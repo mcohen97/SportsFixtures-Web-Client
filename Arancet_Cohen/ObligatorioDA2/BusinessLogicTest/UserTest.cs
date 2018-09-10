@@ -50,7 +50,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
-        public void SetSurnameTest()
+        public void SetInvalidSurnameTest()
         {
             toTest = new Mock<User>("name", "", "username", "password", "email");
             try
@@ -71,7 +71,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
-        public void SetUserNameTest()
+        public void SetInvalidUserNameTest()
         {
             toTest = new Mock<User>("name", "surname", "", "password", "email");
             try
@@ -83,6 +83,28 @@ namespace BusinessLogicTest
                 throw e.InnerException;
             }
         }
+
+        [TestMethod]
+        public void GetPasswordTest()
+        {
+            Assert.AreEqual("password", toTest.Object.Password);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetInvalidPasswordTest()
+        {
+            toTest = new Mock<User>("name", "surname", "username", "", "email");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
 
     }
 }
