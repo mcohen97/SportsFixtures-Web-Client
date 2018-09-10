@@ -16,7 +16,7 @@ namespace BusinessLogicTest
         [TestInitialize]
         public void SetUp()
         {
-            toTest = new Mock<User>("name", "surname", "username", "password", "email");
+            toTest = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
             toTest.CallBase = true;
 
         }
@@ -31,7 +31,7 @@ namespace BusinessLogicTest
         public void SetNameTest()
         {
 
-            toTest = new Mock<User>("", "surname", "username", "password", "email");
+            toTest = new Mock<User>("", "surname", "username", "password", "mail@domain.com");
             try
             {
                 var o = toTest.Object;
@@ -52,7 +52,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetInvalidSurnameTest()
         {
-            toTest = new Mock<User>("name", "", "username", "password", "email");
+            toTest = new Mock<User>("name", "", "username", "password", "mail@domain.com");
             try
             {
                 var o = toTest.Object;
@@ -73,7 +73,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetInvalidUserNameTest()
         {
-            toTest = new Mock<User>("name", "surname", "", "password", "email");
+            toTest = new Mock<User>("name", "surname", "", "password", "mail@domain.com");
             try
             {
                 var o = toTest.Object;
@@ -94,7 +94,88 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetInvalidPasswordTest()
         {
-            toTest = new Mock<User>("name", "surname", "username", "", "email");
+            toTest = new Mock<User>("name", "surname", "username", "", "mail@domain.com");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        [TestMethod]
+        public void GetEmailTest()
+        {
+            Assert.AreEqual("mail@domain.com", toTest.Object.Email);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetEmptyEmailTest()
+        {
+            toTest = new Mock<User>("name", "surname", "username", "password", "");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetEmailWithNoDomainTest()
+        {
+            toTest = new Mock<User>("name", "surname", "username", "password", "mail");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetEmailWithNoNameTest()
+        {
+            toTest = new Mock<User>("name", "surname", "username", "password", "@domain.com");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetEmailWithNoDomainTagTest()
+        {
+            toTest = new Mock<User>("name", "surname", "username", "password", "@domain");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetEmailWithNoAtTest()
+        {
+            toTest = new Mock<User>("name", "surname", "username", "password", "maildomain.com");
             try
             {
                 var o = toTest.Object;
