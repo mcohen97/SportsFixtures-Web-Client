@@ -66,7 +66,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void GetUserNameTest()
         {
-            Assert.AreEqual("username", toTest.Object.Surname);
+            Assert.AreEqual("username", toTest.Object.UserName);
         }
 
         [TestMethod]
