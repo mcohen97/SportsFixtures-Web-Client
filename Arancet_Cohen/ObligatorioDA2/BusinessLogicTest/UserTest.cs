@@ -186,6 +186,17 @@ namespace BusinessLogicTest
             }
         }
 
+        [TestMethod]
+        public void IsAdminTest() {
+            toTest.SetupGet(u => u.IsAdmin).Returns(false);
+            Assert.IsFalse(toTest.Object.IsAdmin);
+        }
+
+        [TestMethod]
+        public void IsNotAdminTest() {
+            toTest.SetupGet(u => u.IsAdmin).Returns(true);
+            Assert.IsTrue(toTest.Object.IsAdmin);
+        }
 
     }
 }
