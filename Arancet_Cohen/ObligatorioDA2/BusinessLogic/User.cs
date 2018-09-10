@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BusinessLogicExceptions;
+using System.Net.Mail;
 
 namespace BusinessLogic
 {
@@ -19,10 +16,15 @@ namespace BusinessLogic
 
         private string userName;
 
-        public string UserName { get { return userName; }set { SetUserName(value); } }
+        public string UserName { get { return userName; } set { SetUserName(value); } }
 
         private string password;
-        public string Password { get {return password; } set {SetPassword(value); } }
+        public string Password { get { return password; } set { SetPassword(value); } }
+
+        private string email;
+        //public string Email { get { return email; } set { SetEmail(value); } }
+
+        public string Email { get; set; }
 
         public User(string aName, string aSurname, string aUserName, string aPassword, string aEmail)
         {
@@ -30,7 +32,7 @@ namespace BusinessLogic
             Surname = aSurname;
             UserName = aUserName;
             Password = aPassword;
- 
+
         }
 
         private void SetName(string aName)
@@ -69,5 +71,7 @@ namespace BusinessLogic
             }
             password = aPassword;
         }
+
+        
     }
 }
