@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic
 {
-    class User
+    public abstract class User
     {
+        public User() {
+
+        }
     }
 }

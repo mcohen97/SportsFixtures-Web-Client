@@ -1,6 +1,7 @@
 ﻿using System;
 using BusinessLogicTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using BusinessLogic;
 
 namespace BusinessLogicTest
 {
