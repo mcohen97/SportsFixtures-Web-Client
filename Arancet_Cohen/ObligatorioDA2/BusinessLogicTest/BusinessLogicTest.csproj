@@ -69,6 +69,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="FollowerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AdminTest.cs" />
     <Compile Include="UserTest.cs" />
