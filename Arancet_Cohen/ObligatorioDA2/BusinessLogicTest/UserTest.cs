@@ -63,5 +63,26 @@ namespace BusinessLogicTest
             }
         }
 
+        [TestMethod]
+        public void GetUserNameTest()
+        {
+            Assert.AreEqual("username", toTest.Object.Surname);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetUserNameTest()
+        {
+            toTest = new Mock<User>("name", "surname", "", "password", "email");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
     }
 }
