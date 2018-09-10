@@ -21,6 +21,8 @@ namespace BusinessLogic
 
         public string UserName { get { return userName; }set { SetUserName(value); } }
 
+        public string Password { get; set; }
+
         public User(string aName, string aSurname, string aUserName, string aPassword, string aEmail)
         {
             Name = aName;
