@@ -54,6 +54,10 @@
     <Compile Include="UserTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BusinessLogicExceptions\BusinessLogicExceptions.csproj">
+      <Project>{8801e585-1262-441c-a559-15475fb8cf6e}</Project>
+      <Name>BusinessLogicExceptions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj">
       <Project>{93920afc-9509-4bda-9f23-e85a7a0cbadf}</Project>
       <Name>BusinessLogic</Name>

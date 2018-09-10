@@ -2,6 +2,7 @@
 using BusinessLogicTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
+using BusinessLogicExceptions;
 
 namespace BusinessLogicTest
 {
@@ -20,6 +21,11 @@ namespace BusinessLogicTest
             Assert.AreEqual("name", toTest.Name);
         }
 
+        [TestMethod]
+        [ExpectedException (typeof (InvalidUserDataException))]
+        public void SetNameTest() {
+
+        }
         
     }
 }

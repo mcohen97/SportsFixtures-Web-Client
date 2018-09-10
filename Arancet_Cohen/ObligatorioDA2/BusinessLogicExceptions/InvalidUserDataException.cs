@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace BusinessLogicExceptions
 {
-    class InvalidUserDataException
+    public class InvalidUserDataException:Exception
     {
+        public InvalidUserDataException(string message) : base(message) {
+
+        }
     }
 }
