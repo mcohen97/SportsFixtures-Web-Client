@@ -38,7 +38,7 @@ namespace BusinessLogic
         {
             if (String.IsNullOrWhiteSpace(aName))
             {
-                throw new InvalidUserDataException("Invalid name format");
+                throw new InvalidUserDataException("Name can't be empty");
             }
             name = aName;
         }
@@ -47,7 +47,7 @@ namespace BusinessLogic
         {
             if (String.IsNullOrWhiteSpace(aSurname))
             {
-                throw new InvalidUserDataException("Invalid surname format");
+                throw new InvalidUserDataException("Surname can't be empty");
             }
             surname = aSurname;
         }
@@ -56,7 +56,7 @@ namespace BusinessLogic
         {
             if (string.IsNullOrWhiteSpace(aUserName))
             {
-                throw new InvalidUserDataException("Invalid user name format");
+                throw new InvalidUserDataException("User name can't be empty");
             }
             userName = aUserName;
         }
@@ -66,7 +66,7 @@ namespace BusinessLogic
         {
             if (string.IsNullOrWhiteSpace(aPassword))
             {
-                throw new InvalidUserDataException("Invalid password format");
+                throw new InvalidUserDataException("Password can't be empty");
             }
             password = aPassword;
         }
