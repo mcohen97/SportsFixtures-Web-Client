@@ -47,6 +47,7 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
         public void SetSurnameTest() {
             toTest = new Mock<User>("name", "", "username", "password", "email");
         }

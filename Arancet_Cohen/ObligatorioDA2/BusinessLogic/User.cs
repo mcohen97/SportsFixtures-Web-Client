@@ -13,8 +13,13 @@ namespace BusinessLogic
 
         public string Name { get { return name; } set { SetName(value); } }
 
+        private string surname;
+
+        public string Surname { get {return surname } set { SetSurname(value); } }
+
         public User(string aName, string aSurname, string aUserName, string aPassword, string aEmail) {
            Name = aName;
+
         }
 
         private void SetName(string aName)
@@ -23,6 +28,11 @@ namespace BusinessLogic
                 throw new InvalidUserDataException("Invalid name format");
             }
             name = aName;
+        }
+
+        private void SetSurname(string aSurname)
+        {
+            aSurname = "";
         }
     }
 }
