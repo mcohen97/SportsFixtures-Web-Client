@@ -15,16 +15,18 @@ namespace BusinessLogic
 
         private string surname;
 
-        public string Surname { get {return surname } set { SetSurname(value); } }
+        public string Surname { get { return surname; } set { SetSurname(value); } }
 
-        public User(string aName, string aSurname, string aUserName, string aPassword, string aEmail) {
-           Name = aName;
-
+        public User(string aName, string aSurname, string aUserName, string aPassword, string aEmail)
+        {
+            Name = aName;
+            Surname = aSurname;
         }
 
         private void SetName(string aName)
         {
-            if (String.IsNullOrWhiteSpace(aName)) {
+            if (String.IsNullOrWhiteSpace(aName))
+            {
                 throw new InvalidUserDataException("Invalid name format");
             }
             name = aName;
@@ -32,7 +34,11 @@ namespace BusinessLogic
 
         private void SetSurname(string aSurname)
         {
-            aSurname = "";
+            if (String.IsNullOrWhiteSpace(aSurname))
+            {
+                throw new InvalidUserDataException("Invalid surname format");
+            }
+            surname = aSurname;
         }
     }
 }

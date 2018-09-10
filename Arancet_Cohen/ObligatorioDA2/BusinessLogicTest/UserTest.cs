@@ -17,8 +17,8 @@ namespace BusinessLogicTest
         public void SetUp()
         {
             toTest = new Mock<User>("name", "surname", "username", "password", "email");
-            toTest.CallBase=true;
-  
+            toTest.CallBase = true;
+
         }
         [TestMethod]
         public void GetNameTest()
@@ -30,26 +30,37 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetNameTest()
         {
-            
-            toTest= new Mock<User>("", "surname", "username", "password", "email");
+
+            toTest = new Mock<User>("", "surname", "username", "password", "email");
             try
             {
                 var o = toTest.Object;
             }
-            catch (TargetInvocationException e) {
+            catch (TargetInvocationException e)
+            {
                 throw e.InnerException;
             }
         }
 
         [TestMethod]
-        public void GetSurnameTest() {
+        public void GetSurnameTest()
+        {
             Assert.AreEqual("surname", toTest.Object.Surname);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
-        public void SetSurnameTest() {
+        public void SetSurnameTest()
+        {
             toTest = new Mock<User>("name", "", "username", "password", "email");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
         }
 
     }
