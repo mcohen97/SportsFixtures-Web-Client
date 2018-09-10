@@ -25,7 +25,7 @@ namespace BusinessLogic
 
         public string Email { get { return email; } set { SetEmail(value); } }
 
-        public bool IsAdmin { get; set; }
+        public abstract bool IsAdmin { get; set; }
 
         public User(string aName, string aSurname, string aUserName, string aPassword, string anEmail)
         {
