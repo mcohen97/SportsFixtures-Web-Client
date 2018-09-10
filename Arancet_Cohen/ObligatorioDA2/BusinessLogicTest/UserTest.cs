@@ -4,9 +4,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
 using BusinessLogicExceptions;
 using Moq;
+using System.Reflection;
 
 namespace BusinessLogicTest
 {
+    class ConcreteUser : User
+    {
+        public ConcreteUser(string aName, string aSurname, string aUserName, string aPassword, string aEmail) : base(aName, aSurname, aUserName, aPassword, aEmail) {
+        }
+    }
+
     [TestClass]
     public class UserTest
     {
@@ -16,6 +23,7 @@ namespace BusinessLogicTest
         public void SetUp()
         {
             toTest = new Mock<User>("name", "surname", "username", "password", "email");
+            toTest.CallBase=true;
   
         }
         [TestMethod]
@@ -28,7 +36,16 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetNameTest()
         {
-            toTest = new Mock<User>("", "surname", "username", "password", "email");
+            
+            toTest.CallBase = true;
+            toTest= new Mock<User>("", "surname", "username", "password", "email");
+            try
+            {
+                var o = toTest.Object;
+            }
+            catch (TargetInvocationException e) {
+                throw e.InnerException;
+            }
         }
 
     }
