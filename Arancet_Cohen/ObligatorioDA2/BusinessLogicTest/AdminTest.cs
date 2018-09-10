@@ -11,8 +11,8 @@ namespace BusinessLogicTest
         [TestMethod]
         public void IsAdminTest()
         {
-            Mock<User> fake = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
-            Assert.IsTrue(fake.Object.IsAdmin);
+            Admin test= new Admin("name", "surname", "username", "password", "mail@domain.com");
+            Assert.IsTrue(test.IsAdmin);
         }
     }
 }
