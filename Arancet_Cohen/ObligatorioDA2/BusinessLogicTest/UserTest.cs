@@ -12,7 +12,8 @@ namespace BusinessLogicTest
         User toTest;
 
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
             toTest = new Admin("name", "surname", "username", "password", "email");
         }
         [TestMethod]
@@ -22,10 +23,11 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        [ExpectedException (typeof (InvalidUserDataException))]
-        public void SetNameTest() {
-
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void SetNameTest()
+        {
+            toTest = new Admin("", "surname", "username", "password", "email");
         }
-        
+
     }
 }
