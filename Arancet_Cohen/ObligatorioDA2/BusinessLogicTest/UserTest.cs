@@ -8,12 +8,6 @@ using System.Reflection;
 
 namespace BusinessLogicTest
 {
-    class ConcreteUser : User
-    {
-        public ConcreteUser(string aName, string aSurname, string aUserName, string aPassword, string aEmail) : base(aName, aSurname, aUserName, aPassword, aEmail) {
-        }
-    }
-
     [TestClass]
     public class UserTest
     {
@@ -37,7 +31,6 @@ namespace BusinessLogicTest
         public void SetNameTest()
         {
             
-            toTest.CallBase = true;
             toTest= new Mock<User>("", "surname", "username", "password", "email");
             try
             {
@@ -46,6 +39,16 @@ namespace BusinessLogicTest
             catch (TargetInvocationException e) {
                 throw e.InnerException;
             }
+        }
+
+        [TestMethod]
+        public void GetSurnameTest() {
+            Assert.AreEqual("surname", toTest.Object.Surname);
+        }
+
+        [TestMethod]
+        public void SetSurnameTest() {
+            toTest = new Mock<User>("name", "", "username", "password", "email");
         }
 
     }
