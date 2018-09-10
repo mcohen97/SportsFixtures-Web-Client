@@ -21,13 +21,15 @@ namespace BusinessLogic
 
         public string UserName { get { return userName; }set { SetUserName(value); } }
 
-        public string Password { get; set; }
+        private string password;
+        public string Password { get {return password; } set {SetPassword(value); } }
 
         public User(string aName, string aSurname, string aUserName, string aPassword, string aEmail)
         {
             Name = aName;
             Surname = aSurname;
             UserName = aUserName;
+            Password = aPassword;
  
         }
 
@@ -56,6 +58,16 @@ namespace BusinessLogic
                 throw new InvalidUserDataException("Invalid user name format");
             }
             userName = aUserName;
+        }
+
+
+        private void SetPassword(string aPassword)
+        {
+            if (string.IsNullOrWhiteSpace(aPassword))
+            {
+                throw new InvalidUserDataException("Invalid password format");
+            }
+            password = aPassword;
         }
     }
 }
