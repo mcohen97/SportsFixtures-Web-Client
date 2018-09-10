@@ -25,6 +25,7 @@ namespace BusinessLogic
         {
             Name = aName;
             Surname = aSurname;
+            UserName = aUserName;
  
         }
 
@@ -48,7 +49,11 @@ namespace BusinessLogic
 
         private void SetUserName(string aUserName)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(aUserName))
+            {
+                throw new InvalidUserDataException("Invalid user name format");
+            }
+            userName = aUserName;
         }
     }
 }
