@@ -58,5 +58,21 @@ namespace BusinessLogicTest
             team.Photo = photo;
             Assert.AreEqual(photo, team.Photo);
         }
+
+        [TestMethod]
+        public void EqualsTest()
+        {
+            Team aTeam = new Team("TeamA", "somePath");
+            Team sameTeam = new Team("TeamA", "");
+            Assert.AreEqual(aTeam, sameTeam);
+        }
+
+        [TestMethod]
+        public void NotEqualsTest()
+        {
+            Team aTeam = new Team("TeamA", "somePath");
+            Team differentTeam = new Team("TeamB", "");
+            Assert.AreNotEqual(aTeam, differentTeam);
+        }
     }
 }
