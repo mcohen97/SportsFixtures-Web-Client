@@ -15,6 +15,7 @@ namespace RepositoryInterface
         void Delete(T entity);
 
         bool Exists(T record);
+
         void Clear();
 
         void Modify(T entity);
