@@ -93,5 +93,21 @@ namespace BusinessLogicTest
             Assert.IsTrue(sport.HasTeam(team2));
             Assert.IsTrue(sport.HasTeam(team3));
         }
+
+        [TestMethod]
+        public void EqualsTest()
+        {
+            Sport aSport = new Sport("SportA");
+            Sport sameSport = new Sport("SportA");
+            Assert.AreEqual(aSport, sameSport);
+        }
+
+        [TestMethod]
+        public void NotEqualsTest()
+        {
+            Sport aSport = new Sport("SportA");
+            Sport differentSport = new Sport("SportB");
+            Assert.AreNotEqual(aSport, differentSport);
+        }
     }
 }
