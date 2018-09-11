@@ -12,7 +12,7 @@ namespace BusinessLogicTest
         public void IsAdminTest()
         {
             Admin test= new Admin("name", "surname", "username", "password", "mail@domain.com");
-            Assert.IsTrue(test.IsAdmin);
+            Assert.IsTrue(test.IsAdmin());
         }
     }
 }

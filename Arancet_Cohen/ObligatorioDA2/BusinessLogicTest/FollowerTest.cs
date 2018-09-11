@@ -11,7 +11,7 @@ namespace BusinessLogicTest
         public void IsAdmintest()
         {
             User test = new Follower("name", "surname", "username", "password", "mail@domain.com");
-            Assert.IsFalse(test.IsAdmin);
+            Assert.IsFalse(test.IsAdmin());
         }
 
     }
