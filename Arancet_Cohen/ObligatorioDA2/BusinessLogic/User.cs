@@ -8,24 +8,22 @@ namespace BusinessLogic
     {
         private string name;
 
-        public string Name { get { return name; } set { SetName(value); } }
+        public string Name { get { return name; } private set { SetName(value); } }
 
         private string surname;
 
-        public string Surname { get { return surname; } set { SetSurname(value); } }
+        public string Surname { get { return surname; } private set { SetSurname(value); } }
 
         private string userName;
 
-        public string UserName { get { return userName; } set { SetUserName(value); } }
+        public string UserName { get { return userName; } private set { SetUserName(value); } }
 
         private string password;
-        public string Password { get { return password; } set { SetPassword(value); } }
+        public string Password { get { return password; } private set { SetPassword(value); } }
 
         private string email;
 
-        public string Email { get { return email; } set { SetEmail(value); } }
-
-        public abstract bool IsAdmin { get; set; }
+        public string Email { get { return email; } private set { SetEmail(value); } }
 
         public User(string aName, string aSurname, string aUserName, string aPassword, string anEmail)
         {
@@ -101,5 +99,6 @@ namespace BusinessLogic
             return valid;
         }
 
+        public abstract bool IsAdmin();
     }
 }

@@ -8,10 +8,12 @@ namespace BusinessLogic
 {
     public class Follower : User
     {
-        public override bool IsAdmin { get; set; }
         public Follower(string aName, string aSurname, string aUserName, string aPassword, string anEmail) : base(aName, aSurname, aUserName, aPassword, anEmail)
         {
+        }
 
+        public override bool IsAdmin() {
+            return false;
         }
     }
 }
