@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataRepositories
+namespace DataRepositoryInterfaces
 {
     public interface IUserRepository
     {

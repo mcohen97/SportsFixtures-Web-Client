@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DataRepositoryInterfaces;
 
 namespace DataRepositories
 {
-    class UserRepository
+    public class UserRepository:IUserRepository
     {
     }
 }

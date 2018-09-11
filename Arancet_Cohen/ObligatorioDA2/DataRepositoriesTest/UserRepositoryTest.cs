@@ -2,7 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using DataAccess;
-using Data
+using DataRepositoryInterfaces;
+using DataRepositories;
 
 namespace DataAccessTest
 {
@@ -14,7 +15,8 @@ namespace DataAccessTest
         [TestInitialize]
         public void SetUp() {
             Mock<DatabaseConnection> connection = new Mock<DatabaseConnection>();
-            usersStorage = new UserRepository();
+           
+            //usersStorage = new UserRepository(connec);
         }
         [TestMethod]
         public void GetUserTest()

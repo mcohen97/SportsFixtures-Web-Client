@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\DataRepositories\DataRepositories.csproj" />
+    <ProjectReference Include="..\DataRepositoryInterfaces\DataRepositoryInterfaces.csproj" />
   </ItemGroup>
 
 </Project>
