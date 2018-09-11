@@ -1,13 +1,12 @@
-﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataAccessTest
 {
     [TestClass]
-    public class UserRepositoryTest
+    public class UnitTest1
     {
         [TestMethod]
-        public void GetUserTest()
+        public void TestMethod1()
         {
         }
     }

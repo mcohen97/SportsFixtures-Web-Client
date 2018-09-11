@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataRepositories", "DataRep
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataRepositoriesTest", "DataRepositoriesTest\DataRepositoriesTest.csproj", "{14A67DE5-1E18-4573-9109-E762CF3575BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessTest", "DataAccessTest\DataAccessTest.csproj", "{5946A8C4-B8D0-4046-A128-0931C17804A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{14A67DE5-1E18-4573-9109-E762CF3575BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14A67DE5-1E18-4573-9109-E762CF3575BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14A67DE5-1E18-4573-9109-E762CF3575BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5946A8C4-B8D0-4046-A128-0931C17804A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5946A8C4-B8D0-4046-A128-0931C17804A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5946A8C4-B8D0-4046-A128-0931C17804A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5946A8C4-B8D0-4046-A128-0931C17804A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
