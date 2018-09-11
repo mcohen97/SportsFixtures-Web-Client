@@ -1,4 +1,6 @@
-﻿namespace BusinessLogic
+﻿using System.Collections.Generic;
+
+namespace BusinessLogic
 {
     public class Team
     {
@@ -35,6 +37,22 @@
             {
                 photo = value;
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (!(obj is Team))
+                return false;
+
+            var team = obj as Team;
+            return Name == team.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return 539060726 + EqualityComparer<string>.Default.GetHashCode(Name);
         }
     }
 }
