@@ -8,8 +8,8 @@ namespace DataAccessTest
     [TestClass]
     public class ContextFactoryTest
     {
-        class DbContextExcample:DbContext {
-        }
+        class DbContextExcample:DbContext { }
+
         ContextFactory factory;
 
         [TestInitialize]
@@ -22,7 +22,7 @@ namespace DataAccessTest
         public void RegisterTest()
         {
             Mock<DbContextExcample> fake = new Mock<DbContextExcample>();
-            factory.Register<DatabaseConnection>(fake);
+            factory.Register<DbContextExcample>(fake.Object);
             DbContext db = factory.Get<DbContextExcample>();
             Assert.Equals(db.GetType(), typeof(DbContextExcample));
         }
