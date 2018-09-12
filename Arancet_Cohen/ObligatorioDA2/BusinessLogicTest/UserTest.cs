@@ -187,13 +187,42 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void IsAdminTest() {
+        public void EqualsTest()
+        {
+            Mock<User> another = new Mock<User>("name2", "surname2", "username", "password2", "mail@domain.com");
+            Assert.IsTrue(toTest.Equals(another));
+        }
+
+        [TestMethod]
+        public void NotEqualsTest()
+        {
+            Mock<User> another = new Mock<User>("name2", "surname2", "username2", "password2", "mail@domain.com");
+            Assert.IsFalse(toTest.Equals(another));
+        }
+
+        [TestMethod]
+        public void NotEqualsOtherTypeTest()
+        {
+            object differentType = new object();
+            Assert.IsFalse(toTest.Equals(differentType));
+        }
+
+        [TestMethod]
+        public void NotEqualsNullTest()
+        {
+            Assert.IsFalse(toTest.Equals(null));
+        }
+
+        [TestMethod]
+        public void IsAdminTest()
+        {
             toTest.Setup(u => u.IsAdmin()).Returns(false);
             Assert.IsFalse(toTest.Object.IsAdmin());
         }
 
         [TestMethod]
-        public void IsNotAdminTest() {
+        public void IsNotAdminTest()
+        {
             toTest.Setup(u => u.IsAdmin()).Returns(true);
             Assert.IsTrue(toTest.Object.IsAdmin());
         }
