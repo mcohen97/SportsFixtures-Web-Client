@@ -18,10 +18,10 @@ namespace DataAccess
 
         public DbContextT Get<DbContextT>() where DbContextT : DbContext, new()
         {
-            DbContextT creation;
+             DbContextT creation;
             if (dbContext == null || dbContextType != typeof(DbContextT))
             {
-                creation = new DbContextT();
+                creation= new DbContextT();
             }
             creation = (DbContextT)dbContext;
             return creation;

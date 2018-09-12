@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using DataRepositoryInterfaces;
 using DataAccess;
 using BusinessLogic;
@@ -17,7 +18,11 @@ namespace DataRepositories
 
         public User GetUserByUsername(string aUsername)
         {
-            throw new NotImplementedException();
+            User toReturn;
+            using (DatabaseConnection db = creator.Get<DatabaseConnection>()) {
+                    toReturn = db.Users.First(u => u.UserName.Equals(aUsername));              
+            }
+            return toReturn;
         }
     }
 }
