@@ -190,7 +190,8 @@ namespace BusinessLogicTest
         public void EqualsTest()
         {
             Mock<User> another = new Mock<User>("name2", "surname2", "username", "password2", "mail@domain.com");
-            Assert.IsTrue(toTest.Equals(another));
+            User mock = another.Object;
+            Assert.IsTrue(toTest.Object.Equals(mock));
         }
 
         [TestMethod]

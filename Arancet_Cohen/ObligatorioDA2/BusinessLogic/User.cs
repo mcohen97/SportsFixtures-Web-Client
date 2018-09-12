@@ -103,7 +103,17 @@ namespace BusinessLogic
 
         public override bool Equals(object obj)
         {
-            return false;
+            bool areEqual;
+            if (obj == null || obj.GetType() != GetType())
+            {
+                areEqual = false;
+            }
+            else
+            {
+                User knownCast = (User)obj;
+                areEqual = UserName.Equals(knownCast.UserName);
+            }
+            return areEqual;
         }
     }
 }
