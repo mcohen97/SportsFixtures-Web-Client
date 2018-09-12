@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessTest
 {
+    public class DbContextExample : DbContext { }
+
     [TestClass]
     public class ContextFactoryTest
     {
-        class DbContextExcample:DbContext { }
-
         ContextFactory factory;
 
         [TestInitialize]
@@ -21,10 +21,10 @@ namespace DataAccessTest
         [TestMethod]
         public void RegisterTest()
         {
-            Mock<DbContextExcample> fake = new Mock<DbContextExcample>();
-            factory.Register<DbContextExcample>(fake.Object);
-            DbContext db = factory.Get<DbContextExcample>();
-            Assert.Equals(db.GetType(), typeof(DbContextExcample));
+            Mock<DbContextExample> fake = new Mock<DbContextExample>();
+            factory.Register<DbContextExample>(fake.Object);
+            DbContext db = factory.Get<DbContextExample>();
+            Assert.AreEqual(db.GetType(), fake.Object.GetType());
         }
     }
 }

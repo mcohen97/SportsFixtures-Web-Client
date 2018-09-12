@@ -12,12 +12,19 @@ namespace DataAccess
 
         public void Register<TDbContext>(TDbContext dbContext) where TDbContext : DbContext, new()
         {
-            
+            dbContextType = typeof(TDbContext);
+            this.dbContext = dbContext;
         }
 
         public DbContextT Get<DbContextT>() where DbContextT : DbContext, new()
         {
-            return new DbContextT();
+            DbContextT creation;
+            if (dbContext == null || dbContextType != typeof(DbContextT))
+            {
+                creation = new DbContextT();
+            }
+            creation = (DbContextT)dbContext;
+            return creation;
         }
     }
 }
