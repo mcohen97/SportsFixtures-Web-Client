@@ -14,8 +14,7 @@ namespace DataAccessTest
 
         [TestInitialize]
         public void SetUp() {
-            factory = new ContextFactory();
-            
+            factory = new ContextFactory();  
         }
 
         [TestMethod]
