@@ -100,5 +100,10 @@ namespace BusinessLogic
         }
 
         public abstract bool IsAdmin();
+
+        public override bool Equals(object obj)
+        {
+            return false;
+        }
     }
 }
