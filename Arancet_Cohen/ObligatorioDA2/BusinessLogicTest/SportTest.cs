@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
 using System.Collections.Generic;
+using Moq;
 
 namespace BusinessLogicTest
 {
@@ -26,13 +27,13 @@ namespace BusinessLogicTest
         [TestMethod]
         public void AddTeamTest()
         {
-            string name = "Football";
-            Sport sport = new Sport(name);
+            Sport sport = new Sport();
 
-            Team team = new Team("TheTeam", "");
-            sport.Add(team);
+            Mock<Team> team = new Mock<Team>("ATeam", "");
+            team.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "ATeam");
+            sport.Add(team.Object);
 
-            Assert.IsTrue(sport.HasTeam(team));
+            Assert.IsTrue(sport.HasTeam(team.Object));
         }
 
         [TestMethod]
@@ -41,11 +42,11 @@ namespace BusinessLogicTest
             string name = "Football";
             Sport sport = new Sport(name);
 
-            Team team = new Team("TheTeam", "");
-            sport.Add(team);
-            sport.Remove(team);
+            Mock<Team> team = new Mock<Team>();
+            sport.Add(team.Object);
+            sport.Remove(team.Object);
 
-            Assert.IsFalse(sport.HasTeam(team));
+            Assert.IsFalse(sport.HasTeam(team.Object));
         }
 
         [TestMethod]
@@ -54,44 +55,45 @@ namespace BusinessLogicTest
             string name = "Football";
             Sport sport = new Sport(name);
 
-            Team team1 = new Team("Team1", "");
-            Team team2 = new Team("Team2", "");
-            Team team3 = new Team("Team3", "");
+            Mock<Team> team1 = new Mock<Team>("team1", "");
+            Mock<Team> team2 = new Mock<Team>("team2", "");
+            Mock<Team> team3 = new Mock<Team>("team3", "");
+            team1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team1");
+            team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team2");
+            team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team3");
 
-            sport.Add(team1);
-            sport.Add(team2);
-            sport.Add(team3);
-
+            sport.Add(team1.Object);
+            sport.Add(team2.Object);
+            sport.Add(team3.Object);
             ICollection<Team> teams = sport.GetTeams();
 
-            Assert.IsTrue(teams.Contains(team1));
-            Assert.IsTrue(teams.Contains(team2));
-            Assert.IsTrue(teams.Contains(team3));
+            Assert.IsTrue(teams.Contains(team1.Object));
+            Assert.IsTrue(teams.Contains(team2.Object));
+            Assert.IsTrue(teams.Contains(team3.Object));
         }
 
         [TestMethod]
         public void AddTeamsTest()
         {
-            string name = "Football";
-            Sport sport = new Sport(name);
+            Sport sport = new Sport();
+            Mock<Team> previousTeam = new Mock<Team>("prevTeam", "");
+            Mock<Team> team1 = new Mock<Team>("team1", "");
+            Mock<Team> team2 = new Mock<Team>("team2", "");
+            Mock<Team> team3 = new Mock<Team>("team3", "");
+            previousTeam.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "prevTeam");
+            team1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team1");
+            team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team2");
+            team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team3");
 
-            Team previousTeam = new Team("prevTeam", "");
-            sport.Add(previousTeam);
+            ICollection<Team> teams = new List<Team> { team1.Object, team2.Object, team3.Object };
 
-            ICollection<Team> teams = new List<Team>();
-            Team team1 = new Team("Team1", "");
-            Team team2 = new Team("Team2", "");
-            Team team3 = new Team("Team3", "");
-            teams.Add(team1);
-            teams.Add(team2);
-            teams.Add(team3);
-
+            sport.Add(previousTeam.Object);
             sport.Add(teams);
 
-            Assert.IsTrue(sport.HasTeam(previousTeam));
-            Assert.IsTrue(sport.HasTeam(team1));
-            Assert.IsTrue(sport.HasTeam(team2));
-            Assert.IsTrue(sport.HasTeam(team3));
+            Assert.IsTrue(sport.HasTeam(previousTeam.Object));
+            Assert.IsTrue(sport.HasTeam(team1.Object));
+            Assert.IsTrue(sport.HasTeam(team2.Object));
+            Assert.IsTrue(sport.HasTeam(team3.Object));
         }
 
         [TestMethod]
