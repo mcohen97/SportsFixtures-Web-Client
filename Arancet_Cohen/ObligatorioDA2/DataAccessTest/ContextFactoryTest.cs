@@ -20,7 +20,7 @@ namespace DataAccessTest
         [TestInitialize]
         public void GetDefaultContextTest(){
             factory = new ContextFactory();
-            DbContext db = factory.Get();
+            DatabaseConnection db = factory.Get();
             Assert.IsNotNull(db);
             db.Dispose();
         }
@@ -31,7 +31,7 @@ namespace DataAccessTest
                 .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
                 .Options;
             factory = new ContextFactory(options);
-            DbContext db = factory.Get();
+            DatabaseConnection db = factory.Get();
             Assert.IsNotNull(db);
             db.Dispose();
         }
