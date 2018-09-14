@@ -17,13 +17,23 @@ namespace DataAccessTest
             factory = new ContextFactory();  
         }
 
+        [TestInitialize]
+        public void GetDefaultContextTest(){
+            factory = new ContextFactory();
+            DbContext db = factory.Get();
+            Assert.IsNotNull(db);
+            db.Dispose();
+        }
+
         [TestMethod]
-        public void RegisterTest()
-        {
-            Mock<DbContextExample> fake = new Mock<DbContextExample>();
-            factory.Register<DbContextExample>(fake.Object);
-            DbContext db = factory.Get<DbContextExample>();
-            Assert.AreEqual(db.GetType(), fake.Object.GetType());
+        public void SetInMemoryTest() {
+            var options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
+                .Options;
+            factory = new ContextFactory(options);
+            DbContext db = factory.Get();
+            Assert.IsNotNull(db);
+            db.Dispose();
         }
     }
 }
