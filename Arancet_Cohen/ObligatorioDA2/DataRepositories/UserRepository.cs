@@ -36,5 +36,40 @@ namespace DataRepositories
         public ICollection<User> GetAll(){
             return null;
         }
+
+        public bool IsEmpty()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Exists(User record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Modify(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User Get(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User Get(User asked)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
