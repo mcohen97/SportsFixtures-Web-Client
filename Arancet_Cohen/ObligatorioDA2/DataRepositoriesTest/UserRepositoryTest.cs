@@ -16,31 +16,52 @@ namespace DataAccessTest
     [TestClass]
     public class UserRepositoryTest
     {
-        IUserRepository usersStorage;
+        IRepository<User> usersStorage;
 
         [TestInitialize]
         public void SetUp() {
-            var options = new DbContextOptionsBuilder<DatabaseConnection>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
-            .Options;
-            usersStorage= new UserRepository(options);
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "UserRepository")
+                .Options;
+            ContextFactory factory = new ContextFactory(options);
+            usersStorage = new UserRepository(factory);
+            ClearDataBase(factory);
+        }
+
+        private void ClearDataBase(ContextFactory factory)
+        {
+            using (DatabaseConnection dbConn = factory.Get()) {
+                foreach (User user in dbConn.Users) {
+                    dbConn.Users.Remove(user);
+                }
+                dbConn.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public void NoUsersTest() {
+            int expectedResult = 0;
+            int actualResult = usersStorage.GetAll().Count;
+            Assert.AreEqual(expectedResult, actualResult);
         }
 
         [TestMethod]
         public void AddUserTest(){
-            IRepository<User> generic =(IRepository<User>) usersStorage;
             Mock<User> user3 = new Mock<User>("name3", "surname3", "username3", "password3", "mail@domain.com");
-            generic.Add(user3.Object);
+            usersStorage.Add(user3.Object);
             int expectedResult=1;
-            int actualResult = generic.GetAll().Count;
+            int actualResult = usersStorage.GetAll().Count;
             Assert.AreEqual(expectedResult,actualResult);
         }
 
         [TestMethod]
         public void GetUserTest()
         {
-            User queried = usersStorage.GetUserByUsername("user1");
-            Assert.AreEqual("name1", queried.Name);
+            IUserRepository specific = (IUserRepository)usersStorage;
+            Mock<User> user3 = new Mock<User>("name3", "surname3", "username3", "password3", "mail@domain.com");
+            usersStorage.Add(user3.Object);
+            User fetched = specific.GetUserByUsername("username3");
+            Assert.AreEqual("name3", fetched.Name);
         }
     }
 }
