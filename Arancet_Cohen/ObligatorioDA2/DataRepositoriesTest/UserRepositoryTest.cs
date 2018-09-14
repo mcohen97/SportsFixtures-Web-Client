@@ -8,6 +8,7 @@ using DataRepositories;
 using System.Collections.Generic;
 using BusinessLogic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.InMemory;
 
 namespace DataAccessTest
 {
@@ -18,23 +19,21 @@ namespace DataAccessTest
 
         [TestInitialize]
         public void SetUp() {
-            Mock<User> user1 = new Mock<User>("name1", "surname1", "username1", "password1", "mail@domain.com");
-            Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail@domain.com");
-            Mock<User> user3 = new Mock<User>("name3", "surname3", "username3", "password3", "mail@domain.com");
-
-            ICollection<Mock<User>> users = new List<Mock<User>>() {user1,user2,user3};
-            Mock<DbSet<User>> mockSet = new Mock<DbSet<User>>();
-            mockSet.Object.AddRange(users.Select(m=>m.Object));
-            
-
-            Mock<DatabaseConnection> fakeDB = new Mock<DatabaseConnection>();
-            fakeDB.Setup(db => db.Users).Returns(mockSet.Object);
-
-            ContextFactory factory = new ContextFactory();
-            factory.Register<DatabaseConnection>(fakeDB.Object);
-                        
-            usersStorage = new UserRepository(factory);
+            var options = new DbContextOptionsBuilder<DatabaseConnection>()
+            .UseInMemoryDatabase(databaseName: "TestDatabase")
+            .Options;
+            usersStorage= new UserRepository(options);
         }
+
+        [TestMethod]
+        public void AddUserTest(){
+            Mock<User> user3 = new Mock<User>("name3", "surname3", "username3", "password3", "mail@domain.com");
+            usersStorage.AddUser(user3.Object);
+            int expectedResult=1;
+            int actualResult = usersStorage.GetUsers().Count;
+            Assert.AreEqual(expectedResult,actualResult);
+        }
+
         [TestMethod]
         public void GetUserTest()
         {
