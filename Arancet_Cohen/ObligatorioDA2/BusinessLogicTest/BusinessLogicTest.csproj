@@ -42,7 +42,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Moq, Version=4.10.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.10.0\lib\net45\Moq.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -119,7 +118,12 @@
   <ItemGroup>
     <Compile Include="FollowerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+<<<<<<< HEAD
     <Compile Include="AdminTest.cs" />
+=======
+    <Compile Include="SportTest.cs" />
+    <Compile Include="TeamTest.cs" />
+>>>>>>> feature_FixtureLogic
     <Compile Include="UserTest.cs" />
   </ItemGroup>
   <ItemGroup>
