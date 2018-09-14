@@ -7,24 +7,31 @@ namespace DataAccess
 {
     public class ContextFactory
     {
-        private Type dbContextType;
-        private DbContext dbContext;
+        private bool isSpecific;
+        private DbContextOptions<DatabaseConnection> options;
 
-        public void Register<TDbContext>(TDbContext dbContext) where TDbContext : DbContext, new()
+        public ContextFactory()
         {
-            dbContextType = typeof(TDbContext);
-            this.dbContext = dbContext;
+            isSpecific = false;
         }
 
-        public DbContextT Get<DbContextT>() where DbContextT : DbContext, new()
+        public ContextFactory(DbContextOptions<DatabaseConnection> someOptions)
         {
-             DbContextT creation;
-            if (dbContext == null || dbContextType != typeof(DbContextT))
+            options = someOptions;
+            isSpecific = true;
+        }
+        public DatabaseConnection Get()
+        {
+            DatabaseConnection toBuild;
+            if (isSpecific)
             {
-                creation= new DbContextT();
+                toBuild = new DatabaseConnection(options);
             }
-            creation = (DbContextT)dbContext;
-            return creation;
+            else
+            {
+                toBuild = new DatabaseConnection();
+            }
+            return toBuild;
         }
     }
 }
