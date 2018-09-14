@@ -18,9 +18,9 @@ namespace DataAccess
             options = someOptions;
             isSpecific=true;
         }
-        public DbContext Get()
+        public DatabaseConnection Get()
         {
-            DbContext toBuild;
+            DatabaseConnection toBuild;
             if(isSpecific){
                 toBuild= new DatabaseConnection(options);
             }else{
