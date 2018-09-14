@@ -17,7 +17,7 @@ namespace DataAccessTest
             factory = new ContextFactory();  
         }
 
-        [TestInitialize]
+        [TestMethod]
         public void GetDefaultContextTest(){
             factory = new ContextFactory();
             DatabaseConnection db = factory.Get();
