@@ -10,28 +10,23 @@ namespace DataAccess
         private bool isSpecific;
         private DbContextOptions<DatabaseConnection> options;
 
-        public ContextFactory()
-        {
+        public ContextFactory() {
             isSpecific = false;
         }
 
-        public ContextFactory(DbContextOptions<DatabaseConnection> someOptions)
-        {
+        public ContextFactory(DbContextOptions<DatabaseConnection> someOptions){
             options = someOptions;
-            isSpecific = true;
+            isSpecific=true;
         }
-        public DatabaseConnection Get()
+        public DbContext Get()
         {
-            DatabaseConnection toBuild;
-            if (isSpecific)
-            {
-                toBuild = new DatabaseConnection(options);
+            DbContext toBuild;
+            if(isSpecific){
+                toBuild= new DatabaseConnection(options);
+            }else{
+                toBuild=new DatabaseConnection();
             }
-            else
-            {
-                toBuild = new DatabaseConnection();
-            }
-            return toBuild;
+             return toBuild;
         }
     }
 }

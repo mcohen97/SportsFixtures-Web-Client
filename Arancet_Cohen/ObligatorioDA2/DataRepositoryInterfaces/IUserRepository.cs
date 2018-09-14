@@ -8,5 +8,6 @@ namespace DataRepositoryInterfaces
     public interface IUserRepository
     {
         User GetUserByUsername(string aUsername);
+        
     }
 }
