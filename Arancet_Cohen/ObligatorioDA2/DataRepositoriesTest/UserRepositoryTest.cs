@@ -31,7 +31,7 @@ namespace DataAccessTest
 
         private void ClearDataBase(DatabaseConnection context)
         { 
-                foreach (User user in context.Users) {
+                foreach (UserEntity user in context.Users) {
                     context.Users.Remove(user);
                 }
                 context.SaveChanges();  
