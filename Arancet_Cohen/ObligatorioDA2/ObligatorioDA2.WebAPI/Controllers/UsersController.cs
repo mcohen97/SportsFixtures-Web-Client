@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using ObligatorioDA2.WebAPI.Models;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -26,8 +27,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] UserModelIn value)
         {
+            return Ok();
         }
 
         // PUT api/values/5
