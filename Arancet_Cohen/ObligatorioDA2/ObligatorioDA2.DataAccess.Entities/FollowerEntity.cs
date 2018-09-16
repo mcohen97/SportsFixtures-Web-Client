@@ -6,7 +6,7 @@ namespace ObligatorioDA2.DataAccess.Entities
 {
     class FollowerEntity:UserEntity
     {
-        public FollowerEntity() {
+        public FollowerEntity():base(){ 
             IsAdmin = false;
         }
     }
