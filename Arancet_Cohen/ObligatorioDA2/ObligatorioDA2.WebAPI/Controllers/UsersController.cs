@@ -27,9 +27,20 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody] UserModelIn value)
+        public IActionResult Post([FromBody] UserModelIn user)
         {
-            return Ok();
+            IActionResult toReturn;
+            if (ModelState.IsValid)
+            {
+                var addedUser = new UserModelOut() { Id = 1, Username = user.Username, Name = user.Name,
+                    Surname =user.Surname,Email=user.Email };
+                toReturn = CreatedAtRoute("GetById", new { id = addedUser.Id }, addedUser);
+            }
+            else
+            {
+                toReturn = BadRequest(ModelState);
+            }
+            return toReturn;
         }
 
         // PUT api/values/5
