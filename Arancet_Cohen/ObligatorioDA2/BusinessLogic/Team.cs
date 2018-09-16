@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using BusinessLogicExceptions;
 
 namespace BusinessLogic
 {
@@ -14,30 +16,32 @@ namespace BusinessLogic
         }
         public Team(string name, string photo)
         {
-            this.name = name;
-            this.photo = photo;
+            this.Name = name;
+            this.Photo = photo;
         }
 
-        public string Name {
-            get
-            {
-                return name;
-            }
-            set
-            {
-                name = value;
-            }
+        public string Name {get{return name;} set{SetName(value);}}
+
+        private void SetName(string value)
+        {
+            if(value == null)
+                throw new InvalidTeamDataException("Name can't be null");
+
+            if(value == "")
+                throw new InvalidTeamDataException("Name can't be empty");
+            
+            name = value;
         }
-        public string Photo {
-            get
-            {
-                return photo;
-            }
-            set
-            {
-                photo = value;
-            }
-        }
+
+        public string Photo {get{return photo;} set{SetPhoto(value);}}
+
+        private void SetPhoto(string value)
+        {
+            if(value == null)
+                throw new InvalidTeamDataException("Photo can't be null");
+
+            photo = value;       
+         }
 
         public override bool Equals(object obj)
         {

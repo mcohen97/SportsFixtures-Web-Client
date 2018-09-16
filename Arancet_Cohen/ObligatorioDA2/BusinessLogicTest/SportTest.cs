@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
 using System.Collections.Generic;
 using Moq;
+using BusinessLogicExceptions;
 
 namespace BusinessLogicTest
 {
@@ -122,7 +123,7 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidTeamDataException))]
+        [ExpectedException(typeof(InvalidSportDataException))]
         public void SetEmptyNameTest()
         {
             Sport sport = new Sport("Name");
@@ -130,7 +131,7 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidTeamDataException))]
+        [ExpectedException(typeof(InvalidSportDataException))]
         public void SetNullNameTest()
         {
             Sport sport = new Sport("Name");

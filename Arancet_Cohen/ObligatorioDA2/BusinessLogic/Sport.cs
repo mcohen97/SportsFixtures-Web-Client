@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using BusinessLogicExceptions;
+
 [assembly:InternalsVisibleTo("BusinessLogicTest")]
 
 namespace BusinessLogic
@@ -9,6 +11,19 @@ namespace BusinessLogic
     {
         private string name;
         private ICollection<Team> teams;
+
+        public string Name { get{return name;} set{SetName(value);} }
+
+        private void SetName(string value)
+        {
+            if(value == null)
+                throw new InvalidSportDataException("Name can't be null");
+            
+            if(value == "")
+                throw new InvalidSportDataException("Name can't be empty");
+
+            name = value;
+        }
 
         public Sport(string name)
         {
