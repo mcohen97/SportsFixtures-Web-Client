@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using BusinessLogic;
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace DataAccess
 {
     public class DatabaseConnection : DbContext
     {
-        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserEntity> Users { get; set; }
 
         public DatabaseConnection(DbContextOptions<DatabaseConnection> options) : base(options)
         {
@@ -18,8 +18,9 @@ namespace DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
 
-            modelBuilder.Entity<User>().HasKey(u => u.UserName);
+            modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
 
         }
     }
