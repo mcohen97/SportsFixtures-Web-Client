@@ -10,7 +10,20 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
     {
         public UserEntity ToEntity(User toConvert)
         {
-            throw new NotImplementedException();
+            UserEntity converted;
+            if (toConvert.IsAdmin())
+            {
+                converted = new AdminEntity();
+            }
+            else {
+                converted = new FollowerEntity();
+            }
+            converted.Name = toConvert.Name;
+            converted.Surname = toConvert.Surname;
+            converted.UserName = toConvert.UserName;
+            converted.Password = toConvert.Password;
+            converted.Email = toConvert.Email;
+            return converted;
         }
     }
 }
