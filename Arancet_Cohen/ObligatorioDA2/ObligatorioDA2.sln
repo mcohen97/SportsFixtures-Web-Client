@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Services.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.DataAccess.Entities", "ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.DataAccess.Entities.csproj", "{9AF76949-3512-4C37-9177-8B3F9BD65A20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.DataAccess.Domain.Mappers", "ObligatorioDA2.DataAccess.Domain.Mapper\ObligatorioDA2.DataAccess.Domain.Mappers.csproj", "{732E9E8C-CD59-47D8-B0EB-23189DE1120B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{9AF76949-3512-4C37-9177-8B3F9BD65A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AF76949-3512-4C37-9177-8B3F9BD65A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AF76949-3512-4C37-9177-8B3F9BD65A20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{732E9E8C-CD59-47D8-B0EB-23189DE1120B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{732E9E8C-CD59-47D8-B0EB-23189DE1120B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{732E9E8C-CD59-47D8-B0EB-23189DE1120B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{732E9E8C-CD59-47D8-B0EB-23189DE1120B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
