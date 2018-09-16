@@ -94,5 +94,22 @@ namespace DataAccessTest
           bool result = usersStorage.Exists(user2.Object);
           Assert.IsFalse(result);
         }
+
+        [TestMethod]
+        public void DeleteTest() {
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            usersStorage.Add(user.Object);
+            usersStorage.Delete(user.Object);
+            Assert.IsTrue(usersStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void DeleteNotExistetTest() {
+            Mock<User> user1 = new Mock<User>("name1", "surname1", "username1", "password1", "mail1@domain.com");
+            Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail2@domain.com");
+            usersStorage.Add(user1.Object);
+            usersStorage.Delete(user2.Object);
+        }
     }
 }
