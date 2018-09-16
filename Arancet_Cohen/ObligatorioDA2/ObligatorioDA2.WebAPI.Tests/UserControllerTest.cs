@@ -26,5 +26,21 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(modelIn.Username, modelOut.Username);
         }
+
+        [TestMethod]
+        public void CreateFailedUserTest()
+        {
+            //Arrange
+            var modelIn = new UserModelIn();
+            var controller = new UsersController();
+            //We need to force the error in de ModelState
+            controller.ModelState.AddModelError("", "Error");
+            var result = controller.Post(modelIn);
+            //Act
+            var createdResult = result as BadRequestObjectResult;
+            //Assert
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(400, createdResult.StatusCode);
+        }
     }
 }
