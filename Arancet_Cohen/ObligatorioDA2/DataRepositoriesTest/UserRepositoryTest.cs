@@ -46,11 +46,19 @@ namespace DataAccessTest
 
         [TestMethod]
         public void AddUserTest(){
-            Mock<User> user3 = new Mock<User>("name3", "surname3", "username3", "password3", "mail@domain.com");
-            usersStorage.Add(user3.Object);
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            usersStorage.Add(user.Object);
             int expectedResult=1;
             int actualResult = usersStorage.GetAll().Count;
             Assert.AreEqual(expectedResult,actualResult);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserAlreadyExistsException))]
+        public void AddAlreadyExistentUserTest() {
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            usersStorage.Add(user.Object);
+            usersStorage.Add(user.Object);
         }
 
         [TestMethod]
@@ -61,6 +69,12 @@ namespace DataAccessTest
             usersStorage.Add(user3.Object);
             User fetched = specific.GetUserByUsername("username3");
             Assert.AreEqual("name3", fetched.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void GetNotExistentUserTest() {
+            User fetched = specific.GetUserByUsername("username3");
         }
     }
 }
