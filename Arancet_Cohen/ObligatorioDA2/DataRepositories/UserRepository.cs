@@ -7,6 +7,7 @@ using DataAccess;
 using BusinessLogic;
 using RepositoryInterface;
 using Microsoft.EntityFrameworkCore;
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace DataRepositories
 {
@@ -19,12 +20,16 @@ namespace DataRepositories
            connection = aConnection;
         }
 
-        public void Add(User aUser){
-
+        public void Add(User aUser) {
+            UserEntity toAdd = new AdminEntity(){Name="name",Surname= "surname",UserName="username", Password="password",Email="email"};
+            connection.Users.Add(toAdd);
+            connection.SaveChanges();
         }
         public User GetUserByUsername(string aUsername)
         {
-            return null;
+            UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUsername));
+            User toReturn = new Admin(fetched.Name, fetched.Surname, fetched.UserName, fetched.Password, fetched.Email);
+            return toReturn;
         }
 
         public ICollection<User> GetAll(){

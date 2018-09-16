@@ -4,6 +4,7 @@
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\DataRepositoryInterfaces\DataRepositoryInterfaces.csproj" />
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.DataAccess.Entities.csproj" />
     <ProjectReference Include="..\RepositoryInterface\RepositoryInterface.csproj" />
   </ItemGroup>
 
