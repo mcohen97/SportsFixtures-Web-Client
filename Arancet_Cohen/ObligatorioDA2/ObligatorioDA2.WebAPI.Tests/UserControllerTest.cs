@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.WebAPI.Models;
+using ObligatorioDA2.WebAPI.Controllers;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
