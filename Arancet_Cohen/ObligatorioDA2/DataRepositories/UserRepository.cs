@@ -68,7 +68,7 @@ namespace DataRepositories
 
         public bool IsEmpty()
         {
-            throw new NotImplementedException();
+            return !connection.Users.Any();
         }
 
         public void Delete(User entity)
