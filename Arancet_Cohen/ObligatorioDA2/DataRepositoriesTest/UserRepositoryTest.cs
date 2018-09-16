@@ -40,9 +40,8 @@ namespace DataAccessTest
 
         [TestMethod]
         public void NoUsersTest() {
-            int expectedResult = 0;
-            int actualResult = usersStorage.GetAll().Count;
-            Assert.AreEqual(expectedResult, actualResult);
+            bool noUsers = usersStorage.IsEmpty();
+            Assert.IsTrue(noUsers);
         }
 
         [TestMethod]
