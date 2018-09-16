@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using BusinessLogic;
 using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.DataAccess.Domain.Mappers;
 
 namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
 {
