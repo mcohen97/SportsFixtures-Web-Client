@@ -8,20 +8,23 @@ using BusinessLogic;
 using RepositoryInterface;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.DataAccess.Domain.Mappers;
 
 namespace DataRepositories
 {
     public class UserRepository : IUserRepository, IRepository<User>
     {
         private readonly DatabaseConnection connection;
+        private readonly UserMapper mapper;
 
         public UserRepository(DatabaseConnection aConnection)
         {
            connection = aConnection;
+           mapper = new UserMapper();
         }
 
         public void Add(User aUser) {
-            UserEntity toAdd = new AdminEntity(){Name="name",Surname= "surname",UserName="username", Password="password",Email="email"};
+            UserEntity toAdd = mapper.ToEntity(aUser);
             connection.Users.Add(toAdd);
             connection.SaveChanges();
         }
@@ -33,7 +36,8 @@ namespace DataRepositories
         }
 
         public ICollection<User> GetAll(){
-            return null;
+            IQueryable<User> query = connection.Users.Select(u => mapper.ToUser(u));
+            return query.ToList();
         }
 
         public bool IsEmpty()
