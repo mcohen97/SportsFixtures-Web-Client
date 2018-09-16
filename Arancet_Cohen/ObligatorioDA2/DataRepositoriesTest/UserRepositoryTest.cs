@@ -23,19 +23,17 @@ namespace DataAccessTest
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "UserRepository")
                 .Options;
-            ContextFactory factory = new ContextFactory(options);
-            usersStorage = new UserRepository(factory);
-            ClearDataBase(factory);
+            DatabaseConnection context = new DatabaseConnection(options);
+            usersStorage = new UserRepository(context);
+            ClearDataBase(context);
         }
 
-        private void ClearDataBase(ContextFactory factory)
-        {
-            using (DatabaseConnection dbConn = factory.Get()) {
-                foreach (User user in dbConn.Users) {
-                    dbConn.Users.Remove(user);
+        private void ClearDataBase(DatabaseConnection context)
+        { 
+                foreach (User user in context.Users) {
+                    context.Users.Remove(user);
                 }
-                dbConn.SaveChanges();
-            }
+                context.SaveChanges();  
         }
 
         [TestMethod]
