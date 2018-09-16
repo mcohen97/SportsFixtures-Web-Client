@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatorioDA2.DataAccess.Entities
 {
-    class FollowerEntity:UserEntity
+    public class FollowerEntity:UserEntity
     {
         public FollowerEntity():base(){ 
             IsAdmin = false;
