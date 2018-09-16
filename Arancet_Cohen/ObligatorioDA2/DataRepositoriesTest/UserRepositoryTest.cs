@@ -78,5 +78,22 @@ namespace DataAccessTest
             IUserRepository specific = (IUserRepository)usersStorage;
             User fetched = specific.GetUserByUsername("username3");
         }
+
+        [TestMethod]
+        public void ExistsUserTest() {
+           Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            usersStorage.Add(user.Object);
+            bool result = usersStorage.Exists(user.Object);
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void DoesNotExistTest() {
+          Mock<User> user1 = new Mock<User>("name1", "surname1", "username1", "password1", "mail1@domain.com");
+          Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail2@domain.com");
+          usersStorage.Add(user1.Object);
+          bool result = usersStorage.Exists(user2.Object);
+          Assert.IsTrue(result);
+        }
     }
 }
