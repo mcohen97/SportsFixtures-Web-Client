@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+[assembly:InternalsVisibleTo("BusinessLogicTest")]
 
 namespace BusinessLogic
 {
@@ -14,7 +16,7 @@ namespace BusinessLogic
             teams = new List<Team>();
         }
 
-        public Sport()
+        internal Sport()
         {
             name = "";
             teams = new List<Team>();

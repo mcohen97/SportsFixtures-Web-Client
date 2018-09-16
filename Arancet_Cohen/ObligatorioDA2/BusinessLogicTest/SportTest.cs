@@ -111,5 +111,30 @@ namespace BusinessLogicTest
             Sport differentSport = new Sport("SportB");
             Assert.AreNotEqual(aSport, differentSport);
         }
+
+        [TestMethod]
+        public void SetNameTest()
+        {
+            Sport aSport = new Sport("SportA");
+            string newName = "NewName";
+            aSport.Name = newName;
+            Assert.AreEqual(newName,aSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamDataException))]
+        public void SetEmptyNameTest()
+        {
+            Sport sport = new Sport("Name");
+            sport.Name = "";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamDataException))]
+        public void SetNullNameTest()
+        {
+            Sport sport = new Sport("Name");
+            sport.Name = "";
+        }
     }
 }

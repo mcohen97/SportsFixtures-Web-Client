@@ -74,5 +74,36 @@ namespace BusinessLogicTest
             Team differentTeam = new Team("TeamB", "");
             Assert.AreNotEqual(aTeam, differentTeam);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamDataException))]
+        public void EmptyNameConstructorTest()
+        {
+            Team team = new Team("","photo");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamDataException))]
+        public void SetEmptyNameTest()
+        {
+            Team team = new Team("name","photo");
+            team.Name = "";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamDataException))]
+        public void SetNullNameTest()
+        {
+            Team team = new Team("name","photo");
+            team.Name = null;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamDataException))]
+        public void SetNullPhotoTest()
+        {
+            Team team = new Team("name","photo");
+            team.Photo = null;
+        }
     }
 }
