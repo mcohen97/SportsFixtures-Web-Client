@@ -12,17 +12,11 @@ namespace DataRepositories
 {
     public class UserRepository : IUserRepository, IRepository<User>
     {
-        private readonly ContextFactory creator;
-        private DbContextOptions<DatabaseConnection> options;
+        private readonly DatabaseConnection connection;
 
-        public UserRepository(ContextFactory aFactory)
+        public UserRepository(DatabaseConnection aConnection)
         {
-           creator = aFactory;
-        }
-
-        public UserRepository(DbContextOptions<DatabaseConnection> someOptions)
-        {
-            options = someOptions;
+           connection = aConnection;
         }
 
         public void Add(User aUser){
