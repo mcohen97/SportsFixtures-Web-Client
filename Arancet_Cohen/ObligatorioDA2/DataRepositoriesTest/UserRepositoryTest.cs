@@ -10,6 +10,7 @@ using BusinessLogic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 using RepositoryInterface;
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace DataAccessTest
 {
@@ -31,7 +32,7 @@ namespace DataAccessTest
         private void ClearDataBase(ContextFactory factory)
         {
             using (DatabaseConnection dbConn = factory.Get()) {
-                foreach (User user in dbConn.Users) {
+                foreach (UserEntity user in dbConn.Users) {
                     dbConn.Users.Remove(user);
                 }
                 dbConn.SaveChanges();
