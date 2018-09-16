@@ -25,10 +25,22 @@ namespace DataRepositories
         }
 
         public void Add(User aUser) {
+            if (!AnyWithThisUserName(aUser.UserName))
+            {
+                AddNewUser(aUser);           
+            }
+            else {
+                throw new UserAlreadyExistsException();
+            }
+        }
+
+        private void AddNewUser(User aUser)
+        {
             UserEntity toAdd = mapper.ToEntity(aUser);
             connection.Users.Add(toAdd);
             connection.SaveChanges();
         }
+
         public User GetUserByUsername(string aUserName)
         {
             User toReturn;
