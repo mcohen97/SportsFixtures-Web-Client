@@ -19,6 +19,7 @@
     <ProjectReference Include="..\DataRepositoryInterfaces\DataRepositoryInterfaces.csproj" />
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\DataRepositories\DataRepositories.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.DataAccess.Entities.csproj" />
     <ProjectReference Include="..\RepositoryInterface\RepositoryInterface.csproj" />
   </ItemGroup>

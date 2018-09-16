@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 using RepositoryInterface;
 using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace DataAccessTest
 {
@@ -74,6 +75,7 @@ namespace DataAccessTest
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void GetNotExistentUserTest() {
+            IUserRepository specific = (IUserRepository)usersStorage;
             User fetched = specific.GetUserByUsername("username3");
         }
     }
