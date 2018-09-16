@@ -10,6 +10,7 @@ using BusinessLogic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 using RepositoryInterface;
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace DataAccessTest
 {

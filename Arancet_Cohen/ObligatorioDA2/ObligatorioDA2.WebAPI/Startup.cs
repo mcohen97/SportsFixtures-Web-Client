@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace ObligatorioDA2.WebAPI
 {
@@ -26,6 +28,7 @@ namespace ObligatorioDA2.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddDbContext<DatabaseConnection>(options => options.UseSqlServer(Configuration.GetConnectionString("ObligatorioDA2")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
