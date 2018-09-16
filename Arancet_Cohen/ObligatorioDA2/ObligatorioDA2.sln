@@ -21,9 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataRepositoryInterfaces", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryInterface", "RepositoryInterface\RepositoryInterface.csproj", "{F05C873C-4980-4954-ADCC-24383159EDED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.WebAPI", "ObligatorioDA2.WebAPI\ObligatorioDA2.WebAPI.csproj", "{C8106455-AC0B-4B04-9CF1-F98AA2654275}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.WebAPI", "ObligatorioDA2.WebAPI\ObligatorioDA2.WebAPI.csproj", "{C8106455-AC0B-4B04-9CF1-F98AA2654275}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.WebAPI.Tests", "ObligatorioDA2.WebAPI.Tests\ObligatorioDA2.WebAPI.Tests.csproj", "{E50AEDF1-BB57-4030-BD45-D7779AE8CE98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.WebAPI.Tests", "ObligatorioDA2.WebAPI.Tests\ObligatorioDA2.WebAPI.Tests.csproj", "{E50AEDF1-BB57-4030-BD45-D7779AE8CE98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.Services.Tests", "ObligatorioDA2.Services.Tests\ObligatorioDA2.Services.Tests.csproj", "{E102F7CF-AB87-40EC-B109-9EFCC8FD05CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{E50AEDF1-BB57-4030-BD45-D7779AE8CE98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E50AEDF1-BB57-4030-BD45-D7779AE8CE98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E50AEDF1-BB57-4030-BD45-D7779AE8CE98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E102F7CF-AB87-40EC-B109-9EFCC8FD05CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E102F7CF-AB87-40EC-B109-9EFCC8FD05CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E102F7CF-AB87-40EC-B109-9EFCC8FD05CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E102F7CF-AB87-40EC-B109-9EFCC8FD05CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
