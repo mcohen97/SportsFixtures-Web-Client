@@ -93,7 +93,7 @@ namespace DataAccessTest
           Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail2@domain.com");
           usersStorage.Add(user1.Object);
           bool result = usersStorage.Exists(user2.Object);
-          Assert.IsTrue(result);
+          Assert.IsFalse(result);
         }
     }
 }
