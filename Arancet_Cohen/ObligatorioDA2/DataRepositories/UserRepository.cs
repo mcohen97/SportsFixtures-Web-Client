@@ -9,6 +9,7 @@ using RepositoryInterface;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace DataRepositories
 {
@@ -28,9 +29,22 @@ namespace DataRepositories
             connection.Users.Add(toAdd);
             connection.SaveChanges();
         }
-        public User GetUserByUsername(string aUsername)
+        public User GetUserByUsername(string aUserName)
         {
-            UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUsername));
+            User toReturn;
+            if (AnyWithThisUserName(aUserName))
+            {
+                toReturn = GetExistentUser(aUserName);
+            }
+            else {
+                throw new UserNotFoundException();
+            }
+            return toReturn;
+        }
+
+        private User GetExistentUser(string aUserName)
+        {
+            UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUserName));
             User toReturn = new Admin(fetched.Name, fetched.Surname, fetched.UserName, fetched.Password, fetched.Email);
             return toReturn;
         }
@@ -52,7 +66,12 @@ namespace DataRepositories
 
         public bool Exists(User record)
         {
-            throw new NotImplementedException();
+            bool doesExist = AnyWithThisUserName(record.UserName);
+            return doesExist;
+        }
+
+        private bool AnyWithThisUserName(string userName) {
+           return connection.Users.Any(u => u.UserName.Equals(userName));
         }
 
         public void Clear()
