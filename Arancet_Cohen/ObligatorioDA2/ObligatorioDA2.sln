@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.DataAccess.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.DataAccess.Domain.Mappers.Tests", "ObligatorioDA2.DataAccess.Domain.Mappers.Tests\ObligatorioDA2.DataAccess.Domain.Mappers.Tests.csproj", "{F3524F09-B0BD-4F04-8427-0E24319E43C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.BusinessLogic.Data.Exceptions", "ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj", "{0DAA83E5-87A9-4E8C-A297-6EB86227A595}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{F3524F09-B0BD-4F04-8427-0E24319E43C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3524F09-B0BD-4F04-8427-0E24319E43C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3524F09-B0BD-4F04-8427-0E24319E43C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DAA83E5-87A9-4E8C-A297-6EB86227A595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DAA83E5-87A9-4E8C-A297-6EB86227A595}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DAA83E5-87A9-4E8C-A297-6EB86227A595}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DAA83E5-87A9-4E8C-A297-6EB86227A595}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
