@@ -21,11 +21,8 @@ namespace DataAccess
         public DatabaseConnection Get()
         {
             DatabaseConnection toBuild;
-            if(isSpecific){
-                toBuild= new DatabaseConnection(options);
-            }else{
-                toBuild=new DatabaseConnection();
-            }
+            toBuild= new DatabaseConnection(options);
+           
              return toBuild;
         }
     }
