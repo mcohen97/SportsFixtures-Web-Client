@@ -11,9 +11,6 @@ namespace DataAccess
     {
         public virtual DbSet<User> Users { get; set; }
 
-        public DatabaseConnection()
-        {
-        }
         public DatabaseConnection(DbContextOptions<DatabaseConnection> options) : base(options)
         {
         }
