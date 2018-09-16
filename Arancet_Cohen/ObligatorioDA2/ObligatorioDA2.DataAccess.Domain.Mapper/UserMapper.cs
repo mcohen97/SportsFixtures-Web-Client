@@ -25,5 +25,19 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             converted.Email = toConvert.Email;
             return converted;
         }
+
+        public User ToUser(UserEntity toConvert)
+        {
+            User converted;
+            if (toConvert.IsAdmin)
+            {
+                converted = new Admin(toConvert.Name, toConvert.Surname, toConvert.UserName, toConvert.Password, toConvert.Email);
+            }
+            else
+            {
+                converted = new Follower(toConvert.Name, toConvert.Surname, toConvert.UserName, toConvert.Password, toConvert.Email);
+            }
+            return converted;
+        }
     }
 }
