@@ -228,5 +228,16 @@ namespace BusinessLogicTest
             Assert.IsTrue(toTest.Object.IsAdmin());
         }
 
+        [TestMethod]
+        public void GetUnassignedIdTest() {
+            Assert.AreEqual(toTest.Object.Id, -1);
+        }
+
+        [TestMethod]
+        public void GetAssignedIdTest() {
+           toTest = new Mock<User>("name", "surname", "username", "password", "maildomain.com", 1);
+           Assert.AreEqual(toTest.Object.Id, 1);
+        }
+
     }
 }
