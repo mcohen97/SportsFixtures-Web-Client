@@ -20,16 +20,18 @@ namespace DataRepositories
 
         public UserRepository(DatabaseConnection aConnection)
         {
-           connection = aConnection;
-           mapper = new UserMapper();
+            connection = aConnection;
+            mapper = new UserMapper();
         }
 
-        public void Add(User aUser) {
+        public void Add(User aUser)
+        {
             if (!AnyWithThisUserName(aUser.UserName))
             {
-                AddNewUser(aUser);           
+                AddNewUser(aUser);
             }
-            else {
+            else
+            {
                 throw new UserAlreadyExistsException();
             }
         }
@@ -48,7 +50,8 @@ namespace DataRepositories
             {
                 toReturn = GetExistentUser(aUserName);
             }
-            else {
+            else
+            {
                 throw new UserNotFoundException();
             }
             return toReturn;
@@ -61,7 +64,8 @@ namespace DataRepositories
             return toReturn;
         }
 
-        public ICollection<User> GetAll(){
+        public ICollection<User> GetAll()
+        {
             IQueryable<User> query = connection.Users.Select(u => mapper.ToUser(u));
             return query.ToList();
         }
@@ -80,7 +84,8 @@ namespace DataRepositories
                 connection.Users.Remove(toDelete);
                 connection.SaveChanges();
             }
-            else {
+            else
+            {
                 throw new UserNotFoundException();
             }
         }
@@ -95,13 +100,14 @@ namespace DataRepositories
         {
             if (AnyWithThisUserName(aUser.UserName))
             {
-                UserEntity toModify = connection.Users.First(u=>u.UserName.Equals(aUser.UserName));
+                UserEntity toModify = connection.Users.First(u => u.UserName.Equals(aUser.UserName));
                 UserEntity newRecord = mapper.ToEntity(aUser);
                 newRecord.Id = toModify.Id;
                 connection.Entry(toModify).CurrentValues.SetValues(newRecord);
                 connection.SaveChanges();
             }
-            else {
+            else
+            {
                 throw new UserNotFoundException();
             }
         }
@@ -125,7 +131,8 @@ namespace DataRepositories
                 UserEntity record = connection.Users.First(u => u.Id == anId);
                 query = mapper.ToUser(record);
             }
-            else {
+            else
+            {
                 throw new UserNotFoundException();
             }
             return query;
@@ -133,7 +140,13 @@ namespace DataRepositories
 
         public void Clear()
         {
-            throw new NotImplementedException();
+
+            foreach (UserEntity user in connection.Users)
+            {
+                connection.Users.Remove(user);
+            }
+            connection.SaveChanges();
+
         }
 
     }
