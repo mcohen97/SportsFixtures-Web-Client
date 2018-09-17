@@ -112,7 +112,7 @@ namespace DataRepositories
             }
         }
 
-        public User Get(Guid id)
+        public User Get(int id)
         {
             throw new NotImplementedException();
         }

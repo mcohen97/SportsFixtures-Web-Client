@@ -20,7 +20,7 @@ namespace RepositoryInterface
 
         void Modify(T entity);
 
-        T Get(Guid id);
+        T Get(int id);
 
         T Get(T asked);
 
