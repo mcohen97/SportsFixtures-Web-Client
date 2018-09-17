@@ -28,17 +28,9 @@ namespace DataAccessTest
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             usersStorage = new UserRepository(context);
-            ClearDataBase(context);
+            usersStorage.Clear();
         }
 
-        private void ClearDataBase(DatabaseConnection context)
-        {
-            foreach (UserEntity user in context.Users)
-            {
-                context.Users.Remove(user);
-            }
-            context.SaveChanges();
-        }
 
         [TestMethod]
         public void NoUsersTest()
