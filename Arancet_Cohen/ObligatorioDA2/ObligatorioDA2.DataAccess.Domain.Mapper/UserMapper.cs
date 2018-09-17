@@ -31,11 +31,13 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             User converted;
             if (toConvert.IsAdmin)
             {
-                converted = new Admin(toConvert.Name, toConvert.Surname, toConvert.UserName, toConvert.Password, toConvert.Email);
+                converted = new Admin(toConvert.Name, toConvert.Surname, toConvert.UserName, 
+                    toConvert.Password, toConvert.Email,toConvert.Id);
             }
             else
             {
-                converted = new Follower(toConvert.Name, toConvert.Surname, toConvert.UserName, toConvert.Password, toConvert.Email);
+                converted = new Follower(toConvert.Name, toConvert.Surname, toConvert.UserName,
+                    toConvert.Password, toConvert.Email, toConvert.Id);
             }
             return converted;
         }
