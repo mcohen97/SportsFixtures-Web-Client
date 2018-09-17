@@ -143,10 +143,11 @@ namespace DataAccessTest
 
         [TestMethod]
         public void GetByIdTest() {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com",3);
+            /*IUserRepository specific = (IUserRepository)usersStorage;
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
             usersStorage.Add(user.Object);
-            User fetched = usersStorage.Get(3);
-            Assert.AreEqual(fetched.Name, user.Name);
+            User fetched = specific.GetUserByUsername("username");
+            Assert.AreEqual(fetched.Na, );*/
         }
 
         [TestMethod]
@@ -155,6 +156,23 @@ namespace DataAccessTest
             Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com", 3);
             usersStorage.Add(user.Object);
             User fetched = usersStorage.Get(4);
+        }
+
+        [TestMethod]
+        public void GetTest() {
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com", 3);
+            usersStorage.Add(user.Object);
+            User fetched = usersStorage.Get(user.Object);
+            Assert.AreEqual(user.Object.UserName, fetched.UserName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void GetNotExistentTest() {
+            Mock<User> user1 = new Mock<User>("name1", "surname1", "username", "password1", "mail1@domain.com");
+            Mock<User> user2 = new Mock<User>("name2", "surname2", "username", "password2", "mail2@domain.com");
+            usersStorage.Add(user1.Object);
+            usersStorage.Get(user2.Object);
         }
     }
 }
