@@ -91,15 +91,6 @@ namespace DataRepositories
             return doesExist;
         }
 
-        private bool AnyWithThisUserName(string userName) {
-           return connection.Users.Any(u => u.UserName.Equals(userName));
-        }
-
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Modify(User entity)
         {
             if (AnyWithThisUserName(entity.UserName))
@@ -112,14 +103,35 @@ namespace DataRepositories
             }
         }
 
-        public User Get(int id)
+        private bool AnyWithThisUserName(string userName)
         {
-            throw new NotImplementedException();
+            return connection.Users.Any(u => u.UserName.Equals(userName));
         }
 
         public User Get(User asked)
         {
+            return GetUserByUsername(asked.UserName);
+        }
+
+        public User Get(int anId)
+        {
+            User query;
+            bool exists = connection.Users.Any(u => u.Id == anId);
+            if (exists)
+            {
+                UserEntity record = connection.Users.First(u => u.Id == anId);
+                query = mapper.ToUser(record);
+            }
+            else {
+                throw new UserNotFoundException();
+            }
+            return query;
+        }
+
+        public void Clear()
+        {
             throw new NotImplementedException();
         }
+
     }
 }
