@@ -15,7 +15,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
 
         [TestInitialize]
         public void StartUp() {
-            toStore = new Mock<User>("name", "surname", "username", "password", "email@domain.com");
+            toStore = new Mock<User>("name", "surname", "username", "password", "email@domain.com",2);
             toGet = new UserEntity()
             {
                 Name = "name",
@@ -61,6 +61,13 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         {
             UserEntity conversion = toTest.ToEntity(toStore.Object);
             Assert.AreEqual(conversion.Email, toStore.Object.Email);
+        }
+
+        [TestMethod]
+        public void UserToEntityIdTest()
+        {
+            UserEntity conversion = toTest.ToEntity(toStore.Object);
+            Assert.AreEqual(conversion.Id, toStore.Object.Id);
         }
 
         [TestMethod]
