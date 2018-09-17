@@ -141,5 +141,10 @@ namespace DataAccessTest
             usersStorage.Modify(user1.Object);
         }
 
+        [TestMethod]
+        public void GetByIdTest() {
+          Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            usersStorage.Add(user.Object);
+        }
     }
 }

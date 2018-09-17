@@ -6,7 +6,6 @@
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.DataAccess.Domain.Mapper\ObligatorioDA2.DataAccess.Domain.Mappers.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.DataAccess.Entities.csproj" />
     <ProjectReference Include="..\RepositoryInterface\RepositoryInterface.csproj" />
   </ItemGroup>
 

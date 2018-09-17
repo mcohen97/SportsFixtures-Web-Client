@@ -102,7 +102,14 @@ namespace DataRepositories
 
         public void Modify(User entity)
         {
-            throw new NotImplementedException();
+            if (AnyWithThisUserName(entity.UserName))
+            {
+                Delete(entity);
+                Add(entity);
+            }
+            else {
+                throw new UserNotFoundException();
+            }
         }
 
         public User Get(Guid id)
