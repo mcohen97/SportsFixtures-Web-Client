@@ -22,7 +22,8 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
                 Surname = "surname",
                 UserName = "username",
                 Password = "password",
-                Email = "email@domain.com"
+                Email = "email@domain.com",
+                Id = 1
             };
             toTest = new UserMapper();
         }
@@ -94,6 +95,12 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         {
             User conversion = toTest.ToUser(toGet);
             Assert.AreEqual(conversion.Email, toGet.Email);
+        }
+
+        [TestMethod]
+        public void EntityToUserIdTest() {
+            User conversion = toTest.ToUser(toGet);
+            Assert.AreEqual(conversion.Id, toGet.Id);
         }
     }
 }
