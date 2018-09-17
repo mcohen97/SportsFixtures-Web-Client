@@ -169,8 +169,8 @@ namespace DataAccessTest
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void GetNotExistentTest() {
-            Mock<User> user1 = new Mock<User>("name1", "surname1", "username", "password1", "mail1@domain.com");
-            Mock<User> user2 = new Mock<User>("name2", "surname2", "username", "password2", "mail2@domain.com");
+            Mock<User> user1 = new Mock<User>("name1", "surname1", "username1", "password1", "mail1@domain.com");
+            Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail2@domain.com");
             usersStorage.Add(user1.Object);
             usersStorage.Get(user2.Object);
         }
