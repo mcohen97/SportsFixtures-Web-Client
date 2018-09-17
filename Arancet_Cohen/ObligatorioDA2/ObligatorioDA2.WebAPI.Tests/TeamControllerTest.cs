@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
+    [TestClass]
     public class TeamControllerTest
     {
         [TestMethod]
