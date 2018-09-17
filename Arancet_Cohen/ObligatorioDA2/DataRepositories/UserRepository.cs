@@ -91,12 +91,15 @@ namespace DataRepositories
             return doesExist;
         }
 
-        public void Modify(User entity)
+        public void Modify(User aUser)
         {
-            if (AnyWithThisUserName(entity.UserName))
+            if (AnyWithThisUserName(aUser.UserName))
             {
-                Delete(entity);
-                Add(entity);
+                UserEntity toModify = connection.Users.First(u=>u.UserName.Equals(aUser.UserName));
+                UserEntity newRecord = mapper.ToEntity(aUser);
+                newRecord.Id = toModify.Id;
+                connection.Entry(toModify).CurrentValues.SetValues(newRecord);
+                connection.SaveChanges();
             }
             else {
                 throw new UserNotFoundException();
