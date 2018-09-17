@@ -173,5 +173,13 @@ namespace DataAccessTest
             usersStorage.Add(user1.Object);
             usersStorage.Get(user2.Object);
         }
+
+        [TestMethod]
+        public void ClearUsersTest() {
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            usersStorage.Add(user.Object);
+            usersStorage.Clear();
+            Assert.IsTrue(usersStorage.IsEmpty());
+        }
     }
 }
