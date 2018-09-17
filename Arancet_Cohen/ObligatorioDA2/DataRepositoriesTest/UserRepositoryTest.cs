@@ -143,8 +143,18 @@ namespace DataAccessTest
 
         [TestMethod]
         public void GetByIdTest() {
-          Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com",3);
             usersStorage.Add(user.Object);
+            User fetched = usersStorage.Get(3);
+            Assert.AreEqual(fetched.Name, user.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void GetByIdNotFoundTest() {
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com", 3);
+            usersStorage.Add(user.Object);
+            User fetched = usersStorage.Get(4);
         }
     }
 }
