@@ -6,6 +6,8 @@ namespace BusinessLogic
 {
     public abstract class User
     {
+        public int Id { get; private set; }
+
         private string name;
 
         public string Name { get { return name; } private set { SetName(value); } }
@@ -32,6 +34,13 @@ namespace BusinessLogic
             UserName = aUserName;
             Password = aPassword;
             Email = anEmail;
+            Id = -1;
+        }
+
+        public User(string aName, string aSurname, string aUserName, string aPassword, string anEmail, int anId)
+            :this(aName,aSurname,aUserName, aPassword,  anEmail)
+        {
+            Id = anId;
         }
 
         private void SetName(string aName)
