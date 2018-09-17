@@ -130,7 +130,7 @@ namespace DataAccessTest
             usersStorage.Add(user1.Object);
             usersStorage.Modify(user2.Object);
             User toVerify = usersStorage.Get(user2.Object);
-            Assert.AreEqual(toVerify.Name, user2.Name);
+            Assert.AreEqual(toVerify.Name, user2.Object.Name);
         }
 
         [TestMethod]
@@ -143,11 +143,10 @@ namespace DataAccessTest
 
         [TestMethod]
         public void GetByIdTest() {
-            /*IUserRepository specific = (IUserRepository)usersStorage;
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
+            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com",3);
             usersStorage.Add(user.Object);
-            User fetched = specific.GetUserByUsername("username");
-            Assert.AreEqual(fetched.Na, );*/
+            User fetched = usersStorage.Get(3);
+            Assert.AreEqual(fetched.UserName,user.Object.UserName);
         }
 
         [TestMethod]
