@@ -30,7 +30,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
 
         [TestMethod]
         public void EntityToTeamTest(){
-            Team convertedTeam = teamMapper.ToDomainObject(mockTeamEntity.Object);
+            Team convertedTeam = teamMapper.ToTeam(mockTeamEntity.Object);
             Assert.AreEqual(convertedTeam.Name, mockTeamEntity.Object.Name);
             Assert.AreEqual(convertedTeam.Photo, mockTeamEntity.Object.Photo);
         }

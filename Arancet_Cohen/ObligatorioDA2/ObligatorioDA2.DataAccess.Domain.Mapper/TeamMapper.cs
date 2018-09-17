@@ -2,11 +2,11 @@ using System;
 using BusinessLogic;
 using ObligatorioDA2.DataAccess.Entities;
 
-namespace ObligatorioDA2.DataAccess.Domain.Mapper
+namespace ObligatorioDA2.DataAccess.Domain.Mappers
 {
     public class TeamMapper
     {
-        public Team ToDomainObject(TeamEntity teamEntity)
+        public Team ToTeam(TeamEntity teamEntity)
         {
             Team convertedTeam = new Team(teamEntity.Name, teamEntity.Photo);
             return convertedTeam;

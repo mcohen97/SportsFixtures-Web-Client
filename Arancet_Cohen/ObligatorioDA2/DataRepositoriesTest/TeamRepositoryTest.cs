@@ -18,7 +18,7 @@ namespace DataRepositoriesTest
     [TestClass]
     public class TeamRepositoryTest
     {
-        private IRepository<Team> teamRepo;
+        private IRepository<Team> teamsStorage;
 
         [TestInitialize]
         public void TestInitialize(){
@@ -26,8 +26,144 @@ namespace DataRepositoriesTest
                 .UseInMemoryDatabase(databaseName: "TeamRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            teamRepo = new TeamRepository(context);
+            teamsStorage = new TeamRepository(context);
             ClearDataBase(context);        
         }
+
+        private void ClearDataBase(DatabaseConnection context)
+        { 
+                foreach (TeamEntity team in context.Teams) {
+                    context.Teams.Remove(team);
+                }
+                context.SaveChanges();  
+        }
+
+        [TestMethod]
+        public void NoTeamsTest(){
+            bool noTeams = teamsStorage.IsEmpty();
+            Assert.IsTrue(noTeams);
+        }
+
+        [TestMethod]
+        public void AddTeamTest(){
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            Assert.AreEqual(1,teamsStorage.GetAll().Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamAlreadyExistsException))]
+        public void AddAlreadyExistentTeamTest() {
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            teamsStorage.Add(team.Object);
+        }
+
+        [TestMethod]
+        public void GetTeamTest()
+        {
+            ITeamRepository specific = (ITeamRepository)teamsStorage;
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            Team fetched = specific.GetTeamByName("DreamTeam");
+            Assert.AreEqual("DreamTeam", fetched.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void GetNotExistentTeamTest() {
+            ITeamRepository specific = (ITeamRepository)teamsStorage;
+            Team fetched = specific.GetTeamByName("DreamTeam");
+        }
+
+        [TestMethod]
+        public void ExistsTeamTest() {
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            bool result = teamsStorage.Exists(team.Object);
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void DoesNotExistTest() {
+            Mock<Team> team1 = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            Mock<Team> team2 = new Mock<Team>("DreamTeam2", "MyResources/DreamTeam2.png");
+            teamsStorage.Add(team1.Object);
+            bool result = teamsStorage.Exists(team2.Object);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void DeleteTest() {
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            teamsStorage.Delete(team.Object);
+            Assert.IsTrue(teamsStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void DeleteNotExistentTest() {
+            Mock<Team> team1 = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            Mock<Team> team2 = new Mock<Team>("DreamTeam2", "MyResources/DreamTeam2.png");
+            teamsStorage.Add(team1.Object);
+            teamsStorage.Delete(team2.Object);
+        }
+
+        [TestMethod]
+        public void ModifyTeamTest(){
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            team.Object.Photo = "NewDreamTeam.png";
+            teamsStorage.Modify(team.Object);
+            Team editedTeam = teamsStorage.Get(team.Object);
+            Assert.AreEqual(team.Object.Photo, editedTeam.Photo);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void ModifyNotExistentTest() {
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            team.Object.Name = "TheDream";
+            teamsStorage.Modify(team.Object);
+        }
+
+        [TestMethod]
+        public void ClearTest() {
+            Mock<Team> team1 = new Mock<Team>("DreamTeam1", "MyResources/DreamTeam.png");
+            Mock<Team> team2 = new Mock<Team>("DreamTeam2", "MyResources/DreamTeam.png");
+            Mock<Team> team3 = new Mock<Team>("DreamTeam3", "MyResources/DreamTeam.png");
+
+            teamsStorage.Add(team1.Object);
+            teamsStorage.Add(team2.Object);
+            teamsStorage.Add(team3.Object);
+
+            teamsStorage.Clear();
+            Assert.IsTrue(teamsStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        public void GetAllTest() {
+            Mock<Team> team1 = new Mock<Team>("DreamTeam1", "MyResources/DreamTeam.png");
+            Mock<Team> team2 = new Mock<Team>("DreamTeam2", "MyResources/DreamTeam.png");
+            Mock<Team> team3 = new Mock<Team>("DreamTeam3", "MyResources/DreamTeam.png");
+            team1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam1");
+            team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam2");
+            team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam3");
+
+            teamsStorage.Add(team1.Object);
+            teamsStorage.Add(team2.Object);
+            teamsStorage.Add(team3.Object);
+
+            ICollection<Team> teams = teamsStorage.GetAll();
+            
+            Assert.AreEqual(3, teams.Count);
+            Assert.IsTrue(teams.Contains(team1.Object));
+            Assert.IsTrue(teams.Contains(team2.Object));
+            Assert.IsTrue(teams.Contains(team3.Object));
+
+        }
+
     }
 }
