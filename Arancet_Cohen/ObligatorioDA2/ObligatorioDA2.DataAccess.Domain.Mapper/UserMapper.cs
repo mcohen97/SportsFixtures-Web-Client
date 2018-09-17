@@ -23,6 +23,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             converted.UserName = toConvert.UserName;
             converted.Password = toConvert.Password;
             converted.Email = toConvert.Email;
+            converted.Id = toConvert.Id;
             return converted;
         }
 
