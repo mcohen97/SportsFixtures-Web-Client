@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
+using RepositoryInterface;
+using BusinessLogic;
+using BusinessLogic.Factories;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -11,6 +14,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        IRepository<User> repo;
+        UserFactory factory;
+
+        public UsersController(IRepository<User> aRepo) {
+            repo = aRepo;
+            factory = new UserFactory();
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -34,6 +45,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 var addedUser = new UserModelOut() { Id = 1, Username = user.Username, Name = user.Name,
                     Surname =user.Surname,Email=user.Email };
+                UserId identity = new UserId
+                {
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    UserName = user.Username,
+                    Password = user.Password,
+                    Email = user.Email
+                };
+
+
+                User toAdd = factory.CreateAdmin(identity);
+                repo.Add(toAdd);
                 toReturn = CreatedAtRoute("GetById", new { id = addedUser.Id }, addedUser);
             }
             else

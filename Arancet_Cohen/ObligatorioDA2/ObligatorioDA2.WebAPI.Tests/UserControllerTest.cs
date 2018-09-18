@@ -2,18 +2,32 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using DataAccess;
+using DataRepositories;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
     public class UserControllerTest
     {
+        UsersController controller;
+        [TestInitialize]
+        public void SetUp() {
+
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "UserRepository")
+                .Options;
+             controller = new UsersController(new UserRepository(new DatabaseConnection(options)));
+        }
+
         [TestMethod]
         public void CreateValidUserTest()
         {
             //Arrange
-            var modelIn = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Email = "JHetfield@gmail.com" };
-            var controller = new UsersController();
+            var modelIn = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63",Password="password", Email = "JHetfield@gmail.com" };
+            
             var result = controller.Post(modelIn);
 
             //Act
@@ -37,7 +51,6 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Username ="username",
                 Password="password"
             };
-            var controller = new UsersController();
             //We need to force the error in de ModelState
             controller.ModelState.AddModelError("", "Error");
             var result = controller.Post(modelIn);
@@ -51,7 +64,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateFailedUserRequiredPasswordTest()
         {
-            //Arrange
+           //Arrange
             var modelIn = new UserModelIn()
             {
                 Name = "name",
@@ -59,7 +72,6 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Username = "username",
                 Email = "email"
             };
-            var controller = new UsersController();
             //We need to force the error in de ModelState
             controller.ModelState.AddModelError("", "Error");
             var result = controller.Post(modelIn);
@@ -73,7 +85,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateFailedUserRequiredUsernameTest()
         {
-            //Arrange
+           //Arrange
             var modelIn = new UserModelIn()
             {
                 Name = "name",
@@ -81,7 +93,6 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Password = "password",
                 Email = "email"
             };
-            var controller = new UsersController();
             //We need to force the error in de ModelState
             controller.ModelState.AddModelError("", "Error");
             var result = controller.Post(modelIn);
@@ -103,7 +114,6 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Password = "password",
                 Email = "email"
             };
-            var controller = new UsersController();
             //We need to force the error in de ModelState
             controller.ModelState.AddModelError("", "Error");
             var result = controller.Post(modelIn);
@@ -125,7 +135,6 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Password = "password",
                 Email = "email"
             };
-            var controller = new UsersController();
             //We need to force the error in de ModelState
             controller.ModelState.AddModelError("", "Error");
             var result = controller.Post(modelIn);

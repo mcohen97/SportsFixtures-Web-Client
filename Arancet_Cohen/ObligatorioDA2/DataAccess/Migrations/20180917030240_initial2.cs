@@ -2,7 +2,7 @@
 
 namespace DataAccess.Migrations
 {
-    public partial class initial : Migration
+    public partial class initial2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,6 +14,7 @@ namespace DataAccess.Migrations
                     Name = table.Column<string>(nullable: true),
                     Surname = table.Column<string>(nullable: true),
                     UserName = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     IsAdmin = table.Column<bool>(nullable: false)
                 },

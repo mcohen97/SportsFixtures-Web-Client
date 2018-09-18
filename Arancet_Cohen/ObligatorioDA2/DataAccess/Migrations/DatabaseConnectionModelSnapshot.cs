@@ -31,6 +31,8 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("Password");
+
                     b.Property<string>("Surname");
 
                     b.HasKey("UserName");
