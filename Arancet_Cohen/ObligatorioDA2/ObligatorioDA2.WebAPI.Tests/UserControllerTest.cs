@@ -29,6 +29,13 @@ namespace ObligatorioDA2.WebAPI.Tests
             input = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Password = "password", Email = "JHetfield@gmail.com" };
         }
 
+        [TestMethod]
+        public void GetTest() {
+            IActionResult postResult = controller.Post(input);
+            CreatedAtRouteResult createdResult = postResult as CreatedAtRouteResult;
+            UserModelOut modelOut = createdResult.Value as UserModelOut;
+            IActionResult fetchedById = controller.Get(modelOut.Id);
+        }
 
         [TestMethod]
         public void CreateValidUserResultTest()
