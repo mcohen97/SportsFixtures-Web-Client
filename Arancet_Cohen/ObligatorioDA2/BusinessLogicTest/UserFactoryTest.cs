@@ -2,25 +2,37 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
 using System.Collections.Generic;
+using BusinessLogic.Factories;
 
 namespace BusinessLogicTest
 {
     [TestClass]
     class UserFactoryTest
     {
+        UserId identity;
         User anAdmin;
         User factoryAdmin;
         User aFollower;
         User factoryFollower;
-        UserFactoryTest factory;
+        UserFactory factory;
+
 
         [TestInitialize]
         public void SetUp() {
+            identity = new UserId()
+            {
+                Name = "name",
+                Surname = "surname",
+                UserName = "username",
+                Password = "password",
+                Email = "mail@domain.com"
+            };
+
             factory = new UserFactory();
-            anAdmin = new User("name", "surname", "username", "password", "email@domain.com",true);
-            factoryAdmin = factory.CreateAdmin("name", "surname", "username", "password", "email@domain.com");
-            aFollower = new User("name", "surname", "username", "password", "email@domain.com", false);
-            factoryFollower= factory.CreateAdmin("name", "surname", "username", "password", "email@domain.com");
+            anAdmin = new User(identity,true);
+            factoryAdmin = factory.CreateAdmin(identity);
+            aFollower = new User(identity, false);
+            factoryFollower= factory.CreateAdmin(identity);
         }
 
         [TestMethod]
@@ -55,12 +67,24 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void IsAdminTest() {
-            Assert.IsTrue(factoryAdmin.IsAdmin());
+            Assert.IsTrue(factoryAdmin.IsAdmin);
         }
 
         [TestMethod]
         public void IsNotAdmin() {
-            Assert.IsFalse(factoryAdmin.IsAdmin());
+            Assert.IsFalse(factoryAdmin.IsAdmin);
+        }
+
+        [TestMethod]
+        public void UnassignedIdTest() {
+            User toTest = factory.CreateAdmin(identity);
+            Assert.AreEqual(toTest.Id,-1);
+        }
+
+        [TestMethod]
+        public void AssignedIdTest() {
+            User toTest = factory.CreateAdmin(identity,3);
+            Assert.AreEqual(toTest.Id, 3);
         }
     }
 }
