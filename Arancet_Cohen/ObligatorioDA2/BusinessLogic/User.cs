@@ -37,7 +37,7 @@ namespace BusinessLogic
             Password = indentification.Password;
             Email = indentification.Email;
             IsAdmin = isAdmin;
-            Id = -1;
+            Id = 0;
             
         }
 
