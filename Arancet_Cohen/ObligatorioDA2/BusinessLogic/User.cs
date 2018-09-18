@@ -4,7 +4,7 @@ using System.Net.Mail;
 
 namespace BusinessLogic
 {
-    public abstract class User
+    public class User
     {
         public int Id { get; private set; }
 
@@ -27,18 +27,22 @@ namespace BusinessLogic
 
         public string Email { get { return email; } private set { SetEmail(value); } }
 
-        public User(string aName, string aSurname, string aUserName, string aPassword, string anEmail)
+        public bool IsAdmin { get; private set; }
+
+        public User(UserId indentification, bool isAdmin)
         {
-            Name = aName;
-            Surname = aSurname;
-            UserName = aUserName;
-            Password = aPassword;
-            Email = anEmail;
+            Name = indentification.Name;
+            Surname = indentification.Surname;
+            UserName = indentification.UserName;
+            Password = indentification.Password;
+            Email = indentification.Email;
+            IsAdmin = isAdmin;
             Id = -1;
+            
         }
 
-        public User(string aName, string aSurname, string aUserName, string aPassword, string anEmail, int anId)
-            :this(aName,aSurname,aUserName, aPassword,  anEmail)
+        public User(UserId anIdentity,bool isAdmin ,int anId)
+            :this(anIdentity,isAdmin)
         {
             Id = anId;
         }
@@ -108,7 +112,7 @@ namespace BusinessLogic
             return valid;
         }
 
-        public abstract bool IsAdmin();
+        
 
         public override bool Equals(object obj)
         {
