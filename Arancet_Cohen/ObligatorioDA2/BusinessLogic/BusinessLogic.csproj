@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\BusinessLogicExceptions\BusinessLogicExceptions.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BusinessLogicExceptions\BusinessLogic.Exceptions.csproj" />
+  </ItemGroup>
 
 </Project>
