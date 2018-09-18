@@ -7,6 +7,7 @@ using DataRepositoryInterfaces;
 using DataRepositories;
 using System.Collections.Generic;
 using BusinessLogic;
+using BusinessLogic.Factories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 using RepositoryInterface;
@@ -19,10 +20,24 @@ namespace DataAccessTest
     public class UserRepositoryTest
     {
         IRepository<User> usersStorage;
+        UserId userId;
+        UserFactory factory;
+        User user;
 
         [TestInitialize]
         public void SetUp()
         {
+            factory = new UserFactory();
+            userId = new UserId()
+            {
+                Name = "name",
+                Surname = "surname",
+                UserName = "username",
+                Password = "password",
+                Email = "mail@domain.com"
+            };
+            user = factory.CreateAdmin(userId);
+
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "UserRepository")
                 .Options;
@@ -42,8 +57,7 @@ namespace DataAccessTest
         [TestMethod]
         public void AddUserTest()
         {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
-            usersStorage.Add(user.Object);
+            usersStorage.Add(user);
             int expectedResult = 1;
             int actualResult = usersStorage.GetAll().Count;
             Assert.AreEqual(expectedResult, actualResult);
@@ -53,19 +67,18 @@ namespace DataAccessTest
         [ExpectedException(typeof(UserAlreadyExistsException))]
         public void AddAlreadyExistentUserTest()
         {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
-            usersStorage.Add(user.Object);
-            usersStorage.Add(user.Object);
+            usersStorage.Add(user);
+            usersStorage.Add(user);
         }
 
         [TestMethod]
         public void GetUserTest()
         {
             IUserRepository specific = (IUserRepository)usersStorage;
-            Mock<User> user3 = new Mock<User>("name3", "surname3", "username3", "password3", "mail@domain.com");
-            usersStorage.Add(user3.Object);
-            User fetched = specific.GetUserByUsername("username3");
-            Assert.AreEqual("name3", fetched.Name);
+            User user = factory.CreateAdmin(userId);
+            usersStorage.Add(user);
+            User fetched = specific.GetUserByUsername("username");
+            Assert.AreEqual("name", fetched.Name);
         }
 
         [TestMethod]
@@ -79,28 +92,28 @@ namespace DataAccessTest
         [TestMethod]
         public void ExistsUserTest()
         {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
-            usersStorage.Add(user.Object);
-            bool result = usersStorage.Exists(user.Object);
+            usersStorage.Add(user);
+            bool result = usersStorage.Exists(user);
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         public void DoesNotExistTest()
         {
-            Mock<User> user1 = new Mock<User>("name1", "surname1", "username1", "password1", "mail1@domain.com");
-            Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail2@domain.com");
-            usersStorage.Add(user1.Object);
-            bool result = usersStorage.Exists(user2.Object);
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username1", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username2", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
+            usersStorage.Add(user1);
+            bool result = usersStorage.Exists(user2);
             Assert.IsFalse(result);
         }
 
         [TestMethod]
         public void DeleteTest()
         {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
-            usersStorage.Add(user.Object);
-            usersStorage.Delete(user.Object);
+            usersStorage.Add(user);
+            usersStorage.Delete(user);
             Assert.IsTrue(usersStorage.IsEmpty());
         }
 
@@ -108,68 +121,73 @@ namespace DataAccessTest
         [ExpectedException(typeof(UserNotFoundException))]
         public void DeleteNotExistetTest()
         {
-            Mock<User> user1 = new Mock<User>("name1", "surname1", "username1", "password1", "mail1@domain.com");
-            Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail2@domain.com");
-            usersStorage.Add(user1.Object);
-            usersStorage.Delete(user2.Object);
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username1", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username2", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
+            usersStorage.Add(user1);
+            usersStorage.Delete(user2);
         }
 
         [TestMethod]
         public void ModifyTest()
         {
-            Mock<User> user1 = new Mock<User>("name1", "surname1", "username", "password1", "mail1@domain.com");
-            Mock<User> user2 = new Mock<User>("name2", "surname2", "username", "password2", "mail2@domain.com");
-            usersStorage.Add(user1.Object);
-            usersStorage.Modify(user2.Object);
-            User toVerify = usersStorage.Get(user2.Object);
-            Assert.AreEqual(toVerify.Name, user2.Object.Name);
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
+            usersStorage.Add(user1);
+            usersStorage.Modify(user2);
+            User toVerify = usersStorage.Get(user2);
+            Assert.AreEqual(toVerify.Name, user2.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void ModifyUserNotExistsTest()
         {
-            Mock<User> user1 = new Mock<User>("name1", "surname1", "username", "password1", "mail1@domain.com");
-            usersStorage.Modify(user1.Object);
+            usersStorage.Modify(user);
         }
 
         [TestMethod]
         public void GetByIdTest() {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com",3);
-            usersStorage.Add(user.Object);
+            User user = factory.CreateAdmin(userId, 3);
+            usersStorage.Add(user);
             User fetched = usersStorage.Get(3);
-            Assert.AreEqual(fetched.UserName,user.Object.UserName);
+            Assert.AreEqual(fetched.UserName,user.UserName);
         }
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void GetByIdNotFoundTest() {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com", 3);
-            usersStorage.Add(user.Object);
+            User user = factory.CreateAdmin(userId, 3);
+            usersStorage.Add(user);
             User fetched = usersStorage.Get(4);
         }
 
         [TestMethod]
         public void GetTest() {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com", 3);
-            usersStorage.Add(user.Object);
-            User fetched = usersStorage.Get(user.Object);
-            Assert.AreEqual(user.Object.UserName, fetched.UserName);
+            User user = factory.CreateAdmin(userId, 3);
+            usersStorage.Add(user);
+            User fetched = usersStorage.Get(user);
+            Assert.AreEqual(user.UserName, fetched.UserName);
         }
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void GetNotExistentTest() {
-            Mock<User> user1 = new Mock<User>("name1", "surname1", "username1", "password1", "mail1@domain.com");
-            Mock<User> user2 = new Mock<User>("name2", "surname2", "username2", "password2", "mail2@domain.com");
-            usersStorage.Add(user1.Object);
-            usersStorage.Get(user2.Object);
+
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username2", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username1", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
+            usersStorage.Add(user1);
+            usersStorage.Get(user2);
         }
 
         [TestMethod]
         public void ClearUsersTest() {
-            Mock<User> user = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
-            usersStorage.Add(user.Object);
+            usersStorage.Add(user);
             usersStorage.Clear();
             Assert.IsTrue(usersStorage.IsEmpty());
         }
