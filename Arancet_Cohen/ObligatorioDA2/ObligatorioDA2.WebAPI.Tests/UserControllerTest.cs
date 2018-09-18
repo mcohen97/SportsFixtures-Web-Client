@@ -41,6 +41,13 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void GetNotExistentTest() {
+            IActionResult fetchedById = controller.Get(3);
+            NotFoundResult result = fetchedById as NotFoundResult;
+            Assert.AreEqual(result.StatusCode, "404");
+        }
+
+        [TestMethod]
         public void CreateValidUserResultTest()
         {
             //Arrange
