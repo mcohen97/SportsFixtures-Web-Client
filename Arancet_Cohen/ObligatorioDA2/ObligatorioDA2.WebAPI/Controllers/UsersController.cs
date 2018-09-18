@@ -27,10 +27,28 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            IActionResult result;
+            try
+            {
+                UserModelOut toReturn = TryGetUser(id);
+                result= Ok(toReturn);
+            }catch (UserNotFoundException e) {
+                result = new NotFoundResult();
+            }
+            return result;
+        }
+
+        private UserModelOut TryGetUser(int id) {
             User queried = repo.Get(id);
-            UserModelOut toReturn = new UserModelOut { Id =queried.Id,Name = queried.Name, Surname = queried.Surname,
-                Username = queried.UserName, Email = queried.Email };
-            return Ok(toReturn);
+            UserModelOut toReturn = new UserModelOut
+            {
+                Id = queried.Id,
+                Name = queried.Name,
+                Surname = queried.Surname,
+                Username = queried.UserName,
+                Email = queried.Email
+            };
+            return toReturn;
         }
 
         // POST api/values
