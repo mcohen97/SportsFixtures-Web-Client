@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using BusinessLogic;
+using BusinessLogic.Factories;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
 
@@ -9,13 +10,23 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
     [TestClass]
     public class UserMapperTest
     {
-        Mock<User> toStore;
+        User toStore;
         UserEntity toGet;
         UserMapper toTest;
+        UserFactory factory;
 
         [TestInitialize]
         public void StartUp() {
-            toStore = new Mock<User>("name", "surname", "username", "password", "email@domain.com",2);
+            factory = new UserFactory();
+            UserId identity = new UserId
+            {
+                Name = "name",
+                Surname = "surname",
+                UserName = "username",
+                Password = "password",
+                Email = "email@domain.com"
+            };
+            toStore = factory.CreateAdmin(identity);
             toGet = new UserEntity()
             {
                 Name = "name",
@@ -31,43 +42,43 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestMethod]
         public void UserToEntityNameTest()
         {
-            UserEntity conversion = toTest.ToEntity(toStore.Object);
-            Assert.AreEqual(conversion.Name, toStore.Object.Name);
+            UserEntity conversion = toTest.ToEntity(toStore);
+            Assert.AreEqual(conversion.Name, toStore.Name);
         }
 
         [TestMethod]
         public void UserToEntitySurnameTest()
         {
-            UserEntity conversion = toTest.ToEntity(toStore.Object);
-            Assert.AreEqual(conversion.Surname, toStore.Object.Surname);
+            UserEntity conversion = toTest.ToEntity(toStore);
+            Assert.AreEqual(conversion.Surname, toStore.Surname);
         }
 
         [TestMethod]
         public void UserToEntityUserNameTest()
         {
-            UserEntity conversion = toTest.ToEntity(toStore.Object);
-            Assert.AreEqual(conversion.UserName, toStore.Object.UserName);
+            UserEntity conversion = toTest.ToEntity(toStore);
+            Assert.AreEqual(conversion.UserName, toStore.UserName);
         }
 
         [TestMethod]
         public void UserToEntityPasswordTest()
         {
-            UserEntity conversion = toTest.ToEntity(toStore.Object);
-            Assert.AreEqual(conversion.Password, toStore.Object.Password);
+            UserEntity conversion = toTest.ToEntity(toStore);
+            Assert.AreEqual(conversion.Password, toStore.Password);
         }
 
         [TestMethod]
         public void UserToEntityEmailTest()
         {
-            UserEntity conversion = toTest.ToEntity(toStore.Object);
-            Assert.AreEqual(conversion.Email, toStore.Object.Email);
+            UserEntity conversion = toTest.ToEntity(toStore);
+            Assert.AreEqual(conversion.Email, toStore.Email);
         }
 
         [TestMethod]
         public void UserToEntityIdTest()
         {
-            UserEntity conversion = toTest.ToEntity(toStore.Object);
-            Assert.AreEqual(conversion.Id, toStore.Object.Id);
+            UserEntity conversion = toTest.ToEntity(toStore);
+            Assert.AreEqual(conversion.Id, toStore.Id);
         }
 
         [TestMethod]
