@@ -2,9 +2,29 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLogic
+namespace BusinessLogic.Factories
 {
-    class UserFactory
+    public class UserFactory
     {
+       
+        public User CreateAdmin(UserId identity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User CreateAdmin(UserId identity, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User CreateFollower(UserId identity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User CreateFollower(UserId identity, int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
