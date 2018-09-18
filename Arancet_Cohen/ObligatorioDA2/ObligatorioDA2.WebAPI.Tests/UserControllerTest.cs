@@ -236,5 +236,23 @@ namespace ObligatorioDA2.WebAPI.Tests
             UserModelOut updated = getResult.Value as UserModelOut;
             Assert.AreEqual("name2", updated.Name);
         }
+
+        [TestMethod]
+        public void DeleteTest() {
+            CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(input);
+            UserModelOut created = (UserModelOut)result.Value;
+            controller.Delete(created.Id);
+            IActionResult fetchedById = controller.Get(created.Id);
+            NotFoundResult wasDeleted = fetchedById as NotFoundResult;
+            Assert.IsNotNull(wasDeleted);
+        }
+
+        [TestMethod]
+        public void DeleteNotExistentTest() {
+            CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(input);
+            UserModelOut created = (UserModelOut)result.Value;
+            NotFoundResult deleteResult =controller.Delete(created.Id) as NotFoundResult;
+            Assert.IsNotNull(deleteResult);
+        }
     }
 }
