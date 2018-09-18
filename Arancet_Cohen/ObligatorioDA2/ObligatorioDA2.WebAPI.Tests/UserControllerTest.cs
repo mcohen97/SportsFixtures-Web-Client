@@ -249,9 +249,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void DeleteNotExistentTest() {
-            CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(input);
-            UserModelOut created = (UserModelOut)result.Value;
-            NotFoundResult deleteResult =controller.Delete(created.Id) as NotFoundResult;
+            NotFoundResult deleteResult =controller.Delete(5) as NotFoundResult;
             Assert.IsNotNull(deleteResult);
         }
     }
