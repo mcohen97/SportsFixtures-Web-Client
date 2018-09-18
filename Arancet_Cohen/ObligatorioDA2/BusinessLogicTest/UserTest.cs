@@ -11,30 +11,38 @@ namespace BusinessLogicTest
     [TestClass]
     public class UserTest
     {
-        Mock<User> toTest;
+        User toTest;
+        UserId userId;
 
         [TestInitialize]
         public void SetUp()
         {
-            toTest = new Mock<User>("name", "surname", "username", "password", "mail@domain.com");
-            toTest.CallBase = true;
+            userId = new UserId()
+            {
+                Name = "name",
+                Surname = "surname",
+                UserName = "username",
+                Password = "password",
+                Email = "mail@domain.com"
+            };
+            toTest = new User(userId,true);
 
         }
         [TestMethod]
         public void GetNameTest()
         {
-            Assert.AreEqual("name", toTest.Object.Name);
+            Assert.AreEqual("name", toTest.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetNameTest()
         {
-
-            toTest = new Mock<User>("", "surname", "username", "password", "mail@domain.com");
+            userId.Name = "";
+            toTest = new User(userId,true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -45,17 +53,18 @@ namespace BusinessLogicTest
         [TestMethod]
         public void GetSurnameTest()
         {
-            Assert.AreEqual("surname", toTest.Object.Surname);
+            Assert.AreEqual("surname", toTest.Surname);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetInvalidSurnameTest()
         {
-            toTest = new Mock<User>("name", "", "username", "password", "mail@domain.com");
+            userId.Surname = "";
+            toTest = new User(userId,true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -66,17 +75,18 @@ namespace BusinessLogicTest
         [TestMethod]
         public void GetUserNameTest()
         {
-            Assert.AreEqual("username", toTest.Object.UserName);
+            Assert.AreEqual("username", toTest.UserName);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetInvalidUserNameTest()
         {
-            toTest = new Mock<User>("name", "surname", "", "password", "mail@domain.com");
+            userId.UserName = "";
+            toTest = new User(userId,true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -87,17 +97,18 @@ namespace BusinessLogicTest
         [TestMethod]
         public void GetPasswordTest()
         {
-            Assert.AreEqual("password", toTest.Object.Password);
+            Assert.AreEqual("password", toTest.Password);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetInvalidPasswordTest()
         {
-            toTest = new Mock<User>("name", "surname", "username", "", "mail@domain.com");
+            userId.Password = "";
+            toTest = new User(userId,true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -108,17 +119,18 @@ namespace BusinessLogicTest
         [TestMethod]
         public void GetEmailTest()
         {
-            Assert.AreEqual("mail@domain.com", toTest.Object.Email);
+            Assert.AreEqual("mail@domain.com", toTest.Email);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetEmptyEmailTest()
         {
-            toTest = new Mock<User>("name", "surname", "username", "password", "");
+            userId.Email = "";
+            toTest = new User(userId, true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -130,10 +142,11 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetEmailWithNoDomainTest()
         {
-            toTest = new Mock<User>("name", "surname", "username", "password", "mail");
+            userId.Email = "mail";
+            toTest = new User(userId, true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -145,10 +158,11 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetEmailWithNoNameTest()
         {
-            toTest = new Mock<User>("name", "surname", "username", "password", "@domain.com");
+            userId.Email = "@domain.com";
+            toTest = new User(userId, true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -160,10 +174,11 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetEmailWithNoDomainTagTest()
         {
-            toTest = new Mock<User>("name", "surname", "username", "password", "@domain");
+            userId.Email = "@domain";
+            toTest = new User(userId, true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -175,10 +190,11 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void SetEmailWithNoAtTest()
         {
-            toTest = new Mock<User>("name", "surname", "username", "password", "maildomain.com");
+            userId.Email = "maildomain.com";
+            toTest = new User(userId, true);
             try
             {
-                var o = toTest.Object;
+                var o = toTest;
             }
             catch (TargetInvocationException e)
             {
@@ -189,15 +205,31 @@ namespace BusinessLogicTest
         [TestMethod]
         public void EqualsTest()
         {
-            Mock<User> another = new Mock<User>("name2", "surname2", "username", "password2", "mail@domain.com");
-            User mock = another.Object;
-            Assert.IsTrue(toTest.Object.Equals(mock));
+            toTest = new User(userId, true);
+            UserId userId2 = new UserId()
+            {
+                Name = "name2",
+                Surname = "surname2",
+                UserName = "username",
+                Password = "password2",
+                Email = "mail@domain.com"
+            };
+            User another = new User(userId,true);
+            Assert.IsTrue(toTest.Equals(another));
         }
 
         [TestMethod]
         public void NotEqualsTest()
         {
-            Mock<User> another = new Mock<User>("name2", "surname2", "username2", "password2", "mail@domain.com");
+            UserId userId2 = new UserId()
+            {
+                Name = "name2",
+                Surname = "surname2",
+                UserName = "username2",
+                Password = "password2",
+                Email = "mail@domain.com"
+            };
+            User another = new User(userId, true);
             Assert.IsFalse(toTest.Equals(another));
         }
 
@@ -217,26 +249,24 @@ namespace BusinessLogicTest
         [TestMethod]
         public void IsAdminTest()
         {
-            toTest.Setup(u => u.IsAdmin()).Returns(false);
-            Assert.IsFalse(toTest.Object.IsAdmin());
+            Assert.IsFalse(toTest.IsAdmin());
         }
 
         [TestMethod]
         public void IsNotAdminTest()
         {
-            toTest.Setup(u => u.IsAdmin()).Returns(true);
-            Assert.IsTrue(toTest.Object.IsAdmin());
+            Assert.IsTrue(toTest.IsAdmin());
         }
 
         [TestMethod]
         public void GetUnassignedIdTest() {
-            Assert.AreEqual(toTest.Object.Id, -1);
+            Assert.AreEqual(toTest.Id, -1);
         }
 
         [TestMethod]
         public void GetAssignedIdTest() {
-           toTest = new Mock<User>("name", "surname", "username", "password", "mail@domain.com", 1);
-           Assert.AreEqual(toTest.Object.Id, 1);
+           toTest = new User(userId, true,1);
+           Assert.AreEqual(toTest.Id, 1);
         }
 
     }
