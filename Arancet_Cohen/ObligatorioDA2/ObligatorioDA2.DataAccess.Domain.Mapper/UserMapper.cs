@@ -10,6 +10,11 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
     public class UserMapper
     {
         UserFactory factory;
+
+        public UserMapper() {
+            factory = new UserFactory();
+        }
+       
         public UserEntity ToEntity(User toConvert)
         {
             UserEntity converted = new UserEntity
