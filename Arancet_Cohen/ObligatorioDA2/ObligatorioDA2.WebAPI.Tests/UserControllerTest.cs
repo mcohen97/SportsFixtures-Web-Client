@@ -13,22 +13,29 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class UserControllerTest
     {
         UsersController controller;
+        UserRepository repo;
+        UserModelIn input; 
+
         [TestInitialize]
         public void SetUp() {
 
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "UserRepository")
                 .Options;
-             controller = new UsersController(new UserRepository(new DatabaseConnection(options)));
+            repo = new UserRepository(new DatabaseConnection(options));
+             controller = new UsersController(repo);
+            repo.Clear();
+
+            input = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Password = "password", Email = "JHetfield@gmail.com" };
         }
 
+
         [TestMethod]
-        public void CreateValidUserTest()
+        public void CreateValidUserResultTest()
         {
             //Arrange
-            var modelIn = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63",Password="password", Email = "JHetfield@gmail.com" };
-            
-            var result = controller.Post(modelIn);
+
+            var result = controller.Post(input);
 
             //Act
             var createdResult = result as CreatedAtRouteResult;
@@ -36,9 +43,49 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             //Assert
             Assert.IsNotNull(createdResult);
+        }
+
+        [TestMethod]
+        public void CreateValidUserCreaatedRouteTest()
+        {
+            //Arrange
+            var result = controller.Post(input);
+
+            //Act
+            var createdResult = result as CreatedAtRouteResult;
+            var modelOut = createdResult.Value as UserModelOut;
+
+            //Assert
             Assert.AreEqual("GetById", createdResult.RouteName);
+        }
+
+        [TestMethod]
+        public void CreateValidUserCodeTest()
+        {
+            //Arrange
+            var result = controller.Post(input);
+
+            //Act
+            var createdResult = result as CreatedAtRouteResult;
+            var modelOut = createdResult.Value as UserModelOut;
+
+            //Assert
+
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual(modelIn.Username, modelOut.Username);
+        }
+
+        [TestMethod]
+        public void CreateValidUserOutPutTest()
+        {
+            //Arrange
+            var result = controller.Post(input);
+
+            //Act
+            var createdResult = result as CreatedAtRouteResult;
+            var modelOut = createdResult.Value as UserModelOut;
+
+            //Assert
+            Assert.AreEqual(input.Username, modelOut.Username);
         }
 
         [TestMethod]
@@ -145,5 +192,28 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, createdResult.StatusCode);
         }
 
+        [TestMethod]
+        public void ModifySuccessfullyTest() {
+            var modelIn = new UserModelIn()
+            {
+                Name = "name1",
+                Surname = "surname1",
+                Username = "username",
+                Password = "password1"
+            };
+
+            var modifiedModelIn = new UserModelIn()
+            {
+                Name = "name2",
+                Surname = "surname2",
+                Username = "username",
+                Password = "password2"
+            };
+
+            CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(modelIn);
+            UserModelOut created = (UserModelOut)result.Value;
+            controller.Put(created.Id,modifiedModelIn);
+            UserModelOut updated = controller.Get(created.Id).Value;
+        }
     }
 }
