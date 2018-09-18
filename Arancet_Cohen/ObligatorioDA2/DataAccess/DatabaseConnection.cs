@@ -18,9 +18,9 @@ namespace DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
-
+           
             modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
+            modelBuilder.Entity<UserEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
 
         }
     }
