@@ -25,7 +25,7 @@ namespace BusinessLogicTest
                 Password = "password",
                 Email = "mail@domain.com"
             };
-            toTest = new User(userId,true);
+            toTest = new User(userId,false);
 
         }
         [TestMethod]
@@ -229,7 +229,7 @@ namespace BusinessLogicTest
                 Password = "password2",
                 Email = "mail@domain.com"
             };
-            User another = new User(userId, true);
+            User another = new User(userId2, true);
             Assert.IsFalse(toTest.Equals(another));
         }
 
@@ -249,13 +249,14 @@ namespace BusinessLogicTest
         [TestMethod]
         public void IsAdminTest()
         {
-            Assert.IsFalse(toTest.IsAdmin);
+            toTest = new User(userId, true);
+            Assert.IsTrue(toTest.IsAdmin);
         }
 
         [TestMethod]
         public void IsNotAdminTest()
         {
-            Assert.IsTrue(toTest.IsAdmin);
+            Assert.IsFalse(toTest.IsAdmin);
         }
 
         [TestMethod]
