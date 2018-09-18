@@ -191,5 +191,13 @@ namespace DataAccessTest
             usersStorage.Clear();
             Assert.IsTrue(usersStorage.IsEmpty());
         }
+
+        [TestMethod]
+        public void DeleteById() {
+            usersStorage.Add(user);
+            User fetched = usersStorage.Get(user);
+            usersStorage.Delete(fetched.Id);
+            Assert.IsTrue(usersStorage.IsEmpty());
+        }
     }
 }

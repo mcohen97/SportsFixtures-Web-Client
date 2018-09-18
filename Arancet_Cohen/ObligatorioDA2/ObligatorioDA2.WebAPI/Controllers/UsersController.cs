@@ -7,6 +7,7 @@ using ObligatorioDA2.WebAPI.Models;
 using RepositoryInterface;
 using BusinessLogic;
 using BusinessLogic.Factories;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -22,18 +23,32 @@ namespace ObligatorioDA2.WebAPI.Controllers
             factory = new UserFactory();
         }
 
-        // GET api/values
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            IActionResult result;
+            try
+            {
+                UserModelOut toReturn = TryGetUser(id);
+                result= Ok(toReturn);
+            }catch (UserNotFoundException e) {
+                result = new NotFoundResult();
+            }
+            return result;
+        }
+
+        private UserModelOut TryGetUser(int id) {
+            User queried = repo.Get(id);
+            UserModelOut toReturn = new UserModelOut
+            {
+                Id = queried.Id,
+                Name = queried.Name,
+                Surname = queried.Surname,
+                Username = queried.UserName,
+                Email = queried.Email
+            };
+            return toReturn;
         }
 
         // POST api/values
@@ -43,21 +58,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
-                var addedUser = new UserModelOut() { Id = 1, Username = user.Username, Name = user.Name,
-                    Surname =user.Surname,Email=user.Email };
-                UserId identity = new UserId
-                {
-                    Name = user.Name,
-                    Surname = user.Surname,
-                    UserName = user.Username,
-                    Password = user.Password,
-                    Email = user.Email
-                };
-
-
-                User toAdd = factory.CreateAdmin(identity);
-                repo.Add(toAdd);
-                toReturn = CreatedAtRoute("GetById", new { id = addedUser.Id }, addedUser);
+                toReturn = AddValidUser(user);
             }
             else
             {
@@ -66,16 +67,83 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return toReturn;
         }
 
+        private IActionResult AddValidUser(UserModelIn user) {
+            UserId identity = new UserId
+            {
+                Name = user.Name,
+                Surname = user.Surname,
+                UserName = user.Username,
+                Password = user.Password,
+                Email = user.Email
+            };
+
+            User toAdd = factory.CreateAdmin(identity);
+            repo.Add(toAdd);
+            User added = repo.Get(toAdd); 
+           
+            var addedUser = new UserModelOut()
+            {
+                Username = added.UserName,
+                Name = added.Name,
+                Surname = added.Surname,
+                Email = added.Email,
+                Id = added.Id
+            };
+
+            return CreatedAtRoute("GetById", new { id = added.Id }, addedUser);
+        }
+
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] UserModelIn toModify)
         {
+            IActionResult toReturn;
+            if (ModelState.IsValid)
+            {
+                ModifyValidUser(id, toModify);
+                toReturn = Ok();
+            }
+            else {
+                toReturn = BadRequest(ModelState);
+            }
+            return toReturn;
+        }
+
+        private void ModifyValidUser(int id, UserModelIn toModify)
+        {
+            UserId identity = new UserId
+            {
+                Name = toModify.Name,
+                Surname = toModify.Surname,
+                UserName = toModify.Username,
+                Password = toModify.Password,
+                Email = toModify.Email
+            };
+            User converted = factory.CreateFollower(identity);
+            try
+            {
+                repo.Modify(converted);
+            }
+            catch(UserNotFoundException) {
+                repo.Add(converted);
+            }
+
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            IActionResult result;
+            try
+            {
+                repo.Delete(id);
+                result = Ok();
+            }
+            catch (UserNotFoundException e) {
+                result = new NotFoundResult();
+            }
+            return result;
         }
     }
 }

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessLogicExceptions\BusinessLogicExceptions.csproj" />
+    <ProjectReference Include="..\BusinessLogicExceptions\BusinessLogic.Exceptions.csproj" />
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
   </ItemGroup>
 

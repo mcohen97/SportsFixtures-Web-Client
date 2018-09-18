@@ -261,7 +261,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void GetUnassignedIdTest() {
-            Assert.AreEqual(toTest.Id, -1);
+            Assert.AreEqual(toTest.Id, 0);
         }
 
         [TestMethod]

@@ -77,10 +77,22 @@ namespace DataRepositories
 
         public void Delete(User entity)
         {
-
             if (AnyWithThisUserName(entity.UserName))
             {
                 UserEntity toDelete = connection.Users.First(r => r.UserName.Equals(entity.UserName));
+                connection.Users.Remove(toDelete);
+                connection.SaveChanges();
+            }
+            else
+            {
+                throw new UserNotFoundException();
+            }
+        }
+
+        public void Delete(int identity) {
+            if (connection.Users.Any(u=>u.Id == identity))
+            {
+                UserEntity toDelete = connection.Users.First(r => r.Id.Equals(identity));
                 connection.Users.Remove(toDelete);
                 connection.SaveChanges();
             }
