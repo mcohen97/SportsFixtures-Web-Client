@@ -60,7 +60,7 @@ namespace DataRepositories
         private User GetExistentUser(string aUserName)
         {
             UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUserName));
-            User toReturn = new Admin(fetched.Name, fetched.Surname, fetched.UserName, fetched.Password, fetched.Email);
+            User toReturn = mapper.ToUser(fetched);
             return toReturn;
         }
 

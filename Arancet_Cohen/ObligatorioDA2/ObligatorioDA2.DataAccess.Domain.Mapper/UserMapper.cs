@@ -3,42 +3,45 @@ using System.Collections.Generic;
 using System.Text;
 using ObligatorioDA2.DataAccess.Entities;
 using BusinessLogic;
+using BusinessLogic.Factories;
 
 namespace ObligatorioDA2.DataAccess.Domain.Mappers
 {
     public class UserMapper
     {
+        UserFactory factory;
         public UserEntity ToEntity(User toConvert)
         {
-            UserEntity converted;
-            if (toConvert.IsAdmin())
+            UserEntity converted = new UserEntity
             {
-                converted = new AdminEntity();
-            }
-            else {
-                converted = new FollowerEntity();
-            }
-            converted.Name = toConvert.Name;
-            converted.Surname = toConvert.Surname;
-            converted.UserName = toConvert.UserName;
-            converted.Password = toConvert.Password;
-            converted.Email = toConvert.Email;
-            converted.Id = toConvert.Id;
+                Name = toConvert.Name,
+                Surname = toConvert.Surname,
+                UserName = toConvert.UserName,
+                Password = toConvert.Password,
+                Email = toConvert.Email,
+                IsAdmin = toConvert.IsAdmin,
+                Id = toConvert.Id
+            };
             return converted;
         }
 
         public User ToUser(UserEntity toConvert)
         {
+            UserId identity = new UserId() {
+               Name= toConvert.Name,
+               Surname = toConvert.Surname,
+               UserName = toConvert.UserName,
+               Password= toConvert.Password,
+               Email = toConvert.Email
+            };
             User converted;
             if (toConvert.IsAdmin)
             {
-                converted = new Admin(toConvert.Name, toConvert.Surname, toConvert.UserName, 
-                    toConvert.Password, toConvert.Email,toConvert.Id);
+                converted = factory.CreateAdmin(identity,toConvert.Id);
             }
             else
             {
-                converted = new Follower(toConvert.Name, toConvert.Surname, toConvert.UserName,
-                    toConvert.Password, toConvert.Email, toConvert.Id);
+                converted = factory.CreateFollower(identity, toConvert.Id);
             }
             return converted;
         }
