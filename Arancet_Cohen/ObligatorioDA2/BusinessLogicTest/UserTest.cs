@@ -249,13 +249,13 @@ namespace BusinessLogicTest
         [TestMethod]
         public void IsAdminTest()
         {
-            Assert.IsFalse(toTest.IsAdmin());
+            Assert.IsFalse(toTest.IsAdmin);
         }
 
         [TestMethod]
         public void IsNotAdminTest()
         {
-            Assert.IsTrue(toTest.IsAdmin());
+            Assert.IsTrue(toTest.IsAdmin);
         }
 
         [TestMethod]
