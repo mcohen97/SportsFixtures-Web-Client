@@ -9,22 +9,22 @@ namespace BusinessLogic.Factories
        
         public User CreateAdmin(UserId identity)
         {
-            throw new NotImplementedException();
+            return new User(identity, true);
         }
 
         public User CreateAdmin(UserId identity, int id)
         {
-            throw new NotImplementedException();
+            return new User(identity, true,id);
         }
 
         public User CreateFollower(UserId identity)
         {
-            throw new NotImplementedException();
+            return new User(identity, false);
         }
 
         public User CreateFollower(UserId identity, int id)
         {
-            throw new NotImplementedException();
+            return new User(identity, false,id);
         }
     }
 }
