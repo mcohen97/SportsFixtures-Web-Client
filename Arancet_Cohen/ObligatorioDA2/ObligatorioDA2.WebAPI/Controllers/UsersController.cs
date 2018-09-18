@@ -134,7 +134,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-
+            IActionResult result;
+            try
+            {
+                repo.Delete(id);
+                result = Ok();
+            }
+            catch (UserNotFoundException e) {
+                result = new NotFoundResult();
+            }
+            return result;
         }
     }
 }
