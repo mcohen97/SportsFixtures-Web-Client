@@ -35,6 +35,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             CreatedAtRouteResult createdResult = postResult as CreatedAtRouteResult;
             UserModelOut modelOut = createdResult.Value as UserModelOut;
             IActionResult fetchedById = controller.Get(modelOut.Id);
+            OkObjectResult okResult = fetchedById as OkObjectResult;
+            UserModelOut userData = okResult.Value as UserModelOut;
+            Assert.AreEqual(modelOut.Username, userData.Username);
         }
 
         [TestMethod]
@@ -206,7 +209,8 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Name = "name1",
                 Surname = "surname1",
                 Username = "username",
-                Password = "password1"
+                Password = "password1",
+                Email = "mail@domain.com"
             };
 
             var modifiedModelIn = new UserModelIn()
@@ -214,13 +218,16 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Name = "name2",
                 Surname = "surname2",
                 Username = "username",
-                Password = "password2"
+                Password = "password2",
+                Email = "mail@domain.com"
             };
 
             CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(modelIn);
             UserModelOut created = (UserModelOut)result.Value;
             controller.Put(created.Id,modifiedModelIn);
-            UserModelOut updated = controller.Get(created.Id).Value;
+            OkObjectResult getResult = controller.Get(created.Id) as OkObjectResult;
+            UserModelOut updated = getResult.Value as UserModelOut;
+            Assert.AreEqual("name2", updated.Name);
         }
     }
 }
