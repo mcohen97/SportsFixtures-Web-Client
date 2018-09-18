@@ -32,7 +32,7 @@ namespace BusinessLogicTest
             anAdmin = new User(identity,true);
             factoryAdmin = factory.CreateAdmin(identity);
             aFollower = new User(identity, false);
-            factoryFollower= factory.CreateAdmin(identity);
+            factoryFollower= factory.CreateFollower(identity);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void AssignedIdTest() {
-            User toTest = factory.CreateAdmin(identity,3);
+            User toTest = factory.CreateFollower(identity,3);
             Assert.AreEqual(toTest.Id, 3);
         }
     }
