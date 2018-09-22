@@ -86,5 +86,10 @@ namespace DataRepositoriesTest
             Assert.IsFalse(any);
         }
 
+        public void DeleteTest() {
+            testRepo.Add(testEntity.Object);
+            testRepo.Delete(testEntity.Object.Id);
+            Assert.IsTrue(testRepo.IsEmpty());
+        }
     }
 }
