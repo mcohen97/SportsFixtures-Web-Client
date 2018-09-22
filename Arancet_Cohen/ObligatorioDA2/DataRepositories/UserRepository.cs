@@ -59,7 +59,6 @@ namespace DataRepositories
         private User GetExistentUser(string aUserName)
         {
             UserEntity fetched = repo.Get(u => u.UserName.Equals(aUserName)).First();
-            //UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUserName));
             User toReturn = mapper.ToUser(fetched);
             return toReturn;
         }
@@ -68,16 +67,12 @@ namespace DataRepositories
         {
             ICollection<UserEntity> query = repo.GetAll();
             ICollection<User> users = query.Select(u => mapper.ToUser(u)).ToList();
-            //.Select(u => mapper.ToUser(u));
-
-            //IQueryable<User> query = connection.Users.Select(u => mapper.ToUser(u));
             return users;
         }
 
         public bool IsEmpty()
         {
             return repo.IsEmpty();
-            //return !connection.Users.Any();
         }
 
         public void Delete(User entity)
@@ -86,9 +81,6 @@ namespace DataRepositories
             {
                 int generatedId = GetUserByUsername(entity.UserName).Id;
                 repo.Delete(entity.Id);
-                /* UserEntity toDelete = connection.Users.First(r => r.UserName.Equals(entity.UserName));
-                 connection.Users.Remove(toDelete);
-                 connection.SaveChanges();*/
             }
             else
             {
@@ -101,9 +93,6 @@ namespace DataRepositories
             if (repo.Any(r => r.Id.Equals(identity)))
             {
                 repo.Delete(identity);
-                /*UserEntity toDelete = connection.Users.First(r => r.Id.Equals(identity));
-                connection.Users.Remove(toDelete);
-                connection.SaveChanges();*/
             }
             else
             {
@@ -115,7 +104,6 @@ namespace DataRepositories
         {
             UserEntity record = mapper.ToEntity(entity);
             bool doesExist = repo.Exists(record);
-            //bool doesExist = AnyWithThisUserName(record.UserName);
             return doesExist;
         }
 
@@ -125,11 +113,6 @@ namespace DataRepositories
             {
                 UserEntity entity = mapper.ToEntity(aUser);
                 repo.Modify(entity);
-                /*UserEntity toModify = connection.Users.First(u => u.UserName.Equals(aUser.UserName));
-                UserEntity newRecord = mapper.ToEntity(aUser);
-                newRecord.Id = toModify.Id;
-                connection.Entry(toModify).CurrentValues.SetValues(newRecord);
-                connection.SaveChanges();*/
             }
             else
             {
@@ -166,11 +149,6 @@ namespace DataRepositories
         public void Clear()
         {
             repo.Clear();
-            //foreach (UserEntity user in connection.Users)
-            //{
-            //    connection.Users.Remove(user);
-            //}
-            //connection.SaveChanges();
         }
     }
 }
