@@ -11,16 +11,17 @@ using RepositoryInterface;
 namespace DataRepositoriesTest
 {
     [TestClass]
-    class GenericRepositoryTest
+    public class GenericRepositoryTest
     {
-        IEntityRepository<BaseEntity> testRepo;
-        Mock<BaseEntity> testEntity;
+        IEntityRepository<UserEntity> testRepo;
+        Mock<UserEntity> testEntity;
         [TestInitialize]
         public void SetUp()
         {
             InitializeRepository();
-            testEntity = new Mock<BaseEntity>();
-            testEntity.SetupGet(u => u.Id).Returns(3);
+            testEntity = new Mock<UserEntity>();
+            testEntity.Setup(u => u.Id).Returns(3);
+            testRepo.Clear();
         }
 
         private void InitializeRepository()
@@ -29,7 +30,7 @@ namespace DataRepositoriesTest
                 .UseInMemoryDatabase(databaseName: "UserRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            testRepo = new GenericRepository<BaseEntity>(context);
+            testRepo = new GenericRepository<UserEntity>(context);
         }
 
         [TestMethod]
@@ -67,7 +68,7 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void AnyPredicateTrueTest() {
-            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            Mock<UserEntity> otherEntity = new Mock<UserEntity>();
             otherEntity.SetupGet(e => e.Id).Returns(4);
             testRepo.Add(testEntity.Object);
             testRepo.Add(otherEntity.Object);
@@ -78,7 +79,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void AnyPredicateFalseTest()
         {
-            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            Mock<UserEntity> otherEntity = new Mock<UserEntity>();
             otherEntity.SetupGet(e => e.Id).Returns(4);
             testRepo.Add(testEntity.Object);
             testRepo.Add(otherEntity.Object);
@@ -101,7 +102,7 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void FirstTest() {
-            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            Mock<UserEntity> otherEntity = new Mock<UserEntity>();
             otherEntity.SetupGet(e => e.Id).Returns(4);
             testRepo.Add(testEntity.Object);
             testRepo.Add(otherEntity.Object);
@@ -112,7 +113,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         [ExpectedException(typeof(EntityNotFoundException))]
         public void FirstNotFoundTest() {
-            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            Mock<UserEntity> otherEntity = new Mock<UserEntity>();
             otherEntity.SetupGet(e => e.Id).Returns(4);
             testRepo.Add(testEntity.Object);
             testRepo.Add(otherEntity.Object);
@@ -121,7 +122,7 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void GetAlltest() {
-            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            Mock<UserEntity> otherEntity = new Mock<UserEntity>();
             otherEntity.SetupGet(e => e.Id).Returns(4);
             testRepo.Add(testEntity.Object);
             testRepo.Add(otherEntity.Object);
@@ -131,9 +132,9 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void GetFilteredTest() {
-            Mock<BaseEntity> otherEntity2 = new Mock<BaseEntity>();
+            Mock<UserEntity> otherEntity2 = new Mock<UserEntity>();
             otherEntity2.SetupGet(e => e.Id).Returns(5);
-            Mock<BaseEntity> otherEntity1 = new Mock<BaseEntity>();
+            Mock<UserEntity> otherEntity1 = new Mock<UserEntity>();
             otherEntity1.SetupGet(e => e.Id).Returns(4);
             testRepo.Add(testEntity.Object);
             testRepo.Add(otherEntity1.Object);
