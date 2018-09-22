@@ -48,7 +48,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetTest() {
             testRepo.Add(testEntity.Object);
-            BaseEntity fromRepo =testRepo.Get(3);
+            BaseEntity fromRepo = testRepo.Get(3);
             Assert.AreEqual(fromRepo.Id, 3);
         }
 
@@ -86,6 +86,7 @@ namespace DataRepositoriesTest
             Assert.IsFalse(any);
         }
 
+        [TestMethod]
         public void DeleteTest() {
             testRepo.Add(testEntity.Object);
             testRepo.Delete(testEntity.Object.Id);

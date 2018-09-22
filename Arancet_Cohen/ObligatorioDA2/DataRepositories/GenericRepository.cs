@@ -67,7 +67,9 @@ namespace DataRepositories
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            T toDelete = context.Set<T>().First(e => e.Id == id);
+            context.Set<T>().Remove(toDelete);
+            context.SaveChanges();
         }
 
         public bool Exists(T record)
@@ -80,7 +82,6 @@ namespace DataRepositories
             throw new NotImplementedException();
         }
 
-    
 
         public ICollection<T> Get(Expression<Func<T, bool>> predicate)
         {
