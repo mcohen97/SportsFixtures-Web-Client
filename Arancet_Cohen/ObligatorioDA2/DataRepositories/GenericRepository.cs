@@ -103,7 +103,7 @@ namespace DataRepositories
 
         public ICollection<T> Get(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return context.Set<T>().Where(predicate).ToList();
         }
 
         public ICollection<T> GetAll()
@@ -113,7 +113,8 @@ namespace DataRepositories
 
         public void Modify(T entity)
         {
-            throw new NotImplementedException();
+            context.Set<T>().Attach(entity);
+            context.Entry(entity).State = EntityState.Modified;
         }
     }
 }
