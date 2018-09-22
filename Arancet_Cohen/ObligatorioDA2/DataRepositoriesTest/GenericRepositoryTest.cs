@@ -13,7 +13,7 @@ namespace DataRepositoriesTest
     [TestClass]
     class GenericRepositoryTest
     {
-        IRepository<BaseEntity> testRepo;
+        IEntityRepository<BaseEntity> testRepo;
         Mock<BaseEntity> testEntity;
         [TestInitialize]
         public void SetUp()
