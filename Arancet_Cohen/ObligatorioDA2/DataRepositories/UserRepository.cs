@@ -13,14 +13,14 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace DataRepositories
 {
-    public class UserRepository : IUserRepository, IRepository<User>
+    public class UserRepository : IUserRepository
     {
-        private readonly DatabaseConnection connection;
+        private readonly IEntityRepository<UserEntity> repo;
         private readonly UserMapper mapper;
 
-        public UserRepository(DatabaseConnection aConnection)
+        public UserRepository(IEntityRepository<UserEntity> genericRepo)
         {
-            connection = aConnection;
+            repo = genericRepo;
             mapper = new UserMapper();
         }
 
@@ -39,8 +39,7 @@ namespace DataRepositories
         private void AddNewUser(User aUser)
         {
             UserEntity toAdd = mapper.ToEntity(aUser);
-            connection.Users.Add(toAdd);
-            connection.SaveChanges();
+            repo.Add(toAdd);
         }
 
         public User GetUserByUsername(string aUserName)
@@ -59,29 +58,37 @@ namespace DataRepositories
 
         private User GetExistentUser(string aUserName)
         {
-            UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUserName));
+            UserEntity fetched = repo.Get(u => u.UserName.Equals(aUserName)).First();
+            //UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUserName));
             User toReturn = mapper.ToUser(fetched);
             return toReturn;
         }
 
         public ICollection<User> GetAll()
         {
-            IQueryable<User> query = connection.Users.Select(u => mapper.ToUser(u));
-            return query.ToList();
+            ICollection<UserEntity> query = repo.GetAll();
+            ICollection<User> users = query.Select(u => mapper.ToUser(u)).ToList();
+            //.Select(u => mapper.ToUser(u));
+
+            //IQueryable<User> query = connection.Users.Select(u => mapper.ToUser(u));
+            return users;
         }
 
         public bool IsEmpty()
         {
-            return !connection.Users.Any();
+            return repo.IsEmpty();
+            //return !connection.Users.Any();
         }
 
         public void Delete(User entity)
         {
             if (AnyWithThisUserName(entity.UserName))
             {
-                UserEntity toDelete = connection.Users.First(r => r.UserName.Equals(entity.UserName));
-                connection.Users.Remove(toDelete);
-                connection.SaveChanges();
+                int generatedId = GetUserByUsername(entity.UserName).Id;
+                repo.Delete(entity.Id);
+                /* UserEntity toDelete = connection.Users.First(r => r.UserName.Equals(entity.UserName));
+                 connection.Users.Remove(toDelete);
+                 connection.SaveChanges();*/
             }
             else
             {
@@ -89,22 +96,26 @@ namespace DataRepositories
             }
         }
 
-        public void Delete(int identity) {
-            if (connection.Users.Any(u=>u.Id == identity))
-            {
-                UserEntity toDelete = connection.Users.First(r => r.Id.Equals(identity));
-                connection.Users.Remove(toDelete);
-                connection.SaveChanges();
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
-        }
-
-        public bool Exists(User record)
+        public void Delete(int identity)
         {
-            bool doesExist = AnyWithThisUserName(record.UserName);
+            if (repo.Any(r => r.Id.Equals(identity)))
+            {
+                repo.Delete(identity);
+                /*UserEntity toDelete = connection.Users.First(r => r.Id.Equals(identity));
+                connection.Users.Remove(toDelete);
+                connection.SaveChanges();*/
+            }
+            else
+            {
+                throw new UserNotFoundException();
+            }
+        }
+
+        public bool Exists(User entity)
+        {
+            UserEntity record = mapper.ToEntity(entity);
+            bool doesExist = repo.Exists(record);
+            //bool doesExist = AnyWithThisUserName(record.UserName);
             return doesExist;
         }
 
@@ -112,11 +123,13 @@ namespace DataRepositories
         {
             if (AnyWithThisUserName(aUser.UserName))
             {
-                UserEntity toModify = connection.Users.First(u => u.UserName.Equals(aUser.UserName));
+                UserEntity entity = mapper.ToEntity(aUser);
+                repo.Modify(entity);
+                /*UserEntity toModify = connection.Users.First(u => u.UserName.Equals(aUser.UserName));
                 UserEntity newRecord = mapper.ToEntity(aUser);
                 newRecord.Id = toModify.Id;
                 connection.Entry(toModify).CurrentValues.SetValues(newRecord);
-                connection.SaveChanges();
+                connection.SaveChanges();*/
             }
             else
             {
@@ -126,7 +139,7 @@ namespace DataRepositories
 
         private bool AnyWithThisUserName(string userName)
         {
-            return connection.Users.Any(u => u.UserName.Equals(userName));
+            return repo.Any(u => u.UserName.Equals(userName));
         }
 
         public User Get(User asked)
@@ -137,10 +150,10 @@ namespace DataRepositories
         public User Get(int anId)
         {
             User query;
-            bool exists = connection.Users.Any(u => u.Id == anId);
+            bool exists = repo.Any(u => u.Id == anId);
             if (exists)
             {
-                UserEntity record = connection.Users.First(u => u.Id == anId);
+                UserEntity record = repo.First(u => u.Id == anId);
                 query = mapper.ToUser(record);
             }
             else
@@ -152,14 +165,13 @@ namespace DataRepositories
 
         public void Clear()
         {
-
-            foreach (UserEntity user in connection.Users)
-            {
-                connection.Users.Remove(user);
-            }
-            connection.SaveChanges();
-
+            repo.Clear();
+            //foreach (UserEntity user in connection.Users)
+            //{
+            //    connection.Users.Remove(user);
+            //}
+            //connection.SaveChanges();
         }
-
     }
 }
+
