@@ -89,7 +89,15 @@ namespace DataRepositories
 
         public T First(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            T firstToComply;
+            if (Any(predicate))
+            {
+                firstToComply = context.Set<T>().First(predicate);
+            }
+            else {
+                throw new EntityNotFoundException();
+            }
+            return firstToComply;
         }
 
 
