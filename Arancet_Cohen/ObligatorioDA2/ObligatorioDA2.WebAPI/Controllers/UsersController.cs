@@ -120,7 +120,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Password = toModify.Password,
                 Email = toModify.Email
             };
-            User converted = factory.CreateFollower(identity);
+            User converted = factory.CreateFollower(identity,id);
             try
             {
                 repo.Modify(converted);

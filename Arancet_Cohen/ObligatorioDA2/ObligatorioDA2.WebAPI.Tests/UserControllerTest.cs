@@ -101,7 +101,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void CreateValidUserOutPutTest()
+        public void CreateValidUserOutPutUsernameTest()
         {
             //Arrange
             var result = controller.Post(input);
@@ -112,6 +112,48 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             //Assert
             Assert.AreEqual(input.Username, modelOut.Username);
+        }
+
+        [TestMethod]
+        public void CreateValidUserOutPutNameTest()
+        {
+            //Arrange
+            var result = controller.Post(input);
+
+            //Act
+            var createdResult = result as CreatedAtRouteResult;
+            var modelOut = createdResult.Value as UserModelOut;
+
+            //Assert
+            Assert.AreEqual(input.Name, modelOut.Name);
+        }
+
+        [TestMethod]
+        public void CreateValidUserOutPutSurnameTest()
+        {
+            //Arrange
+            var result = controller.Post(input);
+
+            //Act
+            var createdResult = result as CreatedAtRouteResult;
+            var modelOut = createdResult.Value as UserModelOut;
+
+            //Assert
+            Assert.AreEqual(input.Surname, modelOut.Surname);
+        }
+
+        [TestMethod]
+        public void CreateValidUserOutPutEmailTest()
+        {
+            //Arrange
+            var result = controller.Post(input);
+
+            //Act
+            var createdResult = result as CreatedAtRouteResult;
+            var modelOut = createdResult.Value as UserModelOut;
+
+            //Assert
+            Assert.AreEqual(input.Email, modelOut.Email);
         }
 
         [TestMethod]
@@ -220,7 +262,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void ModifySuccessfullyTest()
+        public void PutModifyTest()
         {
             var modelIn = new UserModelIn()
             {
@@ -247,6 +289,38 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkObjectResult getResult = controller.Get(created.Id) as OkObjectResult;
             UserModelOut updated = getResult.Value as UserModelOut;
             Assert.AreEqual("name2", updated.Name);
+        }
+
+        [TestMethod]
+        public void PutCreateTest()
+        {
+            var modelIn = new UserModelIn()
+            {
+                Name = "name1",
+                Surname = "surname1",
+                Username = "username",
+                Password = "password1",
+                Email = "mail@domain.com"
+            };
+
+            controller.Put(15, modelIn);
+            OkObjectResult getResult = controller.Get(15) as OkObjectResult;
+            UserModelOut updated = getResult.Value as UserModelOut;
+            Assert.AreEqual("name1", updated.Name);
+        }
+
+        [TestMethod]
+        public void PutBadFormatTest() {
+            var model = new UserModelIn()
+            {
+                Surname = "surname1",
+                Password = "password1",
+                Email = "mail@domain.com"
+            };
+            controller.ModelState.AddModelError("", "Error");
+            IActionResult result =controller.Put(15, model);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequest);
         }
 
         [TestMethod]
