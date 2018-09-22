@@ -2,13 +2,11 @@
 
 namespace ObligatorioDA2.DataAccess.Entities
 {
-    public class UserEntity
+    public class UserEntity:BaseEntity
     {
         public UserEntity()
         { 
         }
-        public int Id { get; set; }
-
         public string Name { get; set; }
 
         public string Surname { get; set; }
