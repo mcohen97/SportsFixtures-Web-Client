@@ -40,14 +40,7 @@ namespace BusinessLogicTest
         {
             userId.Name = "";
             toTest = new User(userId,true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -62,14 +55,7 @@ namespace BusinessLogicTest
         {
             userId.Surname = "";
             toTest = new User(userId,true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -84,14 +70,7 @@ namespace BusinessLogicTest
         {
             userId.UserName = "";
             toTest = new User(userId,true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -106,14 +85,7 @@ namespace BusinessLogicTest
         {
             userId.Password = "";
             toTest = new User(userId,true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -128,14 +100,7 @@ namespace BusinessLogicTest
         {
             userId.Email = "";
             toTest = new User(userId, true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -144,14 +109,7 @@ namespace BusinessLogicTest
         {
             userId.Email = "mail";
             toTest = new User(userId, true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -160,14 +118,7 @@ namespace BusinessLogicTest
         {
             userId.Email = "@domain.com";
             toTest = new User(userId, true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -176,14 +127,7 @@ namespace BusinessLogicTest
         {
             userId.Email = "@domain";
             toTest = new User(userId, true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
@@ -192,14 +136,7 @@ namespace BusinessLogicTest
         {
             userId.Email = "maildomain.com";
             toTest = new User(userId, true);
-            try
-            {
-                var o = toTest;
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+
         }
 
         [TestMethod]
