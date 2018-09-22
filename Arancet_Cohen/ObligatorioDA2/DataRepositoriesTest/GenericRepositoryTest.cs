@@ -98,5 +98,25 @@ namespace DataRepositoriesTest
         public void DeleteNonExistent() {
             testRepo.Delete(5);
         }
+
+        [TestMethod]
+        public void FirstTest() {
+            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            otherEntity.SetupGet(e => e.Id).Returns(4);
+            testRepo.Add(testEntity.Object);
+            testRepo.Add(otherEntity.Object);
+            BaseEntity result = testRepo.First(e => e.Id == 4);
+            Assert.AreEqual(result.Id, 4);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(EntityNotFoundException))]
+        public void FirstNotFoundTest() {
+            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            otherEntity.SetupGet(e => e.Id).Returns(4);
+            testRepo.Add(testEntity.Object);
+            testRepo.Add(otherEntity.Object);
+            BaseEntity result = testRepo.First(e => e.Id == 5);
+        }
     }
 }
