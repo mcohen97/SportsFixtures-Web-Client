@@ -92,5 +92,11 @@ namespace DataRepositoriesTest
             testRepo.Delete(testEntity.Object.Id);
             Assert.IsTrue(testRepo.IsEmpty());
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(EntityNotFoundException))]
+        public void DeleteNonExistent() {
+            testRepo.Delete(5);
+        }
     }
 }
