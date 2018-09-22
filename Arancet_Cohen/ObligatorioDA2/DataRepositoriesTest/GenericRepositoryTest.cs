@@ -51,5 +51,11 @@ namespace DataRepositoriesTest
             BaseEntity fromRepo =testRepo.Get(3);
             Assert.AreEqual(fromRepo.Id, 3);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(EntityNotFoundException))]
+        public void GetNotExistentTest() {
+            BaseEntity fromRepo = testRepo.Get(3);
+        }
     }
 }
