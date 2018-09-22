@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using DataAccess;
 using DataRepositoryInterfaces;
 using DataRepositories;
-using System.Collections.Generic;
 using BusinessLogic;
 using BusinessLogic.Factories;
 using Microsoft.EntityFrameworkCore;
@@ -13,168 +13,197 @@ using Microsoft.EntityFrameworkCore.InMemory;
 using RepositoryInterface;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.DataAccess.Domain.Mappers;
 
-namespace DataRepositories
+namespace DataRepositoriesTest
 {
-    public class UserRepository : IUserRepository
+    [TestClass]
+    public class UserRepositoryTest
     {
-        private readonly IEntityRepository<UserEntity> repo;
-        private readonly UserMapper mapper;
+        IUserRepository usersStorage;
+        UserId userId;
+        UserFactory factory;
+        User user;
 
-        public UserRepository(IEntityRepository<UserEntity> genericRepo)
+        [TestInitialize]
+        public void SetUp()
         {
-            repo = genericRepo;
-            mapper = new UserMapper();
-        }
-
-        public void Add(User aUser)
-        {
-            if (!AnyWithThisUserName(aUser.UserName))
+            factory = new UserFactory();
+            userId = new UserId()
             {
-                AddNewUser(aUser);
-            }
-            else
-            {
-                throw new UserAlreadyExistsException();
-            }
+                Name = "name",
+                Surname = "surname",
+                UserName = "username",
+                Password = "password",
+                Email = "mail@domain.com"
+            };
+            user = factory.CreateAdmin(userId);
+            CreateRepository();
+            usersStorage.Clear();
         }
 
-        private void AddNewUser(User aUser)
-        {
-            UserEntity toAdd = mapper.ToEntity(aUser);
-            repo.Add(toAdd);
+        private void CreateRepository() {
+
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "UserRepository")
+                .Options;
+            DatabaseConnection context = new DatabaseConnection(options);
+            GenericRepository<UserEntity> genericRepo = new GenericRepository<UserEntity>(context);
+            usersStorage = new UserRepository(genericRepo);
         }
 
-        public User GetUserByUsername(string aUserName)
+        [TestMethod]
+        public void NoUsersTest()
         {
-            User toReturn;
-            if (AnyWithThisUserName(aUserName))
-            {
-                toReturn = GetExistentUser(aUserName);
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
-            return toReturn;
+            bool noUsers = usersStorage.IsEmpty();
+            Assert.IsTrue(noUsers);
         }
 
-        private User GetExistentUser(string aUserName)
+        [TestMethod]
+        public void AddUserTest()
         {
-            UserEntity fetched = repo.Get(u => u.UserName.Equals(aUserName)).First();
-            //UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUserName));
-            User toReturn = mapper.ToUser(fetched);
-            return toReturn;
+            usersStorage.Add(user);
+            int expectedResult = 1;
+            int actualResult = usersStorage.GetAll().Count;
+            Assert.AreEqual(expectedResult, actualResult);
         }
 
-        public ICollection<User> GetAll()
+        [TestMethod]
+        [ExpectedException(typeof(UserAlreadyExistsException))]
+        public void AddAlreadyExistentUserTest()
         {
-            ICollection<UserEntity> query = repo.GetAll();
-            ICollection<User> users = query.Select(u => mapper.ToUser(u)).ToList();
-            //.Select(u => mapper.ToUser(u));
-
-            //IQueryable<User> query = connection.Users.Select(u => mapper.ToUser(u));
-            return users;
+            usersStorage.Add(user);
+            usersStorage.Add(user);
         }
 
-        public bool IsEmpty()
+        [TestMethod]
+        public void GetUserTest()
         {
-            return repo.IsEmpty();
-            //return !connection.Users.Any();
+            IUserRepository specific = (IUserRepository)usersStorage;
+            User user = factory.CreateAdmin(userId);
+            usersStorage.Add(user);
+            User fetched = specific.GetUserByUsername("username");
+            Assert.AreEqual("name", fetched.Name);
         }
 
-        public void Delete(User entity)
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void GetNotExistentUserTest()
         {
-            if (AnyWithThisUserName(entity.UserName))
-            {
-                int generatedId = GetUserByUsername(entity.UserName).Id;
-                repo.Delete(entity.Id);
-                /* UserEntity toDelete = connection.Users.First(r => r.UserName.Equals(entity.UserName));
-                 connection.Users.Remove(toDelete);
-                 connection.SaveChanges();*/
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
+            IUserRepository specific = (IUserRepository)usersStorage;
+            User fetched = specific.GetUserByUsername("username3");
         }
 
-        public void Delete(int identity)
+        [TestMethod]
+        public void ExistsUserTest()
         {
-            if (repo.Any(r => r.Id.Equals(identity)))
-            {
-                repo.Delete(identity);
-                /*UserEntity toDelete = connection.Users.First(r => r.Id.Equals(identity));
-                connection.Users.Remove(toDelete);
-                connection.SaveChanges();*/
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
+            usersStorage.Add(user);
+            bool result = usersStorage.Exists(user);
+            Assert.IsTrue(result);
         }
 
-        public bool Exists(User entity)
+        [TestMethod]
+        public void DoesNotExistTest()
         {
-            UserEntity record = mapper.ToEntity(entity);
-            bool doesExist = repo.Exists(record);
-            //bool doesExist = AnyWithThisUserName(record.UserName);
-            return doesExist;
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username1", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username2", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1,1);
+            User user2 = factory.CreateAdmin(userId2,2);
+            usersStorage.Add(user1);
+            bool result = usersStorage.Exists(user2);
+            Assert.IsFalse(result);
         }
 
-        public void Modify(User aUser)
+        [TestMethod]
+        public void DeleteTest()
         {
-            if (AnyWithThisUserName(aUser.UserName))
-            {
-                UserEntity entity = mapper.ToEntity(aUser);
-                repo.Modify(entity);
-                /*UserEntity toModify = connection.Users.First(u => u.UserName.Equals(aUser.UserName));
-                UserEntity newRecord = mapper.ToEntity(aUser);
-                newRecord.Id = toModify.Id;
-                connection.Entry(toModify).CurrentValues.SetValues(newRecord);
-                connection.SaveChanges();*/
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
+            usersStorage.Add(user);
+            usersStorage.Delete(user);
+            Assert.IsTrue(usersStorage.IsEmpty());
         }
 
-        private bool AnyWithThisUserName(string userName)
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void DeleteNotExistetTest()
         {
-            return repo.Any(u => u.UserName.Equals(userName));
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username1", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username2", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
+            usersStorage.Add(user1);
+            usersStorage.Delete(user2);
         }
 
-        public User Get(User asked)
+        [TestMethod]
+        public void ModifyTest()
         {
-            return GetUserByUsername(asked.UserName);
+            usersStorage.Clear();
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
+            usersStorage.Add(user1);
+            CreateRepository();
+            usersStorage.Modify(user2);
+            User toVerify = usersStorage.Get(user2);
+            Assert.AreEqual(toVerify.Name, user2.Name);
         }
 
-        public User Get(int anId)
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void ModifyUserNotExistsTest()
         {
-            User query;
-            bool exists = repo.Any(u => u.Id == anId);
-            if (exists)
-            {
-                UserEntity record = repo.First(u => u.Id == anId);
-                query = mapper.ToUser(record);
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
-            return query;
+            usersStorage.Modify(user);
         }
 
-        public void Clear()
-        {
-            repo.Clear();
-            //foreach (UserEntity user in connection.Users)
-            //{
-            //    connection.Users.Remove(user);
-            //}
-            //connection.SaveChanges();
+        [TestMethod]
+        public void GetByIdTest() {
+            User user = factory.CreateAdmin(userId, 3);
+            usersStorage.Add(user);
+            User fetched = usersStorage.Get(3);
+            Assert.AreEqual(fetched.UserName,user.UserName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void GetByIdNotFoundTest() {
+            User user = factory.CreateAdmin(userId, 3);
+            usersStorage.Add(user);
+            User fetched = usersStorage.Get(4);
+        }
+
+        [TestMethod]
+        public void GetTest() {
+            User user = factory.CreateAdmin(userId, 3);
+            usersStorage.Add(user);
+            User fetched = usersStorage.Get(user);
+            Assert.AreEqual(user.UserName, fetched.UserName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void GetNotExistentTest() {
+
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username2", Password = "password1", Email = "mail1@domain.com" };
+            UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username1", Password = "password2", Email = "mail2@domain.com" };
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
+            usersStorage.Add(user1);
+            usersStorage.Get(user2);
+        }
+
+        [TestMethod]
+        public void ClearUsersTest() {
+            usersStorage.Add(user);
+            usersStorage.Clear();
+            Assert.IsTrue(usersStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        public void DeleteById() {
+            usersStorage.Add(user);
+            User fetched = usersStorage.Get(user);
+            usersStorage.Delete(fetched.Id);
+            Assert.IsTrue(usersStorage.IsEmpty());
         }
     }
 }
