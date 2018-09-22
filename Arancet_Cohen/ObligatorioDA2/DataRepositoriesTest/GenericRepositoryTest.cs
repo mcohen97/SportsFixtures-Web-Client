@@ -38,6 +38,13 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(EntityExistsException))]
+        public void AddAlreadyexistingtest() {
+            testRepo.Add(testEntity.Object);
+            testRepo.Add(testEntity.Object);
+        }
+
+        [TestMethod]
         public void GetTest() {
             testRepo.Add(testEntity.Object);
             BaseEntity fromRepo =testRepo.Get(3);
