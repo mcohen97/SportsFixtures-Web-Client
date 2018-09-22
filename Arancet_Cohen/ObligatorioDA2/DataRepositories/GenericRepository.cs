@@ -34,7 +34,15 @@ namespace DataRepositories
 
         public T Get(int id)
         {
-            return context.Set<T>().First(u => u.Id == id);
+            T toReturn;
+            if (context.Set<T>().Any(u => u.Id == id))
+            {
+                toReturn = context.Set<T>().First(u => u.Id == id);
+            }
+            else {
+                throw new EntityNotFoundException();
+            }
+            return toReturn;
         }
 
         public bool IsEmpty()
