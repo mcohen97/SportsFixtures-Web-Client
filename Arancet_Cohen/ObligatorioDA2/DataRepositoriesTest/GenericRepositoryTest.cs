@@ -118,5 +118,15 @@ namespace DataRepositoriesTest
             testRepo.Add(otherEntity.Object);
             BaseEntity result = testRepo.First(e => e.Id == 5);
         }
+
+        [TestMethod]
+        public void GetAlltest() {
+            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            otherEntity.SetupGet(e => e.Id).Returns(4);
+            testRepo.Add(testEntity.Object);
+            testRepo.Add(otherEntity.Object);
+            int actualResult = testRepo.GetAll().Count;
+            Assert.AreEqual(actualResult,2);
+        }
     }
 }
