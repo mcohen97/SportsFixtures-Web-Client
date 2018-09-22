@@ -12,8 +12,6 @@ namespace RepositoryInterface
 
         void Add(T entity);
 
-        void Delete(T entity);
-
         void Delete(int id);
 
         bool Exists(T record);
@@ -23,8 +21,6 @@ namespace RepositoryInterface
         void Modify(T entity);
 
         T Get(int id);
-
-        T Get(T asked);
 
         ICollection<T> GetAll();
     }
