@@ -128,5 +128,18 @@ namespace DataRepositoriesTest
             int actualResult = testRepo.GetAll().Count;
             Assert.AreEqual(actualResult,2);
         }
+
+        [TestMethod]
+        public void GetFilteredTest() {
+            Mock<BaseEntity> otherEntity2 = new Mock<BaseEntity>();
+            otherEntity2.SetupGet(e => e.Id).Returns(5);
+            Mock<BaseEntity> otherEntity1 = new Mock<BaseEntity>();
+            otherEntity1.SetupGet(e => e.Id).Returns(4);
+            testRepo.Add(testEntity.Object);
+            testRepo.Add(otherEntity1.Object);
+            testRepo.Add(otherEntity2.Object);
+            int expectedResult = testRepo.Get(e => (e.Id >= 4)).Count;
+            Assert.AreEqual(expectedResult, 2);
+        }
     }
 }
