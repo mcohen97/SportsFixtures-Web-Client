@@ -1,8 +1,10 @@
 ﻿using System;
 using DataAccess;
+using DataRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ObligatorioDA2.DataAccess.Entities;
 using RepositoryInterface;
 
 namespace DataRepositoriesTest
@@ -26,7 +28,7 @@ namespace DataRepositoriesTest
                 .UseInMemoryDatabase(databaseName: "UserRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            testRepo = new GenericRepository(context);
+            testRepo = new GenericRepository<BaseEntity>(context);
         }
 
         [TestMethod]
