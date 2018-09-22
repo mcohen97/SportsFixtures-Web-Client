@@ -38,7 +38,7 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(EntityExistsException))]
+        [ExpectedException(typeof(EntityAlreadyExistsException))]
         public void AddAlreadyexistingtest() {
             testRepo.Add(testEntity.Object);
             testRepo.Add(testEntity.Object);
