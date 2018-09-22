@@ -64,5 +64,27 @@ namespace DataRepositoriesTest
             testRepo.Clear();
             Assert.IsTrue(testRepo.IsEmpty());
         }
+
+        [TestMethod]
+        public void AnyPredicateTrueTest() {
+            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            otherEntity.SetupGet(e => e.Id).Returns(4);
+            testRepo.Add(testEntity.Object);
+            testRepo.Add(otherEntity.Object);
+            bool any = testRepo.Any(u => u.Id == 4);
+            Assert.IsTrue(any);
+        }
+
+        [TestMethod]
+        public void AnyPredicateFalseTest()
+        {
+            Mock<BaseEntity> otherEntity = new Mock<BaseEntity>();
+            otherEntity.SetupGet(e => e.Id).Returns(4);
+            testRepo.Add(testEntity.Object);
+            testRepo.Add(otherEntity.Object);
+            bool any = testRepo.Any(u => u.Id == 5);
+            Assert.IsFalse(any);
+        }
+
     }
 }
