@@ -108,7 +108,7 @@ namespace DataRepositories
 
         public ICollection<T> GetAll()
         {
-            throw new NotImplementedException();
+            return context.Set<T>().ToList();
         }
 
         public void Modify(T entity)
