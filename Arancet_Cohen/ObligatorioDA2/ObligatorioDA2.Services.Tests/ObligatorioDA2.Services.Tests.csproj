@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataRepositoryInterfaces\DataRepositoryInterfaces.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Services\ObligatorioDA2.Services.csproj" />
   </ItemGroup>
 
