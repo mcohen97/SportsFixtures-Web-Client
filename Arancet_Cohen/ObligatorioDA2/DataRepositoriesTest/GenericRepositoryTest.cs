@@ -1,6 +1,7 @@
 ﻿using System;
 using DataAccess;
 using DataRepositories;
+using DataRepositories.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

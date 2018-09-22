@@ -1,4 +1,5 @@
 ﻿using DataAccess;
+using DataRepositories.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ObligatorioDA2.DataAccess.Entities;
@@ -21,8 +22,14 @@ namespace DataRepositories
         }
         public void Add(T entity)
         {
-            context.Set<T>().Add(entity);
-            context.SaveChanges();
+            if (context.Set<T>().Contains(entity))
+            {
+                throw new EntityAlreadyExistsException();
+            }
+            else {
+                context.Set<T>().Add(entity);
+                context.SaveChanges();
+            }
         }
 
         public T Get(int id)
