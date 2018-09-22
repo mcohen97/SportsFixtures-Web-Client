@@ -19,7 +19,7 @@ namespace DataAccessTest
     [TestClass]
     public class UserRepositoryTest
     {
-        IRepository<User> usersStorage;
+        IUserRepository usersStorage;
         UserId userId;
         UserFactory factory;
         User user;

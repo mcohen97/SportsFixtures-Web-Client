@@ -8,6 +8,7 @@ using RepositoryInterface;
 using BusinessLogic;
 using BusinessLogic.Factories;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using DataRepositoryInterfaces;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -15,10 +16,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        IRepository<User> repo;
+        IUserRepository repo;
         UserFactory factory;
 
-        public UsersController(IRepository<User> aRepo) {
+        public UsersController(IUserRepository aRepo) {
             repo = aRepo;
             factory = new UserFactory();
         }
