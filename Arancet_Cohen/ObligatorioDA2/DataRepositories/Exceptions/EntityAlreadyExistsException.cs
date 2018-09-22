@@ -6,7 +6,7 @@ namespace DataRepositories.Exceptions
 {
     public class EntityAlreadyExistsException:Exception
     {
-        public EntityAlreadyExistsException(string msg) : base(msg) {
+        public EntityAlreadyExistsException() : base() {
         }
     }
 }
