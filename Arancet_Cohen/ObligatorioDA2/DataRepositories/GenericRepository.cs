@@ -27,7 +27,65 @@ namespace DataRepositories
 
         public T Get(int id)
         {
-            return context.Set<T>().First(u=> u.Id == id);
+            return context.Set<T>().First(u => u.Id == id);
+        }
+
+        public bool IsEmpty()
+        {
+            return !context.Set<T>().Any();
+        }
+
+        public bool Any(Expression<Func<T, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Exists(T record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T First(Expression<Func<T, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+    
+
+        public ICollection<T> Get(Expression<Func<T, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Get(T asked)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<T> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void Modify(T entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }
