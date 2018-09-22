@@ -52,18 +52,18 @@ namespace DataRepositories
 
         public bool Any(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return context.Set<T>().Any(predicate);
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            DbSet<T> set = context.Set<T>();
+            foreach (T entity in set) {
+                set.Remove(entity);
+            }
+            context.SaveChanges();
         }
 
-        public void Delete(T entity)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Delete(int id)
         {
@@ -87,16 +87,10 @@ namespace DataRepositories
             throw new NotImplementedException();
         }
 
-        public T Get(T asked)
-        {
-            throw new NotImplementedException();
-        }
-
         public ICollection<T> GetAll()
         {
             throw new NotImplementedException();
         }
-
 
         public void Modify(T entity)
         {
