@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using DataAccess;
 using DataRepositories;
 using Microsoft.EntityFrameworkCore;
-
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -14,23 +14,31 @@ namespace ObligatorioDA2.WebAPI.Tests
     {
         UsersController controller;
         UserRepository repo;
-        UserModelIn input; 
+        UserModelIn input;
 
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
 
-            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "UserRepository")
-                .Options;
-            repo = new UserRepository(new DatabaseConnection(options));
-             controller = new UsersController(repo);
+            InstantiateController();
             repo.Clear();
-
             input = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Password = "password", Email = "JHetfield@gmail.com" };
         }
 
+        private void InstantiateController()
+        {
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "UserRepository")
+                .Options;
+
+            GenericRepository<UserEntity> genericRepo = new GenericRepository<UserEntity>(new DatabaseConnection(options));
+            repo = new UserRepository(genericRepo);
+            controller = new UsersController(repo);
+        }
+
         [TestMethod]
-        public void GetTest() {
+        public void GetTest()
+        {
             IActionResult postResult = controller.Post(input);
             CreatedAtRouteResult createdResult = postResult as CreatedAtRouteResult;
             UserModelOut modelOut = createdResult.Value as UserModelOut;
@@ -41,7 +49,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void GetNotExistentTest() {
+        public void GetNotExistentTest()
+        {
             IActionResult fetchedById = controller.Get(3);
             NotFoundResult result = fetchedById as NotFoundResult;
             Assert.AreEqual(result.StatusCode, 404);
@@ -109,11 +118,12 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateFailedUserRequiredMailTest()
         {
             //Arrange
-            var modelIn = new UserModelIn() {
-                Name= "name",
-                Surname="surname",
-                Username ="username",
-                Password="password"
+            var modelIn = new UserModelIn()
+            {
+                Name = "name",
+                Surname = "surname",
+                Username = "username",
+                Password = "password"
             };
             //We need to force the error in de ModelState
             controller.ModelState.AddModelError("", "Error");
@@ -128,7 +138,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateFailedUserRequiredPasswordTest()
         {
-           //Arrange
+            //Arrange
             var modelIn = new UserModelIn()
             {
                 Name = "name",
@@ -149,7 +159,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateFailedUserRequiredUsernameTest()
         {
-           //Arrange
+            //Arrange
             var modelIn = new UserModelIn()
             {
                 Name = "name",
@@ -174,7 +184,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             var modelIn = new UserModelIn()
             {
                 Surname = "surname",
-                Username= "username",
+                Username = "username",
                 Password = "password",
                 Email = "email"
             };
@@ -210,7 +220,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void ModifySuccessfullyTest() {
+        public void ModifySuccessfullyTest()
+        {
             var modelIn = new UserModelIn()
             {
                 Name = "name1",
@@ -230,15 +241,17 @@ namespace ObligatorioDA2.WebAPI.Tests
             };
 
             CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(modelIn);
+            InstantiateController();
             UserModelOut created = (UserModelOut)result.Value;
-            controller.Put(created.Id,modifiedModelIn);
+            controller.Put(created.Id, modifiedModelIn);
             OkObjectResult getResult = controller.Get(created.Id) as OkObjectResult;
             UserModelOut updated = getResult.Value as UserModelOut;
             Assert.AreEqual("name2", updated.Name);
         }
 
         [TestMethod]
-        public void DeleteTest() {
+        public void DeleteTest()
+        {
             CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(input);
             UserModelOut created = (UserModelOut)result.Value;
             controller.Delete(created.Id);
@@ -248,8 +261,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void DeleteNotExistentTest() {
-            NotFoundResult deleteResult =controller.Delete(5) as NotFoundResult;
+        public void DeleteNotExistentTest()
+        {
+            NotFoundResult deleteResult = controller.Delete(5) as NotFoundResult;
             Assert.IsNotNull(deleteResult);
         }
     }
