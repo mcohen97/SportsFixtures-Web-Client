@@ -67,14 +67,24 @@ namespace DataRepositories
 
         public void Delete(int id)
         {
-            T toDelete = context.Set<T>().First(e => e.Id == id);
-            context.Set<T>().Remove(toDelete);
-            context.SaveChanges();
+            if (AnyWithId(id))
+            {
+                T toDelete = context.Set<T>().First(e => e.Id == id);
+                context.Set<T>().Remove(toDelete);
+                context.SaveChanges();
+            }
+            else {
+                throw new EntityNotFoundException();
+            }
         }
 
         public bool Exists(T record)
         {
-            throw new NotImplementedException();
+            return AnyWithId(record.Id);
+        }
+
+        private bool AnyWithId(int anId) {
+            return context.Set<T>().Any(e => e.Id == anId);
         }
 
         public T First(Expression<Func<T, bool>> predicate)
