@@ -57,5 +57,12 @@ namespace DataRepositoriesTest
         public void GetNotExistentTest() {
             BaseEntity fromRepo = testRepo.Get(3);
         }
+
+        [TestMethod]
+        public void ClearTest() {
+            testRepo.Add(testEntity.Object);
+            testRepo.Clear();
+            Assert.IsTrue(testRepo.IsEmpty());
+        }
     }
 }
