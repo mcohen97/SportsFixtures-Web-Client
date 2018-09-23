@@ -26,7 +26,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             logger.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser.Object);
 
             //act
-            IActionResult result = controllerToTest.Authenticate("aUsername", "aPassword");
+            LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "aPassword" };
+            IActionResult result = controllerToTest.Authenticate(credentials);
             OkObjectResult okResult = result as OkObjectResult;
 
             logger.VerifyAll();
