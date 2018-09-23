@@ -30,10 +30,10 @@ namespace BusinessLogic
         private void SetName(string value)
         {
             if(value == null)
-                throw new InvalidTeamDataException("Name can't be null");
+                throw new InvalidCommentaryDataException("Name can't be null");
 
             if(value == "")
-                throw new InvalidTeamDataException("Name can't be empty");
+                throw new InvalidCommentaryDataException("Name can't be empty");
             
             name = value;
         }
@@ -41,7 +41,7 @@ namespace BusinessLogic
         private void SetPhoto(string value)
         {
             if(value == null)
-                throw new InvalidTeamDataException("Photo can't be null");
+                throw new InvalidCommentaryDataException("Photo can't be null");
 
             photo = value;       
          }
