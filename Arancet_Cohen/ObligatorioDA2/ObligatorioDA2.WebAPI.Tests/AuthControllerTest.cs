@@ -9,7 +9,7 @@ namespace ObligatorioDA2.WebAPI.Tests
     [TestClass]
     public class AuthControllerTest
     {
-        private AuthController controllerToTest;
+        private AuthenticationController controllerToTest;
         private Mock<LoginService> logger;
         private Mock<User> testUser;
         [TestInitialize]
