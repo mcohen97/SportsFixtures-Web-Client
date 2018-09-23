@@ -17,18 +17,11 @@ namespace BusinessLogicTest
             string photo = "myresource/theteam.png";
             testTeam = new Team(id, name, photo);
         }
+
         [TestMethod]
         public void ConstructorTeamTest()
         {
-            Team team = new Team();
-            Assert.IsNotNull(team);
-        }
-
-        [TestMethod]
-        public void ConstructorParametersTeamTest()
-        {            
-            Team team = new Team(id, name, photo);
-            Assert.IsNotNull(team);
+            Assert.IsNotNull(testTeam);
         }
         
         [TestMethod]
@@ -131,14 +124,6 @@ namespace BusinessLogicTest
         {
             Team team = new Team(1, "name","photo");
             team.Photo = null;
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidTeamDataException))]
-        public void SetNullIdTest()
-        {
-            Team team = new Team(1, "name","photo");
-            team.Id = null;
         }
     }
 }

@@ -8,19 +8,24 @@ namespace BusinessLogic
     {
         private string name;
         private string photo;
+        private int id;
 
-        public Team()
+        public Team(int id, string name, string photo)
         {
-            name = "";
-            photo = "";
-        }
-        public Team(string name, string photo)
-        {
+            this.Id = id;
             this.Name = name;
             this.Photo = photo;
         }
 
         public string Name {get{return name;} set{SetName(value);}}
+
+        public string Photo {get{return photo;} set{SetPhoto(value);}}
+
+        public int Id { get{return id;} set{SetId(value);} }
+
+        public void SetId(int value){
+            id = value;
+        }
 
         private void SetName(string value)
         {
@@ -32,8 +37,6 @@ namespace BusinessLogic
             
             name = value;
         }
-
-        public string Photo {get{return photo;} set{SetPhoto(value);}}
 
         private void SetPhoto(string value)
         {
@@ -51,7 +54,7 @@ namespace BusinessLogic
                 return false;
 
             var team = obj as Team;
-            return Name == team.Name;
+            return Name == team.Name && Id == team.Id;
         }
 
         public override int GetHashCode()
