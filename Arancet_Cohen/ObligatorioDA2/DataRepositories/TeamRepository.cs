@@ -11,6 +11,7 @@ using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
+
 namespace DataRepositories
 {
     public class TeamRepository : ITeamRepository, IRepository<Team>
@@ -24,13 +25,13 @@ namespace DataRepositories
             this.mapper = new TeamMapper();
         }
 
-        public void Add(Team entity)
+        public void Add(Team team)
         {
-            if(Exists(entity))
+            if(Exists(team))
                 throw new TeamAlreadyExistsException();
 
-            TeamEntity convertedTeam = mapper.ToEntity(entity);
-            context.Teams.Add(convertedTeam);
+            TeamEntity entityTeam = mapper.ToEntity(team);
+            context.Teams.Add(entityTeam);
             context.SaveChanges();
         }
 
@@ -42,12 +43,12 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public void Delete(Team entity)
+        public void Delete(int idTeam)
         {
-            if(!Exists(entity))
+            if(!Exists(idTeam))
                 throw new TeamNotFoundException();
 
-            TeamEntity toDelete = context.Teams.First(t => t.Name == entity.Name);
+            TeamEntity toDelete = context.Teams.First(t => t.Id.Equals(idTeam));
             context.Teams.Remove(toDelete);
             context.SaveChanges();
         }
@@ -57,18 +58,22 @@ namespace DataRepositories
             return Exists(record.Name);
         }
 
-         private bool Exists(string name){
+        private bool Exists(string name){
              return context.Teams.Any(t => t.Name == name);
         }
 
-        public Team Get(Guid id)
+        private bool Exists(int id){
+            return context.Teams.Any(t => t.Id.Equals(id));
+        }
+
+        public Team Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Team Get(Team asked) 
+        public Team Get(Team team) 
         {   
-            return GetTeamByName(asked.Name);
+            return GetTeamByName(team.Name);
         }
 
         public ICollection<Team> GetAll()
@@ -77,12 +82,12 @@ namespace DataRepositories
             return query.ToList();
         }
 
-        public Team GetTeamByName(string name) 
+        public Team GetTeamByName(string teamName) 
         {
-            if(!Exists(name))
+            if(!Exists(teamName))
                 throw new TeamNotFoundException();
 
-            TeamEntity askedEntity = context.Teams.First(t => t.Name == name);
+            TeamEntity askedEntity = context.Teams.First(t => t.Name == teamName);
             return mapper.ToTeam(askedEntity);
         }
 
@@ -91,14 +96,25 @@ namespace DataRepositories
             return !context.Teams.Any();
         }
 
-        public void Modify(Team entity)
+        public void Modify(Team teamModified)
         {
-            if(!Exists(entity))
+            if(!Exists(teamModified))
                 throw new TeamNotFoundException();
             
-            TeamEntity modified = mapper.ToEntity(entity);
-            context.Teams.Attach(modified);
-            context.Entry(modified).State = EntityState.Modified;
+            TeamEntity entityModified = mapper.ToEntity(teamModified);
+            TeamEntity recordInDB = context.Teams.First(t => t.Name == teamModified.Name);
+            entityModified.Id = recordInDB.Id;
+            context.Entry(recordInDB).CurrentValues.SetValues(entityModified);
+            context.SaveChanges();
+        }
+
+        public void Delete(Team teamToDelete)
+        {
+            if(!Exists(teamToDelete))
+                throw new TeamNotFoundException();
+
+            TeamEntity recordToDelete = context.Teams.First(t => t.Name == teamToDelete.Name);
+            context.Teams.Remove(recordToDelete);
             context.SaveChanges();
         }
     }

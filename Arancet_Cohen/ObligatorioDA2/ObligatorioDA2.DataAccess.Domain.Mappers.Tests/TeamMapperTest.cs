@@ -3,7 +3,6 @@ using Moq;
 using BusinessLogic;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
-using ObligatorioDA2.DataAccess.Domain.Mapper;
 
 namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
 {

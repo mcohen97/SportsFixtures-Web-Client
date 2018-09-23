@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
 using System.Collections.Generic;
 using Moq;
-using BusinessLogicExceptions;
+using BusinessLogic.Exceptions;
 
 namespace BusinessLogicTest
 {

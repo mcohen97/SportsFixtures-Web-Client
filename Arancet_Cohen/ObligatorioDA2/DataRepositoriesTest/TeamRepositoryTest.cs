@@ -111,6 +111,23 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        public void DeleteByIdTest() {
+            Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            teamsStorage.Delete(team.Object);
+            Assert.IsTrue(teamsStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void DeleteNotExistentByIdTest() {
+            Mock<Team> team1 = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
+            Mock<Team> team2 = new Mock<Team>("DreamTeam2", "MyResources/DreamTeam2.png");
+            teamsStorage.Add(team1.Object);
+            teamsStorage.Delete(team2.Object);
+        }
+
+        [TestMethod]
         public void ModifyTeamTest(){
             Mock<Team> team = new Mock<Team>("DreamTeam", "MyResources/DreamTeam.png");
             teamsStorage.Add(team.Object);

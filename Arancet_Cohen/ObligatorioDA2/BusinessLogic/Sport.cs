@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using BusinessLogicExceptions;
+using BusinessLogic.Exceptions;
 
 [assembly:InternalsVisibleTo("BusinessLogicTest")]
 

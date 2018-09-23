@@ -4,12 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-<<<<<<< HEAD
-  
-=======
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogicExceptions\BusinessLogic.Exceptions.csproj" />
   </ItemGroup>
->>>>>>> b4000f454dcd8e99986515f6c43e4aeff9e05987
+
 
 </Project>
