@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using BusinessLogic;
 using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 
 namespace ObligatorioDA2.WebAPI.Controllers
@@ -25,8 +31,46 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost, Route("login")]
         public IActionResult Authenticate([FromBody]LoginModelIn user)
         {
-            User logged = logger.Login(user.Username, user.Password);
-            return Ok(logged);
+            IActionResult result;
+            try
+            {
+                User logged = logger.Login(user.Username, user.Password);
+                string tokenString = GenerateJSONWebToken(logged);
+                result = Ok(new { Token = tokenString });
+            }
+            catch (UserNotFoundException e1)
+            {
+                result = BadRequest(e1.Message);
+            }
+            catch (WrongPasswordException e2)
+            {
+                result = BadRequest(e2.Message);
+            }
+            return result;
+        }
+
+        private string GenerateJSONWebToken(User userInfo)
+        {
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+            SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            JwtSecurityToken token = new JwtSecurityToken(
+               issuer: "http://localhost:5000",
+               audience: "http://localhost:5000",
+               claims: new List<Claim>{
+                        new Claim(ClaimTypes.Role, AdminOrFollower(userInfo)),
+                        new Claim("UserId", userInfo.Id.ToString()),
+                        },
+               expires: DateTime.Now.AddMinutes(5),
+               signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string AdminOrFollower(User aUser)
+        {
+            return aUser.IsAdmin ? "Admin" : "Follower";
         }
     }
 }
