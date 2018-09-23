@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic", "BusinessLogic\BusinessLogic.csproj", "{578D2F71-991D-40FA-B78E-F7B1C4C2CFA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogicExceptions", "BusinessLogicExceptions\BusinessLogicExceptions.csproj", "{B86BD2C1-4681-4CD4-A588-E3093CAE0DBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic.Exceptions", "BusinessLogicExceptions\BusinessLogic.Exceptions.csproj", "{B86BD2C1-4681-4CD4-A588-E3093CAE0DBE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogicTest", "BusinessLogicTest\BusinessLogicTest.csproj", "{A9E6BED7-AC76-4DE5-BEEE-EA1A56F1D5A0}"
 EndProject
@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.DataAccess.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.DataAccess.Domain.Mappers.Tests", "ObligatorioDA2.DataAccess.Domain.Mappers.Tests\ObligatorioDA2.DataAccess.Domain.Mappers.Tests.csproj", "{F3524F09-B0BD-4F04-8427-0E24319E43C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.BusinessLogic.Data.Exceptions", "ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj", "{0DAA83E5-87A9-4E8C-A297-6EB86227A595}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic.Data.Exceptions", "ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj", "{0DAA83E5-87A9-4E8C-A297-6EB86227A595}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

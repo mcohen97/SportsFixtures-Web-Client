@@ -14,13 +14,15 @@ namespace RepositoryInterface
 
         void Delete(T entity);
 
+        void Delete(int id);
+
         bool Exists(T record);
 
         void Clear();
 
         void Modify(T entity);
 
-        T Get(Guid id);
+        T Get(int id);
 
         T Get(T asked);
 

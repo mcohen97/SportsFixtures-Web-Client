@@ -20,16 +20,18 @@ namespace DataRepositories
 
         public UserRepository(DatabaseConnection aConnection)
         {
-           connection = aConnection;
-           mapper = new UserMapper();
+            connection = aConnection;
+            mapper = new UserMapper();
         }
 
-        public void Add(User aUser) {
+        public void Add(User aUser)
+        {
             if (!AnyWithThisUserName(aUser.UserName))
             {
-                AddNewUser(aUser);           
+                AddNewUser(aUser);
             }
-            else {
+            else
+            {
                 throw new UserAlreadyExistsException();
             }
         }
@@ -48,7 +50,8 @@ namespace DataRepositories
             {
                 toReturn = GetExistentUser(aUserName);
             }
-            else {
+            else
+            {
                 throw new UserNotFoundException();
             }
             return toReturn;
@@ -57,11 +60,12 @@ namespace DataRepositories
         private User GetExistentUser(string aUserName)
         {
             UserEntity fetched = connection.Users.First(u => u.UserName.Equals(aUserName));
-            User toReturn = new Admin(fetched.Name, fetched.Surname, fetched.UserName, fetched.Password, fetched.Email);
+            User toReturn = mapper.ToUser(fetched);
             return toReturn;
         }
 
-        public ICollection<User> GetAll(){
+        public ICollection<User> GetAll()
+        {
             IQueryable<User> query = connection.Users.Select(u => mapper.ToUser(u));
             return query.ToList();
         }
@@ -73,14 +77,27 @@ namespace DataRepositories
 
         public void Delete(User entity)
         {
-
             if (AnyWithThisUserName(entity.UserName))
             {
                 UserEntity toDelete = connection.Users.First(r => r.UserName.Equals(entity.UserName));
                 connection.Users.Remove(toDelete);
                 connection.SaveChanges();
             }
-            else {
+            else
+            {
+                throw new UserNotFoundException();
+            }
+        }
+
+        public void Delete(int identity) {
+            if (connection.Users.Any(u=>u.Id == identity))
+            {
+                UserEntity toDelete = connection.Users.First(r => r.Id.Equals(identity));
+                connection.Users.Remove(toDelete);
+                connection.SaveChanges();
+            }
+            else
+            {
                 throw new UserNotFoundException();
             }
         }
@@ -91,28 +108,58 @@ namespace DataRepositories
             return doesExist;
         }
 
-        private bool AnyWithThisUserName(string userName) {
-           return connection.Users.Any(u => u.UserName.Equals(userName));
+        public void Modify(User aUser)
+        {
+            if (AnyWithThisUserName(aUser.UserName))
+            {
+                UserEntity toModify = connection.Users.First(u => u.UserName.Equals(aUser.UserName));
+                UserEntity newRecord = mapper.ToEntity(aUser);
+                newRecord.Id = toModify.Id;
+                connection.Entry(toModify).CurrentValues.SetValues(newRecord);
+                connection.SaveChanges();
+            }
+            else
+            {
+                throw new UserNotFoundException();
+            }
         }
 
-        public void Clear()
+        private bool AnyWithThisUserName(string userName)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Modify(User entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public User Get(Guid id)
-        {
-            throw new NotImplementedException();
+            return connection.Users.Any(u => u.UserName.Equals(userName));
         }
 
         public User Get(User asked)
         {
-            throw new NotImplementedException();
+            return GetUserByUsername(asked.UserName);
         }
+
+        public User Get(int anId)
+        {
+            User query;
+            bool exists = connection.Users.Any(u => u.Id == anId);
+            if (exists)
+            {
+                UserEntity record = connection.Users.First(u => u.Id == anId);
+                query = mapper.ToUser(record);
+            }
+            else
+            {
+                throw new UserNotFoundException();
+            }
+            return query;
+        }
+
+        public void Clear()
+        {
+
+            foreach (UserEntity user in connection.Users)
+            {
+                connection.Users.Remove(user);
+            }
+            connection.SaveChanges();
+
+        }
+
     }
 }
