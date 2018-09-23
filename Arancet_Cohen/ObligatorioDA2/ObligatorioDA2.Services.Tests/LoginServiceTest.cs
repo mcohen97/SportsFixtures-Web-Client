@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.Services.Tests
 {
