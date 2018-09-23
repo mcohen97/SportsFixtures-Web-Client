@@ -7,6 +7,7 @@ using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using DataRepositoryInterfaces;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -36,8 +37,39 @@ namespace ObligatorioDA2.WebAPI.Tests
             IActionResult result = controllerToTest.Authenticate(credentials);
             OkObjectResult okResult = result as OkObjectResult;
 
+            //assert
             logger.VerifyAll();
             Assert.IsNotNull(okResult);
+        }
+
+        [TestMethod]
+        public void LoginNotFoundTest() {
+            //arrange
+            logger.Setup(l => l.Login("otherUsername", "aPassword")).Throws(new UserNotFoundException());
+
+            //act
+            LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "aPassword" };
+            IActionResult result = controllerToTest.Authenticate(credentials);
+            BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
+
+            //assert
+            logger.VerifyAll();
+            Assert.IsNotNull(badRequestResult);
+        }
+
+        [TestMethod]
+        public void LoginWrongPasswordTest() {
+            //arrange
+            logger.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser.Object);
+
+            //act
+            LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "otherPassword" };
+            IActionResult result = controllerToTest.Authenticate(credentials);
+            BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
+
+            //assert
+            logger.VerifyAll();
+            Assert.IsNotNull(badRequestResult);
         }
     }
 }
