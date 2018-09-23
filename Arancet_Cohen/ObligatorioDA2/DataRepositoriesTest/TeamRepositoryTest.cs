@@ -102,6 +102,14 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        public void DeleteByIdTest() {
+            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            teamsStorage.Delete(team.Object.Id);
+            Assert.IsTrue(teamsStorage.IsEmpty());
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
         public void DeleteNotExistentTest() {
             Mock<Team> team1 = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
@@ -111,11 +119,12 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        public void DeleteByIdTest() {
-            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
-            teamsStorage.Add(team.Object);
-            teamsStorage.Delete(team.Object);
-            Assert.IsTrue(teamsStorage.IsEmpty());
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void DeleteByIdNotExistentTest() {
+            Mock<Team> team1 = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
+            Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam2.png");
+            teamsStorage.Add(team1.Object);
+            teamsStorage.Delete(team2.Object.Id);
         }
 
         [TestMethod]
@@ -176,6 +185,20 @@ namespace DataRepositoriesTest
             ICollection<Team> teams = teamsStorage.GetAll();
             
             Assert.AreEqual(3, teams.Count);
+        }
+
+        [TestMethod]
+        public void GetByIdTest() {
+            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
+            teamsStorage.Add(team.Object);
+            Team teamInDb = teamsStorage.Get(1);
+            Assert.AreEqual("DreamTeam", teamInDb.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void GetByIdNotExistentTeamTest() {
+            Team teamInDb = teamsStorage.Get(1);
         }
 
     }
