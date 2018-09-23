@@ -8,6 +8,15 @@ namespace BusinessLogicTest
     [TestClass]
     public class TeamTest
     {
+        private Team testTeam;
+
+        [TestInitialize]
+        public void TestInitialize(){
+            int id = 1;
+            string name = "TheTeam";
+            string photo = "myresource/theteam.png";
+            testTeam = new Team(id, name, photo);
+        }
         [TestMethod]
         public void ConstructorTeamTest()
         {
@@ -17,77 +26,94 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void ConstructorParametersTeamTest()
-        {
-            string name = "TheTeam";
-            string photo = "myresource/theteam.png";
-            Team team = new Team(name, photo);
+        {            
+            Team team = new Team(id, name, photo);
             Assert.IsNotNull(team);
+        }
+        
+        [TestMethod]
+        public void GetIdTest()
+        {
+            int id = 1;
+            Assert.AreEqual(id, testTeam.Id);
+        }
+
+        [TestMethod]
+        public void SetIdTest()
+        {
+            int newId = 2;
+            testTeam.Id = newId;
+            Assert.AreEqual(newId, testTeam.Id);
         }
 
         [TestMethod]
         public void GetNameTest()
         {
             string name = "TheTeam";
-            string photo = "myresourcce/theteam.png";
-            Team team = new Team(name, photo);
-            Assert.AreEqual(name, team.Name);
+            Assert.AreEqual(name, testTeam.Name);
         }
 
         [TestMethod]
         public void SetNameTest()
         {
-            string name = "TheTeam";
-            Team team = new Team();
-            team.Name = name;
-            Assert.AreEqual(name, team.Name);
+            string newName = "TheNewTeam";
+            testTeam.Name = newName;
+            Assert.AreEqual(newName, testTeam.Name);
         }
 
         [TestMethod]
         public void GetPhotoTest()
         {
-            string name = "TheTeam";
             string photo = "myresource/theteam.png";
-            Team team = new Team(name, photo);
-            Assert.AreEqual(photo, team.Photo);
+            Assert.AreEqual(photo, testTeam.Photo);
         }
 
         [TestMethod]
         public void SetPhotoTest()
         {
-            string photo = "myresource/theteam.png";
-            Team team = new Team();
-            team.Photo = photo;
-            Assert.AreEqual(photo, team.Photo);
+            string newPhoto = "myresource/thenewteam.png";
+            testTeam.Photo = newPhoto;
+            Assert.AreEqual(newPhoto, testTeam.Photo);
         }
 
         [TestMethod]
         public void EqualsTest()
         {
-            Team aTeam = new Team("TeamA", "somePath");
-            Team sameTeam = new Team("TeamA", "");
+            Team aTeam = new Team(1, "TeamA", "somePath");
+            Team sameTeam = new Team(1, "TeamA", "");
             Assert.AreEqual(aTeam, sameTeam);
         }
 
         [TestMethod]
-        public void NotEqualsTest()
+        public void NotEqualsByNameTest()
         {
-            Team aTeam = new Team("TeamA", "somePath");
-            Team differentTeam = new Team("TeamB", "");
+            Team aTeam = new Team(1, "TeamA", "somePath");
+            Team differentTeam = new Team(1, "TeamB", "");
             Assert.AreNotEqual(aTeam, differentTeam);
         }
+
+        [TestMethod]
+        public void NotEqualsByIdTest()
+        {
+            Team aTeam = new Team(1, "TeamA", "somePath");
+            Team differentTeam = new Team(2, "TeamA", "");
+            Assert.AreNotEqual(aTeam, differentTeam);
+        }
+
+        //Exceptions
 
         [TestMethod]
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void EmptyNameConstructorTest()
         {
-            Team team = new Team("","photo");
+            Team team = new Team(1, "","photo");
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetEmptyNameTest()
         {
-            Team team = new Team("name","photo");
+            Team team = new Team(1, "name","photo");
             team.Name = "";
         }
 
@@ -95,7 +121,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullNameTest()
         {
-            Team team = new Team("name","photo");
+            Team team = new Team(1, "name","photo");
             team.Name = null;
         }
 
@@ -103,8 +129,16 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullPhotoTest()
         {
-            Team team = new Team("name","photo");
+            Team team = new Team(1, "name","photo");
             team.Photo = null;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamDataException))]
+        public void SetNullIdTest()
+        {
+            Team team = new Team(1, "name","photo");
+            team.Id = null;
         }
     }
 }
