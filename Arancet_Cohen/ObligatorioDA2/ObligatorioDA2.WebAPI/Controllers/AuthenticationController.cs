@@ -2,19 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using ObligatorioDA2.Services;
+using ObligatorioDA2.WebAPI.Models;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    public class AuthenticationController : Controller
+    [ApiController]
+    public class AuthenticationController : ControllerBase
     {
-        // POST api/<controller>
-        [HttpPost]
-        public void Post([FromBody]string value)
+        private ILoginService logger;
+
+        public AuthenticationController(ILoginService aService)
         {
+            logger = aService;
+        }
+
+        // POST api/<controller>
+        [HttpPost, Route("login")]
+        public IActionResult Authenticate([FromBody]LoginModelIn user)
+        {
+            return Ok(new object());
         }
     }
 }
+

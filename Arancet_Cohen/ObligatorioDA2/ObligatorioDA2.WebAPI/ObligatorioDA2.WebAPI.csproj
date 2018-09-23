@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
     <ProjectReference Include="..\DataRepositories\DataRepositories.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Services\ObligatorioDA2.Services.csproj" />
     <ProjectReference Include="..\RepositoryInterface\RepositoryInterface.csproj" />
   </ItemGroup>
 

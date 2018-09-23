@@ -5,6 +5,8 @@ using BusinessLogic;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using DataRepositoryInterfaces;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -12,14 +14,16 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class AuthControllerTest
     {
         private AuthenticationController controllerToTest;
-        private Mock<LoginService> logger;
+        private Mock<ILoginService> logger;
         private Mock<User> testUser;
+
         [TestInitialize]
         public void StartUp() {
-            logger = new Mock<LoginService>();
+            logger = new Mock<ILoginService>();
             UserId identity = new UserId() { Name= "aName", Surname="aUsername", UserName="aUsername",
                 Password= "aPassword", Email= "anEmail@aDomain.com" };
-            testUser = new Mock<User>(identity);
+            testUser = new Mock<User>(identity,true);
+            controllerToTest = new AuthenticationController(logger.Object);
         }
 
         [TestMethod]
