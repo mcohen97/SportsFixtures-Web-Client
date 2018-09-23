@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using DataRepositoryInterfaces;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -48,7 +49,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             logger.Setup(l => l.Login("otherUsername", "aPassword")).Throws(new UserNotFoundException());
 
             //act
-            LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "aPassword" };
+            LoginModelIn credentials = new LoginModelIn() { Username = "otherUsername", Password = "aPassword" };
             IActionResult result = controllerToTest.Authenticate(credentials);
             BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
 
@@ -60,7 +61,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void LoginWrongPasswordTest() {
             //arrange
-            logger.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser.Object);
+            logger.Setup(l => l.Login("aUsername", "otherPassword")).Throws(new WrongPasswordException());
 
             //act
             LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "otherPassword" };
