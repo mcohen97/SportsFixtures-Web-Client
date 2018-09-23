@@ -32,6 +32,19 @@ namespace ObligatorioDA2.WebAPI.Controllers
         public IActionResult Authenticate([FromBody]LoginModelIn user)
         {
             IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = AuthenticateWithValidModel(user);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult AuthenticateWithValidModel(LoginModelIn user)
+        {
+            IActionResult result;
             try
             {
                 User logged = logger.Login(user.Username, user.Password);
