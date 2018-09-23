@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessLogic;
 using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.Services;
@@ -24,7 +25,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost, Route("login")]
         public IActionResult Authenticate([FromBody]LoginModelIn user)
         {
-            return Ok(new object());
+            User logged = logger.Login(user.Username, user.Password);
+            return Ok(logged);
         }
     }
 }
