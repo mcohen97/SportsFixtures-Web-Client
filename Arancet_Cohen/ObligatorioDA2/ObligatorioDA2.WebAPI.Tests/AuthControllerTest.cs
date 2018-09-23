@@ -72,5 +72,14 @@ namespace ObligatorioDA2.WebAPI.Tests
             logger.VerifyAll();
             Assert.IsNotNull(badRequestResult);
         }
+
+        [TestMethod]
+        public void LoginInvalidModelTest() {
+            LoginModelIn credentials = new LoginModelIn();
+            controllerToTest.ModelState.AddModelError("", "Error");
+            IActionResult result = controllerToTest.Authenticate(credentials);
+            BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+        }
     }
 }
