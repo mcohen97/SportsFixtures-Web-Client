@@ -43,12 +43,12 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public void Delete(int idTeam)
+        public void Delete(int id)
         {
-            if(!Exists(idTeam))
+            if(!Exists(id))
                 throw new TeamNotFoundException();
 
-            TeamEntity toDelete = context.Teams.First(t => t.Id.Equals(idTeam));
+            TeamEntity toDelete = context.Teams.First(t => t.Id == id);
             context.Teams.Remove(toDelete);
             context.SaveChanges();
         }
@@ -63,12 +63,16 @@ namespace DataRepositories
         }
 
         private bool Exists(int id){
-            return context.Teams.Any(t => t.Id.Equals(id));
+            return context.Teams.Any(t => t.Id == id);
         }
 
         public Team Get(int id)
         {
-            throw new NotImplementedException();
+            if(!Exists(id))
+                throw new TeamNotFoundException();
+
+            TeamEntity askedEntity = context.Teams.First(t => t.Id == id);
+            return mapper.ToTeam(askedEntity);
         }
 
         public Team Get(Team team) 

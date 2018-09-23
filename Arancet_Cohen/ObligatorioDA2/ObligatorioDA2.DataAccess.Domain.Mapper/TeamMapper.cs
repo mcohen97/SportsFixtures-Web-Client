@@ -14,7 +14,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
 
         public TeamEntity ToEntity(Team team)
         {
-            TeamEntity convertedTeam = new TeamEntity(team.Name, team.Photo);
+            TeamEntity convertedTeam = new TeamEntity(team.Id, team.Name, team.Photo);
             return convertedTeam;
         }
     }

@@ -6,7 +6,8 @@ namespace ObligatorioDA2.DataAccess.Entities
 
         }
 
-        public TeamEntity(string name, string photo){
+        public TeamEntity(int id, string name, string photo){
+            Id = id;
             Name = name;
             Photo = photo;
         }
