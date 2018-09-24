@@ -152,5 +152,20 @@ namespace BusinessLogicTest
         {
             match.AwayTeam = teamA.Object;
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        public void AwayEqualsHomeTest()
+        {
+            match.HomeTeam = teamB.Object;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        public void AddAlreadyExistentCommentaryTest()
+        {
+            match.AddCommentary(commentary1.Object);
+            match.AddCommentary(commentary1.Object);
+        }
     }
 }

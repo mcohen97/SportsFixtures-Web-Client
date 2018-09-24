@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using BusinessLogic.Exceptions;
+using System.Linq;
 
 namespace BusinessLogic
 {
@@ -29,6 +31,8 @@ namespace BusinessLogic
 
         public void AddCommentary(Commentary commentary)
         {
+            if(HasCommentary(commentary))
+                throw new InvalidMatchDataExcpetion("Commentary already exists in this match");
             commentaries.Add(commentary);
         }
 
@@ -49,11 +53,21 @@ namespace BusinessLogic
 
         private void SetHomeTeam(Team value)
         {
+            if(value == null)
+                throw new InvalidMatchDataExcpetion("Home team can't be null");
+            if(value.Equals(awayTeam))
+                throw new InvalidMatchDataExcpetion("Home team can't be same as away team");
+
             homeTeam = value;
         }
 
         private void SetAwayTeam(Team value)
         {
+            if(value == null)
+                throw new InvalidMatchDataExcpetion("Away team can't be null");
+            if(value.Equals(homeTeam))
+                throw new InvalidMatchDataExcpetion("Away team can't be same as home team");
+                
             awayTeam = value;
         }
 
@@ -62,5 +76,9 @@ namespace BusinessLogic
             date = value;
         }
 
+        public Commentary GetCommentary(int id)
+        {
+            return commentaries.First(c => c.Id == id);
+        }
     }
 }
