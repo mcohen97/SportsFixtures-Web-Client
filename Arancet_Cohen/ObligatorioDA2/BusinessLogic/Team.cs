@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BusinessLogicExceptions;
+using BusinessLogic.Exceptions;
 
 namespace BusinessLogic
 {

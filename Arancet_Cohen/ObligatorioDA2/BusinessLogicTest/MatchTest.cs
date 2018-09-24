@@ -123,5 +123,34 @@ namespace BusinessLogicTest
             Assert.IsFalse(match.HasCommentary(commentary3.Object));
         }
 
+        [TestMethod]
+        public void GetCommentaryTest(){
+            match.AddCommentary(commentary1.Object);
+            Commentary commentary = match.GetCommentary(commentary1.Object.Id);
+            Assert.AreEqual(commentary.Text, commentary1.Object.Text);
+        }
+
+        //Exceptions
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        public void SetNullHomeTeamTest()
+        {
+            match.HomeTeam = null;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        public void SetNullAwayTeamTest()
+        {
+            match.AwayTeam = null;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        public void HomeEqualsAwayTest()
+        {
+            match.AwayTeam = teamA.Object;
+        }
     }
 }
