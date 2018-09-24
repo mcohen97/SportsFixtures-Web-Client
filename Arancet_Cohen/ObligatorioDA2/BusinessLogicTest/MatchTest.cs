@@ -14,7 +14,7 @@ namespace BusinessLogicTest
         private Mock<Team> teamB;
         private Mock<Sport> sport;
         private DateTime date;
-        private Match match;
+        private BusinessLogic.Match match;
         private Mock<Commentary> commentary1;
         private Mock<Commentary> commentary2;
         private Mock<Commentary> commentary3;
@@ -37,7 +37,7 @@ namespace BusinessLogicTest
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
 
-            match = new Match(teamA.Object, teamB.Object, date);
+            match = new BusinessLogic.Match(teamA.Object, teamB.Object, date);
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void SetDateTimeTest(){
-            DateTime newDate = new DateTime(20019,2,2,12,0,0);
+            DateTime newDate = new DateTime(2019,2,2,12,0,0);
             match.Date = newDate;
             Assert.AreEqual(newDate, match.Date);
         }
@@ -105,9 +105,9 @@ namespace BusinessLogicTest
             match.AddCommentary(commentary2.Object);
             match.AddCommentary(commentary3.Object);
 
-            ICollection<Commentary> comments = match.GetAllComments();
+            ICollection<Commentary> commentaries = match.GetAllCommentaries();
 
-            Assert.AreEqual(3, comments.Count);
+            Assert.AreEqual(3, commentaries.Count);
         }
 
         [TestMethod]
