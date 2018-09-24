@@ -35,7 +35,7 @@ namespace BusinessLogicTest
         public void SetIdTest(){
             int newId = 2;
             commentary.Id = newId;
-            Assert.AreEqual(newId, commentary.Text);
+            Assert.AreEqual(newId, commentary.Id);
         }
 
         [TestMethod]
@@ -51,10 +51,34 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
+        public void EqualsTest(){
+            Commentary equalCommentary = new Commentary(id, text);
+            Assert.AreEqual(commentary, equalCommentary);
+        }
+
+        [TestMethod]
+        public void NotEqualsTest(){
+            Commentary notEqualCommentary = new Commentary(id+1, text);
+            Assert.AreNotEqual(commentary, notEqualCommentary);
+        }
+
+        [TestMethod]
+        public void EqualsNullTest(){
+            Assert.AreNotEqual(commentary, null);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(InvalidCommentaryDataException))]
         public void SetNullTextTest()
         {
             commentary.Text = null;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidCommentaryDataException))]
+        public void SetEmptyTextTest()
+        {
+            commentary.Text = "";
         }
     }
 }

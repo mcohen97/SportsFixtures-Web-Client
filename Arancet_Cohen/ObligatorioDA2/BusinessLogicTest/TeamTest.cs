@@ -104,14 +104,14 @@ namespace BusinessLogicTest
         //Exceptions
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidCommentaryDataException))]
+        [ExpectedException(typeof(InvalidTeamDataException))]
         public void EmptyNameConstructorTest()
         {
             Team team = new Team(1, "","photo");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidCommentaryDataException))]
+        [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetEmptyNameTest()
         {
             Team team = new Team(1, "name","photo");
@@ -119,7 +119,7 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidCommentaryDataException))]
+        [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullNameTest()
         {
             Team team = new Team(1, "name","photo");
@@ -127,7 +127,7 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidCommentaryDataException))]
+        [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullPhotoTest()
         {
             Team team = new Team(1, "name","photo");
