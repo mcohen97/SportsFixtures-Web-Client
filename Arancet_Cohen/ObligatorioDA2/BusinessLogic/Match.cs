@@ -50,6 +50,7 @@ namespace BusinessLogic
         {
             commentaries.Clear();
         }
+        
 
         private void SetHomeTeam(Team value)
         {
