@@ -1,7 +1,7 @@
 ﻿using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Moq;
 
 namespace DataRepositoriesTest
 {
@@ -9,6 +9,7 @@ namespace DataRepositoriesTest
     public class MatchRepositoryTest
     {
         IMatchRepository matchesStorage;
+        Mock<BusinessLogic.Match> match;
 
         [TestInitialize]
         public void SetUp() {
@@ -17,8 +18,27 @@ namespace DataRepositoriesTest
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             matchesStorage = new MatchRepository(context);
+            match = new Mock<BusinessLogic.Match>();
             matchesStorage.Clear();
         }
+
+        [TestMethod]
+        public void EmptyTest() {
+            Assert.IsTrue(matchesStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        public void AddMatchNotemptyTest() {
+            matchesStorage.Add(match);
+            Assert.IsFalse(matchesStorage.IsEmpty());
+        }
+
+       /* [TestMethod]
+        public void AddMatchNotemptyTest()
+        {
+            matchesStorage.Add(match);
+            Assert.IsFalse(matchesStorage.IsEmpty());
+        }*/
 
     }
 }
