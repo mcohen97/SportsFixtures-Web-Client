@@ -82,7 +82,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Email = user.Email
             };
 
-            User toAdd = factory.CreateAdmin(identity);
+            User toAdd =user.IsAdmin ? factory.CreateAdmin(identity):factory.CreateFollower(identity);
             repo.Add(toAdd);
             User added = repo.Get(toAdd); 
            
@@ -141,7 +141,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+           // var identity = HttpContext.User.Identity as ClaimsIdentity;
             IActionResult result;
             try
             {
