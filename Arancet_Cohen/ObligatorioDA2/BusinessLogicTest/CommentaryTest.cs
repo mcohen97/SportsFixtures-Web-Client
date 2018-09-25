@@ -18,7 +18,9 @@ namespace BusinessLogicTest
         public void TestInitialize(){
             id = 1;
             text = "The match was so boring";
-            commentary = new Commentary(id, text);
+            Mock<User> user = new Mock<User>("aName","aUsername","aUsername","aPassword"
+                ,"anEmail@aDomain.com",true);
+            commentary = new Commentary(id, text,user.Object);
         }
 
         [TestMethod]
@@ -79,6 +81,11 @@ namespace BusinessLogicTest
         public void SetEmptyTextTest()
         {
             commentary.Text = "";
+        }
+
+        [TestMethod]
+        public void GetUserTest() {
+            Assert.AreEqual(commentary.User.Username, "aUsername");
         }
     }
 }
