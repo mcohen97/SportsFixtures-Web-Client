@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DataRepositoryInterfaces
 {
-    interface ICommentRepository
+    public interface ICommentRepository
     {
     }
 }
