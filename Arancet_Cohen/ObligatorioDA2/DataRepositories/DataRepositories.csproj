@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="CommentRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\DataRepositoryInterfaces\DataRepositoryInterfaces.csproj" />
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />

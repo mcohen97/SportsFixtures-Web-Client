@@ -42,7 +42,9 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void AddCommentTest() {
-            commentsRepo.AddComment(comment);
+            Mock<Team> home = new Mock<Team>();
+            Mock<Team> away = new Mock<Team>();
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(home.Object, away.Object, DateTime.Now);
             Assert.IsFalse(commentsRepo.IsEmpty());
         }
 

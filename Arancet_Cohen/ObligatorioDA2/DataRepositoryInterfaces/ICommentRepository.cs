@@ -9,6 +9,6 @@ namespace DataRepositoryInterfaces
     {
         void Clear();
         bool IsEmpty();
-        void AddComment(Commentary comment);
+        void AddComment(Commentary comment, Match aMatch);
     }
 }

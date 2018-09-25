@@ -17,7 +17,7 @@ namespace DataRepositoriesTest
             commentsStorage = aRepo;
         }
 
-        public void AddComment(Commentary comment)
+        public void AddComment(Commentary comment, Match aMatch)
         {
             throw new NotImplementedException();
         }
