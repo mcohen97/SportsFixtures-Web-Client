@@ -30,5 +30,11 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             CommentEntity entity = testMapper.ToEntity(comment);
             Assert.AreEqual(entity.Maker.UserName, comment.Maker);
         }
+
+        [TestMethod]
+        public void CommentToEntityIdTest() {
+            CommentEntity entity = testMapper.ToEntity(comment);
+            Assert.AreEqual(entity.Id, comment.Id);
+        }
     }
 }
