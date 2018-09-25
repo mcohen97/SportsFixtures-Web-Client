@@ -7,6 +7,7 @@ using RepositoryInterface;
 using DataRepositories;
 using Moq;
 using BusinessLogic;
+using DataRepositoryInterfaces;
 
 namespace DataRepositoriesTest
 {
