@@ -7,15 +7,22 @@ namespace BusinessLogic
     {
         private int id;
         private string text;
+        public User Maker { get; private set; }
 
-        public Commentary(int id, string text)
+        public Commentary(string aText, User aUser)
+        {
+            text = aText;
+            Maker = aUser;
+        }
+        public Commentary(int id, string text, User aUser):this(text,aUser)
         {
             Id = id;
-            Text = text;
         }
 
         public int Id { get;  set; }
         public string Text { get{return text;}  set{SetText(value);} }
+
+        public object User { get; internal set; }
 
         private void SetText(string value)
         {
