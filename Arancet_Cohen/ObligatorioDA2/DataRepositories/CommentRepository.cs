@@ -1,8 +1,10 @@
 ﻿using DataRepositoryInterfaces;
 using RepositoryInterface;
+using ObligatorioDA2.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BusinessLogic;
 
 namespace DataRepositoriesTest
 {
@@ -13,6 +15,21 @@ namespace DataRepositoriesTest
         public CommentRepository(IEntityRepository<CommentEntity> aRepo)
         {
             commentsStorage = aRepo;
+        }
+
+        public void AddComment(Commentary comment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEmpty()
+        {
+            throw new NotImplementedException();
         }
     }
 }
