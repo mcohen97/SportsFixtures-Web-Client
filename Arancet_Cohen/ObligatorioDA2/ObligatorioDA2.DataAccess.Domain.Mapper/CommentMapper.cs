@@ -8,7 +8,24 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
 {
     public class CommentMapper
     {
+        private UserMapper usersMapper;
+
+        public CommentMapper() {
+            usersMapper =new UserMapper();
+        }
         public CommentEntity ToEntity(Commentary comment)
+        {
+
+            CommentEntity converted = new CommentEntity()
+            {
+                Id = comment.Id,
+                Text = comment.Text,
+                Maker = usersMapper.ToEntity(comment.Maker)
+            };
+            return converted;
+        }
+
+        public Commentary ToComment(CommentEntity commentEntity)
         {
             throw new NotImplementedException();
         }
