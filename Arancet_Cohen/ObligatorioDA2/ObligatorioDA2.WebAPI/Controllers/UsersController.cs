@@ -28,8 +28,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-
+        [HttpGet("{id}", Name = "GetById")]
         public IActionResult Get(int id)
         {
             IActionResult result;
