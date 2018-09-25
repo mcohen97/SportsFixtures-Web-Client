@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ObligatorioDA2.Services
 {
-    public class LoginService
+    public class LoginService:ILoginService
     {
         private IUserRepository users;
 
