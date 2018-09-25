@@ -28,7 +28,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         // POST api/<controller>
-        [HttpPost, Route("login")]
+        [HttpPost]
         public IActionResult Authenticate([FromBody]LoginModelIn user)
         {
             IActionResult result;
@@ -72,6 +72,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                audience: "http://localhost:5000",
                claims: new List<Claim>{
                         new Claim(ClaimTypes.Role, AdminOrFollower(userInfo)),
+                        new Claim("Username", userInfo.UserName),
                         new Claim("UserId", userInfo.Id.ToString()),
                         },
                expires: DateTime.Now.AddMinutes(5),
