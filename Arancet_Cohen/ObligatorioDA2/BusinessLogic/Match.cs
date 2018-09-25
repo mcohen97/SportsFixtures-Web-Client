@@ -11,6 +11,7 @@ namespace BusinessLogic
         private Team awayTeam;
         private DateTime date;
         private ICollection<Commentary> commentaries;
+        public int Id { get; private set; }
 
         public Match(Team home, Team away, DateTime date)
         {
@@ -18,6 +19,10 @@ namespace BusinessLogic
             AwayTeam = away;
             Date = date;
             commentaries = new List<Commentary>();
+        }
+
+        public Match(int anId, Team home, Team away, DateTime date):this(home,away,date) {
+            Id = anId;
         }
 
         public Team HomeTeam { get{return homeTeam;} set{SetHomeTeam(value);} }
