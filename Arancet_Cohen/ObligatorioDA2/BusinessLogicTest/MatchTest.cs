@@ -37,12 +37,17 @@ namespace BusinessLogicTest
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
 
-            match = new BusinessLogic.Match(teamA.Object, teamB.Object, date);
+            match = new BusinessLogic.Match(3,teamA.Object, teamB.Object, date);
         }
 
         [TestMethod]
         public void ConstructorTest(){
             Assert.IsNotNull(match);
+        }
+
+        [TestMethod]
+        public void GetIdTest() {
+            Assert.AreEqual(match.Id, 3);
         }
 
         [TestMethod]
