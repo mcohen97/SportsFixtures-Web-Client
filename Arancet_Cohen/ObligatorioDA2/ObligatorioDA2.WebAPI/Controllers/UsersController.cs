@@ -9,6 +9,9 @@ using BusinessLogic;
 using BusinessLogic.Factories;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using DataRepositoryInterfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -26,6 +29,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
+
         public IActionResult Get(int id)
         {
             IActionResult result;
@@ -54,6 +58,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // POST api/values
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Post([FromBody] UserModelIn user)
         {
             IActionResult toReturn;
@@ -96,6 +101,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Put(int id, [FromBody] UserModelIn toModify)
         {
             IActionResult toReturn;
@@ -133,8 +139,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
             IActionResult result;
             try
             {
