@@ -8,6 +8,7 @@ using DataRepositories;
 using Moq;
 using BusinessLogic;
 using DataRepositoryInterfaces;
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace DataRepositoriesTest
 {
@@ -24,9 +25,10 @@ namespace DataRepositoriesTest
                 .UseInMemoryDatabase(databaseName: "CommentRepository")
                 .Options;
             DatabaseConnection db = new DatabaseConnection(options);
-            IEntityRepository<CommentEntity> entityRepo = new GenericRepository<CommentEntity>();
+            IEntityRepository<CommentEntity> entityRepo = new GenericRepository<CommentEntity>(db);
             commentsRepo = new CommentRepository(entityRepo);
-            comment = new Commentary(4,"this is a comment");
+            User user = new Mock<User>("aName", "asurname", "aUsername", "aPassword", "anEmail@aDomain.com").Object;
+            comment = new Commentary(4,"this is a comment",user);
             commentsRepo.Clear();
             //Mock<Team> home = new Mock<Team>(3,"River Plate", "aPath");
             //Mock<Team> away = new Mock<Team>(3, "Boca Juniors", "aPath");
