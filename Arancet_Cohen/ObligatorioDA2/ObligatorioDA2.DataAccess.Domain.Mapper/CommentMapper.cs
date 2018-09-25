@@ -27,7 +27,9 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
 
         public Commentary ToComment(CommentEntity commentEntity)
         {
-            throw new NotImplementedException();
+            User maker = usersMapper.ToUser(commentEntity.Maker);
+            Commentary conversion= new Commentary(commentEntity.Id,commentEntity.Text,maker );
+            return conversion;
         }
     }
 }
