@@ -30,5 +30,34 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             Mock<Team> awayMock = new Mock<Team>(4, "Torque", "aPath");
             match = new Mock<BusinessLogic.Match>(homeMock.Object,awayMock.Object,DateTime.Now);
         }
+
+        [TestMethod]
+        public void MatchToEntityHomeTest() {
+            MatchEntity converted =testMapper.ToEntity(match);
+            Assert.AreEqual(converted.HomeTeam.Id, entity.HomeTeam.Id);
+        }
+        [TestMethod]
+        public void MatchToEntityAwayTest() {
+            MatchEntity converted = testMapper.ToEntity(match);
+            Assert.AreEqual(converted.AwayTeam.Id, entity.AwayTeam.Id);
+
+        }
+        [TestMethod]
+        public void MatchToEntityDateTest()
+        {
+            MatchEntity converted = testMapper.ToEntity(match);
+            Assert.AreEqual(converted.Date, entity.Date);
+        }
+
+        [TestMethod]
+        public void MatchToEntityCommentsTest()
+        {
+            UserId identity = new UserId { Name = "aName", Surname = "aSurname",
+                UserName = "aUsername", Password = "aPassword",Email= "anEmail@aDomain.com" };
+            Mock<User> user = new Mock<User>(identity);
+            match.Object.AddCommentary(new Commentary("test comment", user.Object));
+            MatchEntity converted = testMapper.ToEntity(match);
+            Assert.AreEqual(converted.Commentaries.Count, 1);   
+        }
     }
 }
