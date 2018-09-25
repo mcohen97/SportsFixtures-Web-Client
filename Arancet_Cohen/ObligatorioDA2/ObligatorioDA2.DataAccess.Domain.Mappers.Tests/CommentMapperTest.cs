@@ -14,7 +14,15 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestInitialize]
         public void StartUp() {
             testMapper = new CommentMapper();
-            Mock<User> stub = new Mock<User>("aName", "aSurname", "aUsername", "aPassword", "anEmail@aDomain.com");
+            UserId identity = new UserId
+            {
+                Name = "aName",
+                Surname = "aSurname",
+                UserName = "aUsername",
+                Password = "aPassword",
+                Email = "anEmail@aDomain.com"
+            };
+            Mock<User> stub = new Mock<User>(identity,true);
             comment = new Commentary("this is a comment", stub.Object);
         }
 
@@ -28,7 +36,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         public void CommentToEntityUserTest()
         {
             CommentEntity entity = testMapper.ToEntity(comment);
-            Assert.AreEqual(entity.Maker.UserName, comment.Maker);
+            Assert.AreEqual(entity.Maker.UserName, comment.Maker.UserName);
         }
 
         [TestMethod]
