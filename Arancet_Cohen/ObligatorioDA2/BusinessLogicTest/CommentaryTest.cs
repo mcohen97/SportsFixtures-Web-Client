@@ -13,12 +13,13 @@ namespace BusinessLogicTest
         private Commentary commentary;
         private int id;
         private string text;
-        
+        Mock<User> user;
+
         [TestInitialize]
         public void TestInitialize(){
             id = 1;
             text = "The match was so boring";
-            Mock<User> user = new Mock<User>("aName","aUsername","aUsername","aPassword"
+            user = new Mock<User>("aName","aUsername","aUsername","aPassword"
                 ,"anEmail@aDomain.com",true);
             commentary = new Commentary(id, text,user.Object);
         }
@@ -54,13 +55,13 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void EqualsTest(){
-            Commentary equalCommentary = new Commentary(id, text);
+            Commentary equalCommentary = new Commentary(id, text,user.Object);
             Assert.AreEqual(commentary, equalCommentary);
         }
 
         [TestMethod]
         public void NotEqualsTest(){
-            Commentary notEqualCommentary = new Commentary(id+1, text);
+            Commentary notEqualCommentary = new Commentary(id+1, text, user.Object);
             Assert.AreNotEqual(commentary, notEqualCommentary);
         }
 
@@ -85,7 +86,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void GetUserTest() {
-            Assert.AreEqual(commentary.User.Username, "aUsername");
+            Assert.AreEqual(commentary.Maker.UserName, "aUsername");
         }
     }
 }
