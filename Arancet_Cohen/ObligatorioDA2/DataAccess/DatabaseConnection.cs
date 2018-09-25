@@ -10,6 +10,7 @@ namespace DataAccess
     public class DatabaseConnection : DbContext
     {
         public virtual DbSet<UserEntity> Users { get; set; }
+        public virtual DbSet<TeamEntity> Teams { get; set; }
 
         public DatabaseConnection(DbContextOptions<DatabaseConnection> options) : base(options)
         {
@@ -20,6 +21,8 @@ namespace DataAccess
             base.OnModelCreating(modelBuilder);
            
             modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
+            modelBuilder.Entity<TeamEntity>().HasKey(t => t.Id);
+            modelBuilder.Entity<TeamEntity>().HasAlternateKey(t => t.Name);
             modelBuilder.Entity<UserEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
 
         }
