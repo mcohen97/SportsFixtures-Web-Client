@@ -26,9 +26,10 @@ namespace BusinessLogicTest
             teamA = new Mock<Team>(1, "TeamA", "Photo/A");
             teamB = new Mock<Team>(2, "TeamB", "Photo/B");
             date =  new DateTime(2019,1,25,13,30,0);
-            commentary1 = new Mock<Commentary>(1, "Commentary 1");
-            commentary2 = new Mock<Commentary>(2, "Commentary 2");
-            commentary3 = new Mock<Commentary>(3, "Commentary 3");
+            Mock<User> commentarist = CreateUser();
+            commentary1 = new Mock<Commentary>(1, "Commentary 1",commentarist.Object);
+            commentary2 = new Mock<Commentary>(2, "Commentary 2", commentarist.Object);
+            commentary3 = new Mock<Commentary>(3, "Commentary 3", commentarist.Object);
             
             //Configure mocks
             teamA.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
@@ -38,6 +39,20 @@ namespace BusinessLogicTest
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
 
             match = new BusinessLogic.Match(3,teamA.Object, teamB.Object, date);
+        }
+
+        private Mock<User> CreateUser()
+        {
+            UserId identity = new UserId()
+            {
+                Name = "aName",
+                Surname = "aSurname",
+                UserName = "aUsername",
+                Password = "aPassword",
+                Email = "anEmail@aDomain.com"
+            };
+            Mock<User> toReturn = new Mock<User>(identity, false);
+            return toReturn;
         }
 
         [TestMethod]
