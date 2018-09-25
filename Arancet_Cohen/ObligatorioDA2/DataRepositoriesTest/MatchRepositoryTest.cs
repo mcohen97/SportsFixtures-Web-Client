@@ -1,4 +1,6 @@
 ﻿using DataAccess;
+using DataRepositories;
+using DataRepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -29,7 +31,7 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void AddMatchNotemptyTest() {
-            matchesStorage.Add(match);
+            matchesStorage.Add(match.Object);
             Assert.IsFalse(matchesStorage.IsEmpty());
         }
 
