@@ -46,7 +46,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         public void MatchToEntityDateTest()
         {
             MatchEntity converted = testMapper.ToEntity(match.Object);
-            Assert.AreEqual(converted.Date, entity.Date);
+            Assert.AreEqual(converted.Date.ToString(), entity.Date.ToString());
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         {
             UserId identity = new UserId { Name = "aName", Surname = "aSurname",
                 UserName = "aUsername", Password = "aPassword",Email= "anEmail@aDomain.com" };
-            Mock<User> user = new Mock<User>(identity);
+            Mock<User> user = new Mock<User>(identity,false);
             match.Object.AddCommentary(new Commentary("test comment", user.Object));
             MatchEntity converted = testMapper.ToEntity(match.Object);
             Assert.AreEqual(converted.Commentaries.Count, 1);   
