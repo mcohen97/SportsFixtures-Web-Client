@@ -18,6 +18,9 @@ using DataRepositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DataRepositoryInterfaces;
+using ObligatorioDA2.Services;
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace ObligatorioDA2.WebAPI
 {
@@ -51,7 +54,10 @@ namespace ObligatorioDA2.WebAPI
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<DatabaseConnection>(options => options.UseSqlServer(Configuration.GetConnectionString("ObligatorioDA2")));
-            services.AddScoped<IRepository<User>, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IEntityRepository<UserEntity>, GenericRepository<UserEntity>>();
+            
+            services.AddScoped<ILoginService, LoginService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
