@@ -11,6 +11,8 @@ namespace DataAccess
     {
         public virtual DbSet<UserEntity> Users { get; set; }
         public virtual DbSet<TeamEntity> Teams { get; set; }
+        public virtual DbSet<MatchEntity> Matches { get; set; }
+        public virtual DbSet<CommentEntity> Comments { get;set; }
 
         public DatabaseConnection(DbContextOptions<DatabaseConnection> options) : base(options)
         {
@@ -20,11 +22,13 @@ namespace DataAccess
         {
             base.OnModelCreating(modelBuilder);
            
-            modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
-            modelBuilder.Entity<TeamEntity>().HasKey(t => t.Id);
             modelBuilder.Entity<TeamEntity>().HasAlternateKey(t => t.Name);
-            modelBuilder.Entity<UserEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<UserEntity>().HasAlternateKey(u => u.UserName);
 
+            modelBuilder.Entity<UserEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<TeamEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<MatchEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<CommentEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
         }
     }
 }
