@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BusinessLogic;
 using DataAccess;
 using DataRepositories;
@@ -83,6 +84,32 @@ namespace DataRepositoriesTest
             Mock<User> somebody = new Mock<User>(identity,false);
             Mock<Commentary> comment = new Mock<Commentary>("Some comment", somebody.Object);
             return comment;
+        }
+
+        [TestMethod]
+        private void GetAllTest() {
+            matchesStorage.Add(match.Object);
+            ICollection<Match> all = matchesStorage.GetAll();
+            Assert.AreEqual(all.Count, 1);
+        }
+
+        [TestMethod]
+        private void ModifyTest() {
+            matchesStorage.Add(match.Object);
+            Mock<Match> modified = BuildModifiedFakeMatch();
+            matchesStorage.Add(modified.Object);
+            Match retrieved = matchesStorage.Get(3);
+            Assert.AreEqual(retrieved.AwayTeam, modified.Object.AwayTeam);
+            Assert.AreEqual(retrieved.HomeTeam, modified.Object.HomeTeam);
+            Assert.AreEqual(retrieved.Date, modified.Object.Date);
+        }
+
+        private Mock<BusinessLogic.Match> BuildModifiedFakeMatch()
+        {
+            Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
+            Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath");
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2));
+            return match;
         }
     }
 }
