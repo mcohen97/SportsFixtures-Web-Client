@@ -25,6 +25,11 @@ namespace BusinessLogic
             Id = anId;
         }
 
+        public Match(int anId, Team home, Team away, DateTime date, ICollection<Commentary> comments) : this(anId,home, away, date)
+        {
+            commentaries = comments;
+        }
+
         public Team HomeTeam { get{return homeTeam;} set{SetHomeTeam(value);} }
         public Team AwayTeam { get{return awayTeam;} set{SetAwayTeam(value);} }
         public DateTime Date { get{return date;} set{SetDate(value);} }
