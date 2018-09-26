@@ -97,7 +97,7 @@ namespace DataRepositoriesTest
         public void DeleteTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
             teamsStorage.Add(team.Object);
-            teamsStorage.Delete(team.Object);
+            teamsStorage.Delete(team.Object.Id);
             Assert.IsTrue(teamsStorage.IsEmpty());
         }
 
@@ -115,7 +115,7 @@ namespace DataRepositoriesTest
             Mock<Team> team1 = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
             Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam2.png");
             teamsStorage.Add(team1.Object);
-            teamsStorage.Delete(team2.Object);
+            teamsStorage.Delete(team2.Object.Id);
         }
 
         [TestMethod]
@@ -133,7 +133,7 @@ namespace DataRepositoriesTest
             Mock<Team> team1 = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
             Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam2.png");
             teamsStorage.Add(team1.Object);
-            teamsStorage.Delete(team2.Object);
+            teamsStorage.Delete(team2.Object.Id);
         }
 
         [TestMethod]
@@ -142,7 +142,7 @@ namespace DataRepositoriesTest
             teamsStorage.Add(team.Object);
             team.Object.Photo = "NewDreamTeam.png";
             teamsStorage.Modify(team.Object);
-            Team editedTeam = teamsStorage.Get(team.Object);
+            Team editedTeam = teamsStorage.Get(team.Object.Id);
             Assert.AreEqual(team.Object.Photo, editedTeam.Photo);
         }
 
