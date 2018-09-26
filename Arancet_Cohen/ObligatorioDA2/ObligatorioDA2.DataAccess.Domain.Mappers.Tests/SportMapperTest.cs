@@ -54,5 +54,30 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             Assert.AreEqual(toCompare.Name, "Nacional");
         }
 
+        [TestMethod]
+        public void EntityToSportIdTest() {
+            Sport converted = testMapper.ToSport(entity);
+            Assert.AreEqual(converted.Id, sport.Object.Id);
+        }
+
+        [TestMethod]
+        public void EntityToSportNameTest() {
+            Sport converted = testMapper.ToSport(entity);
+            Assert.AreEqual(converted.Name, sport.Object.Name);
+        }
+
+        [TestMethod]
+        public void EntityToSportTeamsCountTest() {
+            Sport converted = testMapper.ToSport(entity);
+            Assert.AreEqual(converted.GetTeams().Count, 1);
+        }
+
+        [TestMethod]
+        public void EntityToSportTeamsTest() {
+            Sport converted = testMapper.ToSport(entity);
+            IEnumerator<Team> teams = converted.GetTeams().GetEnumerator();
+            teams.MoveNext();
+            Assert.AreEqual(teams.Current.Name, "Nacional");
+        }
     }
 }
