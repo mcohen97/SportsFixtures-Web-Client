@@ -10,11 +10,14 @@ namespace BusinessLogic
         private string photo;
         private int id;
 
-        public Team(int id, string name, string photo)
+        public Team(string name, string photo) {
+            Name = name;
+            Photo = photo;
+        }
+
+        public Team(int id, string name, string photo):this(name,photo)
         {
-            this.Id = id;
-            this.Name = name;
-            this.Photo = photo;
+            Id = id;
         }
 
         public string Name {get{return name;} set{SetName(value);}}
