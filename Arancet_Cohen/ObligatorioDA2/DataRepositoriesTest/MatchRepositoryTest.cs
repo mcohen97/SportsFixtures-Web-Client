@@ -4,6 +4,7 @@ using DataRepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ObligatorioDA2.DataAccess.Entities;
 
 namespace DataRepositoriesTest
 {
@@ -19,7 +20,8 @@ namespace DataRepositoriesTest
                 .UseInMemoryDatabase(databaseName: "TeamRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            matchesStorage = new MatchRepository(context);
+            GenericRepository<MatchEntity> genericRepo = new GenericRepository<MatchEntity>(context);
+            matchesStorage = new MatchRepository(genericRepo);
             match = new Mock<BusinessLogic.Match>();
             matchesStorage.Clear();
         }
