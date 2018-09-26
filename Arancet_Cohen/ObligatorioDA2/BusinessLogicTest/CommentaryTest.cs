@@ -19,9 +19,21 @@ namespace BusinessLogicTest
         public void TestInitialize(){
             id = 1;
             text = "The match was so boring";
-            user = new Mock<User>("aName","aUsername","aUsername","aPassword"
-                ,"anEmail@aDomain.com",true);
+            UserId identity = GetIdentity();
+            user = new Mock<User>(identity,true);
             commentary = new Commentary(id, text,user.Object);
+        }
+
+        private UserId GetIdentity()
+        {
+            return new UserId()
+            {
+                Name = "aName",
+                Surname = "aSurname",
+                UserName = "aUsername",
+                Password = "aPassword",
+                Email = "anEmail@aDomain.com"
+            };
         }
 
         [TestMethod]
