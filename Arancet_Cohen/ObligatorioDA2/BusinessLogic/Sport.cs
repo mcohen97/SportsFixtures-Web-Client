@@ -42,7 +42,7 @@ namespace BusinessLogic
             teams = someTeams;
         }
 
-        public void Add(Team team)
+        public void AddTeam(Team team)
         {
             teams.Add(team);
         }
@@ -67,7 +67,7 @@ namespace BusinessLogic
         {
             foreach (Team team in teamsToAdd)
             {
-                this.Add(team);
+                this.AddTeam(team);
             }
         }
 

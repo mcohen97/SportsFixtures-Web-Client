@@ -13,7 +13,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void ConstructorTest()
         {
-            Sport sport = new Sport();
+            Sport sport = new Sport("Soccer");
             Assert.IsNotNull(sport);
         }
 
@@ -28,11 +28,11 @@ namespace BusinessLogicTest
         [TestMethod]
         public void AddTeamTest()
         {
-            Sport sport = new Sport();
+            Sport sport = new Sport("Soccer");
 
             Mock<Team> team = new Mock<Team>(1, "ATeam", "");
             team.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "ATeam");
-            sport.Add(team.Object);
+            sport.AddTeam(team.Object);
 
             Assert.IsTrue(sport.HasTeam(team.Object));
         }
@@ -44,7 +44,7 @@ namespace BusinessLogicTest
             Sport sport = new Sport(name);
 
             Mock<Team> team = new Mock<Team>(1, "aTeam", "photo");
-            sport.Add(team.Object);
+            sport.AddTeam(team.Object);
             sport.Remove(team.Object);
 
             Assert.IsFalse(sport.HasTeam(team.Object));
@@ -63,9 +63,9 @@ namespace BusinessLogicTest
             team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team2");
             team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "team3");
 
-            sport.Add(team1.Object);
-            sport.Add(team2.Object);
-            sport.Add(team3.Object);
+            sport.AddTeam(team1.Object);
+            sport.AddTeam(team2.Object);
+            sport.AddTeam(team3.Object);
             ICollection<Team> teams = sport.GetTeams();
 
             Assert.IsTrue(teams.Contains(team1.Object));
@@ -76,7 +76,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void AddTeamsTest()
         {
-            Sport sport = new Sport();
+            Sport sport = new Sport("Soccer");
             Mock<Team> previousTeam = new Mock<Team>(4,"prevTeam","");
             Mock<Team> team1 = new Mock<Team>(1, "team1", "");
             Mock<Team> team2 = new Mock<Team>(2, "team2", "");
@@ -88,7 +88,7 @@ namespace BusinessLogicTest
 
             ICollection<Team> teams = new List<Team> { team1.Object, team2.Object, team3.Object };
 
-            sport.Add(previousTeam.Object);
+            sport.AddTeam(previousTeam.Object);
             sport.Add(teams);
 
             Assert.IsTrue(sport.HasTeam(previousTeam.Object));
@@ -140,7 +140,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void GetUnassignedIdTest() {
-            Sport sport = new Sport();
+            Sport sport = new Sport("Soccer");
             Assert.AreEqual(sport.Id, 0);
         }
 
