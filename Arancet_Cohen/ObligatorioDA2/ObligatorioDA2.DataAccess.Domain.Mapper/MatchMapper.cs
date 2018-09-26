@@ -34,6 +34,16 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
         {
             return commentaries.Select(c => commentConverter.ToEntity(c)).ToList();
         }
+
+        public Match ToMatch(MatchEntity entity)
+        {
+            Team home = teamConverter.ToTeam(entity.HomeTeam);
+            Team away = teamConverter.ToTeam(entity.AwayTeam);
+            ICollection<Commentary> comments = entity.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
+            DateTime date = entity.Date;
+            Match created = new Match(entity.Id, home, away, date, comments);
+            return created;
+        }
     }
 }
 
