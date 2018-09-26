@@ -1,10 +1,13 @@
-﻿using DataAccess;
+﻿using System;
+using BusinessLogic;
+using DataAccess;
 using DataRepositories;
 using DataRepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.DataAccess.Entities;
+using Match = BusinessLogic.Match;
 
 namespace DataRepositoriesTest
 {
@@ -21,9 +24,17 @@ namespace DataRepositoriesTest
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             GenericRepository<MatchEntity> genericRepo = new GenericRepository<MatchEntity>(context);
-            matchesStorage = new MatchRepository(genericRepo);
-            match = new Mock<BusinessLogic.Match>();
+            matchesStorage = new MatchRepository(context);
+            match = BuildFakeMatch(); 
             matchesStorage.Clear();
+        }
+
+        private Mock<BusinessLogic.Match> BuildFakeMatch()
+        {
+            Mock<Team> home = new Mock<Team>("Manchester United","aPath");
+            Mock<Team> away = new Mock<Team>("Real Madrid", "aPath");
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3,home.Object, away.Object, DateTime.Now);
+            return match;
         }
 
         [TestMethod]
@@ -37,12 +48,41 @@ namespace DataRepositoriesTest
             Assert.IsFalse(matchesStorage.IsEmpty());
         }
 
-       /* [TestMethod]
-        public void AddMatchNotemptyTest()
-        {
-            matchesStorage.Add(match);
-            Assert.IsFalse(matchesStorage.IsEmpty());
-        }*/
+        [TestMethod]
+        public void GetMatchHomeTeamTest() {
+            matchesStorage.Add(match.Object);
+            Match retrieved = matchesStorage.Get(3);
+            Assert.AreEqual(retrieved.HomeTeam, match.Object.HomeTeam);
+        }
 
+        [TestMethod]
+        public void GetMatchAwayTeamTest() {
+            matchesStorage.Add(match.Object);
+            Match retrieved = matchesStorage.Get(3);
+            Assert.AreEqual(retrieved.AwayTeam, match.Object.AwayTeam);
+        }
+
+        [TestMethod]
+        public void GetMatchCommentsTest() {
+            Mock<Commentary> dummy = BuildFakeCommentary();
+            match.Object.AddCommentary(dummy.Object);
+            matchesStorage.Add(match.Object);
+            Match retrieved = matchesStorage.Get(3);
+            Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
+        }
+
+        private Mock<Commentary> BuildFakeCommentary()
+        {
+            UserId identity = new UserId() {
+                Name = "aName",
+                Surname = "aSurname",
+                UserName = "aUsername",
+                Password = "aPassword",
+                Email = "anEmail@aDomain.com"
+            };
+            Mock<User> somebody = new Mock<User>(identity,false);
+            Mock<Commentary> comment = new Mock<Commentary>("Some comment", somebody.Object);
+            return comment;
+        }
     }
 }
