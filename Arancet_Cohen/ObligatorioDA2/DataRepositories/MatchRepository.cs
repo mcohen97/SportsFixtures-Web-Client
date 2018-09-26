@@ -55,17 +55,16 @@ namespace DataRepositories
 
         public Match Get(int anId)
         {
-            
             MatchEntity a = context.Matches.First(me => me.Id == anId);
-            
             Match conversion = mapper.ToMatch(a);
             return conversion;
-            //return null;
         }
 
         public ICollection<Match> GetAll()
         {
-            throw new NotImplementedException();
+            IQueryable<MatchEntity> entities = context.Matches;
+            ICollection<Match> translation = entities.Select(m => mapper.ToMatch(m)).ToList();
+            return translation;
         }
 
         public bool IsEmpty()
@@ -73,9 +72,11 @@ namespace DataRepositories
             return !context.Matches.Any();
         }
 
-        public void Modify(Match entity)
+        public void Modify(Match aMatch)
         {
-            throw new NotImplementedException();
+            MatchEntity toAdd = mapper.ToEntity(aMatch);
+            context.Entry(aMatch).State = EntityState.Modified;
+            context.SaveChanges();
         }
     }
 }
