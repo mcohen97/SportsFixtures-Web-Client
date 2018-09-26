@@ -23,5 +23,12 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             };
             return converted;
         }
+
+        public Sport ToSport(SportEntity entity)
+        {
+            ICollection<Team> teams = entity.Teams.Select(te => teamConverter.ToTeam(te)).ToList();
+            Sport conversion = new Sport(entity.Id, entity.Name, teams);
+            return conversion;
+        }
     }
 }
