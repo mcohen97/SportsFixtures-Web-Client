@@ -21,7 +21,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             {
                 Id = 3,
                 Name = "Soccer",
-                Teams = new List<TeamEntity>()
+                Teams = new List<TeamEntity>() { new TeamEntity() {Name="Nacional",Id=2, Photo="aPath" } }
             };
             sport.Object.AddTeam(aTeam.Object);
         }
