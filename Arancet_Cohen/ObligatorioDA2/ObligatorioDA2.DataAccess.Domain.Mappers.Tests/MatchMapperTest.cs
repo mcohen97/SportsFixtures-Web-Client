@@ -78,7 +78,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         public void EntityToMatchDateTest()
         {
             Match conversion = testMapper.ToMatch(entity);
-            Assert.AreEqual(match.Object.Date,conversion.Date);
+            Assert.AreEqual(match.Object.Date.ToString(),conversion.Date.ToString());
         }
 
         [TestMethod]
