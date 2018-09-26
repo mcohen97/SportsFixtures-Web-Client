@@ -75,7 +75,7 @@ namespace DataRepositories
         public void Modify(Match aMatch)
         {
             MatchEntity toAdd = mapper.ToEntity(aMatch);
-            context.Entry(aMatch).State = EntityState.Modified;
+            context.Entry(toAdd).State = EntityState.Modified;
             context.SaveChanges();
         }
     }
