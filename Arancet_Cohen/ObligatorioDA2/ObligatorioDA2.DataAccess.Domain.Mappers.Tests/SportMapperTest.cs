@@ -15,9 +15,15 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestInitialize]
         public void SetUp() {
             testMapper = new SportMapper();
-            sport = new Mock<Sport>("Soccer");
+            sport = new Mock<Sport>(3,"Soccer");
             Mock<Team> aTeam = new Mock<Team>("Nacional", "path");
-            sport.Setup(s => s.GetTeams()).Returns(new List<Team>() {aTeam.Object });
+            entity = new SportEntity()
+            {
+                Id = 3,
+                Name = "Soccer",
+                Teams = new List<TeamEntity>()
+            };
+            sport.Object.AddTeam(aTeam.Object);
         }
 
         [TestMethod]
@@ -42,7 +48,9 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestMethod]
         public void SportToEntityTeamsTest() {
             SportEntity converted = testMapper.ToEntity(sport.Object);
-            TeamEntity toCompare = converted.Teams.GetEnumerator().Current;
+            IEnumerator<TeamEntity> teams = converted.Teams.GetEnumerator();
+            teams.MoveNext();
+            TeamEntity toCompare = teams.Current;
             Assert.AreEqual(toCompare.Name, "Nacional");
         }
 
