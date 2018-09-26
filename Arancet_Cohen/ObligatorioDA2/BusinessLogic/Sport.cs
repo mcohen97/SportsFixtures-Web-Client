@@ -11,6 +11,7 @@ namespace BusinessLogic
     {
         private string name;
         private ICollection<Team> teams;
+        public int Id { get; private set; }
 
         public string Name { get{return name;} set{SetName(value);} }
 
@@ -31,10 +32,14 @@ namespace BusinessLogic
             teams = new List<Team>();
         }
 
-        internal Sport()
+        public Sport(int anId,string name):this(name)
         {
-            name = "";
-            teams = new List<Team>();
+            Id = anId;
+        }
+
+        public Sport(int anId, string name, ICollection<Team> someTeams):this(anId,name)
+        {
+            teams = someTeams;
         }
 
         public void Add(Team team)
