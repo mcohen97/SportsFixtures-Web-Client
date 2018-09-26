@@ -20,14 +20,18 @@ namespace DataRepositoriesTest
 
         [TestInitialize]
         public void SetUp() {
+            SetUpRepository();
+            match = BuildFakeMatch(); 
+            matchesStorage.Clear();
+        }
+
+        private void SetUpRepository() {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "TeamRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             GenericRepository<MatchEntity> genericRepo = new GenericRepository<MatchEntity>(context);
             matchesStorage = new MatchRepository(context);
-            match = BuildFakeMatch(); 
-            matchesStorage.Clear();
         }
 
         private Mock<BusinessLogic.Match> BuildFakeMatch()
@@ -87,17 +91,19 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        private void GetAllTest() {
+        public void GetAllTest() {
             matchesStorage.Add(match.Object);
             ICollection<Match> all = matchesStorage.GetAll();
             Assert.AreEqual(all.Count, 1);
         }
 
         [TestMethod]
-        private void ModifyTest() {
+        public void ModifyTest() {
             matchesStorage.Add(match.Object);
+
             Mock<Match> modified = BuildModifiedFakeMatch();
-            matchesStorage.Add(modified.Object);
+            SetUpRepository();
+            matchesStorage.Modify(modified.Object);
             Match retrieved = matchesStorage.Get(3);
             Assert.AreEqual(retrieved.AwayTeam, modified.Object.AwayTeam);
             Assert.AreEqual(retrieved.HomeTeam, modified.Object.HomeTeam);
