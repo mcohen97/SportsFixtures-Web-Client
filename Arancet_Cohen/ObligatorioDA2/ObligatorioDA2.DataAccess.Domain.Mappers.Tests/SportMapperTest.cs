@@ -21,6 +21,13 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         }
 
         [TestMethod]
+        public void SportToEntityIdTest()
+        {
+            SportEntity converted = testMapper.ToEntity(sport.Object);
+            Assert.AreEqual(converted.Id, entity.Id);
+        }
+
+        [TestMethod]
         public void SportToEntityNameTest() {
             SportEntity converted = testMapper.ToEntity(sport.Object);
             Assert.AreEqual(converted.Name, entity.Name);
