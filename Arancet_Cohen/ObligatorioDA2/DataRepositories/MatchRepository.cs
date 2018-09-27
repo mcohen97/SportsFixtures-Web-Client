@@ -31,7 +31,6 @@ namespace DataRepositories
             else {
                 throw new MatchAlreadyExistsException();
             }
-
         }
 
         private void AddNewMatch(Match aMatch)
@@ -49,17 +48,44 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public void Delete(int id)
+        public void Delete(int anId)
         {
-            throw new NotImplementedException();
+            if (AnyWithId(anId))
+            {
+                DeleteExistent(anId);
+            }
+            else
+            {
+                throw new MatchNotFoundException();
+            }
+        }
+
+        private void DeleteExistent(int anId)
+        {
+            MatchEntity retrieved = context.Matches.First(m => m.Id == anId);
+            context.Matches.Remove(retrieved);
+            context.SaveChanges();
         }
 
         public bool Exists(Match record)
         {
-            throw new NotImplementedException();
+            return AnyWithId(record.Id);
         }
 
         public Match Get(int anId)
+        {
+            Match toReturn;
+            if (AnyWithId(anId))
+            {
+                toReturn = GetExistentMatch(anId);
+            }
+            else {
+                throw new MatchNotFoundException();
+            }
+            return toReturn;
+        }
+
+        private Match GetExistentMatch(int anId)
         {
             MatchEntity a = context.Matches.First(me => me.Id == anId);
             Match conversion = mapper.ToMatch(a);
@@ -80,9 +106,24 @@ namespace DataRepositories
 
         public void Modify(Match aMatch)
         {
+            if (Exists(aMatch))
+            {
+                ModifyExistent(aMatch);
+            }
+            else {
+                throw new MatchNotFoundException();
+            }
+        }
+
+        private void ModifyExistent(Match aMatch)
+        {
             MatchEntity toAdd = mapper.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Modified;
             context.SaveChanges();
+        }
+
+        private bool AnyWithId(int anId) {
+            return context.Matches.Any(m => m.Id==anId);
         }
     }
 }
