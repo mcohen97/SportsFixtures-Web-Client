@@ -8,6 +8,7 @@ using ObligatorioDA2.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace DataRepositories
 {
@@ -23,13 +24,22 @@ namespace DataRepositories
 
         public void Add(Match aMatch)
         {
+            if (!Exists(aMatch))
+            {
+                AddNewMatch(aMatch);
+            }
+            else {
+                throw new MatchAlreadyExistsException();
+            }
+
+        }
+
+        private void AddNewMatch(Match aMatch)
+        {
             MatchEntity entity = mapper.ToEntity(aMatch);
-            //context.Matches.Add(entity);
             context.Entry(entity).State = EntityState.Added;
             context.SaveChanges();
         }
-
-
 
         public void Clear()
         {
