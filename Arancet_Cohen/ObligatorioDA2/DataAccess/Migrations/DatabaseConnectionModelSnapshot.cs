@@ -27,11 +27,15 @@ namespace DataAccess.Migrations
 
                     b.Property<int?>("MakerId");
 
+                    b.Property<int?>("MatchEntityId");
+
                     b.Property<string>("Text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MakerId");
+
+                    b.HasIndex("MatchEntityId");
 
                     b.ToTable("Comments");
                 });
@@ -42,7 +46,17 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("AwayTeamId");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<int?>("HomeTeamId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AwayTeamId");
+
+                    b.HasIndex("HomeTeamId");
 
                     b.ToTable("Matches");
                 });
@@ -96,6 +110,21 @@ namespace DataAccess.Migrations
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.UserEntity", "Maker")
                         .WithMany()
                         .HasForeignKey("MakerId");
+
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.MatchEntity")
+                        .WithMany("Commentaries")
+                        .HasForeignKey("MatchEntityId");
+                });
+
+            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.MatchEntity", b =>
+                {
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "AwayTeam")
+                        .WithMany()
+                        .HasForeignKey("AwayTeamId");
+
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "HomeTeam")
+                        .WithMany()
+                        .HasForeignKey("HomeTeamId");
                 });
 #pragma warning restore 612, 618
         }
