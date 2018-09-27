@@ -53,6 +53,14 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(MatchAlreadyExistsException))]
+        public void AddRepeatedMatchTest() {
+            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match.Object);
+        }
+
+
+        [TestMethod]
         public void GetMatchHomeTeamTest() {
             matchesStorage.Add(match.Object);
             Match retrieved = matchesStorage.Get(3);
@@ -90,6 +98,14 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(MatchNotFoundException))]
+        public void GetMatchNotFoundTest()
+        {
+            matchesStorage.Add(match.Object);
+            Match retrieved = matchesStorage.Get(3);
+        }
+
+        [TestMethod]
         public void GetAllTest() {
             matchesStorage.Add(match.Object);
             ICollection<Match> all = matchesStorage.GetAll();
@@ -109,6 +125,15 @@ namespace DataRepositoriesTest
             Assert.AreEqual(retrieved.Date, modified.Object.Date);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(MatchNotFoundException))]
+        public void ModifyUnexistentItemTest() {
+            Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
+            Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath");
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2));
+            matchesStorage.Modify(match.Object);
+        }
+
         private Mock<BusinessLogic.Match> BuildModifiedFakeMatch()
         {
             Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
@@ -116,5 +141,7 @@ namespace DataRepositoriesTest
             Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2));
             return match;
         }
+
+        
     }
 }
