@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <Compile Remove="ICommentRepository.cs" />
+    <Compile Remove="IEntityRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>

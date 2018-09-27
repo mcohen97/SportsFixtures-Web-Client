@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="CommentRepositoryTest.cs" />
+    <Compile Remove="GenericRepositoryTest.cs" />
   </ItemGroup>
 
   <ItemGroup>

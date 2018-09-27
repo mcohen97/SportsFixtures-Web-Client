@@ -55,7 +55,6 @@ namespace ObligatorioDA2.WebAPI
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<DatabaseConnection>(options => options.UseSqlServer(Configuration.GetConnectionString("ObligatorioDA2")));
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IEntityRepository<UserEntity>, GenericRepository<UserEntity>>();
             
             services.AddScoped<ILoginService, LoginService>();
         }
