@@ -28,6 +28,7 @@ namespace BusinessLogic
              int matches;
              int matchesPerRound;
              int Rounds;
+            return new Match[3];
         }
 
         private void SetInitialDate(DateTime value)
