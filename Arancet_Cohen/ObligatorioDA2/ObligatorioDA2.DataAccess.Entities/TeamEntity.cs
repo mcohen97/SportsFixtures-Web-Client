@@ -1,6 +1,6 @@
 namespace ObligatorioDA2.DataAccess.Entities
 {
-    public class TeamEntity
+    public class TeamEntity:BaseEntity
     {
         public TeamEntity(){
 
@@ -11,8 +11,6 @@ namespace ObligatorioDA2.DataAccess.Entities
             Name = name;
             Photo = photo;
         }
-
-        public int Id { get; set; }
 
         public string Name { get; set; }
 
