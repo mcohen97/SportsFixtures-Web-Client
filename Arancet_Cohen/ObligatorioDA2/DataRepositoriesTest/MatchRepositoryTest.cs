@@ -143,6 +143,32 @@ namespace DataRepositoriesTest
             return match;
         }
 
-        
+        [TestMethod]
+        public void ExistsTest() {
+            matchesStorage.Add(match.Object);
+            bool exists = matchesStorage.Exists(match.Object);
+            Assert.IsTrue(exists);
+        }
+
+        [TestMethod]
+        public void DoesNotExistTest() {
+            bool exists = matchesStorage.Exists(match.Object);
+            Assert.IsFalse(exists);
+        }
+
+        [TestMethod]
+        public void DeleteTest() {
+            matchesStorage.Add(match.Object);
+            matchesStorage.Delete(match.Object.Id);
+            bool exists = matchesStorage.Exists(match.Object);
+            Assert.IsFalse(exists);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(MatchNotFoundException))]
+        public void DeleteUnexistentTest() {
+            matchesStorage.Delete(match.Object.Id);
+        }
+
     }
 }
