@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
+using RepositoryInterface;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -8,18 +10,22 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class TeamController : ControllerBase
     {
+        private IRepository<Team> teams;
+        public TeamController(IRepository<Team> aRepo) {
+            teams=aRepo;
+        }
           // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok();
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            return Ok();
         }
 
         // POST api/values
@@ -29,11 +35,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
-                var addedTeam = new TeamModelOut() { 
+                Team toAdd = new Team(team.Name, "");
+                
+                teams.Add(toAdd);
+
+                TeamModelOut addedTeam = new TeamModelOut()
+                {
                     Id = 1,
                     Name = team.Name,
                     Photo = team.Photo
                 };
+
                 toReturn = CreatedAtRoute("GetById", new { id = addedTeam.Id }, addedTeam);
             }
             else
