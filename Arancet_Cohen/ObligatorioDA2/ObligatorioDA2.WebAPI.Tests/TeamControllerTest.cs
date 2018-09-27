@@ -14,13 +14,13 @@ namespace ObligatorioDA2.WebAPI.Tests
     {
         private TeamController controller;
         private Mock<IRepository<Team>> repo;
-        private Mock<Team> team;
+        Team team;
 
         [TestInitialize]
         public void SetUp() {
-            team = new Mock<Team>(2,"Nacional", "aPath");
+            team = new Team(2,"Nacional", "aPath");
             repo = new Mock<IRepository<Team>>();
-            repo.Setup(r => r.Get(2)).Returns(team.Object);
+            repo.Setup(r => r.Get(2)).Returns(team);
             repo.Setup(r => r.Get(It.Is<int>(i=>i != 2))).Throws(new TeamNotFoundException());
             controller = new TeamController(repo.Object);
         }
@@ -33,7 +33,6 @@ namespace ObligatorioDA2.WebAPI.Tests
                  Name = "DreamTeam", 
                  Photo = "/MyResource/DreamTeam.png"
             };
-            var controller = new TeamController();
             var result = controller.Post(modelIn);
 
             //Act
@@ -55,7 +54,6 @@ namespace ObligatorioDA2.WebAPI.Tests
            var modelIn = new TeamModelIn() {
                  Photo = "/MyResource/DreamTeam.png"
             };
-            var controller = new TeamController();
             //We need to force the error in de ModelState
             controller.ModelState.AddModelError("", "Error");
             var result = controller.Post(modelIn);
@@ -66,6 +64,15 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, createdResult.StatusCode);
         }
 
+        [TestMethod]
+        public void GetTeamOk() {
 
+            ActionResult<Team> result = controller.Get(2) as ActionResult<Team>;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Value);
+            Assert.AreEqual(result.Value, team);
+
+        }
     }
 }
