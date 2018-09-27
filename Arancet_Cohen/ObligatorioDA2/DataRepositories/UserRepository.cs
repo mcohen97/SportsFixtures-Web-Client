@@ -15,20 +15,22 @@ namespace DataRepositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly IEntityRepository<UserEntity> repo;
+        private readonly DatabaseConnection context;
         private readonly UserMapper mapper;
 
-        public UserRepository(IEntityRepository<UserEntity> genericRepo)
+        public UserRepository(DatabaseConnection aContext)
         {
-            repo = genericRepo;
+            context = aContext;
             mapper = new UserMapper();
         }
 
         public void Add(User aUser)
         {
+            UserEntity entity = mapper.ToEntity(aUser);
             if (!AnyWithThisUserName(aUser.UserName))
             {
-                AddNewUser(aUser);
+                context.Users.Add(entity);
+                context.SaveChanges();
             }
             else
             {
@@ -39,7 +41,8 @@ namespace DataRepositories
         private void AddNewUser(User aUser)
         {
             UserEntity toAdd = mapper.ToEntity(aUser);
-            repo.Add(toAdd);
+            context.Users.Add(toAdd);
+            context.SaveChanges();
         }
 
         public User GetUserByUsername(string aUserName)
@@ -47,40 +50,23 @@ namespace DataRepositories
             User toReturn;
             if (AnyWithThisUserName(aUserName))
             {
-                toReturn = GetExistentUser(aUserName);
+                UserEntity retrieved = GetEntityByUsername(aUserName);
+                toReturn = mapper.ToUser(retrieved);
             }
             else
             {
                 throw new UserNotFoundException();
             }
             return toReturn;
-        }
-
-        private User GetExistentUser(string aUserName)
-        {
-            UserEntity fetched = repo.Get(u => u.UserName.Equals(aUserName)).First();
-            User toReturn = mapper.ToUser(fetched);
-            return toReturn;
-        }
-
-        public ICollection<User> GetAll()
-        {
-            ICollection<UserEntity> query = repo.GetAll();
-            ICollection<User> users = query.Select(u => mapper.ToUser(u)).ToList();
-            return users;
-        }
-
-        public bool IsEmpty()
-        {
-            return repo.IsEmpty();
         }
 
         public void Delete(User entity)
         {
             if (AnyWithThisUserName(entity.UserName))
             {
-                int generatedId = GetUserByUsername(entity.UserName).Id;
-                repo.Delete(entity.Id);
+                UserEntity toDelete = GetEntityByUsername(entity.UserName);
+                context.Users.Remove(toDelete);
+                context.SaveChanges();
             }
             else
             {
@@ -88,11 +74,31 @@ namespace DataRepositories
             }
         }
 
+        private UserEntity GetEntityByUsername(string aUserName) {
+            return context.Users.First(u => u.UserName.Equals(aUserName));
+        }
+
+        public ICollection<User> GetAll()
+        {
+            IQueryable<UserEntity> query = context.Users;
+            ICollection<User> users = query.Select(u => mapper.ToUser(u)).ToList();
+            return users;
+        }
+
+        public bool IsEmpty()
+        {
+            return !context.Users.Any();
+        }
+
+        
+
         public void Delete(int identity)
         {
-            if (repo.Any(r => r.Id.Equals(identity)))
+            if (context.Users.Any(r => r.Id.Equals(identity)))
             {
-                repo.Delete(identity);
+                UserEntity toDelete = context.Users.First(u=>u.Id == identity);
+                context.Users.Remove(toDelete);
+                context.SaveChanges();
             }
             else
             {
@@ -103,7 +109,7 @@ namespace DataRepositories
         public bool Exists(User entity)
         {
             UserEntity record = mapper.ToEntity(entity);
-            bool doesExist = repo.Exists(record);
+            bool doesExist = context.Users.Any(u => u.UserName.Equals(entity.UserName));
             return doesExist;
         }
 
@@ -112,7 +118,7 @@ namespace DataRepositories
             if (AnyWithThisUserName(aUser.UserName))
             {
                 UserEntity entity = mapper.ToEntity(aUser);
-                repo.Modify(entity);
+                context.Update(entity);
             }
             else
             {
@@ -122,7 +128,7 @@ namespace DataRepositories
 
         private bool AnyWithThisUserName(string userName)
         {
-            return repo.Any(u => u.UserName.Equals(userName));
+            return context.Users.Any(u => u.UserName.Equals(userName));
         }
 
         public User Get(User asked)
@@ -133,10 +139,10 @@ namespace DataRepositories
         public User Get(int anId)
         {
             User query;
-            bool exists = repo.Any(u => u.Id == anId);
+            bool exists = context.Users.Any(u => u.Id == anId);
             if (exists)
             {
-                UserEntity record = repo.First(u => u.Id == anId);
+                UserEntity record =context.Users.First(u => u.Id == anId);
                 query = mapper.ToUser(record);
             }
             else
@@ -148,7 +154,11 @@ namespace DataRepositories
 
         public void Clear()
         {
-            repo.Clear();
+            IQueryable<UserEntity> allOfThem = context.Users;
+            foreach (UserEntity existent in allOfThem) {
+                context.Users.Remove(existent);
+            }
+            context.SaveChanges();
         }
     }
 }
