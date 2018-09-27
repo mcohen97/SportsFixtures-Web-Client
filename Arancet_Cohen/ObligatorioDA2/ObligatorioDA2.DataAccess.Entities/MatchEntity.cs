@@ -6,9 +6,9 @@ namespace ObligatorioDA2.DataAccess.Entities
 {
     public class MatchEntity:BaseEntity
     {
-        public TeamEntity HomeTeam;
-        public TeamEntity AwayTeam;
-        public DateTime Date;
-        public ICollection<CommentEntity> Commentaries;
+        public TeamEntity HomeTeam { get; set; }
+        public TeamEntity AwayTeam { get; set; }
+        public DateTime Date { get; set; }
+        public ICollection<CommentEntity> Commentaries { get; set; }
     }
 }
