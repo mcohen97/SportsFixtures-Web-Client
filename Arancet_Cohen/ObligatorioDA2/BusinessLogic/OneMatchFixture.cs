@@ -6,20 +6,17 @@ namespace BusinessLogic
     public class OneMatchFixture : FixtureGenerator
     {
         private DateTime initialDate;
-        private DateTime finalDate;
         private int roundLength;
         private int daysBetweenRounds;
 
-        public OneMatchFixture(DateTime initialDate, DateTime finalDate, int roundLength, int daysBetweenRounds)
+        public OneMatchFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
         {
             this.initialDate = initialDate;
-            this.finalDate = finalDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
         }
 
         public override DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
-        public override DateTime FinalDate { get => finalDate; set => SetFinalDate(value); }
         public override int RoundLength { get => roundLength; set => SetRoundLength(value); }
         public override int DaysBetweenRounds { get => daysBetweenRounds; set => SetDaysBetweenRounds(value); }
 
@@ -90,6 +87,7 @@ namespace BusinessLogic
             //Fixed team
             newRound[0,0] = actualRound[0,0];
            
+            //Teams changing rows
             Team goesDown = actualRound[0, actualRound.GetLength(1) - 1];
             Team goesUp = actualRound[1,0];
 
@@ -133,11 +131,6 @@ namespace BusinessLogic
         private void SetInitialDate(DateTime value)
         {
             initialDate = value;
-        }
-
-        private void SetFinalDate(DateTime value)
-        {
-            finalDate = value;
         }
 
         private void SetRoundLength(int value)
