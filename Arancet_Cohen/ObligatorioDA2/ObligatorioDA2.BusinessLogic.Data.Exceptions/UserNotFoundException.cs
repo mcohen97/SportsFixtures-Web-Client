@@ -5,14 +5,8 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
 {
 
 
-    public class UserNotFoundException : Exception
+    public class UserNotFoundException : EntityNotFoundException
     {
-        public UserNotFoundException()
-        {
-        }
 
-        public UserNotFoundException(string message) : base(message)
-        {
-        }
     }
 }

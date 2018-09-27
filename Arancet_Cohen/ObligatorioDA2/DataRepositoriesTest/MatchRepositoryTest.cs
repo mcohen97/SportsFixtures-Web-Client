@@ -7,6 +7,7 @@ using DataRepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.DataAccess.Entities;
 using Match = BusinessLogic.Match;
 
