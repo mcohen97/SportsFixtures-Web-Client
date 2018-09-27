@@ -38,15 +38,15 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void AddMatchTest() {
-            serviceToTest.AddMatch(fakeMaatch.Object);
+            serviceToTest.AddMatch(fakeMatch.Object);
             Assert.AreEqual(serviceToTest.GetAllMatches().Count, 1);
         }
 
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void AddAlreadyExistentTesT() {
-            serviceToTest.AddMatch(fakeMaatch.Object);
-            serviceToTest.AddMatch(fakeMaatch.Object);
+            serviceToTest.AddMatch(fakeMatch.Object);
+            serviceToTest.AddMatch(fakeMatch.Object);
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void DeleteNotExistentTest() {
-            serviceToTest.Delete(9);
+            serviceToTest.DeleteMatch(9);
         }
 
         [TestMethod]
