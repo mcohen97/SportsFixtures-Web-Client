@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BusinessLogic;
 using DataRepositoryInterfaces;
 
 namespace ObligatorioDA2.Services
@@ -12,6 +13,31 @@ namespace ObligatorioDA2.Services
         public MatchService(IMatchRepository aRepo)
         {
             matchesStorage = aRepo;
+        }
+
+        public void AddMatch(Match aMatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<Match> GetAllMatches()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Match GetMatch(int anId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteMatch(int anId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ModifyMatch(Match aMatch)
+        {
+            throw new NotImplementedException();
         }
     }
 }
