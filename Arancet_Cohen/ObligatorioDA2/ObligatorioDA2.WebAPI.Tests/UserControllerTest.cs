@@ -31,8 +31,8 @@ namespace ObligatorioDA2.WebAPI.Tests
                 .UseInMemoryDatabase(databaseName: "UserRepository")
                 .Options;
 
-            GenericRepository<UserEntity> genericRepo = new GenericRepository<UserEntity>(new DatabaseConnection(options));
-            repo = new UserRepository(genericRepo);
+            //GenericRepository<UserEntity> genericRepo = new GenericRepository<UserEntity>(new DatabaseConnection(options));
+            repo = new UserRepository(new DatabaseConnection(options));
             controller = new UsersController(repo);
         }
 

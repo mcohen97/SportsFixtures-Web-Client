@@ -47,8 +47,7 @@ namespace DataRepositoriesTest
                 .UseInMemoryDatabase(databaseName: "UserRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            GenericRepository<UserEntity> genericRepo = new GenericRepository<UserEntity>(context);
-            usersStorage = new UserRepository(genericRepo);
+            usersStorage = new UserRepository(context);
         }
 
         [TestMethod]
@@ -139,8 +138,8 @@ namespace DataRepositoriesTest
             usersStorage.Clear();
             UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username", Password = "password1", Email = "mail1@domain.com" };
             UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username", Password = "password2", Email = "mail2@domain.com" };
-            User user1 = factory.CreateAdmin(userId1);
-            User user2 = factory.CreateAdmin(userId2);
+            User user1 = factory.CreateAdmin(userId1,2);
+            User user2 = factory.CreateAdmin(userId2,2);
             usersStorage.Add(user1);
             CreateRepository();
             usersStorage.Modify(user2);

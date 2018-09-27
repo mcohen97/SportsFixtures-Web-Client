@@ -27,10 +27,9 @@ namespace DataRepositoriesTest
 
         private void SetUpRepository() {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "TeamRepository")
+                .UseInMemoryDatabase(databaseName: "MatchRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            GenericRepository<MatchEntity> genericRepo = new GenericRepository<MatchEntity>(context);
             matchesStorage = new MatchRepository(context);
         }
 
