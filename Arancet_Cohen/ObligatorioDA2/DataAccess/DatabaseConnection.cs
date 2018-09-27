@@ -23,7 +23,10 @@ namespace DataAccess
             base.OnModelCreating(modelBuilder);
            
             modelBuilder.Entity<TeamEntity>().HasAlternateKey(t => t.Name);
-            modelBuilder.Entity<UserEntity>().HasAlternateKey(u => u.UserName);
+            modelBuilder.Entity<UserEntity>().HasIndex(u => u.UserName).IsUnique();
+            //modelBuilder.Entity<UserEntity>().HasAlternateKey(u => u.UserName);
+            //modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
+            //modelBuilder.Entity<CommentEntity>().HasOne<UserEntity>(ce => ce.Maker);
 
             modelBuilder.Entity<UserEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<TeamEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
