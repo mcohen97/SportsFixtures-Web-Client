@@ -103,7 +103,7 @@ namespace DataRepositoriesTest
         public void GetMatchNotFoundTest()
         {
             matchesStorage.Add(match.Object);
-            Match retrieved = matchesStorage.Get(3);
+            Match retrieved = matchesStorage.Get(4);
         }
 
         [TestMethod]
