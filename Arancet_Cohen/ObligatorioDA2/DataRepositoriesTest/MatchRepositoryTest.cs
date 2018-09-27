@@ -18,9 +18,11 @@ namespace DataRepositoriesTest
     {
         IMatchRepository matchesStorage;
         Mock<BusinessLogic.Match> match;
+        Mock<Sport> sport;
 
         [TestInitialize]
         public void SetUp() {
+            sport = new Mock<Sport>("Soccer");
             SetUpRepository();
             match = BuildFakeMatch(); 
             matchesStorage.Clear();
@@ -38,7 +40,7 @@ namespace DataRepositoriesTest
         {
             Mock<Team> home = new Mock<Team>("Manchester United","aPath");
             Mock<Team> away = new Mock<Team>("Real Madrid", "aPath");
-            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3,home.Object, away.Object, DateTime.Now);
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3,home.Object, away.Object, DateTime.Now,sport.Object);
             return match;
         }
 
@@ -131,7 +133,7 @@ namespace DataRepositoriesTest
         public void ModifyUnexistentItemTest() {
             Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
             Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath");
-            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2));
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
             matchesStorage.Modify(match.Object);
         }
 
@@ -139,7 +141,7 @@ namespace DataRepositoriesTest
         {
             Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
             Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath");
-            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2));
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
             return match;
         }
 

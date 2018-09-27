@@ -77,13 +77,13 @@ namespace BusinessLogicTest
             Assert.AreEqual(aTeam, sameTeam);
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void EqualsByIdTest()
         {
             Team aTeam = new Team(1, "TeamA", "somePath");
             Team differentTeam = new Team(1, "TeamB", "");
             Assert.AreEqual(aTeam, differentTeam);
-        }
+        }*/
 
         [TestMethod]
         public void EqualsByNameTest()

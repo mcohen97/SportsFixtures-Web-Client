@@ -18,6 +18,7 @@ namespace BusinessLogicTest
         private DateTime finalDate;
         private int roundLength;
         private int daysBetweenRounds;
+        private Mock<Sport> played;
 
         [TestInitialize]
         public void TestInitialize(){
@@ -31,7 +32,8 @@ namespace BusinessLogicTest
             finalDate = new DateTime(2019, 4,4);
             roundLength = 2;
             daysBetweenRounds = 5;
-            oneMatchFixture = new OneMatchFixture(initialDate, finalDate, roundLength, daysBetweenRounds);
+            played = new Mock<Sport>("Soccer");
+            oneMatchFixture = new OneMatchFixture(initialDate, finalDate, roundLength, daysBetweenRounds,played.Object);
         }
 
         [TestMethod]
@@ -103,7 +105,7 @@ namespace BusinessLogicTest
                 for (int j = i; j < teamsArray.Length; j++)
                 {
                     if(i != j)
-                        matchesGenerated.Add(new BusinessLogic.Match(teamsArray[i], teamsArray[j], new DateTime()));
+                        matchesGenerated.Add(new BusinessLogic.Match(teamsArray[i], teamsArray[j], new DateTime(),played.Object));
                 }
             }
             return matchesGenerated;

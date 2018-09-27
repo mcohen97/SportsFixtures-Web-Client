@@ -18,6 +18,7 @@ namespace BusinessLogicTest
         private Mock<Commentary> commentary1;
         private Mock<Commentary> commentary2;
         private Mock<Commentary> commentary3;
+        
 
 
         [TestInitialize]
@@ -37,8 +38,10 @@ namespace BusinessLogicTest
             commentary1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 1);
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
+            sport = new Mock<Sport>("Soccer");
 
-            match = new BusinessLogic.Match(3,teamA.Object, teamB.Object, date);
+
+            match = new BusinessLogic.Match(3,teamA.Object, teamB.Object, date,sport.Object);
         }
 
         private Mock<User> CreateUser()

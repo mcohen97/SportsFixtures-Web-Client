@@ -15,5 +15,7 @@ namespace ObligatorioDA2.DataAccess.Entities
         public string Name { get; set; }
 
         public string Photo { get; set; }
+
+        public int SportEntityId { get; set; }
     }
 }

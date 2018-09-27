@@ -10,22 +10,24 @@ namespace BusinessLogic
         private Team homeTeam;
         private Team awayTeam;
         private DateTime date;
+        private Sport sport;
         private ICollection<Commentary> commentaries;
         public int Id { get; private set; }
 
-        public Match(Team home, Team away, DateTime date)
+        public Match(Team home, Team away, DateTime date,Sport aSport)
         {
             HomeTeam = home;
             AwayTeam = away;
             Date = date;
+            sport = aSport;
             commentaries = new List<Commentary>();
         }
 
-        public Match(int anId, Team home, Team away, DateTime date):this(home,away,date) {
+        public Match(int anId, Team home, Team away, DateTime date,Sport sport):this(home,away,date,sport) {
             Id = anId;
         }
 
-        public Match(int anId, Team home, Team away, DateTime date, ICollection<Commentary> comments) : this(anId,home, away, date)
+        public Match(int anId, Team home, Team away, DateTime date, Sport sport, ICollection<Commentary> comments) : this(anId,home, away, date,sport)
         {
             commentaries = comments;
         }
@@ -33,6 +35,8 @@ namespace BusinessLogic
         public Team HomeTeam { get{return homeTeam;} set{SetHomeTeam(value);} }
         public Team AwayTeam { get{return awayTeam;} set{SetAwayTeam(value);} }
         public DateTime Date { get{return date;} set{SetDate(value);} }
+
+        public Sport Sport { get { return sport; }set { SetSport(value); } }
 
         public bool HasCommentary(Commentary commentary)
         {
@@ -86,6 +90,16 @@ namespace BusinessLogic
         {
             date = value;
         }
+
+
+        private void SetSport(Sport value)
+        {
+            if (value == null) {
+                throw new InvalidMatchDataExcpetion();
+            }
+            sport = value;
+        }
+
 
         public Commentary GetCommentary(int id)
         {

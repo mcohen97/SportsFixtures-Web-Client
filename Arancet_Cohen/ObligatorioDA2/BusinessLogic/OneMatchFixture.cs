@@ -9,13 +9,15 @@ namespace BusinessLogic
         private DateTime finalDate;
         private int roundLength;
         private int daysBetweenRounds;
+        private Sport sport;
 
-        public OneMatchFixture(DateTime initialDate, DateTime finalDate, int roundLength, int daysBetweenRounds)
+        public OneMatchFixture(DateTime initialDate, DateTime finalDate, int roundLength, int daysBetweenRounds,Sport aSport)
         {
             this.initialDate = initialDate;
             this.finalDate = finalDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
+            this.sport = aSport;
         }
 
         public override DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
@@ -114,7 +116,7 @@ namespace BusinessLogic
         private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime roundDate)
         {
             for(int i = 0; i < actualRound.GetLength(1); i++){
-                Match newMatch = new Match(actualRound[0,i], actualRound[1,i], roundDate);
+                Match newMatch = new Match(actualRound[0,i], actualRound[1,i], roundDate,sport);
                 fixture.Add(newMatch);
             }
         }

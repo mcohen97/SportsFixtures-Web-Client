@@ -11,24 +11,31 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
     {
         private TeamMapper teamConverter;
         private CommentMapper commentConverter;
+        private SportMapper sportConverter;
 
         public MatchMapper()
         {
             teamConverter = new TeamMapper();
             commentConverter = new CommentMapper();
+            sportConverter = new SportMapper();
         }
-        public MatchEntity ToEntity(Match aMatch)
+        public MatchEntity ToEntity( Match aMatch)
         {
+            SportEntity sportEntity =sportConverter.ToEntity(aMatch.Sport);
             MatchEntity conversion = new MatchEntity()
             {
                 Id = aMatch.Id,
                 HomeTeam = teamConverter.ToEntity(aMatch.HomeTeam),
                 AwayTeam = teamConverter.ToEntity(aMatch.AwayTeam),
                 Date = aMatch.Date,
-                Commentaries = TransformCommentaries(aMatch.GetAllCommentaries())
+                Commentaries = TransformCommentaries(aMatch.GetAllCommentaries()),
+                SportEntityId = sportEntity.Id,
+                SportEntity = sportEntity
+               
             };
             return conversion;
         }
+
 
         private ICollection<CommentEntity> TransformCommentaries(ICollection<Commentary> commentaries)
         {
@@ -41,7 +48,8 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             Team away = teamConverter.ToTeam(entity.AwayTeam);
             ICollection<Commentary> comments = entity.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
             DateTime date = entity.Date;
-            Match created = new Match(entity.Id, home, away, date, comments);
+            Sport sport = sportConverter.ToSport(entity.SportEntity);
+            Match created = new Match(entity.Id, home, away, date,sport,comments);
             return created;
         }
     }
