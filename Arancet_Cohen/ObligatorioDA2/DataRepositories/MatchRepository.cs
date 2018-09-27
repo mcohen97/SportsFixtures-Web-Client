@@ -24,12 +24,8 @@ namespace DataRepositories
         public void Add(Match aMatch)
         {
             MatchEntity entity = mapper.ToEntity(aMatch);
-            context.Matches.Add(entity);
-            context.Update(entity.HomeTeam);
-            context.Update(entity.AwayTeam);
-            foreach (CommentEntity comment in entity.Commentaries) {
-                context.Update(comment);
-            }
+            //context.Matches.Add(entity);
+            context.Entry(entity).State = EntityState.Added;
             context.SaveChanges();
         }
 
