@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using BusinessLogic;
+using DataAccess;
 using DataRepositoryInterfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
@@ -13,19 +15,31 @@ namespace ObligatorioDA2.Services.Tests
     public class MatchServiceTest
     {
         private MatchService serviceToTest;
-        Mock<IMatchRepository> repoDouble;
+        //Mock<IMatchRepository> repoDouble;
+        IMatchRepository repoDouble;
         Mock<Match> fakeMatch;
         private List<Match> storedMatches;
         [TestInitialize]
         public void SetUp() {
-            repoDouble = new Mock<IMatchRepository>();
+            /*repoDouble = new Mock<IMatchRepository>();
             fakeMatch = BuildMatch();
             serviceToTest = new MatchService(repoDouble.Object);
             repoDouble.Setup(r => r.Get(2)).Returns(fakeMatch.Object);
             repoDouble.Setup(r => r.Get(It.Is<int>(i => i != 2))).Throws(new MatchNotFoundException());
             storedMatches = new List<Match>() { fakeMatch.Object };
-            repoDouble.Setup(r => r.GetAll()).Returns(storedMatches);
+            repoDouble.Setup(r => r.GetAll()).Returns(storedMatches);*/
+            fakeMatch = BuildMatch();
+            SetUpRepository();
+            serviceToTest = new MatchService(repoDouble);
             //repoDouble.Setup(r => r.Add(It.Is<Match>(i => i is Match)))
+        }
+
+        private void SetUpRepository() {
+
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+               .UseInMemoryDatabase(databaseName: "MatchRepository")
+               .Options;
+            DatabaseConnection context = new DatabaseConnection(options);
         }
 
         private Mock<Match> BuildMatch()
@@ -39,6 +53,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void AddMatchTest() {
             serviceToTest.AddMatch(fakeMatch.Object);
+            //repoDouble.Verify(foo => foo.Add(fakeMatch.Object));
             Assert.AreEqual(serviceToTest.GetAllMatches().Count, 1);
         }
 
@@ -67,11 +82,6 @@ namespace ObligatorioDA2.Services.Tests
 
         }
 
-       /* [TestMethod]
-        public void GetMatchesOfSportNotExistentTest()
-        {
-
-        }*/
 
         [TestMethod]
         public void GetMatchesFromTeamTest() {
