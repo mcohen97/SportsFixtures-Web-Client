@@ -10,6 +10,6 @@ namespace BusinessLogic
         public abstract int RoundLength { get; set; }
         public abstract int DaysBetweenRounds { get; set; }
 
-        public abstract Match[] GenerateFixture(ICollection<Team> teams);
+        public abstract ICollection<Match> GenerateFixture(ICollection<Team> teams);
     }
 }
