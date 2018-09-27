@@ -67,11 +67,14 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetTeamOk() {
 
-            ActionResult<Team> result = controller.Get(2) as ActionResult<Team>;
+            IActionResult result = controller.Get(2) as IActionResult;
+            OkObjectResult okResult = result as OkObjectResult;
+            TeamModelOut resultTeam = okResult.Value as TeamModelOut;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.Value);
-            Assert.AreEqual(result.Value, team);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(201,okResult.StatusCode);
+            Assert.AreEqual(resultTeam.Name, team.Name);
 
         }
     }
