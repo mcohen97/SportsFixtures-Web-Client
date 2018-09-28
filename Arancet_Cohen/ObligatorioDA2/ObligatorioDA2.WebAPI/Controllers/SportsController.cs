@@ -46,11 +46,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet("{id}", Name = "GetById")]
         public IActionResult Get(int id)
         {
+
             IActionResult result;
+            try
+            {
+                result = TryGet(id);
+            }
+            catch (SportNotFoundException e) {
+                result = NotFound(e.Message);
+            }
+            return result;
+            
+        }
+
+        private IActionResult TryGet(int id)
+        {
             Sport retrieved = sports.Get(id);
             SportModelOut output = new SportModelOut() { Id = id, Name = retrieved.Name };
-            result = Ok(output);
-            return result;
+            return Ok(output);       
         }
     }
 }
