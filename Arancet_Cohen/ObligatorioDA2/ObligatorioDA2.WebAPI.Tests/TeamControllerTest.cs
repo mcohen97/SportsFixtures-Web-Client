@@ -87,5 +87,50 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(notFoundResult.StatusCode, 404);
         }
+
+        [TestMethod]
+        public void PutTest() {
+            //Arrange
+            var modelIn = new TeamModelIn()
+            {
+                Name = "DreamTeam",
+                Photo = "/MyResource/DreamTeam.png"
+            };
+
+            IActionResult result = controller.Put(modelIn);
+            OkObjectResult okResult = result as OkObjectResult;
+
+            //verify it modifies but not adds
+            repo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
+            repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Never);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(okResult.StatusCode, 200);
+        }
+
+        [TestMethod]
+        public void PutAddTest() {
+
+            //make repository throw not existing exception, so that it has to add
+            repo.Setup(r => r.Modify(It.IsAny<Team>())).Throws(new TeamNotFoundException());
+
+            var modelIn = new TeamModelIn()
+            {
+                Name = "DreamTeam",
+                Photo = "/MyResource/DreamTeam.png"
+            };
+
+            //act
+            IActionResult result =controller.Put(1,modelIn);
+            var createdResult = result as CreatedAtRouteResult;
+            var modelOut = createdResult.Value as TeamModelOut;
+
+            //assert
+            repo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
+            repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
+            Assert.AreEqual("GetById", createdResult.RouteName);
+            Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.AreEqual(modelIn.Name, modelOut.Name);
+        }
     }
 }
