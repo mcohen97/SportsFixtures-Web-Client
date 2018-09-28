@@ -18,12 +18,12 @@ namespace DataRepositoriesTest
         private IRepository<Sport> sportStorage;
         private Sport sportA;
         private Sport sportB;
-        private ICollection<Sport> mockTeamsA;
-        private ICollection<Sport> mockTeamsB;
-        private Sport team1;
-        private Sport team2;
-        private Sport team3;
-        private Sport team4;
+        private ICollection<Team> mockTeamsA;
+        private ICollection<Team> mockTeamsB;
+        private Team team1;
+        private Team team2;
+        private Team team3;
+        private Team team4;
 
         [TestInitialize]
         public void TestInitialize()
@@ -38,22 +38,22 @@ namespace DataRepositoriesTest
         {
             sportA = Mock.Of<Sport>(s => s.Id == 1 && s.Name == "SportA");
             sportB = Mock.Of<Sport>(s => s.Id == 2 && s.Name == "SportB");
-            Mock.Get(sportA).Setup(s => s.GetTeams()).Returns(mockTeamsA);
-            Mock.Get(sportB).Setup(s => s.GetTeams()).Returns(mockTeamsB);
+            Mock.Get(sportA).Setup(s => s.GetTeams()).Returns(mockTeamsA.GetEnumerator());
+            Mock.Get(sportB).Setup(s => s.GetTeams()).Returns(mockTeamsB.GetEnumerator());
         }
 
         private void CreateTeams()
         {
-            team1 = Mock.Of<Sport>(t => t.Id == 1 && t.Name == "TeamA" && t.Photo == "SomePhoto");
-            team2 = Mock.Of<Sport>(t => t.Id == 2 && t.Name == "TeamB" && t.Photo == "SomePhoto");
-            team3 = Mock.Of<Sport>(t => t.Id == 3 && t.Name == "TeamC" && t.Photo == "SomePhoto");
-            team4 = Mock.Of<Sport>(t => t.Id == 4 && t.Name == "TeamD" && t.Photo == "SomePhoto");
-            Mock.Get(team1).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Sport)?.Id == 1);
-            Mock.Get(team2).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Sport)?.Id == 2);
-            Mock.Get(team3).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Sport)?.Id == 3);
-            Mock.Get(team4).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Sport)?.Id == 4);
-            mockTeamsA = new List<Sport> { team1, team2 };
-            mockTeamsB = new List<Sport> { team3, team4 };
+            team1 = Mock.Of<Team>(t => t.Id == 1 && t.Name == "TeamA" && t.Photo == "SomePhoto");
+            team2 = Mock.Of<Team>(t => t.Id == 2 && t.Name == "TeamB" && t.Photo == "SomePhoto");
+            team3 = Mock.Of<Team>(t => t.Id == 3 && t.Name == "TeamC" && t.Photo == "SomePhoto");
+            team4 = Mock.Of<Team>(t => t.Id == 4 && t.Name == "TeamD" && t.Photo == "SomePhoto");
+            Mock.Get(team1).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
+            Mock.Get(team2).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
+            Mock.Get(team3).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 3);
+            Mock.Get(team4).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 4);
+            mockTeamsA = new List<Team> { team1, team2 };
+            mockTeamsB = new List<Team> { team3, team4 };
         }
 
         private DatabaseConnection CreateContext()
