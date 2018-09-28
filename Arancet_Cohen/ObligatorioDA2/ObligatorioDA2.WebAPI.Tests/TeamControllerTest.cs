@@ -148,5 +148,29 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(400, createdResult.StatusCode);
         }
+
+        [TestMethod]
+        public void DeleteTest() {
+
+            IActionResult result =controller.Delete(5);
+            OkResult okResult = result as OkResult;
+
+            repo.Verify(r => r.Delete(5), Times.Once);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(okResult.StatusCode, 200);
+        }
+
+        [TestMethod]
+        public void DeleteNotExistentTest() {
+            repo.Setup(r => r.Delete(It.IsAny<int>())).Throws(new TeamNotFoundException());
+
+            IActionResult result = controller.Delete(5);
+            BadRequestObjectResult okResult = result as BadRequestObjectResult;
+
+            repo.Verify(r => r.Delete(5), Times.Once);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(okResult.StatusCode, 400);
+        }
     }
 }
