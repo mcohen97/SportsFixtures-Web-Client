@@ -115,7 +115,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             Sport toAdd = new Sport(id, modelIn.Name);
             try {
                 sports.Modify(toAdd);
-                result = Ok();
+                UserModelOut modelOut = new UserModelOut()
+                {
+                    Name = modelIn.Name,
+                    Id = id
+                };
+                result = Ok(modelOut);
             }
             catch (SportNotFoundException) {
                 sports.Add(toAdd);

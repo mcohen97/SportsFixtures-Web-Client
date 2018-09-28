@@ -164,7 +164,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutInvalidTest() {
             SportModelIn input = new SportModelIn() {};
             controllerToTest.ModelState.AddModelError("", "Error");
-            IActionResult result = controllerToTest.Put(input);
+            IActionResult result = controllerToTest.Put(2,input);
 
 
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
