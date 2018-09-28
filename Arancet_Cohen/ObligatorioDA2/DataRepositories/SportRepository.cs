@@ -74,17 +74,23 @@ namespace DataRepositories
 
         public ICollection<Sport> GetAll()
         {
-            throw new NotImplementedException();
+            IQueryable<Sport> query = context.Sports.Select(s => mapper.ToSport(s));
+            return query.ToList();
         }
 
         public bool IsEmpty()
         {
-            throw new NotImplementedException();
+            return !context.Sports.Any();
         }
 
         public void Modify(Sport entity)
         {
-            throw new NotImplementedException();
+            if (!Exists(entity))
+                throw new SportNotFoundException();
+
+            SportEntity modified = mapper.ToEntity(entity);
+            context.Entry(modified).State = EntityState.Modified;
+            context.SaveChanges();
         }
     }
 }
