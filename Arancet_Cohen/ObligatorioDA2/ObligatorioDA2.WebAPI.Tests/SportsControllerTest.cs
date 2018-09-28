@@ -47,7 +47,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Name = "Soccer"
             };
 
-            IActionResult result =controllerToTest.Post(toAdd);
+            IActionResult result = controllerToTest.Post(input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             SportModelOut output = createdResult.Value as SportModelOut;
 
