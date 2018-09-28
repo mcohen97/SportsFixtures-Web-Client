@@ -94,5 +94,35 @@ namespace ObligatorioDA2.WebAPI.Controllers
             sports.Delete(id);
             return Ok();
         }
+
+        // PUT api/values/5
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] SportModelIn modelIn) {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = ModifyOrAdd(id, modelIn);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult ModifyOrAdd(int id, SportModelIn modelIn)
+        {
+            IActionResult result;
+            Sport toAdd = new Sport(id, modelIn.Name);
+            try {
+                sports.Modify(toAdd);
+                result = Ok();
+            }
+            catch (SportNotFoundException) {
+                sports.Add(toAdd);
+                SportModelOut modelOut = new SportModelOut() { Id = id, Name = toAdd.Name };
+                result = CreatedAtRoute("GetById", new { id = modelOut.Id }, modelOut);
+            }
+            return result;
+        }
     }
 }
