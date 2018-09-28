@@ -86,14 +86,6 @@ namespace BusinessLogicTest
         }*/
 
         [TestMethod]
-        public void EqualsByNameTest()
-        {
-            Team aTeam = new Team(1, "TeamA", "somePath");
-            Team differentTeam = new Team(2, "TeamA", "");
-            Assert.AreEqual(aTeam, differentTeam);
-        }
-
-        [TestMethod]
         public void NotEqualsTest()
         {
             Team aTeam = new Team(1, "TeamA", "somePath");

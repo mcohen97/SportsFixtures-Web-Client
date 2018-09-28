@@ -3,22 +3,18 @@ using System.Collections.Generic;
 
 namespace BusinessLogic
 {
-    public class OneMatchFixture : FixtureGenerator
+    public class HomeAwayFixture : FixtureGenerator
     {
         private DateTime initialDate;
         private int roundLength;
         private int daysBetweenRounds;
-        private Sport sport;
 
-        public OneMatchFixture(DateTime initialDate, int roundLength, int daysBetweenRounds,Sport aSport)
-
+        public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
         {
             this.initialDate = initialDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
-            this.sport = aSport;
         }
-
         public override DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
         public override int RoundLength { get => roundLength; set => SetRoundLength(value); }
         public override int DaysBetweenRounds { get => daysBetweenRounds; set => SetDaysBetweenRounds(value); }
@@ -38,9 +34,11 @@ namespace BusinessLogic
             int matchesAdded = 0;
             int actualRoundLength = 0;
             DateTime roundDate = initialDate;
+            DateTime secondDate;
 
             while(matchesAdded < matchesCount){
-                AddMatches(generatedFixture, actualRound, roundDate);
+                secondDate = NextDate(roundDate, actualRoundLength);
+                AddMatches(generatedFixture, actualRound, roundDate, secondDate);
                 roundDate = NextDate(roundDate, actualRoundLength);
                 actualRound = RotateTeams(actualRound);
                 
@@ -53,8 +51,28 @@ namespace BusinessLogic
             }
 
             RemoveFreeMatches(generatedFixture);
+            DuplicateMatches(generatedFixture);
 
             return generatedFixture;
+        }
+
+        private void DuplicateMatches(ICollection<Match> generatedFixture)
+        {
+            int matchesCount = generatedFixture.Count;
+            IEnumerator<Match> matches = generatedFixture.GetEnumerator();
+            int actualRoundLength = 0;
+            for (int i = 0; i < matchesCount; i++)
+            {
+                matches.MoveNext();
+                Match current = matches.Current;
+                DateTime nextDate = NextDate(current.Date, actualRoundLength);
+                Match newMatch = new Match(current.AwayTeam, current.HomeTeam, nextDate);
+                
+                if(actualRoundLength == roundLength)
+                    actualRoundLength = 0;
+                else
+                    actualRoundLength++;
+            }
         }
 
         private void RemoveFreeMatches(ICollection<Match> generatedFixture)
@@ -112,11 +130,14 @@ namespace BusinessLogic
             return newRound;
         }
 
-        private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime roundDate)
+        private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime firstDate, DateTime secondDate)
         {
             for(int i = 0; i < actualRound.GetLength(1); i++){
-                Match newMatch = new Match(actualRound[0,i], actualRound[1,i], roundDate,sport);
-                fixture.Add(newMatch);
+                Match firstMatch = new Match(actualRound[0,i], actualRound[1,i], firstDate);
+                Match secondMatch = new Match(actualRound[1,i], actualRound[0,i], secondDate);
+
+                fixture.Add(firstMatch);
+                fixture.Add(secondMatch);
             }
         }
 
@@ -131,7 +152,7 @@ namespace BusinessLogic
             return actualRound;
         }
 
-        private void SetInitialDate(DateTime value)
+         private void SetInitialDate(DateTime value)
         {
             initialDate = value;
         }
@@ -145,6 +166,5 @@ namespace BusinessLogic
         {
             daysBetweenRounds = value;
         }
-   
     }
 }
