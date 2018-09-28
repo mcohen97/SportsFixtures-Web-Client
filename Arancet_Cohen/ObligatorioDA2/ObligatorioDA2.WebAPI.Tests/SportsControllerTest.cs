@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.WebAPI.Controllers;
+using ObligatorioDA2.WebAPI.Models;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -17,7 +19,7 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class SportsControllerTest
     {
         private Mock<ISportRepository> repo;
-        private SportsControllerTest controllerToTest;
+        private SportsController controllerToTest;
 
         [TestInitialize]
         public void SetUp() {
@@ -34,6 +36,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             repo.Setup(r => r.Get(2)).Returns(testSport1);
             repo.Setup(r => r.Get(It.Is<int>(x => (x != 2) && (x !=3)))).Throws(new SportNotFoundException());
             repo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport(3,"Basketball"), new Sport(2,"Tennis") });
+
+            controllerToTest = new SportsController(repo.Object);
         }
 
         [TestMethod]
