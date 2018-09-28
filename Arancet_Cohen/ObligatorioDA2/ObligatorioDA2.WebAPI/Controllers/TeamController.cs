@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using RepositoryInterface;
 
@@ -25,8 +27,34 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            return Ok();
+            IActionResult result;
+            Team fetched;
+            try {
+                fetched =TryGetTeam(id);
+                TeamModelOut transferObject = CreateModelOut(fetched);        
+                result = Ok(transferObject);
+            } catch (TeamNotFoundException e) {
+                result = new NotFoundObjectResult(e.Message);
+            }
+            return result;
         }
+
+        private Team TryGetTeam(int id)
+        {
+            return teams.Get(id);
+        }
+
+        private TeamModelOut CreateModelOut(Team fetched)
+        {
+            TeamModelOut toReturn = new TeamModelOut()
+            {
+                Id = fetched.Id,
+                Name = fetched.Name,
+                Photo = fetched.Photo
+            };
+            return toReturn;
+        }
+
 
         // POST api/values
         [HttpPost]
