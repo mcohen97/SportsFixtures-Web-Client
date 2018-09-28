@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using BusinessLogic.Exceptions;
 
 [assembly:InternalsVisibleTo("BusinessLogicTest")]
+[assembly:InternalsVisibleTo("DataRepositoriesTest")]
 
 namespace BusinessLogic
 {

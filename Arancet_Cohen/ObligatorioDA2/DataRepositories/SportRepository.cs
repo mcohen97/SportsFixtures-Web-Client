@@ -13,7 +13,7 @@ using DataRepositoryInterfaces;
 
 namespace DataRepositories
 {
-    public class SportRepository : IRepository<Sport> : ISportRepository
+    public class SportRepository : IRepository<Sport>, ISportRepository
     {
         private DatabaseConnection context;
         private SportMapper mapper;

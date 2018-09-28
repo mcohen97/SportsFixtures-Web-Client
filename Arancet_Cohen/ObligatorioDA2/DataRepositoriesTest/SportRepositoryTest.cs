@@ -1,9 +1,11 @@
 ﻿using BusinessLogic;
 using DataAccess;
+using DataRepositories;
 using DataRepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.DataAccess.Entities;
 using RepositoryInterface;
 using System;
@@ -16,14 +18,14 @@ namespace DataRepositoriesTest
     public class SportRepositoryTest
     {
         private IRepository<Sport> sportStorage;
-        private Sport sportA;
-        private Sport sportB;
+        private Mock<Sport> sportA;
+        private Mock<Sport> sportB;
         private ICollection<Team> mockTeamsA;
         private ICollection<Team> mockTeamsB;
-        private Team team1;
-        private Team team2;
-        private Team team3;
-        private Team team4;
+        private Mock<Team> team1;
+        private Mock<Team> team2;
+        private Mock<Team> team3;
+        private Mock<Team> team4;
 
         [TestInitialize]
         public void TestInitialize()
@@ -36,24 +38,22 @@ namespace DataRepositoriesTest
 
         private void CreateSports()
         {
-            sportA = Mock.Of<Sport>(s => s.Id == 1 && s.Name == "SportA");
-            sportB = Mock.Of<Sport>(s => s.Id == 2 && s.Name == "SportB");
-            Mock.Get(sportA).Setup(s => s.GetTeams()).Returns(mockTeamsA);
-            Mock.Get(sportB).Setup(s => s.GetTeams()).Returns(mockTeamsB);
-        }
+            sportA = new Mock<Sport>(1, "SportA");
+            sportB = new Mock<Sport>(2, "SportB");
+         }
 
         private void CreateTeams()
         {
-            team1 = Mock.Of<Team>(t => t.Id == 1 && t.Name == "TeamA" && t.Photo == "SomePhoto");
-            team2 = Mock.Of<Team>(t => t.Id == 2 && t.Name == "TeamB" && t.Photo == "SomePhoto");
-            team3 = Mock.Of<Team>(t => t.Id == 3 && t.Name == "TeamC" && t.Photo == "SomePhoto");
-            team4 = Mock.Of<Team>(t => t.Id == 4 && t.Name == "TeamD" && t.Photo == "SomePhoto");
-            Mock.Get(team1).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
-            Mock.Get(team2).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
-            Mock.Get(team3).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 3);
-            Mock.Get(team4).Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 4);
-            mockTeamsA = new List<Team> { team1, team2 };
-            mockTeamsB = new List<Team> { team3, team4 };
+            team1 = new Mock<Team>(1, "TeamA", "SomePhoto");
+            team2 = new Mock<Team>(2 , "TeamB" , "SomePhoto");
+            team3 = new Mock<Team>(3, "TeamC", "SomePhoto");
+            team4 = new Mock<Team>(4, "TeamD", "SomePhoto");
+            team1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
+            team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
+            team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 3);
+            team4.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 4);
+            mockTeamsA = new List<Team> { team1.Object, team2.Object };
+            mockTeamsB = new List<Team> { team3.Object, team4.Object };
         }
 
         private DatabaseConnection CreateContext()
@@ -85,7 +85,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void AddSportTest()
         {
-            sportStorage.Add(sportA);
+            sportStorage.Add(sportA.Object);
             Assert.AreEqual(1, sportStorage.GetAll().Count);
         }
 
@@ -93,32 +93,32 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportAlreadyExistsException))]
         public void AddAlreadyExistentTeamTest()
         {
-            sportStorage.Add(sportA);
-            sportStorage.Add(sportA);
+            sportStorage.Add(sportA.Object);
+            sportStorage.Add(sportA.Object);
         }
 
         [TestMethod]
         public void GetSportTest()
         {
             ISportRepository specific = (ISportRepository)sportStorage;
-            sportStorage.Add(sportA);
-            Sport sportInDb = specific.GetTeamByName("SportA");
+            sportStorage.Add(sportA.Object);
+            Sport sportInDb = specific.GetSportByName("SportA");
             Assert.AreEqual(sportA, sportInDb);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TeamNotFoundException))]
+        [ExpectedException(typeof(SportNotFoundException))]
         public void GetNotExistentTeamTest()
         {
             ISportRepository specific = (ISportRepository)sportStorage;
-            Sport teamInDb = specific.GetTeamByName("DreamTeam");
+            Sport teamInDb = specific.GetSportByName("DreamSport");
         }
 
         [TestMethod]
         public void ExistsTeamTest()
         {
-            sportStorage.Add(sportA);
-            bool result = sportStorage.Exists(sportA);
+            sportStorage.Add(sportA.Object);
+            bool result = sportStorage.Exists(sportA.Object);
             Assert.IsTrue(result);
         }
 
@@ -126,16 +126,16 @@ namespace DataRepositoriesTest
         public void DoesNotExistTest()
         {
 
-            sportStorage.Add(sportA);
-            bool result = sportStorage.Exists(sportB);
+            sportStorage.Add(sportA.Object);
+            bool result = sportStorage.Exists(sportB.Object);
             Assert.IsFalse(result);
         }
 
         [TestMethod]
         public void DeleteTest()
         {
-            sportStorage.Add(sportA);
-            sportStorage.Delete(sportA.Id);
+            sportStorage.Add(sportA.Object);
+            sportStorage.Delete(sportA.Object.Id);
             Assert.IsTrue(sportStorage.IsEmpty());
         }
 
@@ -144,25 +144,25 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportNotFoundException))]
         public void DeleteNotExistentTest()
         { 
-            sportStorage.Add(sportA);
-            sportStorage.Delete(sportA.Id);
+            sportStorage.Add(sportA.Object);
+            sportStorage.Delete(sportA.Object.Id);
         }
 
         [TestMethod]
         [ExpectedException(typeof(SportNotFoundException))]
         public void DeleteByIdNotExistentTest()
         {
-            sportStorage.Add(sportA);
-            sportStorage.Delete(sportB.Id);
+            sportStorage.Add(sportA.Object);
+            sportStorage.Delete(sportB.Object.Id);
         }
 
         [TestMethod]
         public void ModifySportTest()
         {
-            sportStorage.Add(sportA);
+            sportStorage.Add(sportA.Object);
             sportA.Name = "SportAcus";
-            sportStorage.Modify(sportA);
-            Sport editedSport = sportStorage.Get(sportA.Id);
+            sportStorage.Modify(sportA.Object);
+            Sport editedSport = sportStorage.Get(sportA.Object.Id);
             Assert.AreEqual(sportA.Name, editedSport.Name);
         }
 
@@ -170,15 +170,15 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportNotFoundException))]
         public void ModifyNotExistentTest()
         {
-            sportStorage.Modify(sportA);
+            sportStorage.Modify(sportA.Object);
         }
 
         [TestMethod]
         public void ClearTest()
         {
 
-            sportStorage.Add(sportA);
-            sportStorage.Add(sportB);
+            sportStorage.Add(sportA.Object);
+            sportStorage.Add(sportB.Object);
 
             sportStorage.Clear();
             Assert.IsTrue(sportStorage.IsEmpty());
@@ -188,8 +188,8 @@ namespace DataRepositoriesTest
         public void GetAllTest()
         {
       
-            sportStorage.Add(sportA);
-            sportStorage.Add(sportB);
+            sportStorage.Add(sportA.Object);
+            sportStorage.Add(sportB.Object);
 
             ICollection<Sport> sports = sportStorage.GetAll();
 
@@ -199,9 +199,9 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetByNameTest()
         {
-            sportStorage.Add(sportA);
-            sportStorage = (ISportRepository)sportStorage;
-            Sport sportInDb = sportStorage.Get(sportA.Id);
+            sportStorage.Add(sportA.Object);
+            ISportRepository specific = (ISportRepository) sportStorage;
+            Sport sportInDb = specific.GetSportByName(sportA.Name);
             Assert.AreEqual("SportA", sportA.Name);
         }
 
@@ -209,7 +209,15 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportNotFoundException))]
         public void GetByIdNotExistentSportTest()
         {
-            Sport sportsInDb = sportStorage.Get(sportA.Id);
+            Sport sportsInDb = sportStorage.Get(sportA.Object.Id);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SportNotFoundException))]
+        public void GetByNameNotExistentSportTest()
+        {
+            ISportRepository specific = (ISportRepository)sportStorage;
+            Sport sportsInDb = specific.GetSportByName(sportA.Name);
         }
     }
 }

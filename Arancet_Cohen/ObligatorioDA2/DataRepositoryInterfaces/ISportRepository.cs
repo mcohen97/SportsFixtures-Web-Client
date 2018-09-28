@@ -1,10 +1,12 @@
-﻿using System;
+﻿using BusinessLogic;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace DataRepositoryInterfaces
 {
-    interface ISportRepository
+    public interface ISportRepository
     {
-    }
+        Sport GetSportByName(string name);
+     }
 }

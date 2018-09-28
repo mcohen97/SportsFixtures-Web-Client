@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using BusinessLogic.Exceptions;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("DataRepositoriesTest")]
 
 namespace BusinessLogic
 {
@@ -9,7 +12,7 @@ namespace BusinessLogic
         private string name;
         private string photo;
         private int id;
-
+        
         public Team(string name, string photo) {
             Name = name;
             Photo = photo;
