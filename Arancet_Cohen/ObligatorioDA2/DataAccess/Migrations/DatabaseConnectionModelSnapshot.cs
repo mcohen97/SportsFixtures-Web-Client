@@ -75,7 +75,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SportEntity");
+                    b.ToTable("Sports");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
@@ -116,13 +116,12 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Surname");
 
-                    b.Property<string>("UserName");
+                    b.Property<string>("UserName")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserName")
-                        .IsUnique()
-                        .HasFilter("[UserName] IS NOT NULL");
+                    b.HasAlternateKey("UserName");
 
                     b.ToTable("Users");
                 });

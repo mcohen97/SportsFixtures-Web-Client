@@ -25,7 +25,7 @@ namespace DataAccess
 
             modelBuilder.Entity<SportEntity>().HasKey(s => s.Id);
             modelBuilder.Entity<TeamEntity>().HasAlternateKey(t => t.Name);
-            modelBuilder.Entity<UserEntity>().HasIndex(u => u.UserName).IsUnique();
+            modelBuilder.Entity<UserEntity>().HasAlternateKey(u => u.UserName);
             //modelBuilder.Entity<UserEntity>().HasAlternateKey(u => u.UserName);
             //modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
             //modelBuilder.Entity<CommentEntity>().HasOne<UserEntity>(ce => ce.Maker);

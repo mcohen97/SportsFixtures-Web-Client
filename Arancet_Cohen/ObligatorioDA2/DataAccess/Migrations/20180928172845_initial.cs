@@ -9,18 +9,16 @@ namespace DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Teams",
+                name: "Sports",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: false),
-                    Photo = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
-                    table.UniqueConstraint("AK_Teams_Name", x => x.Name);
+                    table.PrimaryKey("PK_Sports", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,6 +41,28 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: false),
+                    Photo = table.Column<string>(nullable: true),
+                    SportEntityId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.UniqueConstraint("AK_Teams_Name", x => x.Name);
+                    table.ForeignKey(
+                        name: "FK_Teams_Sports_SportEntityId",
+                        column: x => x.SportEntityId,
+                        principalTable: "Sports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Matches",
                 columns: table => new
                 {
@@ -50,7 +70,8 @@ namespace DataAccess.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     HomeTeamId = table.Column<int>(nullable: true),
                     AwayTeamId = table.Column<int>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false)
+                    Date = table.Column<DateTime>(nullable: false),
+                    SportEntityId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,6 +88,12 @@ namespace DataAccess.Migrations
                         principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Matches_Sports_SportEntityId",
+                        column: x => x.SportEntityId,
+                        principalTable: "Sports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,6 +142,16 @@ namespace DataAccess.Migrations
                 name: "IX_Matches_HomeTeamId",
                 table: "Matches",
                 column: "HomeTeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_SportEntityId",
+                table: "Matches",
+                column: "SportEntityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_SportEntityId",
+                table: "Teams",
+                column: "SportEntityId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -130,6 +167,9 @@ namespace DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Teams");
+
+            migrationBuilder.DropTable(
+                name: "Sports");
         }
     }
 }

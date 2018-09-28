@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20180927134111_initial")]
+    [Migration("20180928172845_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,13 +54,30 @@ namespace DataAccess.Migrations
 
                     b.Property<int?>("HomeTeamId");
 
+                    b.Property<int>("SportEntityId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AwayTeamId");
 
                     b.HasIndex("HomeTeamId");
 
+                    b.HasIndex("SportEntityId");
+
                     b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.SportEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sports");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
@@ -74,9 +91,13 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Photo");
 
+                    b.Property<int>("SportEntityId");
+
                     b.HasKey("Id");
 
                     b.HasAlternateKey("Name");
+
+                    b.HasIndex("SportEntityId");
 
                     b.ToTable("Teams");
                 });
@@ -127,6 +148,19 @@ namespace DataAccess.Migrations
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "HomeTeam")
                         .WithMany()
                         .HasForeignKey("HomeTeamId");
+
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity", "SportEntity")
+                        .WithMany()
+                        .HasForeignKey("SportEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
+                {
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity")
+                        .WithMany("Teams")
+                        .HasForeignKey("SportEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
