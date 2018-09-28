@@ -8,6 +8,7 @@ using ObligatorioDA2.DataAccess.Domain.Mappers;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace DataRepositories
 {
@@ -43,17 +44,32 @@ namespace DataRepositories
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            if (!Exists(id))
+                throw new SportNotFoundException();
+
+            SportEntity sportInDb = context.Sports.First(s => s.Id == id);
+            context.Sports.Remove(sportInDb);
+            context.SaveChanges();
+        }
+
+        private bool Exists(int id)
+        {
+            return context.Sports.Any(s => s.Id == id);
         }
 
         public bool Exists(Sport record)
         {
-            throw new NotImplementedException();
+            return Exists(record.Id);
         }
 
         public Sport Get(int id)
         {
-            throw new NotImplementedException();
+            if (!Exists(id))
+                throw new SportNotFoundException();
+
+            SportEntity sportInDb = context.Sports.First(s => s.Id == id);
+            Sport domainSport = mapper.ToSport(sportInDb);
+            return domainSport;
         }
 
         public ICollection<Sport> GetAll()
