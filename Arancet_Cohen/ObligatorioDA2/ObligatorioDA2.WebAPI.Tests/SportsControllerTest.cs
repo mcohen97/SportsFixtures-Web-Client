@@ -130,5 +130,46 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(notFound);
             Assert.IsNotNull(notFound.Value);
         }
+
+        [TestMethod]
+        public void PutModifyTest() {
+
+            SportModelIn input = new SportModelIn() { Name = "Soccer" };
+            IActionResult result = controllerToTest.Put(2,input);
+
+            OkObjectResult okResult = result as OkObjectResult;
+
+            repo.Verify(r => r.Modify(It.IsAny<Sport>()), Times.Once);
+            repo.Verify(r => r.Add(It.IsAny<Sport>()), Times.Never);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+        }
+
+        [TestMethod]
+        public void PutAddTest() {
+            repo.Setup(r => r.Modify(It.IsAny<Sport>())).Throws(new SportNotFoundException());
+            SportModelIn input = new SportModelIn() { Name = "Soccer" };
+            IActionResult result = controllerToTest.Put(2,input);
+
+            CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
+
+            repo.Verify(r => r.Modify(It.IsAny<Sport>()), Times.Once);
+            repo.Verify(r => r.Add(It.IsAny<Sport>()), Times.Once);
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(createdResult.StatusCode, 201);
+            Assert.AreEqual(createdResult.RouteName, "GetById");
+        }
+
+        [TestMethod]
+        public void PutInvalidTest() {
+            SportModelIn input = new SportModelIn() {};
+            controllerToTest.ModelState.AddModelError("", "Error");
+            IActionResult result = controllerToTest.Put(input);
+
+
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+        }
     }
 }
