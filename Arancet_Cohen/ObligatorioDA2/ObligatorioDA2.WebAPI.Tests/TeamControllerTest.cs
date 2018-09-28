@@ -132,5 +132,22 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(modelIn.Name, modelOut.Name);
         }
+
+        [TestMethod]
+        public void PutWrongFormatTest() {
+            //Arrange
+            var modelIn = new TeamModelIn()
+            {
+                Photo = "/MyResource/DreamTeam.png"
+            };
+            //We need to force the error in de ModelState
+            controller.ModelState.AddModelError("", "Error");
+            IActionResult result = controller.Put(2,modelIn);
+            //Act
+            BadRequestObjectResult createdResult = result as BadRequestObjectResult;
+            //Assert
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(400, createdResult.StatusCode);
+        }
     }
 }
