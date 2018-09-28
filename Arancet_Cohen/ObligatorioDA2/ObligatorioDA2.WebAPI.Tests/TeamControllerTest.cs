@@ -71,6 +71,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkObjectResult okResult = result as OkObjectResult;
             TeamModelOut resultTeam = okResult.Value as TeamModelOut;
 
+            repo.Verify(r => r.Get(2), Times.Once);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(200,okResult.StatusCode);
@@ -82,6 +83,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             IActionResult result = controller.Get(15) as IActionResult;
             NotFoundObjectResult notFoundResult = result as NotFoundObjectResult;
 
+            repo.Verify(r => r.Get(2), Times.Once);
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(notFoundResult.StatusCode, 404);
         }
