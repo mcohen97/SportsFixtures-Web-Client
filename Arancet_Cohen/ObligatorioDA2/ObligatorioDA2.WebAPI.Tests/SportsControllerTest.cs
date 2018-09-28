@@ -58,5 +58,18 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(output);
             Assert.AreEqual(output.Name, input.Name);
         }
+
+        [TestMethod]
+        public void CreateInvalidSportTest() {
+            SportModelIn input = new SportModelIn();
+
+            controllerToTest.ModelState.AddModelError("", "Error");
+            IActionResult result = controllerToTest.Post(input);
+
+            BadRequestObjectResult createdResult = result as BadRequestObjectResult;
+
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(400, createdResult.StatusCode);
+        }
     }
 }
