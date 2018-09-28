@@ -131,8 +131,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            IActionResult result;
+            try
+            {
+               teams.Delete(id);
+                result = Ok();
+            }
+            catch (TeamNotFoundException e) {
+                result = BadRequest(e.Message);
+            }
+            return result;
         }
     }
 }
