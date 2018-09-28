@@ -9,10 +9,11 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using DataRepositoryInterfaces;
 
 namespace DataRepositories
 {
-    public class SportRepository : IRepository<Sport>
+    public class SportRepository : IRepository<Sport> : ISportRepository
     {
         private DatabaseConnection context;
         private SportMapper mapper;
@@ -91,6 +92,20 @@ namespace DataRepositories
             SportEntity modified = mapper.ToEntity(entity);
             context.Entry(modified).State = EntityState.Modified;
             context.SaveChanges();
+        }
+
+        public Sport GetSportByName(string name)
+        {
+            if (!Exists(name))
+                throw new SportNotFoundException();
+
+            SportEntity sportInDb = context.Sports.First(s => s.Name == name);
+            return mapper.ToSport(sportInDb);
+        }
+
+        private bool Exists(string name)
+        {
+            return context.Sports.Any(s => s.Name == name);
         }
     }
 }
