@@ -103,7 +103,7 @@ namespace DataRepositoriesTest
             ISportRepository specific = (ISportRepository)sportStorage;
             sportStorage.Add(sportA.Object);
             Sport sportInDb = specific.GetSportByName("SportA");
-            Assert.AreEqual(sportA, sportInDb);
+            Assert.AreEqual(sportA.Object.Id, sportInDb.Id);
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ namespace DataRepositoriesTest
         public void DeleteNotExistentTest()
         { 
             sportStorage.Add(sportA.Object);
-            sportStorage.Delete(sportA.Object.Id);
+            sportStorage.Delete(sportB.Object.Id);
         }
 
         [TestMethod]
@@ -161,9 +161,10 @@ namespace DataRepositoriesTest
         {
             sportStorage.Add(sportA.Object);
             sportA.Name = "SportAcus";
+            CreateContext();
             sportStorage.Modify(sportA.Object);
             Sport editedSport = sportStorage.Get(sportA.Object.Id);
-            Assert.AreEqual(sportA.Name, editedSport.Name);
+            Assert.AreEqual(sportA.Object.Name, editedSport.Name);
         }
 
         [TestMethod]
@@ -201,8 +202,8 @@ namespace DataRepositoriesTest
         {
             sportStorage.Add(sportA.Object);
             ISportRepository specific = (ISportRepository) sportStorage;
-            Sport sportInDb = specific.GetSportByName(sportA.Name);
-            Assert.AreEqual("SportA", sportA.Name);
+            Sport sportInDb = specific.GetSportByName(sportA.Object.Name);
+            Assert.AreEqual("SportA", sportA.Object.Name);
         }
 
         [TestMethod]
