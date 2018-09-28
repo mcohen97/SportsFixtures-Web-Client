@@ -63,7 +63,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
-                Team toAdd = new Team(team.Name, "");
+                Team toAdd = new Team(team.Name, team.Photo);
                 
                 teams.Add(toAdd);
 
@@ -85,8 +85,48 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] TeamModelIn value)
         {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = PutValid(id, value);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult PutValid(int id, TeamModelIn value)
+        {
+            IActionResult result;
+            try
+            {
+                Team toModify = new Team(id,value.Name, value.Photo);
+                teams.Modify(toModify);
+                result = Ok();
+            }
+            catch(TeamNotFoundException) {
+              result = PostId(id, value);
+            }
+            return result;
+        }
+
+        private IActionResult PostId(int id, TeamModelIn team)
+        {
+            Team toAdd = new Team(team.Name, team.Photo);
+
+            teams.Add(toAdd);
+
+            TeamModelOut addedTeam = new TeamModelOut()
+            {
+                Id = id,
+                Name = team.Name,
+                Photo = team.Photo
+            };
+
+            return CreatedAtRoute("GetById", new { id = addedTeam.Id }, addedTeam);
         }
 
         // DELETE api/values/5
