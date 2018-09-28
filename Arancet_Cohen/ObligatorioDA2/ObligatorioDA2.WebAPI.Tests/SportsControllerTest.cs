@@ -51,6 +51,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             SportModelOut output = createdResult.Value as SportModelOut;
 
+            repo.Verify(r => r.Add(It.IsAny<Sport>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(createdResult.StatusCode, 201);
@@ -68,8 +69,23 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             BadRequestObjectResult createdResult = result as BadRequestObjectResult;
 
+            repo.Verify(r => r.Add(It.IsAny<Sport>()), Times.Never);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(400, createdResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void GetSportTest() {
+
+            IActionResult result = controllerToTest.Get(2);
+            OkObjectResult okResult = result as OkObjectResult;
+            SportModelOut modelOut = okResult.Value as SportModelOut;
+
+            repo.Verify(r => r.Get(2), Times.Once);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(modelOut.Name, "Tennis");
+            Assert.AreEqual(okResult.StatusCode, 200);
         }
     }
 }
