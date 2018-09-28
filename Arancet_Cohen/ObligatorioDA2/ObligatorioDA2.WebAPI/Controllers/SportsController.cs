@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BusinessLogic;
 using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +44,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
+        [HttpGet]
+        public IActionResult Get() {
+            ICollection<Sport> allOfThem = sports.GetAll();
+            IEnumerable<SportModelOut> output = allOfThem.Select(s=> new SportModelOut {Name=s.Name, Id=s.Id });
+            return Ok(output);
+        }
+
+        
+
         [HttpGet("{id}", Name = "GetById")]
         public IActionResult Get(int id)
         {
@@ -65,5 +75,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             SportModelOut output = new SportModelOut() { Id = id, Name = retrieved.Name };
             return Ok(output);       
         }
+
+
     }
 }
