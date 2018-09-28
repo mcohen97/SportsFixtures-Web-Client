@@ -76,6 +76,23 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(output);       
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id) {
+            IActionResult result;
+            try
+            {
+                result = TryDelete(id);
+            }
+            catch (SportNotFoundException e) {
+                result = NotFound(e.Message);
+            }
+            return result;
+        }
 
+        private IActionResult TryDelete(int id)
+        {
+            sports.Delete(id);
+            return Ok();
+        }
     }
 }
