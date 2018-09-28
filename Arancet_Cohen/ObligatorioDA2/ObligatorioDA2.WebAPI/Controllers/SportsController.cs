@@ -1,53 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BusinessLogic;
 using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.WebAPI.Models;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
-
     [Route("api/[controller]")]
-    public class SportsController : Controller
+    [ApiController]
+    public class SportsController : ControllerBase
     {
-        ISportRepository sports;
-        public SportsController(ISportRepository aRepository) {
-            sports = aRepository;
-        }
-        
-        // GET: api/<controller>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
+        private ISportRepository sports;
+        public SportsController(ISportRepository aRepo) {
+            sports=aRepo;
         }
 
-        // GET api/<controller>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IActionResult Post([FromBody]SportModelIn modelIn)
         {
+            Sport toAdd = new Sport(modelIn.Name);
+            sports.Add(toAdd);
+            SportModelOut modelOut = new SportModelOut()
+            {
+                Id = 1,
+                Name = toAdd.Name
+            };
+            IActionResult result = CreatedAtRoute("GetById", new { id = modelOut.Id }, modelOut);
+            return result;
         }
 
-        // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
