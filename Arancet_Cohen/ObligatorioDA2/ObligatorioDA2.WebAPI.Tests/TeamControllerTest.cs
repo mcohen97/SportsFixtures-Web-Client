@@ -73,7 +73,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
-            Assert.AreEqual(201,okResult.StatusCode);
+            Assert.AreEqual(200,okResult.StatusCode);
             Assert.AreEqual(resultTeam.Name, team.Name);
         }
 
