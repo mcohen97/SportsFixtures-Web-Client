@@ -75,7 +75,15 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(201,okResult.StatusCode);
             Assert.AreEqual(resultTeam.Name, team.Name);
+        }
 
+        [TestMethod]
+        public void GetTeamNotFoundTest() {
+            IActionResult result = controller.Get(15) as IActionResult;
+            NotFoundObjectResult notFoundResult = result as NotFoundObjectResult;
+
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(notFoundResult.StatusCode, 404);
         }
     }
 }
