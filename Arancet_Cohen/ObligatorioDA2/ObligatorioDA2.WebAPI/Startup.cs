@@ -57,6 +57,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRepository<Team>, TeamRepository>();
             services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<ISportRepository, SportRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
