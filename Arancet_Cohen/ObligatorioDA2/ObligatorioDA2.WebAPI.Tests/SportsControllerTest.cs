@@ -87,5 +87,16 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(modelOut.Name, "Tennis");
             Assert.AreEqual(okResult.StatusCode, 200);
         }
+
+        [TestMethod]
+        public void GetNotExistentTest() {
+            IActionResult result = controllerToTest.Get(5);
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+
+            repo.Verify(r => r.Get(5), Times.Once);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(notFound.StatusCode, 404);
+        }
+    
     }
 }
