@@ -20,6 +20,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]SportModelIn modelIn)
         {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = CreateValidSport(modelIn);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult CreateValidSport(SportModelIn modelIn) {
             Sport toAdd = new Sport(modelIn.Name);
             sports.Add(toAdd);
             SportModelOut modelOut = new SportModelOut()
