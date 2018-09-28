@@ -35,7 +35,7 @@ namespace BusinessLogicTest
             daysBetweenRounds = 5;
             played = new Mock<Sport>("Soccer");
             oneMatchFixture = new OneMatchFixture(initialDate,roundLength, daysBetweenRounds,played.Object);
-            homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds);
+            homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds, played.Object);
             
         }
 
@@ -141,7 +141,7 @@ namespace BusinessLogicTest
                 for (int j = 0; j < teamsArray.Length; j++)
                 {
                     if(i != j)
-                        matchesGenerated.Add(new BusinessLogic.Match(teamsArray[i], teamsArray[j], new DateTime()));
+                        matchesGenerated.Add(new BusinessLogic.Match(teamsArray[i], teamsArray[j], new DateTime(),played.Object));
                 }
             }
             return matchesGenerated;

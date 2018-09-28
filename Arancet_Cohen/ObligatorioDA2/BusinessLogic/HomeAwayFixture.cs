@@ -8,9 +8,11 @@ namespace BusinessLogic
         private DateTime initialDate;
         private int roundLength;
         private int daysBetweenRounds;
+        private Sport played;
 
-        public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
+        public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds,Sport sport)
         {
+            this.played = sport;
             this.initialDate = initialDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
@@ -66,7 +68,7 @@ namespace BusinessLogic
                 matches.MoveNext();
                 Match current = matches.Current;
                 DateTime nextDate = NextDate(current.Date, actualRoundLength);
-                Match newMatch = new Match(current.AwayTeam, current.HomeTeam, nextDate);
+                Match newMatch = new Match(current.AwayTeam, current.HomeTeam, nextDate,played);
                 
                 if(actualRoundLength == roundLength)
                     actualRoundLength = 0;
@@ -133,8 +135,8 @@ namespace BusinessLogic
         private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime firstDate, DateTime secondDate)
         {
             for(int i = 0; i < actualRound.GetLength(1); i++){
-                Match firstMatch = new Match(actualRound[0,i], actualRound[1,i], firstDate);
-                Match secondMatch = new Match(actualRound[1,i], actualRound[0,i], secondDate);
+                Match firstMatch = new Match(actualRound[0,i], actualRound[1,i], firstDate,played);
+                Match secondMatch = new Match(actualRound[1,i], actualRound[0,i], secondDate,played);
 
                 fixture.Add(firstMatch);
                 fixture.Add(secondMatch);

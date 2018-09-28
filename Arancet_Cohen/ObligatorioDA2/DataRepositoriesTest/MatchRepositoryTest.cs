@@ -38,8 +38,8 @@ namespace DataRepositoriesTest
 
         private Mock<BusinessLogic.Match> BuildFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>("Manchester United","aPath");
-            Mock<Team> away = new Mock<Team>("Real Madrid", "aPath");
+            Mock<Team> home = new Mock<Team>(3,"Manchester United","aPath");
+            Mock<Team> away = new Mock<Team>(4,"Real Madrid", "aPath");
             Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3,home.Object, away.Object, DateTime.Now,sport.Object);
             return match;
         }
@@ -131,16 +131,16 @@ namespace DataRepositoriesTest
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void ModifyUnexistentItemTest() {
-            Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
-            Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath");
+            Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath");
+            Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath");
             Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
             matchesStorage.Modify(match.Object);
         }
 
         private Mock<BusinessLogic.Match> BuildModifiedFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
-            Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath");
+            Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath");
+            Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath");
             Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
             return match;
         }
