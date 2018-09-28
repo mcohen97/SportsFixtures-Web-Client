@@ -57,7 +57,7 @@ namespace BusinessLogic
                 return false;
 
             var team = obj as Team;
-            return Name == team.Name;
+            return Id == team.Id;
         }
 
         public override int GetHashCode()
