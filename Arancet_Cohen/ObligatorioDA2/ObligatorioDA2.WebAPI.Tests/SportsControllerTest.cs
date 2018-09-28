@@ -97,6 +97,16 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(notFound);
             Assert.AreEqual(notFound.StatusCode, 404);
         }
-    
+
+        [TestMethod]
+        public void GetAlltest() {
+            IActionResult result = controllerToTest.Get();
+
+            OkObjectResult okResult = result as OkObjectResult;
+            IEnumerable<SportModelOut> resultObject = okResult.Value as IEnumerable<SportModelOut>;
+
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(resultObject);
+        }
     }
 }
