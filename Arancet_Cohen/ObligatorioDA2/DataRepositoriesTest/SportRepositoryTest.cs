@@ -38,8 +38,8 @@ namespace DataRepositoriesTest
         {
             sportA = Mock.Of<Sport>(s => s.Id == 1 && s.Name == "SportA");
             sportB = Mock.Of<Sport>(s => s.Id == 2 && s.Name == "SportB");
-            Mock.Get(sportA).Setup(s => s.GetTeams()).Returns(mockTeamsA.GetEnumerator());
-            Mock.Get(sportB).Setup(s => s.GetTeams()).Returns(mockTeamsB.GetEnumerator());
+            Mock.Get(sportA).Setup(s => s.GetTeams()).Returns(mockTeamsA);
+            Mock.Get(sportB).Setup(s => s.GetTeams()).Returns(mockTeamsB);
         }
 
         private void CreateTeams()
