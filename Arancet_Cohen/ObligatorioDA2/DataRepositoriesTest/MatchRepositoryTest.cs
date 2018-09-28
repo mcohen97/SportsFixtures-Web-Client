@@ -18,11 +18,9 @@ namespace DataRepositoriesTest
     {
         IMatchRepository matchesStorage;
         Mock<BusinessLogic.Match> match;
-        Mock<Sport> sport;
 
         [TestInitialize]
         public void SetUp() {
-            sport = new Mock<Sport>("Soccer");
             SetUpRepository();
             match = BuildFakeMatch(); 
             matchesStorage.Clear();
@@ -39,8 +37,8 @@ namespace DataRepositoriesTest
         private Mock<BusinessLogic.Match> BuildFakeMatch()
         {
             Mock<Team> home = new Mock<Team>(3,"Manchester United","aPath");
-            Mock<Team> away = new Mock<Team>(4,"Real Madrid", "aPath");
-            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3,home.Object, away.Object, DateTime.Now,sport.Object);
+            Mock<Team> away = new Mock<Team>(5,"Real Madrid", "aPath");
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3,home.Object, away.Object, DateTime.Now);
             return match;
         }
 
@@ -133,7 +131,7 @@ namespace DataRepositoriesTest
         public void ModifyUnexistentItemTest() {
             Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath");
             Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath");
-            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2));
             matchesStorage.Modify(match.Object);
         }
 
@@ -141,7 +139,7 @@ namespace DataRepositoriesTest
         {
             Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath");
             Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath");
-            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
+            Mock<BusinessLogic.Match> match = new Mock<BusinessLogic.Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2));
             return match;
         }
 
