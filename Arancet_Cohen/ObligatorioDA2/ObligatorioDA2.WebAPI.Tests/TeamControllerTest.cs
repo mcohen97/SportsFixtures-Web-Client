@@ -83,7 +83,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             IActionResult result = controller.Get(15) as IActionResult;
             NotFoundObjectResult notFoundResult = result as NotFoundObjectResult;
 
-            repo.Verify(r => r.Get(2), Times.Once);
+            repo.Verify(r => r.Get(15), Times.Once);
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(notFoundResult.StatusCode, 404);
         }
@@ -97,14 +97,13 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Photo = "/MyResource/DreamTeam.png"
             };
 
-            IActionResult result = controller.Put(modelIn);
-            OkObjectResult okResult = result as OkObjectResult;
+            IActionResult result = controller.Put(2,modelIn);
+            OkResult okResult = result as OkResult;
 
             //verify it modifies but not adds
             repo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
             repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Never);
             Assert.IsNotNull(okResult);
-            Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(okResult.StatusCode, 200);
         }
 
