@@ -133,7 +133,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //assert
             repo.Verify(r => r.Modify("Soccer",It.IsAny<Team>()), Times.Once);
             repo.Verify(r => r.Add("Soccer",It.IsAny<Team>()), Times.Once);
-            Assert.AreEqual("GetById", createdResult.RouteName);
+            Assert.AreEqual("GetTeamById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(modelIn.Name, modelOut.Name);
         }

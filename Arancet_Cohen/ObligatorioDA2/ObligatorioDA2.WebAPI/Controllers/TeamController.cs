@@ -27,7 +27,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
 
-        [HttpGet("{sportName}/{teamName}", Name = "GetById")]
+        [HttpGet("{sportName}/{teamName}", Name = "GetTeamById")]
         public IActionResult Get(string sportName, string teamName)
         {
             IActionResult result;
@@ -132,7 +132,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Photo = team.Photo
             };
 
-            return CreatedAtRoute("GetById", new { id = addedTeam.Id }, addedTeam);
+            return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);
         }
 
         [HttpDelete("{sportName}/{teamName}")]

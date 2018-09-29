@@ -57,7 +57,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
 
-        [HttpGet("{name}", Name = "GetById")]
+        [HttpGet("{name}", Name = "GetSportById")]
         public IActionResult Get(string name)
         {
 
