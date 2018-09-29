@@ -27,14 +27,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             factory = new UserFactory();
         }
 
-        // GET api/values/5
-        [HttpGet("{id}", Name = "GetById")]
-        public IActionResult Get(int id)
+      
+        [HttpGet("{username}", Name = "GetById")]
+        public IActionResult Get(string username)
         {
             IActionResult result;
             try
             {
-                UserModelOut toReturn = TryGetUser(id);
+                UserModelOut toReturn = TryGetUser(username);
                 result= Ok(toReturn);
             }catch (UserNotFoundException e) {
                 result = new NotFoundResult();
@@ -42,8 +42,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private UserModelOut TryGetUser(int id) {
-            User queried = repo.Get(id);
+        private UserModelOut TryGetUser(string username) {
+            User queried = repo.Get(username);
             UserModelOut toReturn = new UserModelOut
             {
                 Name = queried.Name,
@@ -54,7 +54,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return toReturn;
         }
 
-        // POST api/values
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public IActionResult Post([FromBody] UserModelIn user)
@@ -96,15 +95,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return CreatedAtRoute("GetById", new { username = added.UserName }, addedUser);
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
+        [HttpPut("{username}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult Put(int id, [FromBody] UserModelIn toModify)
+        public IActionResult Put(string username, [FromBody] UserModelIn toModify)
         {
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
-                ModifyValidUser(id, toModify);
+                ModifyValidUser(username, toModify);
                 toReturn = Ok();
             }
             else {
@@ -113,7 +111,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return toReturn;
         }
 
-        private void ModifyValidUser(int id, UserModelIn toModify)
+        private void ModifyValidUser(string id, UserModelIn toModify)
         {
             UserId identity = new UserId
             {
@@ -134,16 +132,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{username}")]
         [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string username)
         {
-           // var identity = HttpContext.User.Identity as ClaimsIdentity;
             IActionResult result;
             try
             {
-                repo.Delete(id);
+                repo.Delete(username);
                 result = Ok();
             }
             catch (UserNotFoundException e) {
