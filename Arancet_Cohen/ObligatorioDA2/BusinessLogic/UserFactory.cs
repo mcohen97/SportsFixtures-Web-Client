@@ -12,19 +12,10 @@ namespace BusinessLogic.Factories
             return new User(identity, true);
         }
 
-        public User CreateAdmin(UserId identity, int id)
-        {
-            return new User(identity, true,id);
-        }
-
         public User CreateFollower(UserId identity)
         {
             return new User(identity, false);
         }
 
-        public User CreateFollower(UserId identity, int id)
-        {
-            return new User(identity, false,id);
-        }
     }
 }

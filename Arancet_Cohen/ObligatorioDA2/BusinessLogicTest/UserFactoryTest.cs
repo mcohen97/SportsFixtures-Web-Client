@@ -74,17 +74,5 @@ namespace BusinessLogicTest
         public void IsNotAdmin() {
             Assert.IsFalse(factoryAdmin.IsAdmin);
         }
-
-        [TestMethod]
-        public void UnassignedIdTest() {
-            User toTest = factory.CreateAdmin(identity);
-            Assert.AreEqual(toTest.Id,-1);
-        }
-
-        [TestMethod]
-        public void AssignedIdTest() {
-            User toTest = factory.CreateFollower(identity,3);
-            Assert.AreEqual(toTest.Id, 3);
-        }
     }
 }

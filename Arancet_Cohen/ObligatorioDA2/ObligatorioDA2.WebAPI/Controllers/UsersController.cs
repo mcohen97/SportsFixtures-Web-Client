@@ -46,7 +46,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             User queried = repo.Get(id);
             UserModelOut toReturn = new UserModelOut
             {
-                Id = queried.Id,
                 Name = queried.Name,
                 Surname = queried.Surname,
                 Username = queried.UserName,
@@ -91,11 +90,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Username = added.UserName,
                 Name = added.Name,
                 Surname = added.Surname,
-                Email = added.Email,
-                Id = added.Id
+                Email = added.Email
             };
 
-            return CreatedAtRoute("GetById", new { id = added.Id }, addedUser);
+            return CreatedAtRoute("GetById", new { username = added.UserName }, addedUser);
         }
 
         // PUT api/values/5
@@ -125,7 +123,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Password = toModify.Password,
                 Email = toModify.Email
             };
-            User converted = factory.CreateFollower(identity,id);
+            User converted = factory.CreateFollower(identity);
             try
             {
                 repo.Modify(converted);

@@ -1,13 +1,12 @@
 ﻿using System;
 using BusinessLogicExceptions;
 using System.Net.Mail;
+using System.Collections.Generic;
 
 namespace BusinessLogic
 {
     public class User
     {
-        public int Id { get; private set; }
-
         private string name;
 
         public string Name { get { return name; } private set { SetName(value); } }
@@ -29,6 +28,8 @@ namespace BusinessLogic
 
         public bool IsAdmin { get; private set; }
 
+        public ICollection<Team> favourites { get; private set; }
+
         public User(UserId indentification, bool isAdmin)
         {
             Name = indentification.Name;
@@ -37,14 +38,13 @@ namespace BusinessLogic
             Password = indentification.Password;
             Email = indentification.Email;
             IsAdmin = isAdmin;
-            Id = 0;
-            
+            favourites = new List<Team>();         
         }
 
-        public User(UserId anIdentity,bool isAdmin ,int anId)
+        public User(UserId anIdentity,bool isAdmin ,ICollection<Team> someTeams)
             :this(anIdentity,isAdmin)
         {
-            Id = anId;
+            favourites = someTeams;
         }
 
         private void SetName(string aName)
@@ -112,7 +112,15 @@ namespace BusinessLogic
             return valid;
         }
 
-        
+
+        public ICollection<Team> GetFavouriteTeams()
+        {
+            return favourites;
+        }
+
+        public void AddFavourite(Team team) {
+            favourites.Add(team);
+        }
 
         public override bool Equals(object obj)
         {
@@ -128,5 +136,6 @@ namespace BusinessLogic
             }
             return areEqual;
         }
+
     }
 }

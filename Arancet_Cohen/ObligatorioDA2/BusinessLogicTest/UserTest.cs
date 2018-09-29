@@ -205,7 +205,7 @@ namespace BusinessLogicTest
         public void AddFavouriteTeamTest() {
             Team aTeam = new Team("partisanos fc", "aPath");
             toTest.AddFavourite(aTeam);
-            Assert.AreEqual(aTeam.GetFavouriteTeams().Count, 1);
+            Assert.AreEqual(toTest.GetFavouriteTeams().Count, 1);
         }
 
     }
