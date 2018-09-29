@@ -23,16 +23,11 @@ namespace DataAccess
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<SportEntity>().HasKey(s => s.Id);
-            modelBuilder.Entity<TeamEntity>().HasAlternateKey(t => t.Name);
-            modelBuilder.Entity<UserEntity>().HasAlternateKey(u => u.UserName);
-            //modelBuilder.Entity<UserEntity>().HasAlternateKey(u => u.UserName);
-            //modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
-            //modelBuilder.Entity<CommentEntity>().HasOne<UserEntity>(ce => ce.Maker);
+            modelBuilder.Entity<SportEntity>().HasKey(t => t.Name);
+            modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
+            modelBuilder.Entity<TeamEntity>().HasKey(t => new { t.SportEntityName, t.Name });
 
-            modelBuilder.Entity<SportEntity>().Property(s => s.Id).ValueGeneratedOnAdd();
-            modelBuilder.Entity<UserEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
-            modelBuilder.Entity<TeamEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<TeamEntity>().Property(u => u.Identity).ValueGeneratedOnAdd();
             modelBuilder.Entity<MatchEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<CommentEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
         }   

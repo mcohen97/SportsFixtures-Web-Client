@@ -33,8 +33,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Sport testSport1 = new Sport(2,"Tennis");
             Sport testSport2 = new Sport(3, "Basketball");
 
-            repo.Setup(r => r.Get(2)).Returns(testSport1);
-            repo.Setup(r => r.Get(It.Is<int>(x => (x != 2) && (x !=3)))).Throws(new SportNotFoundException());
+            repo.Setup(r => r.Get("Tennis")).Returns(testSport1);
+            repo.Setup(r => r.Get(It.Is<String>(x => (x != "Tennis") && (x !="Basketball")))).Throws(new SportNotFoundException());
             repo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport(3,"Basketball"), new Sport(2,"Tennis") });
 
             controllerToTest = new SportsController(repo.Object);
@@ -77,11 +77,11 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetSportTest() {
 
-            IActionResult result = controllerToTest.Get(2);
+            IActionResult result = controllerToTest.Get("Tennis");
             OkObjectResult okResult = result as OkObjectResult;
             SportModelOut modelOut = okResult.Value as SportModelOut;
 
-            repo.Verify(r => r.Get(2), Times.Once);
+            repo.Verify(r => r.Get("Tennis"), Times.Once);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(modelOut.Name, "Tennis");
@@ -90,10 +90,10 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void GetNotExistentTest() {
-            IActionResult result = controllerToTest.Get(5);
+            IActionResult result = controllerToTest.Get("Golf");
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
 
-            repo.Verify(r => r.Get(5), Times.Once);
+            repo.Verify(r => r.Get("Golf"), Times.Once);
             Assert.IsNotNull(notFound);
             Assert.AreEqual(notFound.StatusCode, 404);
         }
@@ -111,22 +111,22 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void DeleteTest() {
-            IActionResult result = controllerToTest.Delete(2);
+            IActionResult result = controllerToTest.Delete("Tennis");
 
             OkResult okResult = result as OkResult;
 
-            repo.Verify(r => r.Delete(2), Times.Once);
+            repo.Verify(r => r.Delete("Tennis"), Times.Once);
             Assert.IsNotNull(okResult);
         }
 
         [TestMethod]
         public void DeleteNotFoundTest() {
-            repo.Setup(r => r.Delete(5)).Throws(new SportNotFoundException());
+            repo.Setup(r => r.Delete("Golf")).Throws(new SportNotFoundException());
 
-            IActionResult result = controllerToTest.Delete(5);
+            IActionResult result = controllerToTest.Delete("Golf");
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
 
-            repo.Verify(r => r.Delete(5), Times.Once);
+            repo.Verify(r => r.Delete("Golf"), Times.Once);
             Assert.IsNotNull(notFound);
             Assert.IsNotNull(notFound.Value);
         }
@@ -135,7 +135,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutModifyTest() {
 
             SportModelIn input = new SportModelIn() { Name = "Soccer" };
-            IActionResult result = controllerToTest.Put(2,input);
+            IActionResult result = controllerToTest.Put("Soccer",input);
 
             OkObjectResult okResult = result as OkObjectResult;
 
@@ -149,7 +149,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutAddTest() {
             repo.Setup(r => r.Modify(It.IsAny<Sport>())).Throws(new SportNotFoundException());
             SportModelIn input = new SportModelIn() { Name = "Soccer" };
-            IActionResult result = controllerToTest.Put(2,input);
+            IActionResult result = controllerToTest.Put("Soccer",input);
 
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
 
@@ -164,7 +164,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutInvalidTest() {
             SportModelIn input = new SportModelIn() {};
             controllerToTest.ModelState.AddModelError("", "Error");
-            IActionResult result = controllerToTest.Put(2,input);
+            IActionResult result = controllerToTest.Put("Soccer",input);
 
 
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;

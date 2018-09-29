@@ -17,8 +17,8 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestInitialize]
         public void SetUp() {
             testMapper = new MatchMapper();
-            TeamEntity homeTest = new TeamEntity { Id = 3, Name = "Nacional", Photo = "aPath" };
-            TeamEntity awayTest = new TeamEntity { Id = 4, Name = "Torque", Photo = "aPath" };
+            TeamEntity homeTest = new TeamEntity { SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
+            TeamEntity awayTest = new TeamEntity { SportEntityName= "Soccer", Name = "Torque", Photo = "aPath" };
             entity = new MatchEntity()
             {
                 Id = 3,
@@ -37,13 +37,14 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestMethod]
         public void MatchToEntityHomeTest() {
             MatchEntity converted =testMapper.ToEntity(match.Object);
-            Assert.AreEqual(converted.HomeTeam.Id, entity.HomeTeam.Id);
+            Assert.AreEqual(converted.HomeTeam.SportEntityName, entity.HomeTeam.SportEntityName);
+            Assert.AreEqual(converted.HomeTeam.Name, entity.HomeTeam.Name);
         }
         [TestMethod]
         public void MatchToEntityAwayTest() {
             MatchEntity converted = testMapper.ToEntity(match.Object);
-            Assert.AreEqual(converted.AwayTeam.Id, entity.AwayTeam.Id);
-
+            Assert.AreEqual(converted.AwayTeam.SportEntityName, entity.AwayTeam.SportEntityName);
+            Assert.AreEqual(converted.AwayTeam.Name, entity.AwayTeam.Name);
         }
         [TestMethod]
         public void MatchToEntityDateTest()

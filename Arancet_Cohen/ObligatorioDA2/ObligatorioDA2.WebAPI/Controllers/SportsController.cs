@@ -14,8 +14,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class SportsController : ControllerBase
     {
         private ISportRepository sports;
-        public SportsController(ISportRepository aRepo) {
-            sports=aRepo;
+        public SportsController(ISportRepository aRepo)
+        {
+            sports = aRepo;
         }
 
         [HttpPost]
@@ -26,13 +27,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = CreateValidSport(modelIn);
             }
-            else {
+            else
+            {
                 result = BadRequest(ModelState);
             }
             return result;
         }
 
-        private IActionResult CreateValidSport(SportModelIn modelIn) {
+        private IActionResult CreateValidSport(SportModelIn modelIn)
+        {
             Sport toAdd = new Sport(modelIn.Name);
             sports.Add(toAdd);
             SportModelOut modelOut = new SportModelOut()
@@ -45,86 +48,94 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get() {
+        public IActionResult Get()
+        {
             ICollection<Sport> allOfThem = sports.GetAll();
-            IEnumerable<SportModelOut> output = allOfThem.Select(s=> new SportModelOut {Name=s.Name, Id=s.Id });
+            IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name, Id = s.Id });
             return Ok(output);
         }
 
-        
 
-        [HttpGet("{id}", Name = "GetById")]
-        public IActionResult Get(int id)
+
+        [HttpGet("{name}", Name = "GetById")]
+        public IActionResult Get(string name)
         {
 
             IActionResult result;
             try
             {
-                result = TryGet(id);
+                result = TryGet(name);
             }
-            catch (SportNotFoundException e) {
+            catch (SportNotFoundException e)
+            {
                 result = NotFound(e.Message);
             }
             return result;
-            
+
         }
 
-        private IActionResult TryGet(int id)
+        private IActionResult TryGet(string name)
         {
-            Sport retrieved = sports.Get(id);
-            SportModelOut output = new SportModelOut() { Id = id, Name = retrieved.Name };
-            return Ok(output);       
+            Sport retrieved = sports.Get(name);
+            SportModelOut output = new SportModelOut() { Name = retrieved.Name };
+            return Ok(output);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id) {
+        [HttpDelete("{name}")]
+        public IActionResult Delete(string name)
+        {
             IActionResult result;
             try
             {
-                result = TryDelete(id);
+                result = TryDelete(name);
             }
-            catch (SportNotFoundException e) {
+            catch (SportNotFoundException e)
+            {
                 result = NotFound(e.Message);
             }
             return result;
         }
 
-        private IActionResult TryDelete(int id)
+        private IActionResult TryDelete(string name)
         {
-            sports.Delete(id);
+            sports.Delete(name);
             return Ok();
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] SportModelIn modelIn) {
+        [HttpPut("{name}")]
+        public IActionResult Put(string name, [FromBody] SportModelIn modelIn)
+        {
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = ModifyOrAdd(id, modelIn);
+                result = ModifyOrAdd(name, modelIn);
             }
-            else {
+            else
+            {
                 result = BadRequest(ModelState);
             }
             return result;
         }
 
-        private IActionResult ModifyOrAdd(int id, SportModelIn modelIn)
+
+        private IActionResult ModifyOrAdd(string name, SportModelIn modelIn)
         {
             IActionResult result;
-            Sport toAdd = new Sport(id, modelIn.Name);
-            try {
+            Sport toAdd = new Sport(modelIn.Name);
+            try
+            {
                 sports.Modify(toAdd);
                 UserModelOut modelOut = new UserModelOut()
                 {
-                    Name = modelIn.Name,
-                    Id = id
+                    Name = modelIn.Name
                 };
                 result = Ok(modelOut);
             }
-            catch (SportNotFoundException) {
+            catch (SportNotFoundException)
+            {
                 sports.Add(toAdd);
-                SportModelOut modelOut = new SportModelOut() { Id = id, Name = toAdd.Name };
+                SportModelOut modelOut = new SportModelOut() { Name = toAdd.Name };
                 result = CreatedAtRoute("GetById", new { id = modelOut.Id }, modelOut);
             }
             return result;

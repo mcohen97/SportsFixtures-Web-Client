@@ -29,7 +29,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
                 AwayTeam = teamConverter.ToEntity(aMatch.AwayTeam),
                 Date = aMatch.Date,
                 Commentaries = TransformCommentaries(aMatch.GetAllCommentaries()),
-                SportEntityId = sportEntity.Id,
                 SportEntity = sportEntity
                
             };

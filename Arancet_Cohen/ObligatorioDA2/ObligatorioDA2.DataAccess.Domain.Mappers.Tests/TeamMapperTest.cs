@@ -23,7 +23,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestMethod]
         public void TeamToEntityTest(){
             TeamEntity convertedTeam = teamMapper.ToEntity(mockTeam.Object);
-            Assert.AreEqual(convertedTeam.Id, mockTeam.Object.Id);
+            Assert.AreEqual(convertedTeam, mockTeam.Object.Id);
             Assert.AreEqual(convertedTeam.Name, mockTeam.Object.Name);
             Assert.AreEqual(convertedTeam.Photo, mockTeam.Object.Photo);
         }
@@ -31,7 +31,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestMethod]
         public void EntityToTeamTest(){
             Team convertedTeam = teamMapper.ToTeam(mockTeamEntity.Object);
-            Assert.AreEqual(convertedTeam.Id, mockTeamEntity.Object.Id);
             Assert.AreEqual(convertedTeam.Name, mockTeamEntity.Object.Name);
             Assert.AreEqual(convertedTeam.Photo, mockTeamEntity.Object.Photo);
         }

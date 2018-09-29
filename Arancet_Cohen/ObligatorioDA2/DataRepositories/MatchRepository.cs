@@ -150,5 +150,15 @@ namespace DataRepositories
             context.SaveChanges();
             return commentConverter.ToComment(comment);
         }
+
+        public bool Exists(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Modify(string sportName, Match aMatch)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
