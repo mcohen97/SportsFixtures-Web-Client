@@ -197,14 +197,15 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void GetUnassignedIdTest() {
-            Assert.AreEqual(toTest.Id, 0);
+        public void GetTeamsTest() {
+            Assert.AreEqual(toTest.GetFavouriteTeams().Count, 0);
         }
 
         [TestMethod]
-        public void GetAssignedIdTest() {
-           toTest = new User(userId, true,1);
-           Assert.AreEqual(toTest.Id, 1);
+        public void AddFavouriteTeamTest() {
+            Team aTeam = new Team("partisanos fc", "aPath");
+            toTest.AddFavourite(aTeam);
+            Assert.AreEqual(aTeam.GetFavouriteTeams().Count, 1);
         }
 
     }
