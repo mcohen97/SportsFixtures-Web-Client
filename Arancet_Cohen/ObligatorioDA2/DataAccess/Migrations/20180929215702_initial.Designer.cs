@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20180928172845_initial")]
+    [Migration("20180929215702_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,15 +27,11 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MakerId");
-
                     b.Property<int?>("MatchEntityId");
 
                     b.Property<string>("Text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MakerId");
 
                     b.HasIndex("MatchEntityId");
 
@@ -48,67 +44,65 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AwayTeamId");
+                    b.Property<string>("AwayTeamName");
+
+                    b.Property<string>("AwayTeamSportEntityName");
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<int?>("HomeTeamId");
+                    b.Property<string>("HomeTeamName");
 
-                    b.Property<int>("SportEntityId");
+                    b.Property<string>("HomeTeamSportEntityName");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AwayTeamId");
+                    b.HasIndex("AwayTeamSportEntityName", "AwayTeamName");
 
-                    b.HasIndex("HomeTeamId");
-
-                    b.HasIndex("SportEntityId");
+                    b.HasIndex("HomeTeamSportEntityName", "HomeTeamName");
 
                     b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.SportEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Name")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name");
+                    b.Property<int>("Id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Name");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
 
                     b.ToTable("Sports");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("SportEntityName");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Identity")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Name")
-                        .IsRequired();
-
                     b.Property<string>("Photo");
 
-                    b.Property<int>("SportEntityId");
-
-                    b.HasKey("Id");
-
-                    b.HasAlternateKey("Name");
-
-                    b.HasIndex("SportEntityId");
+                    b.HasKey("SportEntityName", "Name");
 
                     b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.UserEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("UserName")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Email");
+
+                    b.Property<int>("Id");
 
                     b.Property<bool>("IsAdmin");
 
@@ -118,22 +112,16 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Surname");
 
-                    b.Property<string>("UserName")
-                        .IsRequired();
+                    b.HasKey("UserName");
 
-                    b.HasKey("Id");
-
-                    b.HasAlternateKey("UserName");
+                    b.HasIndex("Id")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.CommentEntity", b =>
                 {
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.UserEntity", "Maker")
-                        .WithMany()
-                        .HasForeignKey("MakerId");
-
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.MatchEntity")
                         .WithMany("Commentaries")
                         .HasForeignKey("MatchEntityId");
@@ -143,15 +131,18 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "AwayTeam")
                         .WithMany()
-                        .HasForeignKey("AwayTeamId");
+                        .HasForeignKey("AwayTeamSportEntityName", "AwayTeamName");
 
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "HomeTeam")
                         .WithMany()
-                        .HasForeignKey("HomeTeamId");
+                        .HasForeignKey("HomeTeamSportEntityName", "HomeTeamName");
+                });
 
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity", "SportEntity")
-                        .WithMany()
-                        .HasForeignKey("SportEntityId")
+            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.SportEntity", b =>
+                {
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.MatchEntity")
+                        .WithOne("SportEntity")
+                        .HasForeignKey("ObligatorioDA2.DataAccess.Entities.SportEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -159,7 +150,15 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity")
                         .WithMany("Teams")
-                        .HasForeignKey("SportEntityId")
+                        .HasForeignKey("SportEntityName")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.UserEntity", b =>
+                {
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.CommentEntity")
+                        .WithOne("Maker")
+                        .HasForeignKey("ObligatorioDA2.DataAccess.Entities.UserEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

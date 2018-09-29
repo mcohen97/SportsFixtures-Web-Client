@@ -59,11 +59,16 @@ namespace DataRepositories
 
         public void Delete(string sportName, string teamName)
         {
-            TryDelete(sportName, teamName);
-
+            if (Exists(sportName, teamName))
+            {
+                DeleteValid(sportName, teamName);
+            }
+            else {
+                throw new TeamNotFoundException();
+            }
         }
 
-        private void TryDelete(string sportName, string teamName)
+        private void DeleteValid(string sportName, string teamName)
         {
             TeamEntity toDelete = context.Teams
                 .First(t => t.SportEntityName.Equals(sportName) && t.Name.Equals(teamName));
@@ -86,14 +91,15 @@ namespace DataRepositories
 
         public void Add(string sportName, Team aTeam)
         {
-            try
+
+            if (!Exists(sportName, aTeam.Name))
             {
                 TryAdd(sportName, aTeam);
             }
-            catch (DbUpdateException)
-            {
+            else {
                 throw new TeamAlreadyExistsException();
             }
+ 
 
         }
 
@@ -127,7 +133,7 @@ namespace DataRepositories
 
         public bool IsEmpty()
         {
-            return context.Teams.Any();
+            return !context.Teams.Any();
         }
 
         public bool Exists(string sportName, string teamName)

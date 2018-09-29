@@ -33,12 +33,8 @@ namespace BusinessLogic
             teams = new List<Team>();
         }
 
-        public Sport(int anId,string name):this(name)
-        {
-            Id = anId;
-        }
 
-        public Sport(int anId, string name, ICollection<Team> someTeams):this(anId,name)
+        public Sport(string name, ICollection<Team> someTeams):this(name)
         {
             teams = someTeams;
         }

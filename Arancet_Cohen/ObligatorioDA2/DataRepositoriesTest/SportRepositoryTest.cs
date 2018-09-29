@@ -38,13 +38,13 @@ namespace DataRepositoriesTest
 
         private void CreateSports()
         {
-            sportA = new Mock<Sport>(1, "SportA");
-            sportB = new Mock<Sport>(2, "SportB");
+            sportA = new Mock<Sport>("SportA");
+            sportB = new Mock<Sport>( "SportB");
          }
 
         private void CreateTeams()
         {
-            team1 = new Mock<Team>(1, "TeamA", "SomePhoto");
+            team1 = new Mock<Team>(1,"TeamA", "SomePhoto");
             team2 = new Mock<Team>(2 , "TeamB" , "SomePhoto");
             team3 = new Mock<Team>(3, "TeamC", "SomePhoto");
             team4 = new Mock<Team>(4, "TeamD", "SomePhoto");

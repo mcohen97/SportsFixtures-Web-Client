@@ -28,12 +28,11 @@ namespace DataRepositories
         public Match Add(string sportName, Match aMatch)
         {
             Match created;
-            try
+            if (!Exists(aMatch.Id))
             {
                 created = TryAdd(sportName, aMatch);
             }
-            catch (DbUpdateException)
-            {
+            else {
                 throw new MatchAlreadyExistsException();
             }
             return created;
@@ -153,12 +152,21 @@ namespace DataRepositories
 
         public bool Exists(int id)
         {
-            throw new NotImplementedException();
+            return context.Matches.Any(m => m.Id == id);
         }
 
         public void Modify(string sportName, Match aMatch)
         {
-            throw new NotImplementedException();
+            if (Exists(aMatch.Id))
+            {
+                MatchEntity converted = matchConverter.ToEntity(aMatch);
+                converted.SportEntity = new SportEntity { Name = sportName };
+                context.Matches.Attach(converted).State = EntityState.Modified;
+                context.SaveChanges();
+            }
+            else {
+                throw new MatchNotFoundException();
+            }
         }
     }
 }

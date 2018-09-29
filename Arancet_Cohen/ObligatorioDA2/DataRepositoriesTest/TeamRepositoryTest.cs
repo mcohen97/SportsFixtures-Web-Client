@@ -22,20 +22,20 @@ namespace DataRepositoriesTest
 
         [TestInitialize]
         public void TestInitialize(){
+            SetUpRepository();
+            ClearDataBase();        
+        }
+        private void SetUpRepository() {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "TeamRepository")
-                .Options;
+               .UseInMemoryDatabase(databaseName: "TeamRepository")
+               .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             teamsStorage = new TeamRepository(context);
-            ClearDataBase(context);        
         }
 
-        private void ClearDataBase(DatabaseConnection context)
-        { 
-                foreach (TeamEntity team in context.Teams) {
-                    context.Teams.Remove(team);
-                }
-                context.SaveChanges();  
+        private void ClearDataBase()
+        {
+            teamsStorage.Clear();
         }
 
         [TestMethod]
@@ -56,6 +56,7 @@ namespace DataRepositoriesTest
         public void AddAlreadyExistentTeamTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
             teamsStorage.Add("Soccer",team.Object);
+            SetUpRepository();
             teamsStorage.Add("Soccer",team.Object);
         }
 

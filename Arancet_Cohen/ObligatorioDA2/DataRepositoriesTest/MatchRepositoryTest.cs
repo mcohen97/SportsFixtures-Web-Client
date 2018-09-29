@@ -60,6 +60,7 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(MatchAlreadyExistsException))]
         public void AddRepeatedMatchTest() {
             matchesStorage.Add("Soccer",match.Object);
+            SetUpRepository();
             matchesStorage.Add("Soccer",match.Object);
         }
 
@@ -119,7 +120,6 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void ModifyTest() {
             matchesStorage.Add("Soccer",match.Object);
-
             Mock<Match> modified = BuildModifiedFakeMatch();
             SetUpRepository();
             matchesStorage.Modify("Soccer",modified.Object);

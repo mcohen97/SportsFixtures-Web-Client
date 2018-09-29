@@ -146,7 +146,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void GetAssignedIdTest() {
-            Sport sport = new Sport(3,"Soccer");
+            Sport sport = new Sport("Soccer");
             Assert.AreEqual(sport.Id, 3);
         }
     }

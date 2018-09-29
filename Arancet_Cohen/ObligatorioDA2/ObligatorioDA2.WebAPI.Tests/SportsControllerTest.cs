@@ -30,12 +30,12 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             repo = new Mock<ISportRepository>();
 
-            Sport testSport1 = new Sport(2,"Tennis");
-            Sport testSport2 = new Sport(3, "Basketball");
+            Sport testSport1 = new Sport("Tennis");
+            Sport testSport2 = new Sport("Basketball");
 
             repo.Setup(r => r.Get("Tennis")).Returns(testSport1);
             repo.Setup(r => r.Get(It.Is<String>(x => (x != "Tennis") && (x !="Basketball")))).Throws(new SportNotFoundException());
-            repo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport(3,"Basketball"), new Sport(2,"Tennis") });
+            repo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport("Basketball"), new Sport("Tennis") });
 
             controllerToTest = new SportsController(repo.Object);
         }

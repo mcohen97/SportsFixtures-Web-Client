@@ -25,7 +25,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
                 HomeTeam = homeTest,
                 AwayTeam = awayTest,
                 Date = DateTime.Now,
-                SportEntity = new SportEntity() {Name="Soccer",Id=3,Teams = new List<TeamEntity> (){homeTest,awayTest } },
+                SportEntity = new SportEntity() {Name="Soccer",Teams = new List<TeamEntity> (){homeTest,awayTest } },
                 Commentaries = new List<CommentEntity>()
             };
             Mock<Team> homeMock = new Mock<Team>(3, "Nacional", "aPath");

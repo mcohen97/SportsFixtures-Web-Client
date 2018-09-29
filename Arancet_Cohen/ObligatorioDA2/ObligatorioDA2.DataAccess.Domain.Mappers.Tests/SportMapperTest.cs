@@ -19,19 +19,13 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             Mock<Team> aTeam = new Mock<Team>("Nacional", "path");
             entity = new SportEntity()
             {
-                Id = 3,
                 Name = "Soccer",
                 Teams = new List<TeamEntity>() { new TeamEntity() {Name="Nacional",SportEntityName= "Soccer", Photo="aPath" } }
             };
             sport.Object.AddTeam(aTeam.Object);
         }
 
-        [TestMethod]
-        public void SportToEntityIdTest()
-        {
-            SportEntity converted = testMapper.ToEntity(sport.Object);
-            Assert.AreEqual(converted.Id, entity.Id);
-        }
+    
 
         [TestMethod]
         public void SportToEntityNameTest() {
