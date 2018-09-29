@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace RepositoryInterface
 {
-    public interface IRepository<T>
+    public interface IRepository<T,K>
     {
         bool IsEmpty();
 
         void Add(T entity);
 
-        void Delete(int id);
+        void Delete(K id);
 
         bool Exists(T record);
 
@@ -20,7 +20,7 @@ namespace RepositoryInterface
 
         void Modify(T entity);
 
-        T Get(int id);
+        T Get(K id);
 
         ICollection<T> GetAll();
     }
