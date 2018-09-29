@@ -38,14 +38,12 @@ namespace DataRepositories
         public Team Get(string sportName, string teamName)
         {
             Team fetched;
-            try
-            {
+            if (Exists(sportName,teamName)) {
                 fetched = TryGet(sportName, teamName);
-            }
-            catch (DbUpdateException)
-            {
+            }else{
                 throw new TeamNotFoundException();
             }
+        
             return fetched;
         }
 

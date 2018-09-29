@@ -116,6 +116,7 @@ namespace DataRepositoriesTest
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
             teamsStorage.Add("Soccer",team.Object);
             team.Object.Photo = "NewDreamTeam.png";
+            SetUpRepository();
             teamsStorage.Modify("Soccer",team.Object);
             Team editedTeam = teamsStorage.Get("Soccer",team.Object.Name);
             Assert.AreEqual(team.Object.Photo, editedTeam.Photo);
