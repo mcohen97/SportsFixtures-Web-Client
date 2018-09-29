@@ -94,7 +94,7 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public Sport GetSportByName(string name)
+        public Sport Get(string name)
         {
             if (!Exists(name))
                 throw new SportNotFoundException();

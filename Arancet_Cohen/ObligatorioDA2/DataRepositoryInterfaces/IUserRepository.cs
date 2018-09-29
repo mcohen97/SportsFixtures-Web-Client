@@ -6,10 +6,8 @@ using RepositoryInterface;
 
 namespace DataRepositoryInterfaces
 {
-    public interface IUserRepository:IRepository<User>
+    public interface IUserRepository:IRepository<User,string>
     {
-        User GetUserByUsername(string aUsername);
-
         User Get(User asked);
 
         void Delete(User toDelete);

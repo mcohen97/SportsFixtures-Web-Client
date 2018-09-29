@@ -77,10 +77,10 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetUserTest()
         {
-            IUserRepository specific = (IUserRepository)usersStorage;
+ 
             User user = factory.CreateAdmin(userId);
             usersStorage.Add(user);
-            User fetched = specific.GetUserByUsername("username");
+            User fetched = usersStorage.Get("username");
             Assert.AreEqual("name", fetched.Name);
         }
 
@@ -89,7 +89,7 @@ namespace DataRepositoriesTest
         public void GetNotExistentUserTest()
         {
             IUserRepository specific = (IUserRepository)usersStorage;
-            User fetched = specific.GetUserByUsername("username3");
+            User fetched = specific.Get("username3");
         }
 
         [TestMethod]
@@ -154,21 +154,6 @@ namespace DataRepositoriesTest
             usersStorage.Modify(user);
         }
 
-        [TestMethod]
-        public void GetByIdTest() {
-            User user = factory.CreateAdmin(userId);
-            usersStorage.Add(user);
-            User fetched = usersStorage.Get(3);
-            Assert.AreEqual(fetched.UserName,user.UserName);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
-        public void GetByIdNotFoundTest() {
-            User user = factory.CreateAdmin(userId);
-            usersStorage.Add(user);
-            User fetched = usersStorage.Get(4);
-        }
 
         [TestMethod]
         public void GetTest() {
@@ -198,10 +183,10 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        public void DeleteById() {
+        public void DeleteByUsername() {
             usersStorage.Add(user);
             User fetched = usersStorage.Get(user);
-            usersStorage.Delete(fetched.Id);
+            usersStorage.Delete(fetched.UserName);
             Assert.IsTrue(usersStorage.IsEmpty());
         }
     }

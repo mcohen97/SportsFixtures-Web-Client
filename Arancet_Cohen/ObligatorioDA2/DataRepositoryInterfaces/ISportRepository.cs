@@ -6,8 +6,8 @@ using System.Text;
 
 namespace DataRepositoryInterfaces
 {
-    public interface ISportRepository:IRepository<Sport>
+    public interface ISportRepository:IRepository<Sport,string>
     {
-        Sport GetSportByName(string name);
+        Sport Get(string name);
      }
 }

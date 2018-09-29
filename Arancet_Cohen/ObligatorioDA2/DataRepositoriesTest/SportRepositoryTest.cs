@@ -102,7 +102,7 @@ namespace DataRepositoriesTest
         {
             ISportRepository specific = (ISportRepository)sportStorage;
             sportStorage.Add(sportA.Object);
-            Sport sportInDb = specific.GetSportByName("SportA");
+            Sport sportInDb = specific.Get("SportA");
             Assert.AreEqual(sportA.Object.Id, sportInDb.Id);
         }
 
@@ -111,7 +111,7 @@ namespace DataRepositoriesTest
         public void GetNotExistentTeamTest()
         {
             ISportRepository specific = (ISportRepository)sportStorage;
-            Sport teamInDb = specific.GetSportByName("DreamSport");
+            Sport teamInDb = specific.Get("DreamSport");
         }
 
         [TestMethod]
@@ -202,7 +202,7 @@ namespace DataRepositoriesTest
         {
             sportStorage.Add(sportA.Object);
             ISportRepository specific = (ISportRepository) sportStorage;
-            Sport sportInDb = specific.GetSportByName(sportA.Object.Name);
+            Sport sportInDb = specific.Get(sportA.Object.Name);
             Assert.AreEqual("SportA", sportA.Object.Name);
         }
 
@@ -218,7 +218,7 @@ namespace DataRepositoriesTest
         public void GetByNameNotExistentSportTest()
         {
             ISportRepository specific = (ISportRepository)sportStorage;
-            Sport sportsInDb = specific.GetSportByName(sportA.Name);
+            Sport sportsInDb = specific.Get(sportA.Name);
         }
     }
 }
