@@ -27,7 +27,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
 
-        [HttpGet("{sportName}/{teamName}")]
+        [HttpGet("{sportName}/{teamName}", Name = "GetById")]
         public IActionResult Get(string sportName, string teamName)
         {
             IActionResult result;
@@ -123,7 +123,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             Team toAdd = new Team(team.Name, team.Photo);
 
-            teams.Modify(sportName, toAdd);
+            teams.Add(sportName, toAdd);
 
             TeamModelOut addedTeam = new TeamModelOut()
             {

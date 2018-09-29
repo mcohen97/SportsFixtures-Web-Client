@@ -138,16 +138,6 @@ namespace BusinessLogicTest
             sport.Name = "";
         }
 
-        [TestMethod]
-        public void GetUnassignedIdTest() {
-            Sport sport = new Sport("Soccer");
-            Assert.AreEqual(sport.Id, 0);
-        }
-
-        [TestMethod]
-        public void GetAssignedIdTest() {
-            Sport sport = new Sport("Soccer");
-            Assert.AreEqual(sport.Id, 3);
-        }
+      
     }
 }

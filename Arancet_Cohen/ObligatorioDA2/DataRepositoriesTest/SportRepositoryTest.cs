@@ -103,7 +103,7 @@ namespace DataRepositoriesTest
             ISportRepository specific = (ISportRepository)sportStorage;
             sportStorage.Add(sportA.Object);
             Sport sportInDb = specific.Get("SportA");
-            Assert.AreEqual(sportA.Object.Id, sportInDb.Id);
+            Assert.AreEqual(sportA.Object.Name, sportInDb.Name);
         }
 
         [TestMethod]

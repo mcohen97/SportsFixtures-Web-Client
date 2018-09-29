@@ -12,7 +12,6 @@ namespace BusinessLogic
     {
         private string name;
         private ICollection<Team> teams;
-        public int Id { get; private set; }
 
         public string Name { get{return name;} set{SetName(value);} }
 

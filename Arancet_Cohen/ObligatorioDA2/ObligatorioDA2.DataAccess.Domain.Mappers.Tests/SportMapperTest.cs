@@ -48,11 +48,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             Assert.AreEqual(toCompare.Name, "Nacional");
         }
 
-        [TestMethod]
-        public void EntityToSportIdTest() {
-            Sport converted = testMapper.ToSport(entity);
-            Assert.AreEqual(converted.Id, sport.Object.Id);
-        }
+     
 
         [TestMethod]
         public void EntityToSportNameTest() {

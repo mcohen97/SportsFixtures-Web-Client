@@ -70,11 +70,11 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetTeamOk() {
 
-            IActionResult result = controller.Get("Soccer","DreamTeam") as IActionResult;
+            IActionResult result = controller.Get("Soccer","Nacional") as IActionResult;
             OkObjectResult okResult = result as OkObjectResult;
             TeamModelOut resultTeam = okResult.Value as TeamModelOut;
 
-            repo.Verify(r => r.Get("Soccer", "DreamTeam"), Times.Once);
+            repo.Verify(r => r.Get("Soccer", "Nacional"), Times.Once);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(200,okResult.StatusCode);
@@ -119,7 +119,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             var modelIn = new TeamModelIn()
             {
-                Name = "DreamTeam",
+                Name = "Nacional",
                 Photo = "/MyResource/DreamTeam.png",
                 SportName= "Soccer"
                 

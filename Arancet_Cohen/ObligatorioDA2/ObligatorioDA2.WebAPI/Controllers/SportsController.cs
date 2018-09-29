@@ -51,7 +51,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         public IActionResult Get()
         {
             ICollection<Sport> allOfThem = sports.GetAll();
-            IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name, Id = s.Id });
+            IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name });
             return Ok(output);
         }
 
