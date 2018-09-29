@@ -17,8 +17,8 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         [TestInitialize]
         public void SetUp() {
             testMapper = new MatchMapper();
-            TeamEntity homeTest = new TeamEntity { SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
-            TeamEntity awayTest = new TeamEntity { SportEntityName= "Soccer", Name = "Torque", Photo = "aPath" };
+            TeamEntity homeTest = new TeamEntity { Identity =3,SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
+            TeamEntity awayTest = new TeamEntity { Identity =4,SportEntityName= "Soccer", Name = "Torque", Photo = "aPath" };
             entity = new MatchEntity()
             {
                 Id = 3,
@@ -30,20 +30,18 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             };
             Mock<Team> homeMock = new Mock<Team>(3, "Nacional", "aPath");
             Mock<Team> awayMock = new Mock<Team>(4, "Torque", "aPath");
-            Mock<Sport> sport = new Mock<Sport>(3, "Soccer");
+            Mock<Sport> sport = new Mock<Sport>( "Soccer");
             match = new Mock<BusinessLogic.Match>(homeMock.Object,awayMock.Object,DateTime.Now,sport.Object);
         }
 
         [TestMethod]
         public void MatchToEntityHomeTest() {
             MatchEntity converted =testMapper.ToEntity(match.Object);
-            Assert.AreEqual(converted.HomeTeam.SportEntityName, entity.HomeTeam.SportEntityName);
             Assert.AreEqual(converted.HomeTeam.Name, entity.HomeTeam.Name);
         }
         [TestMethod]
         public void MatchToEntityAwayTest() {
             MatchEntity converted = testMapper.ToEntity(match.Object);
-            Assert.AreEqual(converted.AwayTeam.SportEntityName, entity.AwayTeam.SportEntityName);
             Assert.AreEqual(converted.AwayTeam.Name, entity.AwayTeam.Name);
         }
         [TestMethod]

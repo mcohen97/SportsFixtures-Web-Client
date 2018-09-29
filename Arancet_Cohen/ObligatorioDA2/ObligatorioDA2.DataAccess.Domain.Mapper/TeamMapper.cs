@@ -8,7 +8,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
     {
         public Team ToTeam(TeamEntity teamEntity)
         {
-            Team convertedTeam = new Team(teamEntity.Name, teamEntity.Photo);
+            Team convertedTeam = new Team(teamEntity.Identity,teamEntity.Name, teamEntity.Photo);
             return convertedTeam;
         }
 
