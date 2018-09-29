@@ -1,21 +1,24 @@
 namespace ObligatorioDA2.DataAccess.Entities
 {
-    public class TeamEntity:BaseEntity
+    public class TeamEntity
     {
-        public TeamEntity(){
+        public TeamEntity()
+        {
 
         }
 
-        public TeamEntity(int id, string name, string photo){
-            Id = id;
+        public TeamEntity(int id, string name, string photo)
+        {
+            Identity = id;
             Name = name;
             Photo = photo;
         }
 
+        public int Identity { get; set; }
         public string Name { get; set; }
 
         public string Photo { get; set; }
 
-        public int SportEntityId { get; set; }
+        public string SportEntityName { get; set; }
     }
 }

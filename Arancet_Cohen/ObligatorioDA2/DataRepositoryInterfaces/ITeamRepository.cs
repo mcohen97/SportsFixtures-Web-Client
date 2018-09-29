@@ -1,9 +1,25 @@
 using BusinessLogic;
+using System.Collections.Generic;
 
 namespace DataRepositoryInterfaces
 {
     public interface ITeamRepository
     {
-         Team GetTeamByName(string name);
+        bool IsEmpty();
+
+        void Clear();
+
+        Team Get(string sportName, string teamName);
+
+        void Delete(string sportName, string teamName);
+
+        bool Exists(string sportName, string teamName);
+
+        void Add(string sportName, Team aTeam);
+
+        void Modify(string sportName, Team aTeam);
+
+        ICollection<Team> GetAll();
     }
+
 }

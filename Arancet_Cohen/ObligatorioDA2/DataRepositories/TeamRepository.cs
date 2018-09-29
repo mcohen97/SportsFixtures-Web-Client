@@ -25,101 +25,121 @@ namespace DataRepositories
             this.mapper = new TeamMapper();
         }
 
-        public void Add(Team team)
-        {
-            if(Exists(team))
-                throw new TeamAlreadyExistsException();
-
-            TeamEntity entityTeam = mapper.ToEntity(team);
-            context.Teams.Add(entityTeam);
-            context.SaveChanges();
-        }
-
         public void Clear()
         {
-            foreach(TeamEntity team in context.Teams){
+            foreach (TeamEntity team in context.Teams)
+            {
                 context.Teams.Remove(team);
             }
             context.SaveChanges();
         }
 
-        public void Delete(int id)
-        {
-            if(!Exists(id))
-                throw new TeamNotFoundException();
 
-            TeamEntity toDelete = context.Teams.First(t => t.Id == id);
+        public Team Get(string sportName, string teamName)
+        {
+            Team fetched;
+            try
+            {
+                fetched = TryGet(sportName, teamName);
+            }
+            catch (DbUpdateException)
+            {
+                throw new TeamNotFoundException();
+            }
+            return fetched;
+        }
+
+        private Team TryGet(string sportName, string teamName)
+        {
+            TeamEntity entity = context.Teams
+                .FirstOrDefault(e => e.Name.Equals(teamName) && e.SportEntityName.Equals(sportName));
+            Team converted = mapper.ToTeam(entity);
+            return converted;
+        }
+
+        public void Delete(string sportName, string teamName)
+        {
+            TryDelete(sportName, teamName);
+
+        }
+
+        private void TryDelete(string sportName, string teamName)
+        {
+            TeamEntity toDelete = context.Teams
+                .First(t => t.SportEntityName.Equals(sportName) && t.Name.Equals(teamName));
             context.Teams.Remove(toDelete);
+            DeleteMatches(toDelete);
             context.SaveChanges();
         }
 
-        public bool Exists(Team record)
+        private void DeleteMatches(TeamEntity toDelete)
         {
-            return Exists(record.Name);
+            IQueryable<MatchEntity> teamMatches = context.Matches
+                .Include(m => m.Commentaries)
+                .Where(m => m.AwayTeam.Equals(toDelete) || m.HomeTeam.Equals(toDelete));
+            context.Matches.RemoveRange(teamMatches);
+            foreach (MatchEntity match in teamMatches)
+            {
+                context.Comments.RemoveRange(match.Commentaries);
+            }
         }
 
-        private bool Exists(string name){
-             return context.Teams.Any(t => t.Name == name);
-        }
-
-        private bool Exists(int id){
-            return context.Teams.Any(t => t.Id == id);
-        }
-
-        public Team Get(int id)
+        public void Add(string sportName, Team aTeam)
         {
-            if(!Exists(id))
+            try
+            {
+                TryAdd(sportName, aTeam);
+            }
+            catch (DbUpdateException)
+            {
+                throw new TeamAlreadyExistsException();
+            }
+
+        }
+
+        private void TryAdd(string sportName, Team aTeam)
+        {
+            TeamEntity toStore = mapper.ToEntity(aTeam);
+            toStore.SportEntityName = sportName;
+            context.Teams.Add(toStore);
+            context.SaveChanges();
+        }
+
+        public void Modify(string sportName, Team aTeam)
+        {
+            try
+            {
+                TryModify(sportName, aTeam);
+            }
+            catch (DbUpdateException)
+            {
                 throw new TeamNotFoundException();
-
-            TeamEntity askedEntity = context.Teams.First(t => t.Id == id);
-            return mapper.ToTeam(askedEntity);
+            }
         }
 
-        public Team Get(Team team) 
-        {   
-            return GetTeamByName(team.Name);
-        }
-
-        public ICollection<Team> GetAll()
+        private void TryModify(string sportName, Team aTeam)
         {
-            IQueryable<Team> query = context.Teams.Select(t => mapper.ToTeam(t));
-            return query.ToList();
-        }
-
-        public Team GetTeamByName(string teamName) 
-        {
-            if(!Exists(teamName))
-                throw new TeamNotFoundException();
-
-            TeamEntity askedEntity = context.Teams.First(t => t.Name == teamName);
-            return mapper.ToTeam(askedEntity);
+            TeamEntity entity = mapper.ToEntity(aTeam);
+            entity.SportEntityName = sportName;
+            context.Entry(entity).State = EntityState.Modified;
+            context.SaveChanges();
         }
 
         public bool IsEmpty()
         {
-            return !context.Teams.Any();
+            return context.Teams.Any();
         }
 
-        public void Modify(Team teamModified)
+        public bool Exists(string sportName, string teamName)
         {
-            if(!Exists(teamModified))
-                throw new TeamNotFoundException();
-            
-            TeamEntity entityModified = mapper.ToEntity(teamModified);
-            TeamEntity recordInDB = context.Teams.First(t => t.Name == teamModified.Name);
-            entityModified.Id = recordInDB.Id;
-            context.Entry(recordInDB).CurrentValues.SetValues(entityModified);
-            context.SaveChanges();
+            return context.Teams.Any(t => t.SportEntityName.Equals(sportName) && t.Name.Equals(teamName));
         }
 
-        public void Delete(Team teamToDelete)
+        public ICollection<Team> GetAll()
         {
-            if(!Exists(teamToDelete))
-                throw new TeamNotFoundException();
-
-            TeamEntity recordToDelete = context.Teams.First(t => t.Name == teamToDelete.Name);
-            context.Teams.Remove(recordToDelete);
-            context.SaveChanges();
+            IQueryable<TeamEntity> teams = context.Teams;
+            ICollection<Team> result = teams.Select(t => mapper.ToTeam(t)).ToList();
+            return result;
         }
     }
 }

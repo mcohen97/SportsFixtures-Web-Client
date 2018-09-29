@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BusinessLogic;
+using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
@@ -12,8 +13,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class TeamController : ControllerBase
     {
-        private IRepository<Team> teams;
-        public TeamController(IRepository<Team> aRepo) {
+        private ITeamRepository teams;
+        public TeamController(ITeamRepository aRepo) {
             teams=aRepo;
         }
           // GET api/values
