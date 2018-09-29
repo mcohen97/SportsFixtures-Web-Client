@@ -8,6 +8,9 @@ namespace ObligatorioDA2.WebAPI.Models
         [Required]
         public string Name { get; set; }  
 
+        [Required]
+        public string SportName { get; set; }
+
         public string Photo{ get; set; }
     }
 }

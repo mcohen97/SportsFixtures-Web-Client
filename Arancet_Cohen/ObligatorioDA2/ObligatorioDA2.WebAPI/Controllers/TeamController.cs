@@ -11,38 +11,43 @@ namespace ObligatorioDA2.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TeamController : ControllerBase
+    public class TeamsController : ControllerBase
     {
         private ITeamRepository teams;
-        public TeamController(ITeamRepository aRepo) {
-            teams=aRepo;
+        public TeamsController(ITeamRepository aRepo)
+        {
+            teams = aRepo;
+
+
         }
-          // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public IActionResult Get()
         {
             return Ok();
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
+
+        [HttpGet("{sportName}/{teamName}")]
+        public IActionResult Get(string sportName, string teamName)
         {
             IActionResult result;
             Team fetched;
-            try {
-                fetched =TryGetTeam(id);
-                TeamModelOut transferObject = CreateModelOut(fetched);        
+            try
+            {
+                fetched = TryGetTeam(sportName, teamName);
+                TeamModelOut transferObject = CreateModelOut(fetched);
                 result = Ok(transferObject);
-            } catch (TeamNotFoundException e) {
+            }
+            catch (TeamNotFoundException e)
+            {
                 result = new NotFoundObjectResult(e.Message);
             }
             return result;
         }
 
-        private Team TryGetTeam(int id)
+        private Team TryGetTeam(string sportName, string teamName)
         {
-            return teams.Get(id);
+            return teams.Get(sportName, teamName);
         }
 
         private TeamModelOut CreateModelOut(Team fetched)
@@ -57,7 +62,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
 
-        // POST api/values
         [HttpPost]
         public IActionResult Post([FromBody] TeamModelIn team)
         {
@@ -65,8 +69,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             if (ModelState.IsValid)
             {
                 Team toAdd = new Team(team.Name, team.Photo);
-                
-                teams.Add(toAdd);
+
+                teams.Add(team.SportName, toAdd);
 
                 TeamModelOut addedTeam = new TeamModelOut()
                 {
@@ -84,45 +88,46 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return toReturn;
         }
 
-        // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] TeamModelIn value)
+        public IActionResult Put(string sportName, [FromBody] TeamModelIn value)
         {
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = PutValid(id, value);
+                result = PutValid(sportName, value);
             }
-            else {
+            else
+            {
                 result = BadRequest(ModelState);
             }
             return result;
         }
 
-        private IActionResult PutValid(int id, TeamModelIn value)
+        private IActionResult PutValid(string sportName, TeamModelIn value)
         {
             IActionResult result;
             try
             {
-                Team toModify = new Team(id,value.Name, value.Photo);
-                teams.Modify(toModify);
+                Team toModify = new Team(value.Name, value.Photo);
+                teams.Modify(sportName, toModify);
                 result = Ok();
             }
-            catch(TeamNotFoundException) {
-              result = PostId(id, value);
+            catch (TeamNotFoundException)
+            {
+                result = PostId(sportName, value);
             }
             return result;
         }
 
-        private IActionResult PostId(int id, TeamModelIn team)
+        private IActionResult PostId(string sportName, TeamModelIn team)
         {
             Team toAdd = new Team(team.Name, team.Photo);
 
-            teams.Add(toAdd);
+            teams.Modify(sportName, toAdd);
 
             TeamModelOut addedTeam = new TeamModelOut()
             {
-                Id = id,
+                SportName = sportName,
                 Name = team.Name,
                 Photo = team.Photo
             };
@@ -130,17 +135,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return CreatedAtRoute("GetById", new { id = addedTeam.Id }, addedTeam);
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("{sportName}/{teamName}")]
+        public IActionResult Delete(string sportName, string teamName)
         {
             IActionResult result;
             try
             {
-               teams.Delete(id);
+                teams.Delete(sportName, teamName);
                 result = Ok();
             }
-            catch (TeamNotFoundException e) {
+            catch (TeamNotFoundException e)
+            {
                 result = BadRequest(e.Message);
             }
             return result;

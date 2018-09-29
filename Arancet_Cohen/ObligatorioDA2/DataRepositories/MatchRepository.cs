@@ -15,34 +15,44 @@ namespace DataRepositories
     public class MatchRepository : IMatchRepository
     {
         private DatabaseConnection context;
-        private MatchMapper mapper;
+        private MatchMapper matchConverter;
+        private CommentMapper commentConverter;
         public MatchRepository(DatabaseConnection aContext)
         {
             context = aContext;
-            mapper = new MatchMapper();
+            matchConverter = new MatchMapper();
+            commentConverter = new CommentMapper();
         }
 
-        public void Add(Match aMatch)
+
+        public Match Add(string sportName, Match aMatch)
         {
-            if (!Exists(aMatch))
+            Match created;
+            try
             {
-                AddNewMatch(aMatch);
+                created = TryAdd(sportName, aMatch);
             }
-            else {
+            catch (DbUpdateException)
+            {
                 throw new MatchAlreadyExistsException();
             }
+            return created;
         }
 
-        private void AddNewMatch(Match aMatch)
+        private Match TryAdd(string sportName, Match aMatch)
         {
-            MatchEntity entity = mapper.ToEntity(aMatch);
-            context.Entry(entity).State = EntityState.Added;
+            MatchEntity toAdd = matchConverter.ToEntity(aMatch);
+            toAdd.HomeTeam.SportEntityName = sportName;
+            toAdd.AwayTeam.SportEntityName = sportName;
+            context.Entry(toAdd).State = EntityState.Added;
             context.SaveChanges();
+            return new Match(toAdd.Id, aMatch.HomeTeam, aMatch.AwayTeam, aMatch.Date, aMatch.Sport);
         }
 
         public void Clear()
         {
-            foreach (MatchEntity match in context.Matches) {
+            foreach (MatchEntity match in context.Matches)
+            {
                 context.Matches.Remove(match);
             }
             context.SaveChanges();
@@ -62,8 +72,9 @@ namespace DataRepositories
 
         private void DeleteExistent(int anId)
         {
-            MatchEntity retrieved = context.Matches.First(m => m.Id == anId);
+            MatchEntity retrieved = context.Matches.Include(m => m.Commentaries).First(m => m.Id == anId);
             context.Matches.Remove(retrieved);
+            context.Comments.RemoveRange(retrieved.Commentaries);
             context.SaveChanges();
         }
 
@@ -79,7 +90,8 @@ namespace DataRepositories
             {
                 toReturn = GetExistentMatch(anId);
             }
-            else {
+            else
+            {
                 throw new MatchNotFoundException();
             }
             return toReturn;
@@ -87,15 +99,15 @@ namespace DataRepositories
 
         private Match GetExistentMatch(int anId)
         {
-            MatchEntity a = context.Matches.First(me => me.Id == anId);
-            Match conversion = mapper.ToMatch(a);
+            MatchEntity entity = context.Matches.First(me => me.Id == anId);
+            Match conversion = matchConverter.ToMatch(entity);
             return conversion;
         }
 
         public ICollection<Match> GetAll()
         {
             IQueryable<MatchEntity> entities = context.Matches;
-            ICollection<Match> translation = entities.Select(m => mapper.ToMatch(m)).ToList();
+            ICollection<Match> translation = entities.Select(m => matchConverter.ToMatch(m)).ToList();
             return translation;
         }
 
@@ -110,20 +122,33 @@ namespace DataRepositories
             {
                 ModifyExistent(aMatch);
             }
-            else {
+            else
+            {
                 throw new MatchNotFoundException();
             }
         }
 
         private void ModifyExistent(Match aMatch)
         {
-            MatchEntity toAdd = mapper.ToEntity(aMatch);
+            MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Modified;
             context.SaveChanges();
         }
 
-        private bool AnyWithId(int anId) {
-            return context.Matches.Any(m => m.Id==anId);
+        private bool AnyWithId(int anId)
+        {
+            return context.Matches.Any(m => m.Id == anId);
+        }
+
+        public Commentary CommentOnMatch(int idMatch, Commentary aComment)
+        {
+            CommentEntity comment = commentConverter.ToEntity(aComment);
+            MatchEntity commented = context.Matches.Include(m => m.Commentaries).First(m => m.Id == idMatch);
+            commented.Commentaries.Add(comment);
+            context.Attach(comment).State = EntityState.Added;
+            var x = context.Entry(comment.Maker).State;
+            context.SaveChanges();
+            return commentConverter.ToComment(comment);
         }
     }
 }
