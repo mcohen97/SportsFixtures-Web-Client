@@ -17,7 +17,7 @@ namespace DataRepositoriesTest
     [TestClass]
     public class SportRepositoryTest
     {
-        private IRepository<Sport> sportStorage;
+        private ISportRepository sportStorage;
         private Mock<Sport> sportA;
         private Mock<Sport> sportB;
         private ICollection<Team> mockTeamsA;
@@ -135,7 +135,7 @@ namespace DataRepositoriesTest
         public void DeleteTest()
         {
             sportStorage.Add(sportA.Object);
-            sportStorage.Delete(sportA.Object.Id);
+            sportStorage.Delete(sportA.Object.Name);
             Assert.IsTrue(sportStorage.IsEmpty());
         }
 
@@ -145,7 +145,7 @@ namespace DataRepositoriesTest
         public void DeleteNotExistentTest()
         { 
             sportStorage.Add(sportA.Object);
-            sportStorage.Delete(sportB.Object.Id);
+            sportStorage.Delete(sportB.Object.Name);
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ namespace DataRepositoriesTest
         public void DeleteByIdNotExistentTest()
         {
             sportStorage.Add(sportA.Object);
-            sportStorage.Delete(sportB.Object.Id);
+            sportStorage.Delete(sportB.Object.Name);
         }
 
         [TestMethod]
@@ -163,7 +163,7 @@ namespace DataRepositoriesTest
             sportA.Name = "SportAcus";
             CreateContext();
             sportStorage.Modify(sportA.Object);
-            Sport editedSport = sportStorage.Get(sportA.Object.Id);
+            Sport editedSport = sportStorage.Get(sportA.Object.Name);
             Assert.AreEqual(sportA.Object.Name, editedSport.Name);
         }
 
@@ -210,7 +210,7 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportNotFoundException))]
         public void GetByIdNotExistentSportTest()
         {
-            Sport sportsInDb = sportStorage.Get(sportA.Object.Id);
+            Sport sportsInDb = sportStorage.Get(sportA.Object.Name);
         }
 
         [TestMethod]

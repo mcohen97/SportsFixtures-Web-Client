@@ -116,7 +116,7 @@ namespace DataRepositoriesTest
         public void DeleteTest()
         {
             usersStorage.Add(user);
-            usersStorage.Delete(user);
+            usersStorage.Delete(user.UserName);
             Assert.IsTrue(usersStorage.IsEmpty());
         }
 
@@ -129,7 +129,7 @@ namespace DataRepositoriesTest
             User user1 = factory.CreateAdmin(userId1);
             User user2 = factory.CreateAdmin(userId2);
             usersStorage.Add(user1);
-            usersStorage.Delete(user2);
+            usersStorage.Delete(user2.UserName);
         }
 
         [TestMethod]

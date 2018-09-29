@@ -14,7 +14,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace DataRepositories
 {
-    public class TeamRepository : ITeamRepository, IRepository<Team>
+    public class TeamRepository : ITeamRepository
     {
         private DatabaseConnection context;
         private readonly TeamMapper mapper;

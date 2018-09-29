@@ -38,14 +38,7 @@ namespace DataRepositories
             }
         }
 
-        private void AddNewUser(User aUser)
-        {
-            UserEntity toAdd = mapper.ToEntity(aUser);
-            context.Users.Add(toAdd);
-            context.SaveChanges();
-        }
-
-        public User GetUserByUsername(string aUserName)
+        public User Get(string aUserName)
         {
             User toReturn;
             if (AnyWithThisUserName(aUserName))
@@ -60,11 +53,11 @@ namespace DataRepositories
             return toReturn;
         }
 
-        public void Delete(User entity)
+        public void Delete(string username)
         {
-            if (AnyWithThisUserName(entity.UserName))
+            if (AnyWithThisUserName(username))
             {
-                UserEntity toDelete = GetEntityByUsername(entity.UserName);
+                UserEntity toDelete = GetEntityByUsername(username);
                 context.Users.Remove(toDelete);
                 context.SaveChanges();
             }
@@ -133,7 +126,7 @@ namespace DataRepositories
 
         public User Get(User asked)
         {
-            return GetUserByUsername(asked.UserName);
+            return Get(asked.UserName);
         }
 
         public User Get(int anId)

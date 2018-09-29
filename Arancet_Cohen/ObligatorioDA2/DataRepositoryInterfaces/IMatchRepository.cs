@@ -6,7 +6,7 @@ using RepositoryInterface;
 
 namespace DataRepositoryInterfaces
 {
-    public interface IMatchRepository:IRepository<Match>
+    public interface IMatchRepository:IRepository<Match,int>
     {
 
     }

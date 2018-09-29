@@ -9,7 +9,5 @@ namespace DataRepositoryInterfaces
     public interface IUserRepository:IRepository<User,string>
     {
         User Get(User asked);
-
-        void Delete(User toDelete);
     }
 }

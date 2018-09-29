@@ -29,7 +29,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void LoginSuccesfullyTest() {
             //arrange
-            repo.Setup(r => r.GetUserByUsername("aUsername")).Returns(user);
+            repo.Setup(r => r.Get("aUsername")).Returns(user);
 
             //act
             User logged = logger.Login("aUsername", "aPassword");
@@ -46,7 +46,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(UserNotFoundException))]
         public void UserNotFoundTest() {
             //arrange.
-            repo.Setup(r => r.GetUserByUsername("otherUsername")).Throws(new UserNotFoundException());
+            repo.Setup(r => r.Get("otherUsername")).Throws(new UserNotFoundException());
             //act.
             logger.Login("otherUsername", "password");
         }
@@ -55,7 +55,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(WrongPasswordException))]
         public void WrongPasswordTest() {
             //arrange
-            repo.Setup(r => r.GetUserByUsername("aUsername")).Returns(user);
+            repo.Setup(r => r.Get("aUsername")).Returns(user);
 
             //act
             User logged = logger.Login("aUsername", "otherPassword");

@@ -8,6 +8,6 @@ namespace DataRepositoryInterfaces
 {
     public interface ISportRepository:IRepository<Sport,string>
     {
-        Sport Get(string name);
-     }
+
+    }
 }

@@ -43,36 +43,26 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public void Delete(int id)
+        public void Delete(string name)
         {
-            if (!Exists(id))
+            if (!Exists(name))
+            {
                 throw new SportNotFoundException();
-
-            SportEntity sportInDb = context.Sports.First(s => s.Id == id);
+            }
+            SportEntity sportInDb = context.Sports.First(s => s.Name == name);
             context.Sports.Remove(sportInDb);
             context.SaveChanges();
         }
 
-        private bool Exists(int id)
-        {
-            return context.Sports.Any(s => s.Id == id);
-        }
-
         public bool Exists(Sport record)
         {
-            return Exists(record.Id);
+            return Exists(record.Name);
         }
 
-        public Sport Get(int id)
+        private bool Exists(string name)
         {
-            if (!Exists(id))
-                throw new SportNotFoundException();
-
-            SportEntity sportInDb = context.Sports.First(s => s.Id == id);
-            Sport domainSport = mapper.ToSport(sportInDb);
-            return domainSport;
+            return context.Sports.Any(s => s.Name == name);
         }
-
         public ICollection<Sport> GetAll()
         {
             IQueryable<Sport> query = context.Sports.Select(s => mapper.ToSport(s));
@@ -97,15 +87,13 @@ namespace DataRepositories
         public Sport Get(string name)
         {
             if (!Exists(name))
+            {
                 throw new SportNotFoundException();
-
+            }
             SportEntity sportInDb = context.Sports.First(s => s.Name == name);
             return mapper.ToSport(sportInDb);
         }
 
-        private bool Exists(string name)
-        {
-            return context.Sports.Any(s => s.Name == name);
-        }
+        
     }
 }

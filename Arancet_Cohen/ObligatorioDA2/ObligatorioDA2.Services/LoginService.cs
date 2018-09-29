@@ -18,7 +18,7 @@ namespace ObligatorioDA2.Services
 
         public User Login(string aUsername, string aPassword)
         {
-            User fetched = users.GetUserByUsername(aUsername);
+            User fetched = users.Get(aUsername);
             if (!aPassword.Equals(fetched.Password)) {
                 throw new WrongPasswordException();
             }
