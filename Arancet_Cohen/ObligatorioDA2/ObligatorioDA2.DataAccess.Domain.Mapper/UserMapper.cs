@@ -25,7 +25,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
                 Password = toConvert.Password,
                 Email = toConvert.Email,
                 IsAdmin = toConvert.IsAdmin,
-                Id = toConvert.Id
             };
             return converted;
         }
@@ -42,11 +41,11 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             User converted;
             if (toConvert.IsAdmin)
             {
-                converted = factory.CreateAdmin(identity,toConvert.Id);
+                converted = factory.CreateAdmin(identity);
             }
             else
             {
-                converted = factory.CreateFollower(identity, toConvert.Id);
+                converted = factory.CreateFollower(identity);
             }
             return converted;
         }

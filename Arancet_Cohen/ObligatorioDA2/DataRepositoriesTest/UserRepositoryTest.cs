@@ -105,8 +105,8 @@ namespace DataRepositoriesTest
         {
             UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username1", Password = "password1", Email = "mail1@domain.com" };
             UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username2", Password = "password2", Email = "mail2@domain.com" };
-            User user1 = factory.CreateAdmin(userId1,1);
-            User user2 = factory.CreateAdmin(userId2,2);
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
             usersStorage.Add(user1);
             bool result = usersStorage.Exists(user2);
             Assert.IsFalse(result);
@@ -138,8 +138,8 @@ namespace DataRepositoriesTest
             usersStorage.Clear();
             UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username", Password = "password1", Email = "mail1@domain.com" };
             UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username", Password = "password2", Email = "mail2@domain.com" };
-            User user1 = factory.CreateAdmin(userId1,2);
-            User user2 = factory.CreateAdmin(userId2,2);
+            User user1 = factory.CreateAdmin(userId1);
+            User user2 = factory.CreateAdmin(userId2);
             usersStorage.Add(user1);
             CreateRepository();
             usersStorage.Modify(user2);
@@ -156,7 +156,7 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void GetByIdTest() {
-            User user = factory.CreateAdmin(userId, 3);
+            User user = factory.CreateAdmin(userId);
             usersStorage.Add(user);
             User fetched = usersStorage.Get(3);
             Assert.AreEqual(fetched.UserName,user.UserName);
@@ -165,14 +165,14 @@ namespace DataRepositoriesTest
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void GetByIdNotFoundTest() {
-            User user = factory.CreateAdmin(userId, 3);
+            User user = factory.CreateAdmin(userId);
             usersStorage.Add(user);
             User fetched = usersStorage.Get(4);
         }
 
         [TestMethod]
         public void GetTest() {
-            User user = factory.CreateAdmin(userId, 3);
+            User user = factory.CreateAdmin(userId);
             usersStorage.Add(user);
             User fetched = usersStorage.Get(user);
             Assert.AreEqual(user.UserName, fetched.UserName);

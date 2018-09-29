@@ -75,13 +75,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         }
 
         [TestMethod]
-        public void UserToEntityIdTest()
-        {
-            UserEntity conversion = toTest.ToEntity(toStore);
-            Assert.AreEqual(conversion.Id, toStore.Id);
-        }
-
-        [TestMethod]
         public void EntityToUserNameTest() {
             User conversion = toTest.ToUser(toGet);
             Assert.AreEqual(conversion.Name, toGet.Name);
@@ -115,10 +108,5 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             Assert.AreEqual(conversion.Email, toGet.Email);
         }
 
-        [TestMethod]
-        public void EntityToUserIdTest() {
-            User conversion = toTest.ToUser(toGet);
-            Assert.AreEqual(conversion.Id, toGet.Id);
-        }
     }
 }
