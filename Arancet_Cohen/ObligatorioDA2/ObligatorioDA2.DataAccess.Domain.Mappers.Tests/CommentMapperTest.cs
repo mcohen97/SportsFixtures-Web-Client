@@ -29,7 +29,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
                 Id = 3,
                 Text = "another comment",
                 Maker = new UserEntity() {
-                    Id= 3,
                     Name = "aName",
                     Surname = "aSurname",
                     UserName = "aUsername",

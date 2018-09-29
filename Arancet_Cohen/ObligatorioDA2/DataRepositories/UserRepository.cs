@@ -83,21 +83,7 @@ namespace DataRepositories
             return !context.Users.Any();
         }
 
-        
-
-        public void Delete(int identity)
-        {
-            if (context.Users.Any(r => r.Id.Equals(identity)))
-            {
-                UserEntity toDelete = context.Users.First(u=>u.Id == identity);
-                context.Users.Remove(toDelete);
-                context.SaveChanges();
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
-        }
+       
 
         public bool Exists(User entity)
         {
@@ -129,21 +115,6 @@ namespace DataRepositories
             return Get(asked.UserName);
         }
 
-        public User Get(int anId)
-        {
-            User query;
-            bool exists = context.Users.Any(u => u.Id == anId);
-            if (exists)
-            {
-                UserEntity record =context.Users.First(u => u.Id == anId);
-                query = mapper.ToUser(record);
-            }
-            else
-            {
-                throw new UserNotFoundException();
-            }
-            return query;
-        }
 
         public void Clear()
         {

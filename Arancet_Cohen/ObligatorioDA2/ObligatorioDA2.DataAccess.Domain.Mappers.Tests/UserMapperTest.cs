@@ -33,8 +33,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
                 Surname = "surname",
                 UserName = "username",
                 Password = "password",
-                Email = "email@domain.com",
-                Id = 1
+                Email = "email@domain.com"
             };
             toTest = new UserMapper();
         }

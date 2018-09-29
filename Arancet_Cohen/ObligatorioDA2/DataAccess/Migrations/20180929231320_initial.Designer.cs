@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20180929215702_initial")]
+    [Migration("20180929231320_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,15 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("MakerUserName");
+
                     b.Property<int?>("MatchEntityId");
 
                     b.Property<string>("Text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MakerUserName");
 
                     b.HasIndex("MatchEntityId");
 
@@ -54,7 +58,11 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("HomeTeamSportEntityName");
 
+                    b.Property<string>("SportEntityName");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SportEntityName");
 
                     b.HasIndex("AwayTeamSportEntityName", "AwayTeamName");
 
@@ -68,12 +76,7 @@ namespace DataAccess.Migrations
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("Id");
-
                     b.HasKey("Name");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.ToTable("Sports");
                 });
@@ -102,8 +105,6 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Email");
 
-                    b.Property<int>("Id");
-
                     b.Property<bool>("IsAdmin");
 
                     b.Property<string>("Name");
@@ -114,14 +115,15 @@ namespace DataAccess.Migrations
 
                     b.HasKey("UserName");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
-
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.CommentEntity", b =>
                 {
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.UserEntity", "Maker")
+                        .WithMany()
+                        .HasForeignKey("MakerUserName");
+
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.MatchEntity")
                         .WithMany("Commentaries")
                         .HasForeignKey("MatchEntityId");
@@ -129,6 +131,10 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.MatchEntity", b =>
                 {
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity", "SportEntity")
+                        .WithMany()
+                        .HasForeignKey("SportEntityName");
+
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "AwayTeam")
                         .WithMany()
                         .HasForeignKey("AwayTeamSportEntityName", "AwayTeamName");
@@ -138,27 +144,11 @@ namespace DataAccess.Migrations
                         .HasForeignKey("HomeTeamSportEntityName", "HomeTeamName");
                 });
 
-            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.SportEntity", b =>
-                {
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.MatchEntity")
-                        .WithOne("SportEntity")
-                        .HasForeignKey("ObligatorioDA2.DataAccess.Entities.SportEntity", "Id")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
                 {
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity")
                         .WithMany("Teams")
                         .HasForeignKey("SportEntityName")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.UserEntity", b =>
-                {
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.CommentEntity")
-                        .WithOne("Maker")
-                        .HasForeignKey("ObligatorioDA2.DataAccess.Entities.UserEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

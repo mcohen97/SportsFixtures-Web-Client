@@ -2,7 +2,7 @@
 
 namespace ObligatorioDA2.DataAccess.Entities
 {
-    public class UserEntity:BaseEntity
+    public class UserEntity
     {
         public UserEntity()
         { 

@@ -9,10 +9,20 @@ namespace DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Sports",
+                columns: table => new
+                {
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sports", x => x.Name);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Surname = table.Column<string>(nullable: true),
                     UserName = table.Column<string>(nullable: false),
@@ -23,32 +33,6 @@ namespace DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserName);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Comments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Text = table.Column<string>(nullable: true),
-                    MatchEntityId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Sports",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sports", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,11 +66,18 @@ namespace DataAccess.Migrations
                     HomeTeamName = table.Column<string>(nullable: true),
                     AwayTeamSportEntityName = table.Column<string>(nullable: true),
                     AwayTeamName = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false)
+                    Date = table.Column<DateTime>(nullable: false),
+                    SportEntityName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Matches", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Matches_Sports_SportEntityName",
+                        column: x => x.SportEntityName,
+                        principalTable: "Sports",
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Matches_Teams_AwayTeamSportEntityName_AwayTeamName",
                         columns: x => new { x.AwayTeamSportEntityName, x.AwayTeamName },
@@ -101,10 +92,47 @@ namespace DataAccess.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    MakerUserName = table.Column<string>(nullable: true),
+                    Text = table.Column<string>(nullable: true),
+                    MatchEntityId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_MakerUserName",
+                        column: x => x.MakerUserName,
+                        principalTable: "Users",
+                        principalColumn: "UserName",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comments_Matches_MatchEntityId",
+                        column: x => x.MatchEntityId,
+                        principalTable: "Matches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_MakerUserName",
+                table: "Comments",
+                column: "MakerUserName");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_MatchEntityId",
                 table: "Comments",
                 column: "MatchEntityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_SportEntityName",
+                table: "Matches",
+                column: "SportEntityName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Matches_AwayTeamSportEntityName_AwayTeamName",
@@ -115,55 +143,15 @@ namespace DataAccess.Migrations
                 name: "IX_Matches_HomeTeamSportEntityName_HomeTeamName",
                 table: "Matches",
                 columns: new[] { "HomeTeamSportEntityName", "HomeTeamName" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sports_Id",
-                table: "Sports",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_Id",
-                table: "Users",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Users_Comments_Id",
-                table: "Users",
-                column: "Id",
-                principalTable: "Comments",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Comments_Matches_MatchEntityId",
-                table: "Comments",
-                column: "MatchEntityId",
-                principalTable: "Matches",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Sports_Matches_Id",
-                table: "Sports",
-                column: "Id",
-                principalTable: "Matches",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Sports_Matches_Id",
-                table: "Sports");
+            migrationBuilder.DropTable(
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Matches");
