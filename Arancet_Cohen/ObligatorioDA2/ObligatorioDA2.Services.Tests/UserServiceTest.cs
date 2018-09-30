@@ -14,6 +14,7 @@ namespace ObligatorioDA2.Services.Tests
         private Mock<IUserRepository> users;
         private IUserService service;
         private User testUser;
+        private Team toFollow;
 
         [TestInitialize]
         public void SetUp() {
@@ -22,7 +23,7 @@ namespace ObligatorioDA2.Services.Tests
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
-
+             toFollow = GetFakeTeam();
         }
 
         private User GetFakeUser()
@@ -31,12 +32,18 @@ namespace ObligatorioDA2.Services.Tests
             {
                 Name = "John",
                 Surname = "Doe",
-                UserName = "JohnDoe"
-                ,
+                UserName = "JohnDoe",
                 Password = "Password",
                 Email = "John@Doe.com"
             };
             return new User(identity, true);
+        }
+
+        private Team GetFakeTeam()
+        {
+            Sport played = new Sport("Basketball");
+            Team fake = new Team(1, "Lakers", "aPhoto", played);
+            return fake;
         }
 
         [TestMethod]
@@ -95,5 +102,35 @@ namespace ObligatorioDA2.Services.Tests
             users.Setup(r => r.Delete(testUser.UserName)).Throws(new UserNotFoundException());
             service.DeleteUser(testUser.UserName);
         }
+
+        [TestMethod]
+        public void FollowTeamtest() {
+            service.FollowTeam(testUser.UserName, toFollow);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void FollowTeamNotExistentUserTest() {
+            users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
+
+            service.FollowTeam(testUser.UserName, toFollow);
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Never);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void FollowNotExistentTeamTest() {
+            users.Setup(r => r.Modify(testUser)).Throws(new TeamNotFoundException());
+
+            service.FollowTeam(testUser.UserName, toFollow);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Once);
+        }
+
     }
 }
