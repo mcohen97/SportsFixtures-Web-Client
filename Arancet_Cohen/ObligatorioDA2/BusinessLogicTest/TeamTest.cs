@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
 using BusinessLogic.Exceptions;
+using Moq;
 
 namespace BusinessLogicTest
 {
@@ -9,13 +10,15 @@ namespace BusinessLogicTest
     public class TeamTest
     {
         private Team testTeam;
+        private Sport aSport;
 
         [TestInitialize]
         public void TestInitialize(){
             int id = 1;
             string name = "TheTeam";
             string photo = "myresource/theteam.png";
-            testTeam = new Team(id, name, photo);
+            aSport = new Mock<Sport>("TheSport").Object;
+            testTeam = new Team(id, name, photo, aSport);
         }
 
         [TestMethod]
@@ -52,6 +55,20 @@ namespace BusinessLogicTest
             string newName = "TheNewTeam";
             testTeam.Name = newName;
             Assert.AreEqual(newName, testTeam.Name);
+        }
+
+        [TestMethod]
+        public void GetSportTest()
+        {
+            Assert.AreEqual(testTeam.Sport, aSport);
+        }
+
+        [TestMethod]
+        public void SetSportTest()
+        {
+            Sport sport = new Mock<Sport>("TheNewSport").Object;
+            testTeam.Sport = sport;
+            Assert.AreEqual(sport, testTeam.Sport);
         }
 
         [TestMethod]

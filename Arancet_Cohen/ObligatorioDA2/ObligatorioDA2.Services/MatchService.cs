@@ -17,7 +17,6 @@ namespace ObligatorioDA2.Services
 
         public void AddMatch(Match aMatch)
         {
-            
         }
 
         public ICollection<Match> GetAllMatches()
