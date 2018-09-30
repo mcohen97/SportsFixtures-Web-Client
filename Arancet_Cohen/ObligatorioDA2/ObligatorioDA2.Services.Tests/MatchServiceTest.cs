@@ -19,6 +19,7 @@ namespace ObligatorioDA2.Services.Tests
         IMatchRepository repoDouble;
         Mock<Match> fakeMatch;
         private List<Match> storedMatches;
+
         [TestInitialize]
         public void SetUp() {
             /*repoDouble = new Mock<IMatchRepository>();
@@ -46,7 +47,8 @@ namespace ObligatorioDA2.Services.Tests
         {
             Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
             Mock<Team> away = new Mock<Team>("Real Madrid", "aPath");
-            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now);
+            Mock<Sport> sport = new Mock<Sport>("Soccer");
+            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now, sport.Object);
             return match;
         }
 

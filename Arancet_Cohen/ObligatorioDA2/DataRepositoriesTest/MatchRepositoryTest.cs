@@ -67,15 +67,15 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void GetMatchHomeTeamTest() {
-            Match added =matchesStorage.Add(match.Object);
-            Match retrieved = matchesStorage.Get(added.Id);
+            matchesStorage.Add(match.Object);
+            Match retrieved = matchesStorage.Get(match.Object.Id);
             Assert.AreEqual(retrieved.HomeTeam, match.Object.HomeTeam);
         }
 
         [TestMethod]
         public void GetMatchAwayTeamTest() {
-            Match added =matchesStorage.Add(match.Object);
-            Match retrieved = matchesStorage.Get(added.Id);
+            matchesStorage.Add(match.Object);
+            Match retrieved = matchesStorage.Get(match.Object.Id);
             Assert.AreEqual(retrieved.AwayTeam, match.Object.AwayTeam);
         }
 
@@ -83,8 +83,8 @@ namespace DataRepositoriesTest
         public void GetMatchCommentsTest() {
             Mock<Commentary> dummy = BuildFakeCommentary();
             match.Object.AddCommentary(dummy.Object);
-            Match added =matchesStorage.Add(match.Object);
-            Match retrieved = matchesStorage.Get(added.Id);
+            matchesStorage.Add(match.Object);
+            Match retrieved = matchesStorage.Get(match.Object.Id);
             Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
         }
 
@@ -106,7 +106,7 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(MatchNotFoundException))]
         public void GetMatchNotFoundTest()
         {
-            Match added =matchesStorage.Add(match.Object);
+            matchesStorage.Add(match.Object);
             Match retrieved = matchesStorage.Get(4);
         }
 
@@ -148,8 +148,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void ExistsTest() {
-            Match added = matchesStorage.Add(match.Object);
-            bool exists = matchesStorage.Exists(added.Id);
+            matchesStorage.Add(match.Object);
+            bool exists = matchesStorage.Exists(match.Object.Id);
             Assert.IsTrue(exists);
         }
 
@@ -161,9 +161,9 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void DeleteTest() {
-            Match added =matchesStorage.Add(match.Object);
+            matchesStorage.Add(match.Object);
             matchesStorage.Delete(match.Object.Id);
-            bool exists = matchesStorage.Exists(added.Id);
+            bool exists = matchesStorage.Exists(match.Object.Id);
             Assert.IsFalse(exists);
         }
 

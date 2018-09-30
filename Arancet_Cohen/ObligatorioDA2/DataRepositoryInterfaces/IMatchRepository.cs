@@ -16,7 +16,7 @@ namespace DataRepositoryInterfaces
 
         Match Get(int id);
 
-        Match Add(Match aMatch);
+        void Add(Match aMatch);
 
         void Modify(Match aMatch);
 
