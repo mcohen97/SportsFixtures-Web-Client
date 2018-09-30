@@ -25,8 +25,8 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             MatchEntity conversion = new MatchEntity()
             {
                 Id = aMatch.Id,
-                HomeTeam = teamConverter.ToEntity(aMatch.HomeTeam),
-                AwayTeam = teamConverter.ToEntity(aMatch.AwayTeam),
+                HomeTeam = teamConverter.ToEntity(aMatch.HomeTeam,aMatch.Sport.Name),
+                AwayTeam = teamConverter.ToEntity(aMatch.AwayTeam,aMatch.Sport.Name),
                 Date = aMatch.Date,
                 Commentaries = TransformCommentaries(aMatch.GetAllCommentaries()),
                 SportEntity = sportEntity

@@ -33,17 +33,17 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             return converted;
         }
 
-        public ICollection<UserTeam> GetTeams(User aUser) {
+        /*public ICollection<UserTeam> GetTeams(User aUser) {
             UserEntity entity = ToEntity(aUser);
             ICollection<UserTeam> conversion = aUser.GetFavouriteTeams()
                 .Select(t => BuildRelationship(entity,t))
                 .ToList();
             return conversion;
-        }
+        }*/
 
-        private UserTeam BuildRelationship(UserEntity entity, Team aTeam)
+        private UserTeam BuildRelationship(UserEntity entity, Team aTeam, string sportName)
         {
-            TeamEntity teamEntity = teamConverter.ToEntity(aTeam);
+            TeamEntity teamEntity = teamConverter.ToEntity(aTeam,sportName);
             UserTeam relationship = new UserTeam
             {
                 Team = teamEntity,

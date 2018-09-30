@@ -103,7 +103,7 @@ namespace DataRepositories
 
         private void TryAdd(string sportName, Team aTeam)
         {
-            TeamEntity toStore = mapper.ToEntity(aTeam);
+            TeamEntity toStore = mapper.ToEntity(aTeam,sportName);
             toStore.SportEntityName = sportName;
             context.Teams.Add(toStore);
             context.SaveChanges();
@@ -123,7 +123,7 @@ namespace DataRepositories
 
         private void TryModify(string sportName, Team aTeam)
         {
-            TeamEntity entity = mapper.ToEntity(aTeam);
+            TeamEntity entity = mapper.ToEntity(aTeam,sportName);
             entity.SportEntityName = sportName;
             context.Entry(entity).State = EntityState.Modified;
             context.SaveChanges();

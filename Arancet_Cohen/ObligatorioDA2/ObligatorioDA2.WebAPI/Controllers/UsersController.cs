@@ -19,11 +19,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        IUserRepository repo;
+        IUserRepository users;
+        ITeamRepository teams;
         UserFactory factory;
 
-        public UsersController(IUserRepository aRepo) {
-            repo = aRepo;
+
+        public UsersController(IUserRepository usersRepo, ITeamRepository teamsRepo) {
+            users = usersRepo;
+            teams = teamsRepo;
             factory = new UserFactory();
         }
 
@@ -43,7 +46,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         private UserModelOut TryGetUser(string username) {
-            User queried = repo.Get(username);
+            User queried = users.Get(username);
             UserModelOut toReturn = new UserModelOut
             {
                 Name = queried.Name,
@@ -70,6 +73,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return toReturn;
         }
 
+        [HttpPost("{username}/teams")]
+        public void Post(string username,TeamModelIn modelIn) {
+            Team toFollow = new Team(modelIn.Name);
+
+            users.AddFollowedTeam(username,modelIn.SportName,toFollow);
+        }
+
         private IActionResult AddValidUser(UserModelIn user) {
             UserId identity = new UserId
             {
@@ -81,8 +91,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
 
             User toAdd =user.IsAdmin ? factory.CreateAdmin(identity):factory.CreateFollower(identity);
-            repo.Add(toAdd);
-            User added = repo.Get(toAdd); 
+            users.Add(toAdd);
+            User added = users.Get(toAdd); 
            
             var addedUser = new UserModelOut()
             {
@@ -124,10 +134,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             User converted = factory.CreateFollower(identity);
             try
             {
-                repo.Modify(converted);
+                users.Modify(converted);
             }
             catch(UserNotFoundException) {
-                repo.Add(converted);
+                users.Add(converted);
             }
 
         }
@@ -139,7 +149,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                repo.Delete(username);
+                users.Delete(username);
                 result = Ok();
             }
             catch (UserNotFoundException e) {

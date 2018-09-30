@@ -9,5 +9,6 @@ namespace DataRepositoryInterfaces
     public interface IUserRepository:IRepository<User,string>
     {
         User Get(User asked);
+        void AddFollowedTeam(string username, string sportName, Team toFollow);
     }
 }

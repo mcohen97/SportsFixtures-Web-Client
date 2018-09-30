@@ -18,7 +18,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             SportEntity converted = new SportEntity()
             {
                 Name= aSport.Name,
-                Teams = aSport.GetTeams().Select(t => teamConverter.ToEntity(t)).ToList()
+                Teams = aSport.GetTeams().Select(t => teamConverter.ToEntity(t,aSport.Name)).ToList()
             };
             return converted;
         }

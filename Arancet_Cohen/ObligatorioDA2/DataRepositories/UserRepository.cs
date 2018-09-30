@@ -16,21 +16,21 @@ namespace DataRepositories
     public class UserRepository : IUserRepository
     {
         private readonly DatabaseConnection context;
-        private readonly UserMapper mapper;
+        private readonly UserMapper userMapper;
+        private readonly TeamMapper teamMapper;
 
         public UserRepository(DatabaseConnection aContext)
         {
             context = aContext;
-            mapper = new UserMapper();
+            userMapper = new UserMapper();
+            teamMapper = new TeamMapper();
         }
 
         public void Add(User aUser)
         {
-            UserEntity entity = mapper.ToEntity(aUser);
-            ICollection<UserTeam> teams = mapper.GetTeams(aUser);
+            UserEntity entity = userMapper.ToEntity(aUser);
             if (!AnyWithThisUserName(aUser.UserName))
             {
-                context.UserTeams.AddRange(teams);
                 context.Users.Add(entity);
                 context.SaveChanges();
             }
@@ -50,7 +50,8 @@ namespace DataRepositories
                     .Where(ut => ut.UserEntityUserName.Equals(aUserName))
                     .Select(ut => ut.Team)
                     .ToList();
-                toReturn = mapper.ToUser(retrieved,teams);
+                toReturn = userMapper.ToUser(retrieved,teams);
+                context.Entry(retrieved).State = EntityState.Detached;
             }
             else
             {
@@ -86,7 +87,7 @@ namespace DataRepositories
                 IQueryable<TeamEntity> followed = context.UserTeams
                     .Where(ue => ue.UserEntityUserName.Equals(user.UserName))
                     .Select(ue => ue.Team);
-                User built = mapper.ToUser(user, followed.ToList());
+                User built = userMapper.ToUser(user, followed.ToList());
                 users.Add(built);
             };
             return users;
@@ -101,7 +102,7 @@ namespace DataRepositories
 
         public bool Exists(User entity)
         {
-            UserEntity record = mapper.ToEntity(entity);
+            UserEntity record = userMapper.ToEntity(entity);
             bool doesExist = context.Users.Any(u => u.UserName.Equals(entity.UserName));
             return doesExist;
         }
@@ -110,14 +111,15 @@ namespace DataRepositories
         {
             if (AnyWithThisUserName(aUser.UserName))
             {
-                UserEntity entity = mapper.ToEntity(aUser);
+                UserEntity entity = userMapper.ToEntity(aUser);
 
-                foreach (UserTeam team in mapper.GetTeams(aUser)) {
+                /*foreach (UserTeam team in userMapper.GetTeams(aUser)) {
                     if (!context.UserTeams.Contains(team)) {
-                        context.UserTeams.Add(team);
+                        context.Entry(team).State=EntityState.Added;
                     }
-                }
+                }*/
                 context.Update(entity);
+                context.SaveChanges();
             }
             else
             {
@@ -142,6 +144,21 @@ namespace DataRepositories
             foreach (UserEntity existent in allOfThem) {
                 context.Users.Remove(existent);
             }
+            context.SaveChanges();
+        }
+
+        public void AddFollowedTeam(string username, string sportName, Team toFollow)
+        {
+            UserEntity follower = context.Users.First(u => u.UserName.Equals(username));
+            UserTeam relationship = new UserTeam
+            {
+                Follower = follower,
+                UserEntityUserName = follower.UserName,
+                Team = teamMapper.ToEntity(toFollow, sportName),
+                TeamEntityName = toFollow.Name,
+                TeamEntitySportEntityName = sportName
+            };
+            context.Entry(relationship).State=EntityState.Added;
             context.SaveChanges();
         }
     }

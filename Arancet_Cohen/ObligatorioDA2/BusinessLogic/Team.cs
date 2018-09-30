@@ -12,9 +12,12 @@ namespace BusinessLogic
         private string name;
         private string photo;
         private int id;
-        
-        public Team(string name, string photo) {
-            Name = name;
+
+        public Team(string aName) {
+            Name = aName;
+            Photo = "";
+        }
+        public Team(string name, string photo):this(name) {
             Photo = photo;
         }
 
