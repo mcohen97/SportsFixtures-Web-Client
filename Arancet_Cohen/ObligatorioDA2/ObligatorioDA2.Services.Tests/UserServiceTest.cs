@@ -11,7 +11,7 @@ namespace ObligatorioDA2.Services.Tests
     public class UserServiceTest
     {
         private Mock<IUserRepository> users;
-        private UserService service;
+        private IUserService service;
         private User testUser;
 
         [TestInitialize]
