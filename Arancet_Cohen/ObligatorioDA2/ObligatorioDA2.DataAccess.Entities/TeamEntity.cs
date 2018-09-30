@@ -22,6 +22,7 @@ namespace ObligatorioDA2.DataAccess.Entities
         public string Photo { get; set; }
 
         public string SportEntityName { get; set; }
+        public SportEntity Sport { get; set; }
 
         public ICollection<UserTeam> Followers { get; set; }
     }
