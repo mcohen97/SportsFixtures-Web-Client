@@ -50,7 +50,7 @@ namespace DataRepositories
         private Team TryGet(string sportName, string teamName)
         {
             TeamEntity entity = context.Teams
-                .FirstOrDefault(e => e.Name.Equals(teamName) && e.SportEntityName.Equals(sportName));
+                .FirstOrDefault(e => e.Name.Equals(teamName) && e.Sport.Name.Equals(sportName));
             Team converted = mapper.ToTeam(entity);
             return converted;
         }
@@ -69,7 +69,7 @@ namespace DataRepositories
         private void DeleteValid(string sportName, string teamName)
         {
             TeamEntity toDelete = context.Teams
-                .First(t => t.SportEntityName.Equals(sportName) && t.Name.Equals(teamName));
+                .First(t => t.Sport.Name.Equals(sportName) && t.Name.Equals(teamName));
             context.Teams.Remove(toDelete);
             DeleteMatches(toDelete);
             context.SaveChanges();
@@ -87,33 +87,31 @@ namespace DataRepositories
             }
         }
 
-        public void Add(string sportName, Team aTeam)
+        public void Add( Team aTeam)
         {
+            TeamEntity entity = mapper.ToEntity(aTeam);
 
-            if (!Exists(sportName, aTeam.Name))
+            if (!Exists(entity.Sport.Name,entity.Name))
             {
-                TryAdd(sportName, aTeam);
+                TryAdd(aTeam);
             }
             else {
                 throw new TeamAlreadyExistsException();
             }
- 
-
         }
 
-        private void TryAdd(string sportName, Team aTeam)
+        private void TryAdd(Team aTeam)
         {
-            TeamEntity toStore = mapper.ToEntity(aTeam,sportName);
-            toStore.SportEntityName = sportName;
+            TeamEntity toStore = mapper.ToEntity(aTeam);
             context.Teams.Add(toStore);
             context.SaveChanges();
         }
 
-        public void Modify(string sportName, Team aTeam)
+        public void Modify(Team aTeam)
         {
             try
             {
-                TryModify(sportName, aTeam);
+                TryModify(aTeam);
             }
             catch (DbUpdateException)
             {
@@ -121,10 +119,9 @@ namespace DataRepositories
             }
         }
 
-        private void TryModify(string sportName, Team aTeam)
+        private void TryModify(Team aTeam)
         {
-            TeamEntity entity = mapper.ToEntity(aTeam,sportName);
-            entity.SportEntityName = sportName;
+            TeamEntity entity = mapper.ToEntity(aTeam);
             context.Entry(entity).State = EntityState.Modified;
             context.SaveChanges();
         }
@@ -136,7 +133,7 @@ namespace DataRepositories
 
         public bool Exists(string sportName, string teamName)
         {
-            return context.Teams.Any(t => t.SportEntityName.Equals(sportName) && t.Name.Equals(teamName));
+            return context.Teams.Any(t => t.Sport.Name.Equals(sportName) && t.Name.Equals(teamName));
         }
 
         public ICollection<Team> GetAll()
