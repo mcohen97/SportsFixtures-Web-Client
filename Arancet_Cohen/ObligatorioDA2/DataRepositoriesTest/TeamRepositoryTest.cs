@@ -187,7 +187,7 @@ namespace DataRepositoriesTest
                 fake.AddFavourite(created);
             }       
             userRepository.Add(fake);
-            ICollection<Team> followedTeams = teams.GetFollowedTeams(fake);
+            ICollection<Team> followedTeams = teamsStorage.GetFollowedTeams(fake.UserName);
             Assert.AreEqual(followedTeams.Count, 3);
         }
 

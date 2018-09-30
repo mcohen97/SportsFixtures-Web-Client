@@ -20,6 +20,8 @@ namespace DataRepositoryInterfaces
         void Modify(string sportName, Team aTeam);
 
         ICollection<Team> GetAll();
+
+        ICollection<Team> GetFollowedTeams(string username);
     }
 
 }

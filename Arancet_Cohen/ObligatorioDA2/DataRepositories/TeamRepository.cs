@@ -145,5 +145,13 @@ namespace DataRepositories
             ICollection<Team> result = teams.Select(t => mapper.ToTeam(t)).ToList();
             return result;
         }
+
+        public ICollection<Team> GetFollowedTeams(string username)
+        {
+            IQueryable<UserTeam> relationships= context.UserTeams
+                .Where(ut => ut.UserEntityUserName.Equals(username));
+            IQueryable<TeamEntity> teams = relationships.Select(ut => ut.Team);
+            return teams.Select(t => mapper.ToTeam(t)).ToList();
+        }
     }
 }
