@@ -115,9 +115,12 @@ namespace DataRepositories
 
         public void Modify(Match aMatch)
         {
-            if (Exists(aMatch))
+            if (Exists(aMatch.Id))
             {
-                ModifyExistent(aMatch);
+                MatchEntity converted = matchConverter.ToEntity(aMatch);
+                converted.SportEntity = new SportEntity { Name = aMatch.Sport.Name };
+                context.Matches.Attach(converted).State = EntityState.Modified;
+                context.SaveChanges();
             }
             else
             {
@@ -153,18 +156,5 @@ namespace DataRepositories
             return context.Matches.Any(m => m.Id == id);
         }
 
-        public void Modify(string sportName, Match aMatch)
-        {
-            if (Exists(aMatch.Id))
-            {
-                MatchEntity converted = matchConverter.ToEntity(aMatch);
-                converted.SportEntity = new SportEntity { Name = sportName };
-                context.Matches.Attach(converted).State = EntityState.Modified;
-                context.SaveChanges();
-            }
-            else {
-                throw new MatchNotFoundException();
-            }
-        }
     }
 }

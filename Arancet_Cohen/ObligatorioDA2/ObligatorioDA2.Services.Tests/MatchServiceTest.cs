@@ -18,7 +18,6 @@ namespace ObligatorioDA2.Services.Tests
     {
         private MatchService serviceToTest;
         private IMatchRepository repoDouble;
-        private ITeamRepository teamsRepo;
         private Sport sport;
         private Team teamA;
         private Team teamB;
@@ -35,7 +34,7 @@ namespace ObligatorioDA2.Services.Tests
             teamC = new Mock<Team>(3, "teamC", "photo", sport).Object;
             matchAvsB = new Mock<Match>(1, teamA, teamB, DateTime.Now.AddDays(1), sport).Object;
             matchAvsC = new Mock<Match>(2, teamA, teamC, DateTime.Now.AddDays(2), sport).Object;
-            matchBvsC = new Mock<Match>(3, teamA, teamB, DateTime.Now.AddDays(3), sport).Object;
+            matchBvsC = new Mock<Match>(3, teamB, teamC, DateTime.Now.AddDays(3), sport).Object;
             SetUpRepository();
             serviceToTest = new MatchService(repoDouble);
         }
@@ -91,14 +90,7 @@ namespace ObligatorioDA2.Services.Tests
             serviceToTest.AddMatch(matchAvsC);
             serviceToTest.AddMatch(matchBvsC);
             ICollection<Match> matches = serviceToTest.GetAllMatches(teamA);
-            Assert.AreEqual(matches.Count, 2);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(TeamNotFoundException))]
-        public void GetMatchesFromTeamNotExistentTest()
-        {
-            serviceToTest.GetAllMatches(teamA);
+            Assert.AreEqual(2, matches.Count);
         }
 
         [TestMethod]
@@ -109,10 +101,10 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void ModifyTest() {
-            serviceToTest.AddMatch(matchAvsC);
+            serviceToTest.AddMatch(matchAvsB);
             Match modifiedAvsB = new Mock<Match>(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport).Object;
             serviceToTest.ModifyMatch(modifiedAvsB);
-            Match modified = serviceToTest.GetMatch(matchAvsC.Id);
+            Match modified = serviceToTest.GetMatch(matchAvsB.Id);
 
             Assert.AreEqual(modifiedAvsB.HomeTeam.Name, modified.HomeTeam.Name);
             Assert.AreEqual(modifiedAvsB.AwayTeam.Name, modified.AwayTeam.Name);
