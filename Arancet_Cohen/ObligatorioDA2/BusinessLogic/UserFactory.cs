@@ -12,9 +12,19 @@ namespace BusinessLogic.Factories
             return new User(identity, true);
         }
 
+        public User CreateAdmin(UserId identity,ICollection<Team> following)
+        {
+            return new User(identity, true,following);
+        }
+
         public User CreateFollower(UserId identity)
         {
             return new User(identity, false);
+        }
+
+        public User CreateFollower(UserId identity, ICollection<Team> following)
+        {
+            return new User(identity, false, following);
         }
 
     }

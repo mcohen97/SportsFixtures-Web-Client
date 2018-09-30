@@ -27,8 +27,10 @@ namespace DataRepositories
         public void Add(User aUser)
         {
             UserEntity entity = mapper.ToEntity(aUser);
+            ICollection<UserTeam> teams = mapper.GetTeams(aUser);
             if (!AnyWithThisUserName(aUser.UserName))
             {
+                context.UserTeams.AddRange(teams);
                 context.Users.Add(entity);
                 context.SaveChanges();
             }
@@ -44,7 +46,11 @@ namespace DataRepositories
             if (AnyWithThisUserName(aUserName))
             {
                 UserEntity retrieved = GetEntityByUsername(aUserName);
-                toReturn = mapper.ToUser(retrieved);
+                ICollection<TeamEntity> teams = context.UserTeams
+                    .Where(ut => ut.UserEntityUserName.Equals(aUserName))
+                    .Select(ut => ut.Team)
+                    .ToList();
+                toReturn = mapper.ToUser(retrieved,teams);
             }
             else
             {
@@ -74,7 +80,15 @@ namespace DataRepositories
         public ICollection<User> GetAll()
         {
             IQueryable<UserEntity> query = context.Users;
-            ICollection<User> users = query.Select(u => mapper.ToUser(u)).ToList();
+            ICollection<User> users = new List<User>();
+
+            foreach (UserEntity user in query) {
+                IQueryable<TeamEntity> followed = context.UserTeams
+                    .Where(ue => ue.UserEntityUserName.Equals(user.UserName))
+                    .Select(ue => ue.Team);
+                User built = mapper.ToUser(user, followed.ToList());
+                users.Add(built);
+            };
             return users;
         }
 
@@ -97,6 +111,12 @@ namespace DataRepositories
             if (AnyWithThisUserName(aUser.UserName))
             {
                 UserEntity entity = mapper.ToEntity(aUser);
+
+                foreach (UserTeam team in mapper.GetTeams(aUser)) {
+                    if (!context.UserTeams.Contains(team)) {
+                        context.UserTeams.Add(team);
+                    }
+                }
                 context.Update(entity);
             }
             else

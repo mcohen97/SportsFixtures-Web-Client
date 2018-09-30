@@ -15,6 +15,8 @@ namespace DataAccess
         public virtual DbSet<CommentEntity> Comments { get;set; }
         public virtual DbSet<SportEntity> Sports { get; set; }
 
+        public virtual DbSet<UserTeam> UserTeams { get; set; }
+
         public DatabaseConnection(DbContextOptions<DatabaseConnection> options) : base(options)
         {
         }
@@ -26,6 +28,9 @@ namespace DataAccess
             modelBuilder.Entity<SportEntity>().HasKey(t => t.Name);
             modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
             modelBuilder.Entity<TeamEntity>().HasKey(t => new { t.SportEntityName, t.Name });
+            modelBuilder.Entity<UserTeam>().HasKey(ut => new { ut.TeamEntityName,ut.TeamEntitySportEntityName, ut.UserEntityUserName});
+
+      
 
             modelBuilder.Entity<TeamEntity>().Property(u => u.Identity).ValueGeneratedOnAdd();
             modelBuilder.Entity<MatchEntity>().Property(u => u.Id).ValueGeneratedOnAdd();

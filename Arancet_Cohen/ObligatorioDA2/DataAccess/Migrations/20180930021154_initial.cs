@@ -93,6 +93,31 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserTeams",
+                columns: table => new
+                {
+                    UserEntityUserName = table.Column<string>(nullable: false),
+                    TeamEntityName = table.Column<string>(nullable: false),
+                    TeamEntitySportEntityName = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTeams", x => new { x.TeamEntityName, x.TeamEntitySportEntityName, x.UserEntityUserName });
+                    table.ForeignKey(
+                        name: "FK_UserTeams_Users_UserEntityUserName",
+                        column: x => x.UserEntityUserName,
+                        principalTable: "Users",
+                        principalColumn: "UserName",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserTeams_Teams_TeamEntitySportEntityName_TeamEntityName",
+                        columns: x => new { x.TeamEntitySportEntityName, x.TeamEntityName },
+                        principalTable: "Teams",
+                        principalColumns: new[] { "SportEntityName", "Name" },
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
@@ -143,6 +168,16 @@ namespace DataAccess.Migrations
                 name: "IX_Matches_HomeTeamSportEntityName_HomeTeamName",
                 table: "Matches",
                 columns: new[] { "HomeTeamSportEntityName", "HomeTeamName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTeams_UserEntityUserName",
+                table: "UserTeams",
+                column: "UserEntityUserName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTeams_TeamEntitySportEntityName_TeamEntityName",
+                table: "UserTeams",
+                columns: new[] { "TeamEntitySportEntityName", "TeamEntityName" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -151,10 +186,13 @@ namespace DataAccess.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "UserTeams");
 
             migrationBuilder.DropTable(
                 name: "Matches");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Teams");

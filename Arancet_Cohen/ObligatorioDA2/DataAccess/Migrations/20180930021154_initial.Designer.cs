@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20180929231320_initial")]
+    [Migration("20180930021154_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -118,6 +118,23 @@ namespace DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.UserTeam", b =>
+                {
+                    b.Property<string>("TeamEntityName");
+
+                    b.Property<string>("TeamEntitySportEntityName");
+
+                    b.Property<string>("UserEntityUserName");
+
+                    b.HasKey("TeamEntityName", "TeamEntitySportEntityName", "UserEntityUserName");
+
+                    b.HasIndex("UserEntityUserName");
+
+                    b.HasIndex("TeamEntitySportEntityName", "TeamEntityName");
+
+                    b.ToTable("UserTeams");
+                });
+
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.CommentEntity", b =>
                 {
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.UserEntity", "Maker")
@@ -149,6 +166,19 @@ namespace DataAccess.Migrations
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity")
                         .WithMany("Teams")
                         .HasForeignKey("SportEntityName")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.UserTeam", b =>
+                {
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.UserEntity", "Follower")
+                        .WithMany("FavouriteTeams")
+                        .HasForeignKey("UserEntityUserName")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "Team")
+                        .WithMany("Followers")
+                        .HasForeignKey("TeamEntitySportEntityName", "TeamEntityName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

@@ -74,6 +74,13 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         }
 
         [TestMethod]
+        public void UserToEntityTeamsTest() {
+            Team aTeam = new Team("aTeam", "aPhoto");
+            UserEntity conversion = toTest.ToEntity(toStore);
+            Assert.AreEqual(conversion.FavouriteTeams.Count, 1);
+        }
+
+        [TestMethod]
         public void EntityToUserNameTest() {
             User conversion = toTest.ToUser(toGet);
             Assert.AreEqual(conversion.Name, toGet.Name);
@@ -105,6 +112,16 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         {
             User conversion = toTest.ToUser(toGet);
             Assert.AreEqual(conversion.Email, toGet.Email);
+        }
+
+        [TestMethod]
+        public void EntityToUserFavouritesTest() {
+            TeamEntity team = new TeamEntity { Name = "aTeam", SportEntityName = "aSport" };
+            UserTeam user_team = new UserTeam() { TeamEntityName = "aTeam",
+                TeamEntitySportEntityName = "aSport", Team = team, Follower = toGet, UserEntityUserName = toGet.UserName };
+            toGet.FavouriteTeams.Add(user_team);
+            User conversion = toTest.ToUser(toGet);
+            Assert.AreEqual(conversion.GetFavouriteTeams().Count, 1);
         }
 
     }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ObligatorioDA2.DataAccess.Entities
 {
     public class TeamEntity
@@ -20,5 +22,7 @@ namespace ObligatorioDA2.DataAccess.Entities
         public string Photo { get; set; }
 
         public string SportEntityName { get; set; }
+
+        public ICollection<UserTeam> Followers { get; set; }
     }
 }
