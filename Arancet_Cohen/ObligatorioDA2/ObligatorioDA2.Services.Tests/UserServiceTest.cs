@@ -12,6 +12,7 @@ namespace ObligatorioDA2.Services.Tests
     public class UserServiceTest
     {
         private Mock<IUserRepository> users;
+        private Mock<ITeamRepository> teams;
         private IUserService service;
         private User testUser;
         private Team toFollow;
@@ -19,7 +20,8 @@ namespace ObligatorioDA2.Services.Tests
         [TestInitialize]
         public void SetUp() {
             users = new Mock<IUserRepository>();
-            service = new UserService(users.Object);
+            teams = new Mock<ITeamRepository>();
+            service = new UserService(users.Object,teams.Object);
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
@@ -122,7 +124,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(TeamNotFoundException))]
         public void FollowNotExistentTeamTest() {
             users.Setup(r => r.Modify(testUser)).Throws(new TeamNotFoundException());
 
@@ -132,5 +134,9 @@ namespace ObligatorioDA2.Services.Tests
             users.Verify(r => r.Modify(testUser), Times.Once);
         }
 
+        [TestMethod]
+        public void GetUserTeamsTest() {
+
+        }
     }
 }

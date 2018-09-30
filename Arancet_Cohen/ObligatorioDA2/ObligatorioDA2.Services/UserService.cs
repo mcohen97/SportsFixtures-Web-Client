@@ -11,7 +11,7 @@ namespace ObligatorioDA2.Services
     {
         private IUserRepository usersStorage;
 
-        public UserService(IUserRepository repository) {
+        public UserService(IUserRepository repository, ITeamRepository @object) {
             usersStorage = repository;
         }
 
