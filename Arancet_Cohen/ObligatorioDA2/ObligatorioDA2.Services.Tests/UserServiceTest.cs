@@ -43,6 +43,8 @@ namespace ObligatorioDA2.Services.Tests
         public void GetUserTest()
         {
             User retrieved = service.GetUser("JohnDoe");
+
+            users.Verify(r => r.Get("JohnDoe"), Times.Once);
             Assert.AreEqual(retrieved, testUser);
         }
 
@@ -55,6 +57,15 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void AddUserTest()
         {
+            service.AddUser(testUser);
+            users.Verify(r => r.Add(testUser), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserAlreadyExistsException))]
+        public void AddAlreadyExistentUserTest() {
+            users.Setup(r => r.Add(testUser)).Throws(new UserAlreadyExistsException());
+            service.AddUser(testUser);
         }
 
         [TestMethod]
