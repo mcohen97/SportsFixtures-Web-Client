@@ -14,20 +14,18 @@ namespace BusinessLogic
         private int id;
         private Sport sport;
 
-        public Team(string aName) {
-            Name = aName;
-            Photo = "";
-        }
-        public Team(string name, string photo):this(name) {
+        public Team( string name, string photo)
+        {
+            Name = name;
             Photo = photo;
         }
 
-        public Team(int id, string name, string photo):this(name,photo)
+        public Team(int id,string name, string photo):this(name,photo)
         {
             Id = id;
         }
 
-        public Team(int id, string name, string photo, Sport aSport)
+        public Team(int id, string name, string photo, Sport aSport):this(id,name,photo)
         {
             this.id = id;
             this.name = name;
