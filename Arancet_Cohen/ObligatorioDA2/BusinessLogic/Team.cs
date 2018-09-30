@@ -12,6 +12,7 @@ namespace BusinessLogic
         private string name;
         private string photo;
         private int id;
+        private Sport sport;
 
         public Team(string aName) {
             Name = aName;
@@ -26,11 +27,26 @@ namespace BusinessLogic
             Id = id;
         }
 
+        public Team(int id, string name, string photo, Sport aSport)
+        {
+            this.id = id;
+            this.name = name;
+            this.photo = photo;
+            this.sport = aSport;
+        }
+
         public string Name {get{return name;} set{SetName(value);}}
 
         public string Photo {get{return photo;} set{SetPhoto(value);}}
 
         public int Id { get{return id;} set{SetId(value);} }
+
+        public Sport Sport { get => sport; set => SetSport(value); }
+
+        private void SetSport(Sport aSport)
+        {
+            sport = aSport ?? throw new InvalidSportDataException("Sport can't be null");
+        }
 
         public void SetId(int value){
             id = value;

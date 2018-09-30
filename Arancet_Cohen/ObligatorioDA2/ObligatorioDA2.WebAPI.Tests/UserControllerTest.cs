@@ -32,7 +32,8 @@ namespace ObligatorioDA2.WebAPI.Tests
                 .Options;
 
             repo = new UserRepository(new DatabaseConnection(options));
-            controller = new UsersController(repo);
+            
+            controller = new UsersController(repo, new TeamRepository(new DatabaseConnection(options)));
         }
 
         [TestMethod]

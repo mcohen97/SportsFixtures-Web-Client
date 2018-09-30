@@ -9,10 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using RepositoryInterface;
 
 namespace DataRepositories
 {
-    public class MatchRepository : IMatchRepository
+    public class MatchRepository : IMatchRepository, IRepository<Match,int>
     {
         private DatabaseConnection context;
         private MatchMapper matchConverter;
@@ -25,27 +26,24 @@ namespace DataRepositories
         }
 
 
-        public Match Add(string sportName, Match aMatch)
+        public void Add(Match aMatch)
         {
-            Match created;
             if (!Exists(aMatch.Id))
             {
-                created = TryAdd(sportName, aMatch);
+                TryAdd(aMatch);
             }
             else {
                 throw new MatchAlreadyExistsException();
             }
-            return created;
         }
 
-        private Match TryAdd(string sportName, Match aMatch)
+        private void TryAdd(Match aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
-            toAdd.HomeTeam.SportEntityName = sportName;
-            toAdd.AwayTeam.SportEntityName = sportName;
+            toAdd.HomeTeam.SportEntityName = aMatch.Sport.Name;
+            toAdd.AwayTeam.SportEntityName = aMatch.Sport.Name;
             context.Entry(toAdd).State = EntityState.Added;
             context.SaveChanges();
-            return new Match(toAdd.Id, aMatch.HomeTeam, aMatch.AwayTeam, aMatch.Date, aMatch.Sport);
         }
 
         public void Clear()
@@ -117,9 +115,12 @@ namespace DataRepositories
 
         public void Modify(Match aMatch)
         {
-            if (Exists(aMatch))
+            if (Exists(aMatch.Id))
             {
-                ModifyExistent(aMatch);
+                MatchEntity converted = matchConverter.ToEntity(aMatch);
+                converted.SportEntity = new SportEntity { Name = aMatch.Sport.Name };
+                context.Matches.Attach(converted).State = EntityState.Modified;
+                context.SaveChanges();
             }
             else
             {
@@ -155,18 +156,5 @@ namespace DataRepositories
             return context.Matches.Any(m => m.Id == id);
         }
 
-        public void Modify(string sportName, Match aMatch)
-        {
-            if (Exists(aMatch.Id))
-            {
-                MatchEntity converted = matchConverter.ToEntity(aMatch);
-                converted.SportEntity = new SportEntity { Name = sportName };
-                context.Matches.Attach(converted).State = EntityState.Modified;
-                context.SaveChanges();
-            }
-            else {
-                throw new MatchNotFoundException();
-            }
-        }
     }
 }

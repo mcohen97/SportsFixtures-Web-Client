@@ -11,7 +11,6 @@ namespace BusinessLogic
     public class Sport
     {
         private string name;
-        private ICollection<Team> teams;
 
         public string Name { get{return name;} set{SetName(value);} }
 
@@ -29,42 +28,6 @@ namespace BusinessLogic
         public Sport(string name)
         {
             this.name = name;
-            teams = new List<Team>();
-        }
-
-
-        public Sport(string name, ICollection<Team> someTeams):this(name)
-        {
-            teams = someTeams;
-        }
-
-        public void AddTeam(Team team)
-        {
-            teams.Add(team);
-        }
-
-        public bool HasTeam(Team team)
-        {
-            return teams.Contains(team);
-        }
-
-        public void Remove(Team team)
-        {
-            teams.Remove(team);
-        }
-
-        public ICollection<Team> GetTeams()
-        {
-            ICollection<Team> returnedTeams = new List<Team>(teams);
-            return returnedTeams;
-        }
-
-        public void Add(ICollection<Team> teamsToAdd)
-        {
-            foreach (Team team in teamsToAdd)
-            {
-                this.AddTeam(team);
-            }
         }
 
         public override bool Equals(object obj)
