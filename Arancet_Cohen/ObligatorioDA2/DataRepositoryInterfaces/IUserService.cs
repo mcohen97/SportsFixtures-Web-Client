@@ -11,5 +11,6 @@ namespace ObligatorioDA2.Services.Interfaces
         void AddUser(User testUser);
         void ModifyUser(User testUser);
         void DeleteUser(string userName);
+        void FollowTeam(string username, Team toFollow);
     }
 }

@@ -35,7 +35,11 @@ namespace ObligatorioDA2.Services
             usersStorage.Modify(testUser);
         }
 
-
-
+        public void FollowTeam(string username, Team toFollow)
+        {
+            User follower =usersStorage.Get(username);
+            follower.AddFavourite(toFollow);
+            usersStorage.Modify(follower);
+        }
     }
 }
