@@ -24,5 +24,10 @@ namespace ObligatorioDA2.Services
         {
             return usersStorage.Get(username);
         }
+
+        public void ModifyUser(User testUser)
+        {
+            usersStorage.Modify(testUser);
+        }
     }
 }

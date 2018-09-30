@@ -9,5 +9,6 @@ namespace ObligatorioDA2.Services.Interfaces
     {
         User GetUser(string username);
         void AddUser(User testUser);
+        void ModifyUser(User testUser);
     }
 }
