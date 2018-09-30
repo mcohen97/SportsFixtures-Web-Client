@@ -20,6 +20,11 @@ namespace ObligatorioDA2.Services
             usersStorage.Add(testUser);
         }
 
+        public void DeleteUser(string userName)
+        {
+            usersStorage.Delete(userName);
+        }
+
         public User GetUser(string username)
         {
             return usersStorage.Get(username);
@@ -29,6 +34,8 @@ namespace ObligatorioDA2.Services
         {
             usersStorage.Modify(testUser);
         }
+
+
 
     }
 }
