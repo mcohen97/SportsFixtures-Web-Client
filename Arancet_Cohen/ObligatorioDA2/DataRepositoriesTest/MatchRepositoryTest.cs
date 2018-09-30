@@ -132,16 +132,16 @@ namespace DataRepositoriesTest
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void ModifyUnexistentItemTest() {
-            Mock<Team> home = new Mock<Team>("Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath", sport.Object);
+            Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath", sport.Object);
+            Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath", sport.Object);
             Mock<Match> match = new Mock<Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2),sport.Object);
             matchesStorage.Modify(match.Object);
         }
 
         private Mock<BusinessLogic.Match> BuildModifiedFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>("Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>("Bayern Munich", "aPath", sport.Object);
+            Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath", sport.Object);
+            Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath", sport.Object);
             Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2),sport.Object);
             return match;
         }
