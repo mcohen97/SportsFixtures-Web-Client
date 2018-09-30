@@ -9,10 +9,12 @@ namespace ObligatorioDA2.Services
     public class MatchService
     {
         private IMatchRepository matchesStorage;
+        private ITeamRepository teamsStorage;
 
-        public MatchService(IMatchRepository aRepo)
+        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository)
         {
-            matchesStorage = aRepo;
+            matchesStorage = matchsRepository;
+            teamsStorage = teamsRepository;
         }
 
         public void AddMatch(Match aMatch)
