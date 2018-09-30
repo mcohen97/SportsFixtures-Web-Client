@@ -22,11 +22,11 @@ namespace ObligatorioDA2.Services.Tests
         public void SetUp() {
             users = new Mock<IUserRepository>();
             teams = new Mock<ITeamRepository>();
-            service = new UserService(users.Object,teams.Object);
+            service = new UserService(users.Object, teams.Object);
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
-             toFollow = GetFakeTeam();
+            toFollow = GetFakeTeam();
         }
 
         private User GetFakeUser()
@@ -138,10 +138,21 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetUserTeamsTest() {
             Team fake = GetFakeTeam();
-            teams.Setup(r => r.GetFollowedTeams(testUser.UserName)).Returns(new List<Team>() { fake });
+            //teams.Setup(r => r.GetFollowedTeams(testUser.UserName)).Returns(new List<Team>() { fake });
+            testUser.AddFavourite(fake);
+            users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
-            ICollection<Team> userTeams = GetUserTeams(testUser.UserName);
+            ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
             Assert.AreEqual(userTeams.Count, 1);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void GetNotExistentUserTeams() {
+            users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
+            ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
+        }
+
     }
 }
