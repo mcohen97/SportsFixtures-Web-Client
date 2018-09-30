@@ -71,6 +71,15 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void ModifyUserTest()
         {
+            service.ModifyUser(testUser);
+            users.Verify(r => r.Modify(testUser), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void ModifyNotExistentTest() {
+            users.Setup(r => r.Modify(testUser)).Throws(new UserNotFoundException());
+            service.ModifyUser(testUser);
         }
 
         [TestMethod]
