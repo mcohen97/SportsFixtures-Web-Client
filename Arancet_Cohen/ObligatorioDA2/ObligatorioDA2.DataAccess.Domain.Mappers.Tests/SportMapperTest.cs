@@ -16,15 +16,11 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         public void SetUp() {
             testMapper = new SportMapper();
             sport = new Mock<Sport>("Soccer");
-            Mock<Team> aTeam = new Mock<Team>("Nacional", "path");
             entity = new SportEntity()
             {
                 Name = "Soccer",
-                Teams = new List<TeamEntity>() { new TeamEntity() {Name="Nacional",SportEntityName= "Soccer", Photo="aPath" } }
             };
-            sport.Object.AddTeam(aTeam.Object);
         }
-
     
 
         [TestMethod]
@@ -32,22 +28,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             SportEntity converted = testMapper.ToEntity(sport.Object);
             Assert.AreEqual(converted.Name, entity.Name);
          }
-
-        [TestMethod]
-        public void SportToEntityTeamsCountTest() {
-            SportEntity converted = testMapper.ToEntity(sport.Object);
-            Assert.AreEqual(converted.Teams.Count, 1);
-        }
-
-        [TestMethod]
-        public void SportToEntityTeamsTest() {
-            SportEntity converted = testMapper.ToEntity(sport.Object);
-            IEnumerator<TeamEntity> teams = converted.Teams.GetEnumerator();
-            teams.MoveNext();
-            TeamEntity toCompare = teams.Current;
-            Assert.AreEqual(toCompare.Name, "Nacional");
-        }
-
      
 
         [TestMethod]
@@ -56,18 +36,5 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             Assert.AreEqual(converted.Name, sport.Object.Name);
         }
 
-        [TestMethod]
-        public void EntityToSportTeamsCountTest() {
-            Sport converted = testMapper.ToSport(entity);
-            Assert.AreEqual(converted.GetTeams().Count, 1);
-        }
-
-        [TestMethod]
-        public void EntityToSportTeamsTest() {
-            Sport converted = testMapper.ToSport(entity);
-            IEnumerator<Team> teams = converted.GetTeams().GetEnumerator();
-            teams.MoveNext();
-            Assert.AreEqual(teams.Current.Name, "Nacional");
-        }
     }
 }

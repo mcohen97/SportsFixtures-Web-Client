@@ -11,13 +11,14 @@ namespace DataRepositoryInterfaces
         void Clear();
 
         bool IsEmpty();
+
         bool Exists(int id);
 
         Match Get(int id);
 
-        Match Add(string sportName, Match aMatch);
+        void Add(Match aMatch);
 
-        void Modify(string sportName, Match aMatch);
+        void Modify(Match aMatch);
 
         void Delete(int id);
 

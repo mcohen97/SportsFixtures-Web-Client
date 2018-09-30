@@ -18,15 +18,13 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             SportEntity converted = new SportEntity()
             {
                 Name= aSport.Name,
-                Teams = aSport.GetTeams().Select(t => teamConverter.ToEntity(t,aSport.Name)).ToList()
             };
             return converted;
         }
 
         public Sport ToSport(SportEntity entity)
         {
-            ICollection<Team> teams = entity.Teams.Select(te => teamConverter.ToTeam(te)).ToList();
-            Sport conversion = new Sport( entity.Name, teams);
+            Sport conversion = new Sport( entity.Name);
             return conversion;
         }
     }
