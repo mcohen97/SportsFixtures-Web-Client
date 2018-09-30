@@ -41,5 +41,11 @@ namespace ObligatorioDA2.Services
             follower.AddFavourite(toFollow);
             usersStorage.Modify(follower);
         }
+
+        public ICollection<Team> GetUserTeams(string userName)
+        {
+            User fetched = usersStorage.Get(userName);
+            return fetched.GetFavouriteTeams();
+        }
     }
 }
