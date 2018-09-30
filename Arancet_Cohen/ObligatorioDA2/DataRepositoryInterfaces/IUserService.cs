@@ -8,5 +8,6 @@ namespace ObligatorioDA2.Services.Interfaces
     public interface IUserService
     {
         User GetUser(string username);
+        void AddUser(User testUser);
     }
 }

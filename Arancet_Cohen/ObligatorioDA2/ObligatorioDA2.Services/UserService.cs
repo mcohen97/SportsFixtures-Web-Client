@@ -15,6 +15,11 @@ namespace ObligatorioDA2.Services
             usersStorage = repository;
         }
 
+        public void AddUser(User testUser)
+        {
+            usersStorage.Add(testUser);
+        }
+
         public User GetUser(string username)
         {
             return usersStorage.Get(username);
