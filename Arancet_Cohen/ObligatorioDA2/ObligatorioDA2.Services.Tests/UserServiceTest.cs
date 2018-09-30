@@ -5,6 +5,7 @@ using ObligatorioDA2.Services.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using System.Collections.Generic;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -136,7 +137,11 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetUserTeamsTest() {
+            Team fake = GetFakeTeam();
+            teams.Setup(r => r.GetFollowedTeams(testUser.UserName)).Returns(new List<Team>() { fake });
 
+            ICollection<Team> userTeams = GetUserTeams(testUser.UserName);
+            Assert.AreEqual(userTeams.Count, 1);
         }
     }
 }
