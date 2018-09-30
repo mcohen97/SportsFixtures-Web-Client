@@ -1,4 +1,5 @@
-﻿using DataRepositoryInterfaces;
+﻿using BusinessLogic;
+using DataRepositoryInterfaces;
 using ObligatorioDA2.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,9 @@ namespace ObligatorioDA2.Services
             usersStorage = repository;
         }
 
+        public User GetUser(string username)
+        {
+            return usersStorage.Get(username);
+        }
     }
 }
