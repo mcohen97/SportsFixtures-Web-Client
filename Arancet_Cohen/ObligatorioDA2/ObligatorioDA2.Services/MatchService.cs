@@ -17,26 +17,27 @@ namespace ObligatorioDA2.Services
 
         public void AddMatch(Match aMatch)
         {
+            matchesStorage.Add(aMatch);
         }
 
         public ICollection<Match> GetAllMatches()
         {
-            throw new NotImplementedException();
+            return matchesStorage.GetAll();
         }
 
         public Match GetMatch(int anId)
         {
-            throw new NotImplementedException();
+            return matchesStorage.Get(anId);
         }
 
         public void DeleteMatch(int anId)
         {
-            throw new NotImplementedException();
+            matchesStorage.Delete(anId);
         }
 
         public void ModifyMatch(Match aMatch)
         {
-            throw new NotImplementedException();
+            matchesStorage.Modify(aMatch);
         }
     }
 }

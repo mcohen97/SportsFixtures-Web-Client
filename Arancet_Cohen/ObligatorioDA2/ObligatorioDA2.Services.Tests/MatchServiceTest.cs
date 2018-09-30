@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Match = BusinessLogic.Match;
+using DataRepositories;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -41,6 +42,7 @@ namespace ObligatorioDA2.Services.Tests
                .UseInMemoryDatabase(databaseName: "MatchRepository")
                .Options;
             DatabaseConnection context = new DatabaseConnection(options);
+            repoDouble = new MatchRepository(context);
         }
 
         private Mock<Match> BuildMatch()
@@ -60,7 +62,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MatchNotFoundException))]
+        [ExpectedException(typeof(MatchAlreadyExistsException))]
         public void AddAlreadyExistentTesT() {
             serviceToTest.AddMatch(fakeMatch.Object);
             serviceToTest.AddMatch(fakeMatch.Object);
@@ -70,13 +72,14 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(MatchNotFoundException))]
         public void GetUnexistentMatchTest() {
             serviceToTest.GetMatch(9);
-
         }
 
         [TestMethod]
         public void GetExistentMatchTest() {
+            serviceToTest.AddMatch(fakeMatch.Object);
             Match retrieved = serviceToTest.GetMatch(3);
-            Assert.AreEqual(retrieved.HomeTeam, BuildMatch().Object.HomeTeam);
+            Assert.AreEqual(retrieved.Id, fakeMatch.Object.Id);
+
         }
 
         [TestMethod]
@@ -98,6 +101,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(MatchNotFoundException))]
         public void DeleteMatchTest() {
             serviceToTest.AddMatch(fakeMatch.Object);
             serviceToTest.DeleteMatch(3);
