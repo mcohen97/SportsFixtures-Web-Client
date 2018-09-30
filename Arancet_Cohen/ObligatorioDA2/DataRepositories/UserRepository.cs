@@ -147,20 +147,6 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public void AddFollowedTeam(string username, string sportName, Team toFollow)
-        {
-            UserEntity follower = context.Users.First(u => u.UserName.Equals(username));
-            UserTeam relationship = new UserTeam
-            {
-                Follower = follower,
-                UserEntityUserName = follower.UserName,
-                Team = teamMapper.ToEntity(toFollow, sportName),
-                TeamEntityName = toFollow.Name,
-                TeamEntitySportEntityName = sportName
-            };
-            context.Entry(relationship).State=EntityState.Added;
-            context.SaveChanges();
-        }
     }
 }
 
