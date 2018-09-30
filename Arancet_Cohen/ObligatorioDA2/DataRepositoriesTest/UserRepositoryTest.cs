@@ -189,5 +189,22 @@ namespace DataRepositoriesTest
             usersStorage.Delete(fetched.UserName);
             Assert.IsTrue(usersStorage.IsEmpty());
         }
+
+        [TestMethod]
+        public void GetUserFollowedTeamsTest() {
+            Team toFollow = GetFakeTeam();
+            user.AddFavourite(toFollow);
+            usersStorage.Add(user);
+            CreateRepository();
+            User fromDB =usersStorage.Get(user.UserName);
+            Assert.AreEqual(fromDB.GetFavouriteTeams().Count, 1);
+        }
+
+        private Team GetFakeTeam()
+        {
+            Sport played = new Sport("Soccer");
+            Team fake = new Team(1, "RealMadrid", "aPath", played);
+            return fake;
+        }
     }
 }
