@@ -17,7 +17,7 @@ namespace ObligatorioDA2.Services
 
         public void AddMatch(Match aMatch)
         {
-            throw new NotImplementedException();
+            
         }
 
         public ICollection<Match> GetAllMatches()
