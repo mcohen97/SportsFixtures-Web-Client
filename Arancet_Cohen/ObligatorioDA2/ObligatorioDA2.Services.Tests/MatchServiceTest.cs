@@ -9,6 +9,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Match = BusinessLogic.Match;
 using DataRepositories;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -16,7 +17,6 @@ namespace ObligatorioDA2.Services.Tests
     public class MatchServiceTest
     {
         private MatchService serviceToTest;
-        //Mock<IMatchRepository> repoDouble;
         private IMatchRepository repoDouble;
         private ITeamRepository teamsRepo;
         private Sport sport;
@@ -26,17 +26,9 @@ namespace ObligatorioDA2.Services.Tests
         private Match matchAvsB;
         private Match matchAvsC;
         private Match matchBvsC;
-        private List<Match> storedMatches;
 
         [TestInitialize]
         public void SetUp() {
-            /*repoDouble = new Mock<IMatchRepository>();
-            fakeMatch = BuildMatch();
-            serviceToTest = new MatchService(repoDouble.Object);
-            repoDouble.Setup(r => r.Get(2)).Returns(fakeMatch.Object);
-            repoDouble.Setup(r => r.Get(It.Is<int>(i => i != 2))).Throws(new MatchNotFoundException());
-            storedMatches = new List<Match>() { fakeMatch.Object };
-            repoDouble.Setup(r => r.GetAll()).Returns(storedMatches);*/
             sport = new Mock<Sport>("Soccer").Object;
             teamA = new Mock<Team>(1, "teamA", "photo", sport).Object;
             teamB = new Mock<Team>(2, "teamB", "photo", sport).Object;
@@ -45,8 +37,7 @@ namespace ObligatorioDA2.Services.Tests
             matchAvsC = new Mock<Match>(2, teamA, teamC, DateTime.Now.AddDays(2), sport).Object;
             matchBvsC = new Mock<Match>(3, teamA, teamB, DateTime.Now.AddDays(3), sport).Object;
             SetUpRepository();
-            serviceToTest = new MatchService(repoDouble, teamsRepo);
-            //repoDouble.Setup(r => r.Add(It.Is<Match>(i => i is Match)))
+            serviceToTest = new MatchService(repoDouble);
         }
 
         private void SetUpRepository() {
@@ -56,16 +47,6 @@ namespace ObligatorioDA2.Services.Tests
                .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             repoDouble = new MatchRepository(context);
-            teamsRepo = new TeamRepository(context);
-        }
-
-        private Match BuildMatch(int id, string homeTeamName, string awayTeamName, string sportName)
-        {
-            Mock<Team> home = new Mock<Team>("Manchester United", "aPath");
-            Mock<Team> away = new Mock<Team>("Real Madrid", "aPath");
-            Mock<Sport> sport = new Mock<Sport>("Soccer");
-            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now, sport.Object);
-            return match.Object;
         }
 
         [TestMethod]
@@ -76,9 +57,10 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(MatchAlreadyExistsException))]
-        public void AddAlreadyExistentTesT() {
+        public void AddAlreadyExistentTest() {
             serviceToTest.AddMatch(matchAvsB);
-            serviceToTest.AddMatch(matchAvsB);
+            Match sameMatch = new Mock<Match>(1, teamA, teamB, matchAvsB.Date.AddDays(1), sport).Object;
+            serviceToTest.AddMatch(sameMatch);
         }
 
         [TestMethod]
@@ -101,9 +83,7 @@ namespace ObligatorioDA2.Services.Tests
             serviceToTest.AddMatch(matchBvsC);
             ICollection<Match> matches = serviceToTest.GetAllMatches(sport);
             Assert.AreEqual(matches.Count, 2);
-          
         }
-
 
         [TestMethod]
         public void GetMatchesFromTeamTest() {
@@ -156,23 +136,34 @@ namespace ObligatorioDA2.Services.Tests
         public void ExistMatchTrueTest()
         {
             serviceToTest.AddMatch(matchAvsB);
-            Assert.IsTrue(serviceToTest.Exists(matchAvsB));
+            Assert.IsTrue(serviceToTest.Exists(matchAvsB.Id));
         }
 
         [TestMethod]
         public void ExistMatchFalseTest()
         {
             serviceToTest.AddMatch(matchAvsB);
-            Assert.IsFalse(serviceToTest.Exists(matchAvsC));
+            Assert.IsFalse(serviceToTest.Exists(matchAvsC.Id));
         }
 
         [TestMethod]
         [ExpectedException(typeof(TeamAlreadyHasMatchException))]
-        public void TeamWithTwoMatchesSameDateTest()
+        public void AwayTeamWithTwoMatchesSameDateTest()
+        {
+            matchAvsB.Date = matchBvsC.Date;
+            serviceToTest.AddMatch(matchBvsC);
+            serviceToTest.AddMatch(matchAvsB);
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamAlreadyHasMatchException))]
+        public void HomeTeamWithTwoMatchesSameDateTest()
         {
             matchAvsC.Date = matchAvsB.Date;
-            serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchAvsC);
+            serviceToTest.AddMatch(matchAvsB);
+
         }
 
 
