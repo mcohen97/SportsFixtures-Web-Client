@@ -176,5 +176,54 @@ namespace DataRepositoriesTest
             Team teamInDb = teamsStorage.Get("Soccer","Nacional");
         }
 
+        [TestMethod]
+        public void GetUserTeamsTest() {
+            IUserRepository userRepository = GetUsersRepository();
+            User fake = GetFakeUser();
+            
+            ICollection<Team> teams = GetFakeTeams();
+            foreach (Team created in teams) {
+                teams.Add(created);
+                fake.AddFavourite(created);
+            }       
+            userRepository.Add(fake);
+            ICollection<Team> followedTeams = teams.GetFollowedTeams(fake);
+            Assert.AreEqual(followedTeams.Count, 3);
+        }
+
+        private User GetFakeUser()
+        {
+            UserId identity = new UserId
+            {
+                Name = "John",
+                Surname = "Doe",
+                UserName = "JohnDoe",
+                Password = "Password",
+                Email = "John@Doe.com"
+            };
+            return new User(identity, true);
+        }
+
+        private IUserRepository GetUsersRepository()
+        {
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+               .UseInMemoryDatabase(databaseName: "UsersRepository")
+               .Options;
+            DatabaseConnection context = new DatabaseConnection(options);
+            IUserRepository usersStorage = new UserRepository(context);
+            return usersStorage;
+        }
+
+        private ICollection<Team> GetFakeTeams()
+        {
+            Sport played = new Sport("Soccer");
+            ICollection<Team> teams = new List<Team>() {
+                new Team(1, "DreamTeam1", "MyResources/DreamTeam.png",played),
+                new Team(2, "DreamTeam2", "MyResources/DreamTeam.png",played),
+                new Team(3, "DreamTeam3", "MyResources/DreamTeam.png",played)
+            };
+            return teams;
+        }
+        
     }
 }
