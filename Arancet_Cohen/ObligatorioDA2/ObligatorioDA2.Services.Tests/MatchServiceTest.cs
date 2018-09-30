@@ -99,7 +99,7 @@ namespace ObligatorioDA2.Services.Tests
         public void GetMatchesOfSportTest() {
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchBvsC);
-            ICollection<Match> matches = serviceToTest.GetAllMatches(sport.Name);
+            ICollection<Match> matches = serviceToTest.GetAllMatches(sport);
             Assert.AreEqual(matches.Count, 2);
           
         }
@@ -110,7 +110,7 @@ namespace ObligatorioDA2.Services.Tests
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchAvsC);
             serviceToTest.AddMatch(matchBvsC);
-            ICollection<Match> matches = serviceToTest.GetAllMatches(teamA.Name);
+            ICollection<Match> matches = serviceToTest.GetAllMatches(teamA);
             Assert.AreEqual(matches.Count, 2);
         }
 
@@ -118,7 +118,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(TeamNotFoundException))]
         public void GetMatchesFromTeamNotExistentTest()
         {
-            serviceToTest.GetAllMatches(teamA.Name);
+            serviceToTest.GetAllMatches(teamA);
         }
 
         [TestMethod]
