@@ -84,7 +84,16 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void DeleteUserTest() {
+            service.DeleteUser(testUser.UserName);
+            users.Verify(r => r.Delete(testUser.UserName));
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void DeleteNotExistentUserTest()
+        {
+            users.Setup(r => r.Delete(testUser.UserName)).Throws(new UserNotFoundException());
+            service.DeleteUser(testUser.UserName);
         }
     }
 }
