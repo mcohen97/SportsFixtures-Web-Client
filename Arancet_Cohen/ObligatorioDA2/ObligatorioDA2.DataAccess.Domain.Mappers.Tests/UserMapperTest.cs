@@ -75,7 +75,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
 
         [TestMethod]
         public void UserToEntityTeamsTest() {
-            Team aTeam = new Team("aTeam", "aPhoto");
+            Team aTeam = new Team(1,"aTeam", "aPhoto", new Sport("aSport"));
             UserEntity conversion = toTest.ToEntity(toStore);
             Assert.AreEqual(conversion.FavouriteTeams.Count, 1);
         }

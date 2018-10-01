@@ -19,7 +19,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestInitialize]
         public void SetUp() {
-            team = new Team(2,"Nacional", "aPath");
+            team = new Team(2,"Nacional", "aPath",new Sport("Soccer"));
             repo = new Mock<ITeamRepository>();
             repo.Setup(r => r.Get("Soccer","Nacional")).Returns(team);
             repo.Setup(r => r.Get(It.Is<string>(i => !i.Equals("Soccer")), It.Is<string>(i => !i.Equals("Nacional"))))

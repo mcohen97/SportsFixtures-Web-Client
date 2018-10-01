@@ -203,7 +203,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void AddFavouriteTeamTest() {
-            Team aTeam = new Team("partisanos fc", "aPath");
+            Team aTeam = new Team(1,"partisanos fc", "aPath",new Sport("aSport"));
             toTest.AddFavourite(aTeam);
             Assert.AreEqual(toTest.GetFavouriteTeams().Count, 1);
         }
