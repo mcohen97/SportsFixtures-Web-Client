@@ -159,7 +159,7 @@ namespace DataRepositories
 
         public ICollection<Team> GetTeams(string sportName)
         {
-            throw new NotImplementedException();
+            return GetAll().Where(t => t.Sport.Name == sportName).ToList();
         }
 
         private bool Exists(int id)
