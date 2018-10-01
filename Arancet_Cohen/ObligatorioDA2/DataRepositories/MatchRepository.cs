@@ -40,8 +40,6 @@ namespace DataRepositories
         private void TryAdd(Match aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
-            toAdd.HomeTeam.SportEntityName = aMatch.Sport.Name;
-            toAdd.AwayTeam.SportEntityName = aMatch.Sport.Name;
             context.Entry(toAdd).State = EntityState.Added;
             context.SaveChanges();
         }
