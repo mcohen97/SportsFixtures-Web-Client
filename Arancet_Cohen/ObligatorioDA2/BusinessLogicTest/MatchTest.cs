@@ -24,8 +24,9 @@ namespace BusinessLogicTest
         [TestInitialize]
         public void TestInitialize(){
             //Create mocks
-            teamA = new Mock<Team>(1, "TeamA", "Photo/A");
-            teamB = new Mock<Team>(2, "TeamB", "Photo/B");
+            sport = new Mock<Sport>("Soccer");
+            teamA = new Mock<Team>(1, "TeamA", "Photo/A",sport.Object);
+            teamB = new Mock<Team>(2, "TeamB", "Photo/B",sport.Object);
             date =  new DateTime(2019,1,25,13,30,0);
             Mock<User> commentarist = CreateUser();
             commentary1 = new Mock<Commentary>(1, "Commentary 1",commentarist.Object);
@@ -38,7 +39,7 @@ namespace BusinessLogicTest
             commentary1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 1);
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
-            sport = new Mock<Sport>("Soccer");
+            
 
 
             match = new BusinessLogic.Match(3,teamA.Object, teamB.Object, date,sport.Object);
@@ -80,14 +81,14 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void SetHomeTeamTest(){
-            Mock<Team> homeTeam = new Mock<Team>(3, "HomeTeam", "photo");
+            Mock<Team> homeTeam = new Mock<Team>(3, "HomeTeam", "photo",sport.Object);
             match.HomeTeam = homeTeam.Object;
             Assert.AreEqual(homeTeam.Object.Id, match.HomeTeam.Id);
         }
 
         [TestMethod]
         public void SetAwayTeamTest(){
-            Mock<Team> awayTeam = new Mock<Team>(3, "AwayTeam", "photo");
+            Mock<Team> awayTeam = new Mock<Team>(3, "AwayTeam", "photo",sport.Object);
             match.AwayTeam = awayTeam.Object;
             Assert.AreEqual(awayTeam.Object.Id, match.AwayTeam.Id);
         }
