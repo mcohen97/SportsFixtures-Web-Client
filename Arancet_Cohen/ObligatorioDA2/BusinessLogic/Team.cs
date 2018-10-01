@@ -17,10 +17,10 @@ namespace BusinessLogic
 
         public Team(int id, string name, string photo, Sport aSport)
         {
-            this.id = id;
-            this.name = name;
-            this.photo = photo;
-            this.sport = aSport;
+            Id = id;
+            Name = name;
+            Photo = photo;
+            Sport = aSport;
         }
 
         public string Name {get{return name;} set{SetName(value);}}
