@@ -118,8 +118,7 @@ namespace DataRepositories
             if (Exists(aMatch.Id))
             {
                 MatchEntity converted = matchConverter.ToEntity(aMatch);
-                converted.SportEntity = new SportEntity { Name = aMatch.Sport.Name };
-                context.Matches.Attach(converted).State = EntityState.Modified;
+                context.Entry(converted).State = EntityState.Modified;
                 context.SaveChanges();
             }
             else
