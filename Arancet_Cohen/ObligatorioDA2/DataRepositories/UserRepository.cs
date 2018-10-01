@@ -46,10 +46,7 @@ namespace DataRepositories
             if (AnyWithThisUserName(aUserName))
             {
                 UserEntity retrieved = GetEntityByUsername(aUserName);
-                ICollection<TeamEntity> teams = context.UserTeams
-                    .Where(ut => ut.UserEntityUserName.Equals(aUserName))
-                    .Select(ut => ut.Team)
-                    .ToList();
+                ICollection<TeamEntity> teams = GetFollowedTeams(aUserName); 
                 toReturn = userMapper.ToUser(retrieved,teams);
                 context.Entry(retrieved).State = EntityState.Detached;
             }
@@ -58,6 +55,14 @@ namespace DataRepositories
                 throw new UserNotFoundException();
             }
             return toReturn;
+        }
+
+        private ICollection<TeamEntity> GetFollowedTeams(string aUserName)
+        {
+           return context.UserTeams
+                    .Where(ut => ut.UserEntityUserName.Equals(aUserName))
+                    .Select(ut => ut.Team)
+                    .ToList();
         }
 
         public void Delete(string username)
