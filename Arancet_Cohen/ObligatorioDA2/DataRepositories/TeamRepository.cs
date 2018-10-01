@@ -104,6 +104,9 @@ namespace DataRepositories
         {
             TeamEntity toStore = mapper.ToEntity(aTeam);
             context.Teams.Add(toStore);
+            if (context.Sports.Contains(toStore.Sport)) {
+                context.Entry(toStore.Sport).State = EntityState.Unchanged;
+            }
             context.SaveChanges();
         }
 
