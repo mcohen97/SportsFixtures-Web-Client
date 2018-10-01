@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using Match = BusinessLogic.Match;
 using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -28,6 +29,7 @@ namespace ObligatorioDA2.Services.Tests
         private ICollection<Team> teamsCollection;
         private DateTime initialDate;
         private IMatchRepository matchStorage;
+        private ITeamRepository teamStorage;
         private FixtureService fixtureService;
 
         [TestInitialize]
@@ -49,7 +51,7 @@ namespace ObligatorioDA2.Services.Tests
             oneMatchGenerator = new OneMatchFixture(initialDate, 2, 5, sport);
             twoMatchsGenerator = new HomeAwayFixture(initialDate, 2, 5, sport);
             SetUpRepository();
-            fixtureService = new FixtureService(matchStorage);
+            fixtureService = new FixtureService(matchStorage, teamStorage);
         }
 
         private void SetUpRepository()
@@ -59,6 +61,15 @@ namespace ObligatorioDA2.Services.Tests
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             matchStorage = new MatchRepository(context);
+            teamStorage = new TeamRepository(context);
+        }
+
+        private void AddTeamsToRepo()
+        {
+            foreach(Team team in teamsCollection)
+            {
+                teamStorage.Add(sport.Name, team);
+            }
         }
 
         [TestMethod]
@@ -88,7 +99,8 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureWithNamesTest()
         {
             ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames);
+            string sportName = sport.Name;
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
 
@@ -99,6 +111,15 @@ namespace ObligatorioDA2.Services.Tests
             Match aMatch = new Match(teamA, teamB, initialDate, sport);
             matchStorage.Add(aMatch);
             fixtureService.AddFixture(teamsCollection);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void AddFixtureTeamNotFoundTest()
+        {
+            ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
+            string sportName = sport.Name;
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
         }
 
 
