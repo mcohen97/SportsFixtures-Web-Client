@@ -98,6 +98,24 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        public void AddFixtureOneMatchImpairTest()
+        {
+            teamsCollection.Remove(teamD);
+            fixtureService.FixtureAlgorithm = oneMatchGenerator;
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
+        }
+
+        [TestMethod]
+        public void AddFixtureTwoMatchesImpairTest()
+        {
+            teamsCollection.Remove(teamD);
+            fixtureService.FixtureAlgorithm = twoMatchsGenerator;
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
+        }
+
+        [TestMethod]
         public void AddFixtureWithNamesTest()
         {
             AddTeamsToRepo();
@@ -108,12 +126,13 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TeamAlreadyHasMatchException))]
+        [ExpectedException(typeof(WrongFixtureException))]
         public void AddFixtureTeamAlreadyHasMatchTest()
         {
             Match aMatch = new Match(teamA, teamB, initialDate, sport);
             matchStorage.Add(aMatch);
             fixtureService.AddFixture(teamsCollection);
+            Assert.IsTrue(matchStorage.IsEmpty());
         }
 
         [TestMethod]
