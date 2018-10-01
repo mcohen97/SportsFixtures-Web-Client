@@ -120,11 +120,11 @@ namespace DataRepositories
             {
                 UserEntity entity = userMapper.ToEntity(aUser);
 
-                /*foreach (UserTeam team in userMapper.GetTeams(aUser)) {
-                    if (!context.UserTeams.Contains(team)) {
+                foreach (UserTeam team in userMapper.GetUserTeams(aUser)) {
+                    if (!context.UserTeams.Any(ut=>ut.Team.Equals(team.Team) && ut.Follower.Equals(team.Follower))) {
                         context.Entry(team).State=EntityState.Added;
                     }
-                }*/
+                }
                 context.Update(entity);
                 context.SaveChanges();
             }
