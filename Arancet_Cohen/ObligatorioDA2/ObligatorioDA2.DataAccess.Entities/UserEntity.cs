@@ -19,7 +19,5 @@ namespace ObligatorioDA2.DataAccess.Entities
         public string Email { get; set; }
 
         public bool IsAdmin { get; set; }
-
-        public ICollection<UserTeam> FavouriteTeams{get;set;}
     }
 }
