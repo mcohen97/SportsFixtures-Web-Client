@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20181001012416_initial")]
-    partial class initial
+    [Migration("20181001160953_initial2")]
+    partial class initial2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,6 +94,8 @@ namespace DataAccess.Migrations
                     b.Property<string>("Photo");
 
                     b.HasKey("SportEntityName", "Name");
+
+                    b.HasAlternateKey("Identity");
 
                     b.ToTable("Teams");
                 });

@@ -4,14 +4,16 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    partial class DatabaseConnectionModelSnapshot : ModelSnapshot
+    [Migration("20181001161301_initial3")]
+    partial class initial3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,21 +48,25 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AwayTeamIdentity");
+                    b.Property<string>("AwayTeamName");
+
+                    b.Property<string>("AwayTeamSportEntityName");
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<int?>("HomeTeamIdentity");
+                    b.Property<string>("HomeTeamName");
+
+                    b.Property<string>("HomeTeamSportEntityName");
 
                     b.Property<string>("SportEntityName");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AwayTeamIdentity");
-
-                    b.HasIndex("HomeTeamIdentity");
-
                     b.HasIndex("SportEntityName");
+
+                    b.HasIndex("AwayTeamSportEntityName", "AwayTeamName");
+
+                    b.HasIndex("HomeTeamSportEntityName", "HomeTeamName");
 
                     b.ToTable("Matches");
                 });
@@ -77,21 +83,19 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
                 {
+                    b.Property<string>("SportEntityName");
+
+                    b.Property<string>("Name");
+
                     b.Property<int>("Identity")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Name")
-                        .IsRequired();
-
                     b.Property<string>("Photo");
 
-                    b.Property<string>("SportEntityName")
-                        .IsRequired();
+                    b.HasKey("SportEntityName", "Name");
 
-                    b.HasKey("Identity");
-
-                    b.HasAlternateKey("SportEntityName", "Name");
+                    b.HasAlternateKey("Identity");
 
                     b.ToTable("Teams");
                 });
@@ -124,13 +128,11 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("UserEntityUserName");
 
-                    b.Property<int?>("TeamIdentity");
-
                     b.HasKey("TeamEntityName", "TeamEntitySportEntityName", "UserEntityUserName");
 
-                    b.HasIndex("TeamIdentity");
-
                     b.HasIndex("UserEntityUserName");
+
+                    b.HasIndex("TeamEntitySportEntityName", "TeamEntityName");
 
                     b.ToTable("UserTeams");
                 });
@@ -148,17 +150,17 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.MatchEntity", b =>
                 {
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "AwayTeam")
-                        .WithMany()
-                        .HasForeignKey("AwayTeamIdentity");
-
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "HomeTeam")
-                        .WithMany()
-                        .HasForeignKey("HomeTeamIdentity");
-
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity", "SportEntity")
                         .WithMany()
                         .HasForeignKey("SportEntityName");
+
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "AwayTeam")
+                        .WithMany()
+                        .HasForeignKey("AwayTeamSportEntityName", "AwayTeamName");
+
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "HomeTeam")
+                        .WithMany()
+                        .HasForeignKey("HomeTeamSportEntityName", "HomeTeamName");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
@@ -171,13 +173,14 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.UserTeam", b =>
                 {
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamIdentity");
-
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.UserEntity", "Follower")
                         .WithMany()
                         .HasForeignKey("UserEntityUserName")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamEntitySportEntityName", "TeamEntityName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
