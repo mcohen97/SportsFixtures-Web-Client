@@ -15,9 +15,9 @@ namespace DataRepositoryInterfaces
 
         bool Exists(string sportName, string teamName);
 
-        void Add(string sportName, Team aTeam);
+        void Add( Team aTeam);
 
-        void Modify(string sportName, Team aTeam);
+        void Modify( Team aTeam);
 
         ICollection<Team> GetAll();
 

@@ -12,10 +12,10 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             return convertedTeam;
         }
 
-        public TeamEntity ToEntity(Team team,string sportName)
+        public TeamEntity ToEntity(Team team)
         {
             TeamEntity convertedTeam = new TeamEntity(team.Id, team.Name, team.Photo);
-            convertedTeam.SportEntityName = sportName;
+            convertedTeam.SportEntityName = team.Sport.Name;
             return convertedTeam;
         }
     }

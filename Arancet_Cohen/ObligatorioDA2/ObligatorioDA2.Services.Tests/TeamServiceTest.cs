@@ -28,7 +28,7 @@ namespace ObligatorioDA2.Services.Tests
             Sport played = new Sport("Soccer");
             teamService.AddTeam(played, testTeam);
             mockSports.Verify(s => s.Exists(It.IsAny<Sport>()));
-            mockTeams.Verify(t => t.Add(It.IsAny<string>(), It.IsAny<Team>()));
+            mockTeams.Verify(t => t.Add( It.IsAny<Team>()));
         }
 
     }

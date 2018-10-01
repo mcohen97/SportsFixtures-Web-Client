@@ -43,7 +43,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
 
         private UserTeam BuildRelationship(UserEntity entity, Team aTeam, string sportName)
         {
-            TeamEntity teamEntity = teamConverter.ToEntity(aTeam,sportName);
+            TeamEntity teamEntity = teamConverter.ToEntity(aTeam);
             UserTeam relationship = new UserTeam
             {
                 Team = teamEntity,
