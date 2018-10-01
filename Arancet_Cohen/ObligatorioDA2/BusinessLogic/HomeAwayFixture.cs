@@ -34,12 +34,15 @@ namespace BusinessLogic
             int matchesAdded = 0;
             int actualRoundLength = 0;
             DateTime roundDate = initialDate;
-            DateTime secondDate;
+            DateTime secondDate = NextDate(roundDate, actualRoundLength);
 
             while(matchesAdded < matchesCount){
-                secondDate = NextDate(roundDate, actualRoundLength);
                 AddMatches(generatedFixture, actualRound, roundDate, secondDate);
                 roundDate = NextDate(roundDate, actualRoundLength);
+                roundDate = NextDate(roundDate, actualRoundLength);
+                secondDate = NextDate(roundDate, actualRoundLength);
+                secondDate = NextDate(roundDate, actualRoundLength);
+
                 actualRound = RotateTeams(actualRound);
                 
                 matchesAdded += matchesPerRound;
