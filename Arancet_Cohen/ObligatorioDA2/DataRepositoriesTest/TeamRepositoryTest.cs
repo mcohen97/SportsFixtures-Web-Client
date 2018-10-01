@@ -19,6 +19,7 @@ namespace DataRepositoriesTest
     public class TeamRepositoryTest
     {
         private ITeamRepository teamsStorage;
+        private ISportRepository sportsStorage;
 
         [TestInitialize]
         public void TestInitialize(){
@@ -30,12 +31,14 @@ namespace DataRepositoriesTest
                .UseInMemoryDatabase(databaseName: "TeamRepository")
                .Options;
             DatabaseConnection context = new DatabaseConnection(options);
+            sportsStorage = new SportRepository(context);
             teamsStorage = new TeamRepository(context);
         }
 
         private void ClearDataBase()
         {
             teamsStorage.Clear();
+            sportsStorage.Clear();
         }
 
         [TestMethod]
@@ -54,17 +57,17 @@ namespace DataRepositoriesTest
         [TestMethod]
         [ExpectedException(typeof(TeamAlreadyExistsException))]
         public void AddAlreadyExistentTeamTest() {
-            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
-            teamsStorage.Add(team.Object);
+            Team team = new Team(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            teamsStorage.Add(team);
             SetUpRepository();
-            teamsStorage.Add(team.Object);
+            teamsStorage.Add(team);
         }
 
         [TestMethod]
         public void GetTeamTest()
         {
             ITeamRepository specific = (ITeamRepository)teamsStorage;
-            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
+            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
             Team teamInDb = specific.Get("Soccer","DreamTeam");
             Assert.AreEqual("DreamTeam", teamInDb.Name);
@@ -78,7 +81,7 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void ExistsTeamTest() {
-            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
+            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
             bool result = teamsStorage.Exists("Soccer",team.Object.Name);
             Assert.IsTrue(result);
@@ -86,18 +89,18 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void DoesNotExistTest() {
-            Mock<Team> team1 = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
-            Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam2.png");
-            teamsStorage.Add(team1.Object);
-            bool result = teamsStorage.Exists("Basketball",team1.Object.Name);
+            Team team1 = new Team(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            Team team2 = new Team(2, "DreamTeam2", "MyResources/DreamTeam2.png", new Sport("Soccer"));
+            teamsStorage.Add(team1);
+            bool result = teamsStorage.Exists("Basketball",team1.Name);
             Assert.IsFalse(result);
         }
 
         [TestMethod]
         public void DeleteTest() {
-            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png");
-            teamsStorage.Add(team.Object);
-            teamsStorage.Delete("Soccer",team.Object.Name);
+            Team team = new Team(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            teamsStorage.Add(team);
+            teamsStorage.Delete("Soccer",team.Name);
             Assert.IsTrue(teamsStorage.IsEmpty());
         }
 
@@ -105,10 +108,10 @@ namespace DataRepositoriesTest
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
         public void DeleteNotExistentTest() {
-            Mock<Team> team1 = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png",new Sport("Soccer"));
-            Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam2.png", new Sport("Soccer"));
-            teamsStorage.Add(team1.Object);
-            teamsStorage.Delete(team2.Object.Sport.Name, team2.Object.Name);
+            Team team1 = new Team(1, "DreamTeam", "MyResources/DreamTeam.png",new Sport("Soccer"));
+            Team team2 = new Team(2, "DreamTeam2", "MyResources/DreamTeam2.png", new Sport("Soccer"));
+            teamsStorage.Add(team1);
+            teamsStorage.Delete(team2.Sport.Name, team2.Name);
         }
 
         [TestMethod]
@@ -127,6 +130,7 @@ namespace DataRepositoriesTest
         public void ModifyNotExistentTest() {
             Mock<Team> team = new Mock<Team>(1,"DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
+            SetUpRepository();
             teamsStorage.Modify(team.Object);
         }
 
@@ -146,9 +150,9 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void GetAllTest() {
-            Mock<Team> team1 = new Mock<Team>(1, "DreamTeam1", "MyResources/DreamTeam.png");
-            Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam.png");
-            Mock<Team> team3 = new Mock<Team>(3, "DreamTeam3", "MyResources/DreamTeam.png");
+            Mock<Team> team1 = new Mock<Team>(1, "DreamTeam1", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            Mock<Team> team3 = new Mock<Team>(3, "DreamTeam3", "MyResources/DreamTeam.png", new Sport("Soccer"));
             team1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam1");
             team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam2");
             team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam3");
@@ -183,7 +187,7 @@ namespace DataRepositoriesTest
             
             ICollection<Team> teams = GetFakeTeams();
             foreach (Team created in teams) {
-                teams.Add(created);
+                teamsStorage.Add(created);
                 fake.AddFavourite(created);
             }       
             userRepository.Add(fake);

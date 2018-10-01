@@ -17,6 +17,7 @@ namespace DataRepositoriesTest
     public class MatchRepositoryTest
     {
         IMatchRepository matchesStorage;
+        ISportRepository sportsStorage;
         Mock<BusinessLogic.Match> match;
         Mock<Sport> sport;
 
@@ -26,7 +27,7 @@ namespace DataRepositoriesTest
             SetUpRepository();
             match = BuildFakeMatch(); 
             matchesStorage.Clear();
-            
+            sportsStorage.Clear();
         }
 
         private void SetUpRepository() {
@@ -35,6 +36,7 @@ namespace DataRepositoriesTest
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             matchesStorage = new MatchRepository(context);
+            sportsStorage = new SportRepository(context); 
         }
 
         private Mock<BusinessLogic.Match> BuildFakeMatch()
