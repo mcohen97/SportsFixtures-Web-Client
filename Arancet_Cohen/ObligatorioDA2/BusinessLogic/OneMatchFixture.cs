@@ -8,15 +8,13 @@ namespace BusinessLogic
         private DateTime initialDate;
         private int roundLength;
         private int daysBetweenRounds;
-        private Sport sport;
 
-        public OneMatchFixture(DateTime initialDate, int roundLength, int daysBetweenRounds,Sport aSport)
+        public OneMatchFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
 
         {
             this.initialDate = initialDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
-            this.sport = aSport;
         }
 
         public override DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
@@ -28,7 +26,7 @@ namespace BusinessLogic
             ICollection<Match> generatedFixture = new List<Match>();
 
             if (teams.Count % 2 != 0)
-                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", sport));
+                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", new Sport("Free match")));
 
             int teamsCount = teams.Count;
             int matchesCount = teamsCount * (teamsCount -1) / 2; //Combinations(teams, 2);
@@ -75,11 +73,10 @@ namespace BusinessLogic
 
         private DateTime NextDate(DateTime roundDate, int actualRoundLength)
         {
-            DateTime nextDate = new DateTime(roundDate.Year,roundDate.Month, roundDate.Day);
             int change = 1;
             if(actualRoundLength == roundLength)
                 change = daysBetweenRounds;
-            nextDate.AddDays(change);
+            DateTime nextDate = roundDate.AddDays(change);
             return nextDate;
         }
 
@@ -115,6 +112,7 @@ namespace BusinessLogic
         private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime roundDate)
         {
             for(int i = 0; i < actualRound.GetLength(1); i++){
+                Sport sport = actualRound[0, i].Sport;
                 Match newMatch = new Match(actualRound[0,i], actualRound[1,i], roundDate,sport);
                 fixture.Add(newMatch);
             }

@@ -17,7 +17,7 @@ namespace ObligatorioDA2.Services
             matchesStorage = matchsRepository;
         }
 
-        public void AddMatch(Match aMatch)
+        public int AddMatch(Match aMatch)
         {
 
             if (DateOccupied(aMatch.HomeTeam, aMatch.Date))
@@ -25,7 +25,7 @@ namespace ObligatorioDA2.Services
             if (DateOccupied(aMatch.AwayTeam, aMatch.Date))
                 throw new TeamAlreadyHasMatchException(aMatch.HomeTeam + "already has a match on date" + aMatch.Date);
 
-            matchesStorage.Add(aMatch);
+            return matchesStorage.Add(aMatch);
         }
 
         private bool DateOccupied(Team team, DateTime date)

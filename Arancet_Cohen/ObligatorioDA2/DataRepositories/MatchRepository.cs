@@ -13,7 +13,7 @@ using RepositoryInterface;
 
 namespace DataRepositories
 {
-    public class MatchRepository : IMatchRepository, IRepository<Match,int>
+    public class MatchRepository : IMatchRepository
     {
         private DatabaseConnection context;
         private MatchMapper matchConverter;
@@ -26,22 +26,25 @@ namespace DataRepositories
         }
 
 
-        public void Add(Match aMatch)
+        public int Add(Match aMatch)
         {
+            int id = 0;
             if (!Exists(aMatch.Id))
             {
-                TryAdd(aMatch);
+                id = TryAdd(aMatch);
             }
             else {
                 throw new MatchAlreadyExistsException();
             }
+            return id;
         }
 
-        private void TryAdd(Match aMatch)
+        private int TryAdd(Match aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
             context.SaveChanges();
+            return toAdd.Id;
         }
 
         public void Clear()
