@@ -9,10 +9,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
 {
     public class SportMapper
     {
-        private TeamMapper teamConverter;
-        public SportMapper() {
-            teamConverter = new TeamMapper();
-        }
+      
         public SportEntity ToEntity(Sport aSport)
         {
             SportEntity converted = new SportEntity()

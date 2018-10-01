@@ -6,16 +6,23 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
 {
     public class TeamMapper
     {
+        private SportMapper sportConverter;
+        public TeamMapper() {
+            sportConverter = new SportMapper();
+        }
         public Team ToTeam(TeamEntity teamEntity)
         {
-            Team convertedTeam = new Team(teamEntity.Identity,teamEntity.Name, teamEntity.Photo);
+
+            Team convertedTeam = new Team(teamEntity.Identity,teamEntity.Name, teamEntity.Photo, new Sport(teamEntity.SportEntityName));
             return convertedTeam;
         }
 
         public TeamEntity ToEntity(Team team)
         {
+            SportEntity convertedSport = sportConverter.ToEntity(team.Sport);
             TeamEntity convertedTeam = new TeamEntity(team.Id, team.Name, team.Photo);
-            convertedTeam.SportEntityName = team.Sport.Name;
+            convertedTeam.Sport = convertedSport;
+            convertedTeam.SportEntityName = convertedSport.Name;
             return convertedTeam;
         }
     }
