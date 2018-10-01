@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Match = BusinessLogic.Match;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -26,7 +27,7 @@ namespace ObligatorioDA2.Services.Tests
         private Team teamD;
         private ICollection<Team> teamsCollection;
         private DateTime initialDate;
-        private IMatchRepository matchesStorage;
+        private IMatchRepository matchStorage;
         private FixtureService fixtureService;
 
         [TestInitialize]
@@ -48,7 +49,7 @@ namespace ObligatorioDA2.Services.Tests
             oneMatchGenerator = new OneMatchFixture(initialDate, 2, 5, sport);
             twoMatchsGenerator = new HomeAwayFixture(initialDate, 2, 5, sport);
             SetUpRepository();
-            fixtureService = new FixtureService();
+            fixtureService = new FixtureService(matchStorage);
         }
 
         private void SetUpRepository()
@@ -57,7 +58,7 @@ namespace ObligatorioDA2.Services.Tests
                 .UseInMemoryDatabase(databaseName: "MatchRepository")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            matchesStorage = new MatchRepository(context);
+            matchStorage = new MatchRepository(context);
         }
 
         [TestMethod]
@@ -68,13 +69,38 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void AddMatchesTest()
+        public void AddFixtureOneMatchTest()
         {
             fixtureService.FixtureAlgorithm = oneMatchGenerator;
-            ICollection<Match> matchesGenerated = oneMatchGenerator.GenerateFixture(teamsCollection);
-            fixtureService.AddMatches(teamsCollection);
-            Assert.IsTrue(matchesGenerated.All(m => matchesStorage.Exists(m.Id)));
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
+
+        [TestMethod]
+        public void AddFixtureTwoMatchesTest()
+        {
+            fixtureService.FixtureAlgorithm = twoMatchsGenerator;
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
+        }
+
+        [TestMethod]
+        public void AddFixtureWithNamesTest()
+        {
+            ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames);
+            Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamAlreadyHasMatchException))]
+        public void AddFixtureTeamAlreadyHasMatchTest()
+        {
+            Match aMatch = new Match(teamA, teamB, initialDate, sport);
+            matchStorage.Add(aMatch);
+            fixtureService.AddFixture(teamsCollection);
+        }
+
 
 
 
