@@ -123,5 +123,12 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             Assert.AreEqual(conversion.GetFavouriteTeams().Count, 1);
         }
 
+        [TestMethod]
+        public void GetUserTeamsTest() {
+            toStore.AddFavourite(new Team(1, "Nacional", "aPath", new Sport("Soccer")));
+            ICollection<UserTeam> relationships = toTest.GetUserTeams(toStore);
+            Assert.AreEqual(relationships.Count, 1);
+        }
+
     }
 }
