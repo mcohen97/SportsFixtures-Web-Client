@@ -167,6 +167,25 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        public void GetTeamsOfSport()
+        {
+            Mock<Team> team1 = new Mock<Team>(1, "DreamTeam1", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            Mock<Team> team3 = new Mock<Team>(3, "DreamTeam3", "MyResources/DreamTeam.png", new Sport("Basketball"));
+            team1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam1");
+            team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam2");
+            team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Name == "DreamTeam3");
+
+            teamsStorage.Add(team1.Object);
+            teamsStorage.Add(team2.Object);
+            teamsStorage.Add(team3.Object);
+
+            ICollection<Team> teams = teamsStorage.GetTeams("Soccer");
+
+            Assert.AreEqual(2, teams.Count);
+        }
+
+        [TestMethod]
         public void GetByIdTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
@@ -257,6 +276,7 @@ namespace DataRepositoriesTest
             };
             return teams;
         }
+
 
         
         
