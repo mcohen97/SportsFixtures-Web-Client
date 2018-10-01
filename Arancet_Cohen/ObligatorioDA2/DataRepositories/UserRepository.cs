@@ -28,10 +28,12 @@ namespace DataRepositories
 
         public void Add(User aUser)
         {
-            UserEntity entity = userMapper.ToEntity(aUser);
             if (!AnyWithThisUserName(aUser.UserName))
             {
+                UserEntity entity = userMapper.ToEntity(aUser);
+                ICollection<UserTeam> follower_teams = userMapper.GetUserTeams(aUser);
                 context.Users.Add(entity);
+                context.UserTeams.AddRange(follower_teams);
                 context.SaveChanges();
             }
             else
@@ -46,10 +48,7 @@ namespace DataRepositories
             if (AnyWithThisUserName(aUserName))
             {
                 UserEntity retrieved = GetEntityByUsername(aUserName);
-                ICollection<TeamEntity> teams = context.UserTeams
-                    .Where(ut => ut.UserEntityUserName.Equals(aUserName))
-                    .Select(ut => ut.Team)
-                    .ToList();
+                ICollection<TeamEntity> teams = GetFollowedTeams(aUserName); 
                 toReturn = userMapper.ToUser(retrieved,teams);
                 context.Entry(retrieved).State = EntityState.Detached;
             }
@@ -58,6 +57,14 @@ namespace DataRepositories
                 throw new UserNotFoundException();
             }
             return toReturn;
+        }
+
+        private ICollection<TeamEntity> GetFollowedTeams(string aUserName)
+        {
+           return context.UserTeams
+                    .Where(ut => ut.UserEntityUserName.Equals(aUserName))
+                    .Select(ut => ut.Team)
+                    .ToList();
         }
 
         public void Delete(string username)
@@ -147,20 +154,6 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public void AddFollowedTeam(string username, string sportName, Team toFollow)
-        {
-            UserEntity follower = context.Users.First(u => u.UserName.Equals(username));
-            UserTeam relationship = new UserTeam
-            {
-                Follower = follower,
-                UserEntityUserName = follower.UserName,
-                Team = teamMapper.ToEntity(toFollow, sportName),
-                TeamEntityName = toFollow.Name,
-                TeamEntitySportEntityName = sportName
-            };
-            context.Entry(relationship).State=EntityState.Added;
-            context.SaveChanges();
-        }
     }
 }
 

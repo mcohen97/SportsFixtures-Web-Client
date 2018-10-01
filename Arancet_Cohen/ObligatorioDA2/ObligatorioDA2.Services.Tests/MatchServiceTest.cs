@@ -28,24 +28,25 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestInitialize]
         public void SetUp() {
-            sport = new Mock<Sport>("Soccer").Object;
-            teamA = new Mock<Team>(1, "teamA", "photo", sport).Object;
-            teamB = new Mock<Team>(2, "teamB", "photo", sport).Object;
-            teamC = new Mock<Team>(3, "teamC", "photo", sport).Object;
-            matchAvsB = new Mock<Match>(1, teamA, teamB, DateTime.Now.AddDays(1), sport).Object;
-            matchAvsC = new Mock<Match>(2, teamA, teamC, DateTime.Now.AddDays(2), sport).Object;
-            matchBvsC = new Mock<Match>(3, teamB, teamC, DateTime.Now.AddDays(3), sport).Object;
+            sport = new Sport("Soccer");
+            teamA = new Team(1, "teamA", "photo", sport);
+            teamB = new Team(2, "teamB", "photo", sport);
+            teamC = new Team(3, "teamC", "photo", sport);
+            matchAvsB = new Match(1, teamA, teamB, DateTime.Now.AddDays(1), sport);
+            matchAvsC = new Match(2, teamA, teamC, DateTime.Now.AddDays(2), sport);
+            matchBvsC = new Match(3, teamB, teamC, DateTime.Now.AddDays(3), sport);
             SetUpRepository();
-            serviceToTest = new MatchService(repoDouble);
+            repoDouble.Clear();
         }
 
         private void SetUpRepository() {
 
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-               .UseInMemoryDatabase(databaseName: "MatchRepository")
+               .UseInMemoryDatabase(databaseName: "MatchService")
                .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             repoDouble = new MatchRepository(context);
+            serviceToTest = new MatchService(repoDouble);
         }
 
         [TestMethod]
@@ -102,7 +103,8 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void ModifyTest() {
             serviceToTest.AddMatch(matchAvsB);
-            Match modifiedAvsB = new Mock<Match>(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport).Object;
+            Match modifiedAvsB = new Match(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport);
+            SetUpRepository();
             serviceToTest.ModifyMatch(modifiedAvsB);
             Match modified = serviceToTest.GetMatch(matchAvsB.Id);
 

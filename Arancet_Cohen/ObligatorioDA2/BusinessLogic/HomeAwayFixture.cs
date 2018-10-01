@@ -24,7 +24,7 @@ namespace BusinessLogic
             ICollection<Match> generatedFixture = new List<Match>();
 
             if(teams.Count % 2 != 0)
-                teams.Add(new Team(-1,"Free Match", "Photos/freeMatch.png"));
+                teams.Add(new Team(-1,"Free Match", "Photos/freeMatch.png",played));
 
             int teamsCount = teams.Count;
             int matchesCount = teamsCount * (teamsCount -1) / 2; //Combinations(teams, 2);

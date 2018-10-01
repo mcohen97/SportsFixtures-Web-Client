@@ -28,10 +28,10 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
                 SportEntity = new SportEntity() {Name="Soccer"},
                 Commentaries = new List<CommentEntity>()
             };
-            Mock<Team> homeMock = new Mock<Team>(3, "Nacional", "aPath");
-            Mock<Team> awayMock = new Mock<Team>(4, "Torque", "aPath");
-            Mock<Sport> sport = new Mock<Sport>( "Soccer");
-            match = new Mock<BusinessLogic.Match>(homeMock.Object,awayMock.Object,DateTime.Now,sport.Object);
+            Team homeMock = new Team(3, "Nacional", "aPath",new Sport("Soccer"));
+            Team awayMock = new Team(4, "Torque", "aPath",new Sport("Soccer"));
+            Sport sport = new Sport( "Soccer");
+            match = new Mock<BusinessLogic.Match>(homeMock,awayMock,DateTime.Now,sport);
         }
 
         [TestMethod]

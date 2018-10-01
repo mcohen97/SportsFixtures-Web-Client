@@ -25,7 +25,7 @@ namespace BusinessLogicTest
         public void TestInitialize(){
             teams = new List<Team>();
             for(int i = 1; i <= 6; i++){
-                Team newTeam = new Team(i, "Team "+i, "Photo/"+i);
+                Team newTeam = new Team(i, "Team "+i, "Photo/"+i, new Sport("aSport"));
                 //newTeam.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == i);
                 teams.Add(newTeam);
             }

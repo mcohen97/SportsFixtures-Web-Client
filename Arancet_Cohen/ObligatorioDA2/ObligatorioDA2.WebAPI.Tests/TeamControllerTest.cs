@@ -19,7 +19,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestInitialize]
         public void SetUp() {
-            team = new Team(2,"Nacional", "aPath");
+            team = new Team(2,"Nacional", "aPath",new Sport("Soccer"));
             repo = new Mock<ITeamRepository>();
             repo.Setup(r => r.Get("Soccer","Nacional")).Returns(team);
             repo.Setup(r => r.Get(It.Is<string>(i => !i.Equals("Soccer")), It.Is<string>(i => !i.Equals("Nacional"))))
@@ -43,7 +43,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             var modelOut = createdResult.Value as TeamModelOut;
 
             //Assert
-            repo.Verify(r => r.Add(It.Is<string>(i => i.Equals("Soccer")),It.IsAny<Team>()), Times.Once);
+            repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual("GetById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -105,8 +105,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkResult okResult = result as OkResult;
 
             //verify it modifies but not adds
-            repo.Verify(r => r.Modify("Soccer",It.IsAny<Team>()), Times.Once);
-            repo.Verify(r => r.Add("Soccer",It.IsAny<Team>()), Times.Never);
+            repo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
+            repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Never);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(okResult.StatusCode, 200);
         }
@@ -115,7 +115,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutAddTest() {
 
             //make repository throw not existing exception, so that it has to add
-            repo.Setup(r => r.Modify(It.IsAny<string>(),It.IsAny<Team>())).Throws(new TeamNotFoundException());
+            repo.Setup(r => r.Modify(It.IsAny<Team>())).Throws(new TeamNotFoundException());
 
             var modelIn = new TeamModelIn()
             {
@@ -131,8 +131,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             var modelOut = createdResult.Value as TeamModelOut;
 
             //assert
-            repo.Verify(r => r.Modify("Soccer",It.IsAny<Team>()), Times.Once);
-            repo.Verify(r => r.Add("Soccer",It.IsAny<Team>()), Times.Once);
+            repo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
+            repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
             Assert.AreEqual("GetTeamById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(modelIn.Name, modelOut.Name);

@@ -31,7 +31,6 @@ namespace DataRepositoriesTest
         public void TestInitialize()
         {
             DatabaseConnection context = CreateContext();
-            CreateTeams();
             CreateSports();
             ClearDataBase(context);
         }
@@ -41,20 +40,6 @@ namespace DataRepositoriesTest
             sportA = new Mock<Sport>("SportA");
             sportB = new Mock<Sport>( "SportB");
          }
-
-        private void CreateTeams()
-        {
-            team1 = new Mock<Team>(1,"TeamA", "SomePhoto");
-            team2 = new Mock<Team>(2 , "TeamB" , "SomePhoto");
-            team3 = new Mock<Team>(3, "TeamC", "SomePhoto");
-            team4 = new Mock<Team>(4, "TeamD", "SomePhoto");
-            team1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
-            team2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
-            team3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 3);
-            team4.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 4);
-            mockTeamsA = new List<Team> { team1.Object, team2.Object };
-            mockTeamsB = new List<Team> { team3.Object, team4.Object };
-        }
 
         private DatabaseConnection CreateContext()
         {

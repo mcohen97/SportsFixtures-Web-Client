@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20180930021154_initial")]
+    [Migration("20181001012416_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,8 +163,8 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.TeamEntity", b =>
                 {
-                    b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity")
-                        .WithMany("Teams")
+                    b.HasOne("ObligatorioDA2.DataAccess.Entities.SportEntity", "Sport")
+                        .WithMany()
                         .HasForeignKey("SportEntityName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -172,12 +172,12 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("ObligatorioDA2.DataAccess.Entities.UserTeam", b =>
                 {
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.UserEntity", "Follower")
-                        .WithMany("FavouriteTeams")
+                        .WithMany()
                         .HasForeignKey("UserEntityUserName")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ObligatorioDA2.DataAccess.Entities.TeamEntity", "Team")
-                        .WithMany("Followers")
+                        .WithMany()
                         .HasForeignKey("TeamEntitySportEntityName", "TeamEntityName")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

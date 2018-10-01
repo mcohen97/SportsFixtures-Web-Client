@@ -42,8 +42,6 @@ namespace DataRepositories
         private int TryAdd(Match aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
-            toAdd.HomeTeam.SportEntityName = aMatch.Sport.Name;
-            toAdd.AwayTeam.SportEntityName = aMatch.Sport.Name;
             context.Entry(toAdd).State = EntityState.Added;
             context.SaveChanges();
             return toAdd.Id;
@@ -121,8 +119,7 @@ namespace DataRepositories
             if (Exists(aMatch.Id))
             {
                 MatchEntity converted = matchConverter.ToEntity(aMatch);
-                converted.SportEntity = new SportEntity { Name = aMatch.Sport.Name };
-                context.Matches.Attach(converted).State = EntityState.Modified;
+                context.Entry(converted).State = EntityState.Modified;
                 context.SaveChanges();
             }
             else

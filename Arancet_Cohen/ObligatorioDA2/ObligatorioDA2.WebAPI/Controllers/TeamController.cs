@@ -68,9 +68,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
-                Team toAdd = new Team(team.Name, team.Photo);
+                Team toAdd = new Team(1,team.Name, team.Photo, new Sport(team.SportName));
 
-                teams.Add(team.SportName, toAdd);
+                teams.Add(toAdd);
 
                 TeamModelOut addedTeam = new TeamModelOut()
                 {
@@ -108,8 +108,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Team toModify = new Team(value.Name, value.Photo);
-                teams.Modify(sportName, toModify);
+                Team toModify = new Team(1,value.Name, value.Photo,new Sport("Soccer"));
+                teams.Modify(toModify);
                 result = Ok();
             }
             catch (TeamNotFoundException)
@@ -121,9 +121,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult PostId(string sportName, TeamModelIn team)
         {
-            Team toAdd = new Team(team.Name, team.Photo);
+            Team toAdd = new Team(1,team.Name, team.Photo,new Sport(team.SportName));
 
-            teams.Add(sportName, toAdd);
+            teams.Add(toAdd);
 
             TeamModelOut addedTeam = new TeamModelOut()
             {

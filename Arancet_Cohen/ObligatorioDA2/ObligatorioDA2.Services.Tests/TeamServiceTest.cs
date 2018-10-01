@@ -20,7 +20,7 @@ namespace ObligatorioDA2.Services.Tests
         public void SetUp() {
             mockTeams = new Mock<ITeamRepository>();
             teamService = new TeamService(mockTeams.Object);
-            testTeam = new Team("aTeam", "aPhoto");
+            testTeam = new Team(1,"aTeam", "aPhoto",new Sport("aSport"));
         }
 
         [TestMethod]
@@ -28,7 +28,7 @@ namespace ObligatorioDA2.Services.Tests
             Sport played = new Sport("Soccer");
             teamService.AddTeam(played, testTeam);
             mockSports.Verify(s => s.Exists(It.IsAny<Sport>()));
-            mockTeams.Verify(t => t.Add(It.IsAny<string>(), It.IsAny<Team>()));
+            mockTeams.Verify(t => t.Add( It.IsAny<Team>()));
         }
 
     }

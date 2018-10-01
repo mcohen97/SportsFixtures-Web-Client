@@ -4,8 +4,9 @@ using System.Text;
 
 namespace ObligatorioDA2.DataAccess.Entities
 {
-    public class MatchEntity:BaseEntity
+    public class MatchEntity
     {
+        public int Id { get; set; }
         public TeamEntity HomeTeam { get; set; }
         public TeamEntity AwayTeam { get; set; }
         public DateTime Date { get; set; }

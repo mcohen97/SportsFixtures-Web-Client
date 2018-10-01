@@ -4,6 +4,7 @@ using BusinessLogic;
 using BusinessLogic.Factories;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
+using System.Collections.Generic;
 
 namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
 {
@@ -74,54 +75,59 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
         }
 
         [TestMethod]
-        public void UserToEntityTeamsTest() {
-            Team aTeam = new Team("aTeam", "aPhoto");
-            UserEntity conversion = toTest.ToEntity(toStore);
-            Assert.AreEqual(conversion.FavouriteTeams.Count, 1);
-        }
-
-        [TestMethod]
         public void EntityToUserNameTest() {
-            User conversion = toTest.ToUser(toGet);
+            User conversion = toTest.ToUser(toGet,new List<TeamEntity>());
             Assert.AreEqual(conversion.Name, toGet.Name);
         }
 
         [TestMethod]
         public void EntityToUserSurnameTest()
         {
-            User conversion = toTest.ToUser(toGet);
+            User conversion = toTest.ToUser(toGet, new List<TeamEntity>());
             Assert.AreEqual(conversion.Surname, toGet.Surname);
         }
 
         [TestMethod]
         public void EntityToUserUserNameTest()
         {
-            User conversion = toTest.ToUser(toGet);
+            User conversion = toTest.ToUser(toGet, new List<TeamEntity>());
             Assert.AreEqual(conversion.UserName, toGet.UserName);
         }
 
         [TestMethod]
         public void EntityToUserPasswordTest()
         {
-            User conversion = toTest.ToUser(toGet);
+            User conversion = toTest.ToUser(toGet, new List<TeamEntity>());
             Assert.AreEqual(conversion.Password, toGet.Password);
         }
 
         [TestMethod]
         public void EntityToUserEmailTest()
         {
-            User conversion = toTest.ToUser(toGet);
+            User conversion = toTest.ToUser(toGet, new List<TeamEntity>());
             Assert.AreEqual(conversion.Email, toGet.Email);
         }
 
         [TestMethod]
-        public void EntityToUserFavouritesTest() {
-            TeamEntity team = new TeamEntity { Name = "aTeam", SportEntityName = "aSport" };
-            UserTeam user_team = new UserTeam() { TeamEntityName = "aTeam",
-                TeamEntitySportEntityName = "aSport", Team = team, Follower = toGet, UserEntityUserName = toGet.UserName };
-            toGet.FavouriteTeams.Add(user_team);
-            User conversion = toTest.ToUser(toGet);
+        public void EntityToUserFollowersTest()
+        {
+            TeamEntity entity = new TeamEntity()
+            {
+                Name = "Partisanos Fc",
+                SportEntityName = "Soccer",
+                Sport = new SportEntity() {Name= "Soccer" },
+                Identity = 1,
+                Photo = "aPhoto"
+            };
+            User conversion = toTest.ToUser(toGet, new List<TeamEntity>() { entity});
             Assert.AreEqual(conversion.GetFavouriteTeams().Count, 1);
+        }
+
+        [TestMethod]
+        public void GetUserTeamsTest() {
+            toStore.AddFavourite(new Team(1, "Nacional", "aPath", new Sport("Soccer")));
+            ICollection<UserTeam> relationships = toTest.GetUserTeams(toStore);
+            Assert.AreEqual(relationships.Count, 1);
         }
 
     }

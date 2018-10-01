@@ -89,8 +89,8 @@ namespace BusinessLogicTest
         [TestMethod]
         public void EqualsTest()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath");
-            Team sameTeam = new Team(1, "TeamA", "");
+            Team aTeam = new Team(1, "TeamA", "somePath",new Sport("aSport"));
+            Team sameTeam = new Team(1, "TeamA", "", new Sport("aSport"));
             Assert.AreEqual(aTeam, sameTeam);
         }
 
@@ -105,8 +105,8 @@ namespace BusinessLogicTest
         [TestMethod]
         public void NotEqualsTest()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath");
-            Team differentTeam = new Team(2, "TeamB", "");
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
+            Team differentTeam = new Team(2, "TeamB", "", new Sport("aSport"));
             Assert.AreNotEqual(aTeam, differentTeam);
         }
 
@@ -116,14 +116,14 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void EmptyNameConstructorTest()
         {
-            Team team = new Team(1, "","photo");
+            Team team = new Team(1, "","photo", new Sport("aSport"));
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetEmptyNameTest()
         {
-            Team team = new Team(1, "name","photo");
+            Team team = new Team(1, "name","photo", new Sport("aSport"));
             team.Name = "";
         }
 
@@ -131,7 +131,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullNameTest()
         {
-            Team team = new Team(1, "name","photo");
+            Team team = new Team(1, "name","photo", new Sport("aSport"));
             team.Name = null;
         }
 
@@ -139,7 +139,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullPhotoTest()
         {
-            Team team = new Team(1, "name","photo");
+            Team team = new Team(1, "name","photo", new Sport("aSport"));
             team.Photo = null;
         }
     }
