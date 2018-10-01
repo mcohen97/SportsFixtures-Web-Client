@@ -126,6 +126,16 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        public void AddFixtureOfSport()
+        {
+            AddTeamsToRepo();
+            ICollection<Match> matchesAdded = fixtureService.AddFixture(sport);
+            Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
+        }
+
+        //Exceptions
+
+        [TestMethod]
         [ExpectedException(typeof(WrongFixtureException))]
         public void AddFixtureTeamAlreadyHasMatchTest()
         {
@@ -143,6 +153,7 @@ namespace ObligatorioDA2.Services.Tests
             string sportName = sport.Name;
             ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
         }
+
 
 
 

@@ -30,7 +30,6 @@ namespace ObligatorioDA2.Services
 
         private bool DateOccupied(Team team, DateTime date)
         {
-            //SHOULD BE A METHOD IN MATCHREPOSITORY THAT EXECUTES THE QUERY IN DB
             return matchesStorage.GetAll().Any(m => (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
         }
 
@@ -64,13 +63,11 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Match> GetAllMatches(Sport sport)
         {
-            //SHOULD BE A METHOD IN MATCHREPOSITORY THAT EXECUTES THE QUERY IN DB
             return matchesStorage.GetAll().Where(m => m.Sport.Equals(sport)).ToList();
         }
 
         public ICollection<Match> GetAllMatches(Team team)
         {
-            //SHOULD BE A METHOD IN MATCHREPOSITORY THAT EXECUTES THE QUERY IN DB
             return matchesStorage.GetAll().Where(m => m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)).ToList();
         }
 
