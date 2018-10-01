@@ -48,9 +48,11 @@ namespace ObligatorioDA2.Services.Tests
             };
 
             initialDate = DateTime.Now;
-            oneMatchGenerator = new OneMatchFixture(initialDate, 2, 5, sport);
-            twoMatchsGenerator = new HomeAwayFixture(initialDate, 2, 5, sport);
+            oneMatchGenerator = new OneMatchFixture(initialDate, 2, 5);
+            twoMatchsGenerator = new HomeAwayFixture(initialDate, 2, 5);
             SetUpRepository();
+            matchStorage.Clear();
+            teamStorage.Clear();
             fixtureService = new FixtureService(matchStorage, teamStorage);
         }
 
@@ -98,6 +100,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void AddFixtureWithNamesTest()
         {
+            AddTeamsToRepo();
             ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
             string sportName = sport.Name;
             ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);

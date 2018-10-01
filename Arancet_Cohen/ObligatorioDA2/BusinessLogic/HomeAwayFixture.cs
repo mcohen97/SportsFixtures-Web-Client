@@ -8,11 +8,9 @@ namespace BusinessLogic
         private DateTime initialDate;
         private int roundLength;
         private int daysBetweenRounds;
-        private Sport played;
 
-        public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds,Sport sport)
+        public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
         {
-            this.played = sport;
             this.initialDate = initialDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
@@ -68,7 +66,7 @@ namespace BusinessLogic
                 matches.MoveNext();
                 Match current = matches.Current;
                 DateTime nextDate = NextDate(current.Date, actualRoundLength);
-                Match newMatch = new Match(current.AwayTeam, current.HomeTeam, nextDate,played);
+                Match newMatch = new Match(current.AwayTeam, current.HomeTeam, nextDate, current.Sport);
                 
                 if(actualRoundLength == roundLength)
                     actualRoundLength = 0;
@@ -95,11 +93,10 @@ namespace BusinessLogic
 
         private DateTime NextDate(DateTime roundDate, int actualRoundLength)
         {
-            DateTime nextDate = new DateTime(roundDate.Year,roundDate.Month, roundDate.Day);
             int change = 1;
             if(actualRoundLength == roundLength)
                 change = daysBetweenRounds;
-            nextDate.AddDays(change);
+            DateTime nextDate = roundDate.AddDays(change);
             return nextDate;
         }
 
@@ -135,8 +132,9 @@ namespace BusinessLogic
         private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime firstDate, DateTime secondDate)
         {
             for(int i = 0; i < actualRound.GetLength(1); i++){
-                Match firstMatch = new Match(actualRound[0,i], actualRound[1,i], firstDate,played);
-                Match secondMatch = new Match(actualRound[1,i], actualRound[0,i], secondDate,played);
+                Sport sport = actualRound[0, i].Sport;
+                Match firstMatch = new Match(actualRound[0,i], actualRound[1,i], firstDate, sport);
+                Match secondMatch = new Match(actualRound[1,i], actualRound[0,i], secondDate, sport);
 
                 fixture.Add(firstMatch);
                 fixture.Add(secondMatch);

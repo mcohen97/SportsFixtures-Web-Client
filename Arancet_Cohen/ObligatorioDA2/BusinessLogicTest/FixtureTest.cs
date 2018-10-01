@@ -34,8 +34,8 @@ namespace BusinessLogicTest
             roundLength = 2;
             daysBetweenRounds = 5;
             played = new Mock<Sport>("Soccer");
-            oneMatchFixture = new OneMatchFixture(initialDate,roundLength, daysBetweenRounds,played.Object);
-            homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds, played.Object);
+            oneMatchFixture = new OneMatchFixture(initialDate,roundLength, daysBetweenRounds);
+            homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds);
             
         }
 
