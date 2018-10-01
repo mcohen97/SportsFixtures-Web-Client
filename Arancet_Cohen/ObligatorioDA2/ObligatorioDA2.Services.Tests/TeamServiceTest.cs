@@ -20,7 +20,7 @@ namespace ObligatorioDA2.Services.Tests
         public void SetUp() {
             mockTeams = new Mock<ITeamRepository>();
             teamService = new TeamService(mockTeams.Object);
-            testTeam = new Team("aTeam", "aPhoto");
+            testTeam = new Team(1,"aTeam", "aPhoto",new Sport("aSport"));
         }
 
         [TestMethod]

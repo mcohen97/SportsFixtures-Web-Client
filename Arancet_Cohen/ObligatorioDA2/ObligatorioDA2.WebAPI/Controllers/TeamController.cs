@@ -108,7 +108,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Team toModify = new Team(value.Name, value.Photo);
+                Team toModify = new Team(1,value.Name, value.Photo,new Sport("Soccer"));
                 teams.Modify(toModify);
                 result = Ok();
             }
