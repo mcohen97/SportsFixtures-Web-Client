@@ -70,5 +70,10 @@ namespace ObligatorioDA2.Services
             return AddFixture(teamsCollection);
         }
 
+        public ICollection<Match> AddFixture(Sport sport)
+        {
+            ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
+            return AddFixture(teamsCollection);
+        }
     }
 }
