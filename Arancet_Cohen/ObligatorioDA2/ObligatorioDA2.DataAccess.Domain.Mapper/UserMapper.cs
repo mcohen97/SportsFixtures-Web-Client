@@ -27,19 +27,11 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
                 UserName = toConvert.UserName,
                 Password = toConvert.Password,
                 Email = toConvert.Email,
-                IsAdmin = toConvert.IsAdmin,
-                //FavouriteTeams = toConvert.GetFavouriteTeams().Select(t => BuldTeamUser(t,toConvert)).ToList()
+                IsAdmin = toConvert.IsAdmin
             };
             return converted;
         }
 
-        /*public ICollection<UserTeam> GetTeams(User aUser) {
-            UserEntity entity = ToEntity(aUser);
-            ICollection<UserTeam> conversion = aUser.GetFavouriteTeams()
-                .Select(t => BuildRelationship(entity,t))
-                .ToList();
-            return conversion;
-        }*/
 
         private UserTeam BuildRelationship(UserEntity entity, Team aTeam, string sportName)
         {
@@ -55,27 +47,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             return relationship;
         }
 
-        public User ToUser(UserEntity toConvert)
-        {
-            UserId identity = new UserId() {
-               Name= toConvert.Name,
-               Surname = toConvert.Surname,
-               UserName = toConvert.UserName,
-               Password= toConvert.Password,
-               Email = toConvert.Email
-            };
-            User converted;
-            if (toConvert.IsAdmin)
-            {
-                converted = factory.CreateAdmin(identity);
-            }
-            else
-            {
-                converted = factory.CreateFollower(identity);
-            }
-            return converted;
-        }
-
         public User ToUser(UserEntity toConvert, ICollection<TeamEntity> teamEntities) {
             UserId identity = new UserId()
             {
@@ -87,14 +58,7 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             };
             ICollection<Team> teams = teamEntities.Select(t => teamConverter.ToTeam(t)).ToList();
             User converted;
-            if (toConvert.IsAdmin)
-            {
-                converted = factory.CreateAdmin(identity, teams);
-            }
-            else
-            {
-                converted = factory.CreateFollower(identity, teams);
-            }
+            converted = toConvert.IsAdmin? factory.CreateAdmin(identity, teams) : factory.CreateFollower(identity, teams);  
             return converted;
         }
     }
