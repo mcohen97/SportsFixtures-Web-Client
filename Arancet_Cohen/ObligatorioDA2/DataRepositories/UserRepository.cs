@@ -28,10 +28,12 @@ namespace DataRepositories
 
         public void Add(User aUser)
         {
-            UserEntity entity = userMapper.ToEntity(aUser);
             if (!AnyWithThisUserName(aUser.UserName))
             {
+                UserEntity entity = userMapper.ToEntity(aUser);
+                ICollection<UserTeam> follower_teams = userMapper.GetUserTeams(aUser);
                 context.Users.Add(entity);
+                context.UserTeams.AddRange(follower_teams);
                 context.SaveChanges();
             }
             else
