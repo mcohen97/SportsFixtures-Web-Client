@@ -17,7 +17,7 @@ namespace ObligatorioDA2.Services
             matchesStorage = matchsRepository;
         }
 
-        public int AddMatch(Match aMatch)
+        public Match AddMatch(Match aMatch)
         {
 
             if (DateOccupied(aMatch.HomeTeam, aMatch.Date))

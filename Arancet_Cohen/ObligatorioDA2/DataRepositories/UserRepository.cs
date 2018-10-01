@@ -26,8 +26,9 @@ namespace DataRepositories
             teamMapper = new TeamMapper();
         }
 
-        public void Add(User aUser)
+        public User Add(User aUser)
         {
+            User added;
             if (!AnyWithThisUserName(aUser.UserName))
             {
                 UserEntity entity = userMapper.ToEntity(aUser);
@@ -35,11 +36,13 @@ namespace DataRepositories
                 context.Users.Add(entity);
                 context.UserTeams.AddRange(follower_teams);
                 context.SaveChanges();
+                added = aUser;
             }
             else
             {
                 throw new UserAlreadyExistsException();
             }
+            return added;
         }
 
         public User Get(string aUserName)

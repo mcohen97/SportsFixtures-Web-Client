@@ -24,7 +24,7 @@ namespace DataRepositories
             mapper = new SportMapper();
         }
 
-        public void Add(Sport sport)
+        public Sport Add(Sport sport)
         {
             if (Exists(sport))
                 throw new SportAlreadyExistsException();
@@ -32,6 +32,7 @@ namespace DataRepositories
             SportEntity entity = mapper.ToEntity(sport);
             context.Entry(entity).State = EntityState.Added;
             context.SaveChanges();
+            return mapper.ToSport(entity);
         }
 
         public void Clear()
