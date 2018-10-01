@@ -80,7 +80,7 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        public void ExistsTeamTest() {
+        public void ExistsTeamWithSportTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
             bool result = teamsStorage.Exists("Soccer",team.Object.Name);
@@ -196,6 +196,34 @@ namespace DataRepositoriesTest
             Assert.AreEqual(followedTeams.Count, 3);
         }
 
+        [TestMethod]
+        public void ExistsTeamTest()
+        {
+            Sport sport = new Mock<Sport>("Soccer").Object;
+            Team aTeam = new Mock<Team>(1, "DreamTeam", "photo", sport).Object;
+            aTeam = teamsStorage.Add(aTeam);
+            Assert.IsTrue(teamsStorage.Exists(aTeam));
+        }
+
+        [TestMethod]
+        public void DeleteTeamByIdTest()
+        {
+            Sport sport = new Mock<Sport>("Soccer").Object;
+            Team aTeam = new Mock<Team>(1, "DreamTeam", "photo", sport).Object;
+            aTeam = teamsStorage.Add(aTeam);
+            teamsStorage.Delete(aTeam.Id);
+            Assert.IsFalse(teamsStorage.Exists(aTeam));
+        }
+
+        [TestMethod]
+        public void GetTeamByIdTest()
+        {
+            Sport sport = new Mock<Sport>("Soccer").Object;
+            Team aTeam = new Mock<Team>(1, "DreamTeam", "photo", sport).Object;
+            aTeam = teamsStorage.Add(aTeam);
+            Assert.AreEqual(teamsStorage.Get(aTeam.Id), aTeam);
+        }
+
         private User GetFakeUser()
         {
             UserId identity = new UserId
@@ -229,6 +257,8 @@ namespace DataRepositoriesTest
             };
             return teams;
         }
+
+        
         
     }
 }

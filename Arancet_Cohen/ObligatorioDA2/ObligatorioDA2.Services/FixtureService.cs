@@ -58,8 +58,8 @@ namespace ObligatorioDA2.Services
         {
             foreach (Match match in generated)
             {
-                int id = matchService.AddMatch(match);
-                added.Add(new Match(id, match.HomeTeam, match.AwayTeam, match.Date, match.Sport));
+                Match matchAdded = matchService.AddMatch(match);
+                added.Add(matchAdded);
             }
             return added;
         }
@@ -70,5 +70,10 @@ namespace ObligatorioDA2.Services
             return AddFixture(teamsCollection);
         }
 
+        public ICollection<Match> AddFixture(Sport sport)
+        {
+            ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
+            return AddFixture(teamsCollection);
+        }
     }
 }

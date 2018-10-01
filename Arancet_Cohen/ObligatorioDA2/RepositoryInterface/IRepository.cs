@@ -10,7 +10,7 @@ namespace RepositoryInterface
     {
         bool IsEmpty();
 
-        void Add(T entity);
+        T Add(T entity);
 
         void Delete(K id);
 

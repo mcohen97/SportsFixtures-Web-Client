@@ -87,20 +87,21 @@ namespace DataRepositories
             }
         }
 
-        public void Add( Team aTeam)
+        public Team Add( Team aTeam)
         {
             TeamEntity entity = mapper.ToEntity(aTeam);
-
+            Team teamAdded;
             if (!Exists(entity.Sport.Name,entity.Name))
             {
-                TryAdd(aTeam);
+                teamAdded = TryAdd(aTeam);
             }
             else {
                 throw new TeamAlreadyExistsException();
             }
+            return teamAdded;
         }
 
-        private void TryAdd(Team aTeam)
+        private Team TryAdd(Team aTeam)
         {
             TeamEntity toStore = mapper.ToEntity(aTeam);
             context.Teams.Add(toStore);
@@ -108,6 +109,8 @@ namespace DataRepositories
                 context.Entry(toStore.Sport).State = EntityState.Unchanged;
             }
             context.SaveChanges();
+            return mapper.ToTeam(toStore);
+
         }
 
         public void Modify(Team aTeam)
@@ -152,6 +155,44 @@ namespace DataRepositories
                 .Where(ut => ut.UserEntityUserName.Equals(username));
             IQueryable<TeamEntity> teams = relationships.Select(ut => ut.Team);
             return teams.Select(t => mapper.ToTeam(t)).ToList();
+        }
+
+        public ICollection<Team> GetTeams(string sportName)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool Exists(int id)
+        {
+            return context.Teams.Any(t => t.Identity == id);
+        }
+
+        public void Delete(int id)
+        {
+            if (!Exists(id))
+                throw new TeamNotFoundException();
+
+            TeamEntity toDelete = context.Teams
+                .First(t => t.Identity == id);
+            context.Teams.Remove(toDelete);
+            DeleteMatches(toDelete);
+            context.SaveChanges();
+        }
+
+        public bool Exists(Team record)
+        {
+            return Exists(record.Sport.Name, record.Name);
+        }
+
+        public Team Get(int id)
+        {
+            if (!Exists(id))
+                throw new TeamNotFoundException();
+
+            TeamEntity entity = context.Teams
+                .FirstOrDefault(e => e.Identity == id);
+            Team converted = mapper.ToTeam(entity);
+            return converted ;
         }
     }
 }
