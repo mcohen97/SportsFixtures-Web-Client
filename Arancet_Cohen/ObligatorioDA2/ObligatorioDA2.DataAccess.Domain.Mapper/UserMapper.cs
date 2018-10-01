@@ -32,8 +32,15 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers
             return converted;
         }
 
+        public ICollection<UserTeam> GetUserTeams(User aUser) {
+            UserEntity userEntity = ToEntity(aUser);
+            ICollection <UserTeam> relationships =aUser.GetFavouriteTeams()
+                .Select(t => BuildRelationship(userEntity, t))
+                .ToList();
+            return relationships;
+        }
 
-        private UserTeam BuildRelationship(UserEntity entity, Team aTeam, string sportName)
+        private UserTeam BuildRelationship(UserEntity entity, Team aTeam)
         {
             TeamEntity teamEntity = teamConverter.ToEntity(aTeam);
             UserTeam relationship = new UserTeam
