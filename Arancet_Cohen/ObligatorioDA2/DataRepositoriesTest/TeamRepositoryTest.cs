@@ -129,8 +129,8 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(TeamNotFoundException))]
         public void ModifyNotExistentTest() {
             Mock<Team> team = new Mock<Team>(1,"DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
-            teamsStorage.Add(team.Object);
-            SetUpRepository();
+            //teamsStorage.Add(team.Object);
+            //SetUpRepository();
             teamsStorage.Modify(team.Object);
         }
 
@@ -191,7 +191,8 @@ namespace DataRepositoriesTest
                 fake.AddFavourite(created);
             }       
             userRepository.Add(fake);
-            ICollection<Team> followedTeams = teamsStorage.GetFollowedTeams(fake.UserName);
+            //ICollection<Team> followedTeams = teamsStorage.GetFollowedTeams(fake.UserName);
+            ICollection<Team> followedTeams=userRepository.Get(fake.UserName).GetFavouriteTeams();
             Assert.AreEqual(followedTeams.Count, 3);
         }
 
