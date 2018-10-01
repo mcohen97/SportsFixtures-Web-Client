@@ -1,27 +1,20 @@
 using BusinessLogic;
 using System.Collections.Generic;
+using RepositoryInterface;
 
 namespace DataRepositoryInterfaces
 {
-    public interface ITeamRepository
+    public interface ITeamRepository : IRepository<Team, int>
     {
-        bool IsEmpty();
-
-        void Clear();
-
         Team Get(string sportName, string teamName);
-
-        void Delete(string sportName, string teamName);
 
         bool Exists(string sportName, string teamName);
 
-        void Add( Team aTeam);
-
-        void Modify( Team aTeam);
-
-        ICollection<Team> GetAll();
+        void Delete(string sportName, string teamName);
 
         ICollection<Team> GetFollowedTeams(string username);
+
+        ICollection<Team> GetTeams(string sportName);
     }
 
 }
