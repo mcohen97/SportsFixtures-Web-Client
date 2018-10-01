@@ -70,7 +70,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             foreach(Team team in teamsCollection)
             {
-                teamStorage.Add(sport.Name, team);
+                teamStorage.Add(team);
             }
         }
 
