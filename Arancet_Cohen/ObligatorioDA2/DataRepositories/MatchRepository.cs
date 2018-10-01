@@ -26,25 +26,25 @@ namespace DataRepositories
         }
 
 
-        public int Add(Match aMatch)
+        public Match Add(Match aMatch)
         {
-            int id = 0;
+            Match added;
             if (!Exists(aMatch.Id))
             {
-                id = TryAdd(aMatch);
+                added = TryAdd(aMatch);
             }
             else {
                 throw new MatchAlreadyExistsException();
             }
-            return id;
+            return added;
         }
 
-        private int TryAdd(Match aMatch)
+        private Match TryAdd(Match aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
             context.SaveChanges();
-            return toAdd.Id;
+            return matchConverter.ToMatch(toAdd);
         }
 
         public void Clear()
