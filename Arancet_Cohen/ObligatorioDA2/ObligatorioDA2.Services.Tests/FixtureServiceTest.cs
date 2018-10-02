@@ -30,6 +30,7 @@ namespace ObligatorioDA2.Services.Tests
         private DateTime initialDate;
         private IMatchRepository matchStorage;
         private ITeamRepository teamStorage;
+        private ISportRepository sportStorage;
         private FixtureService fixtureService;
 
         [TestInitialize]
@@ -53,7 +54,7 @@ namespace ObligatorioDA2.Services.Tests
             SetUpRepository();
             matchStorage.Clear();
             teamStorage.Clear();
-            fixtureService = new FixtureService(matchStorage, teamStorage);
+            fixtureService = new FixtureService(matchStorage, teamStorage,sportStorage);
         }
 
         private void SetUpRepository()
@@ -64,6 +65,7 @@ namespace ObligatorioDA2.Services.Tests
             DatabaseConnection context = new DatabaseConnection(options);
             matchStorage = new MatchRepository(context);
             teamStorage = new TeamRepository(context);
+            sportStorage = new SportRepository(context);
         }
 
         private void AddTeamsToRepo()
