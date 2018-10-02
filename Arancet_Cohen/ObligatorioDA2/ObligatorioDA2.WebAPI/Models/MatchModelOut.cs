@@ -8,12 +8,11 @@ namespace ObligatorioDA2.WebAPI.Models
 {
     public class MatchModelOut
     {
-        [Required]
+        public int Id { get; set; }
         public string SportName { get; set; }
-        [Required]
         public int HomeTeamId { get; set; }
-        [Required]
         public int AwayTeamId { get; set; }
+
 
         public ICollection<int> CommentsIds { get; set; } 
 

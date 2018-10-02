@@ -7,7 +7,6 @@ namespace ObligatorioDA2.WebAPI.Models
 {
     public class SportModelOut
     {
-        public int Id { get; set; }
         public string Name { get; set; }
     }
 }
