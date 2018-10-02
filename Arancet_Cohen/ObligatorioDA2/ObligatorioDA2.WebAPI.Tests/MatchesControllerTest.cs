@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
 using DataRepositoryInterfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
@@ -33,6 +34,24 @@ namespace ObligatorioDA2.WebAPI.Tests
             return built;
         }
 
+        [TestMethod]
+        public void GetTest()
+        {
+            //Arrange.
+            matchService.Setup(s => s.GetAllMatches()).Returns(new List<Match>() { testMatch });
+
+            //Act.
+            IActionResult result =controller.Get();
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<MatchModelOut> matches = okResult.Value as ICollection<MatchModelOut>;
+
+            //Check.
+            matchService.Verify(s => s.GetAllMatches(), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(matches);
+            Assert.AreEqual(matches.Count, 1);
+        }
     }
    
 }
