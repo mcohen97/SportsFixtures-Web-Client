@@ -104,7 +104,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateMatchSameDayForTeamTest() {
             //Arrange.
-            matchService.Setup(ms => ms.AddMatch(testMatch)).Throws(new TeamAlreadyHasMatchException());
+            Exception toThrow = new TeamAlreadyHasMatchException();
+            matchService.Setup(ms => ms.AddMatch(testMatch)).Throws(toThrow);
             MatchModelIn input = BuildMatchModelIn(testMatch);
 
             //Act.
@@ -117,6 +118,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage,toThrow.Message);
         }
 
     }
