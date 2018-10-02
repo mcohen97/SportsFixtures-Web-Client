@@ -40,10 +40,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             sports.Add(toAdd);
             SportModelOut modelOut = new SportModelOut()
             {
-                Id = 1,
                 Name = toAdd.Name
             };
-            IActionResult result = CreatedAtRoute("GetById", new { id = modelOut.Id }, modelOut);
+            IActionResult result = CreatedAtRoute("GetById", modelOut);
             return result;
         }
 
@@ -102,7 +101,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok();
         }
 
-        // PUT api/values/5
         [HttpPut("{name}")]
         public IActionResult Put(string name, [FromBody] SportModelIn modelIn)
         {
@@ -136,7 +134,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 sports.Add(toAdd);
                 SportModelOut modelOut = new SportModelOut() { Name = toAdd.Name };
-                result = CreatedAtRoute("GetById", new { id = modelOut.Id }, modelOut);
+                result = CreatedAtRoute("GetById", modelOut);
             }
             return result;
         }
