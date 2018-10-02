@@ -7,6 +7,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
+using BusinessLogic.Exceptions;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -166,11 +167,10 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TeamNotFoundException))]
+        [ExpectedException(typeof(TeamNotFollowedException))]
         public void UnfollowNotFollowedTeamTest() 
         {
             Team fake = GetFakeTeam();
-            testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
             service.UnFollowTeam(testUser.UserName, fake);
@@ -178,16 +178,18 @@ namespace ObligatorioDA2.Services.Tests
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Once);
 
-            Assert.AreEqual(testUser.GetFavouriteTeams().Count, 1);
+            Assert.AreEqual(0, testUser.GetFavouriteTeams().Count);
         }
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void UnfollowNotFoundUserTest() {
             Team fake = GetFakeTeam();
+            users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
             testUser.AddFavourite(fake);
 
-            users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
+            service.UnFollowTeam(testUser.UserName,fake);
+
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Never);
         }
