@@ -3,6 +3,8 @@ using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ObligatorioDA2.WebAPI.Controllers;
+using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -41,7 +43,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             matchService.Setup(s => s.GetAllMatches()).Returns(new List<Match>() { testMatch });
 
             //Act.
-            IActionResult result =controller.Get();
+            IActionResult result = controller.Get();
             OkObjectResult okResult = result as OkObjectResult;
             ICollection<MatchModelOut> matches = okResult.Value as ICollection<MatchModelOut>;
 
