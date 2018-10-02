@@ -122,6 +122,16 @@ namespace BusinessLogic
             favourites.Add(team);
         }
 
+        public bool HasFavouriteTeam(Team aTeam)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveFavouriteTeam(Team aTeam)
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Equals(object obj)
         {
             bool areEqual;
@@ -136,6 +146,7 @@ namespace BusinessLogic
             }
             return areEqual;
         }
+
 
     }
 }
