@@ -58,14 +58,16 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void CreateValidMatchTest() {
-            matchService.Setup(ms => ms.AddMatch(testMatch)).Returns(testMatch);
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testMatch);
             MatchModelIn input = BuildMatchModelIn(testMatch);
 
             IActionResult result = controller.Post(input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             MatchModelOut created = createdResult.Value as MatchModelOut;
 
-            matchService.Verify(ms => ms.AddMatch(testMatch), Times.Once);
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -105,7 +107,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateMatchSameDayForTeamTest() {
             //Arrange.
             Exception toThrow = new TeamAlreadyHasMatchException();
-            matchService.Setup(ms => ms.AddMatch(testMatch)).Throws(toThrow);
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>())).Throws(toThrow);
             MatchModelIn input = BuildMatchModelIn(testMatch);
 
             //Act.
