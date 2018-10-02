@@ -12,6 +12,7 @@ using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using ObligatorioDA2.Services.Interfaces;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -20,13 +21,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class UsersController : ControllerBase
     {
         IUserRepository users;
-        ITeamRepository teams;
+        IUserService service;
         UserFactory factory;
 
 
-        public UsersController(IUserRepository usersRepo, ITeamRepository teamsRepo) {
+        public UsersController(IUserRepository usersRepo, IUserService aService) {
             users = usersRepo;
-            teams = teamsRepo;
+            service = aService;
             factory = new UserFactory();
         }
 
@@ -55,6 +56,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Email = queried.Email
             };
             return toReturn;
+        }
+
+        [HttpPost, Route("teams")]
+        [Authorize]
+        public IActionResult FollowTeam([FromBody] TeamModelIn aTeam) {
+           string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+            Team toFollow = new Team(aTeam.Id, aTeam.Name, aTeam.Photo, new Sport(aTeam.SportName));
+            service.FollowTeam(username,toFollow);
+            return Ok();
         }
 
         [HttpPost]
