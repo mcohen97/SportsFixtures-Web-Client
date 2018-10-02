@@ -218,7 +218,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void DoesNotHaveTeamTest() {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
-            Assert.IsTrue(toTest.HasFavouriteTeam(aTeam));
+            Assert.IsFalse(toTest.HasFavouriteTeam(aTeam));
         }
 
         [TestMethod]
