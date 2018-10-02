@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -35,10 +36,47 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(output);
         }
 
+        [HttpPost]
+        public IActionResult Post([FromBody] MatchModelIn input)
+        {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = TryPostMatch(input);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult TryPostMatch(MatchModelIn input)
+        {
+            IActionResult result;
+            try
+            {
+                Match added = matchService.AddMatch(input.HomeTeamId, input.AwayTeamId, input.SportName, input.Date);
+                MatchModelOut output =BuildModelOut(added);
+                result = CreatedAtRoute("GetMatchById", output);
+            }
+            catch (EntityNotFoundException e) {
+                result = CreateErrorMessage(e);
+            }
+            catch (TeamAlreadyHasMatchException e) {
+                result = CreateErrorMessage(e);
+            }
+            return result;
+        }
+
+        private IActionResult CreateErrorMessage(Exception e) {
+            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
+            IActionResult errorResult = BadRequest(error);
+            return errorResult;
+        }
+
         private MatchModelOut BuildModelOut(Match aMatch)
         {
-
-            return new MatchModelOut()
+           return new MatchModelOut()
             {
                 SportName = aMatch.Sport.Name,
                 AwayTeamId = aMatch.AwayTeam.Id,
