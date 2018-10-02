@@ -68,7 +68,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
-                Team toAdd = new Team(1,team.Name, team.Photo, new Sport(team.SportName));
+                Team toAdd = new Team(team.Name, team.Photo, new Sport(team.SportName));
 
                 teams.Add(toAdd);
 
