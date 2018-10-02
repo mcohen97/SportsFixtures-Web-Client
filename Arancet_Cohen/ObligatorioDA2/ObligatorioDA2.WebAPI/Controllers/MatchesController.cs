@@ -30,8 +30,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            throw new NotImplementedException();
+            ICollection<Match> matches = matchService.GetAllMatches();
+            ICollection<MatchModelOut> output = matches.Select(m => BuildModelOut(m)).ToList();
+            return Ok(output);
         }
 
+        private MatchModelOut BuildModelOut(Match aMatch)
+        {
+
+            return new MatchModelOut()
+            {
+                SportName = aMatch.Sport.Name,
+                AwayTeamId = aMatch.AwayTeam.Id,
+                HomeTeamId = aMatch.HomeTeam.Id,
+                CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
+            };
+        }
     }
 }
