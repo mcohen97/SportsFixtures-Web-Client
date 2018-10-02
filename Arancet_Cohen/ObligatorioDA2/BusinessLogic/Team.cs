@@ -68,7 +68,7 @@ namespace BusinessLogic
                 return false;
 
             var team = obj as Team;
-            return Name == team.Name;
+            return Sport.Equals(team.Sport) && Name.Equals(team.Name);
         }
 
         public override int GetHashCode()
