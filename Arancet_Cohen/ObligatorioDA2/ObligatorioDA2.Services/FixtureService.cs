@@ -11,12 +11,14 @@ namespace ObligatorioDA2.Services
     {
         private MatchService matchService;
         private ITeamRepository teamStorage;
+        private ISportRepository sportsStorage;
         private FixtureGenerator fixtureAlgorithm;
 
-        public FixtureService(IMatchRepository matchStorage, ITeamRepository teamStorage)
+        public FixtureService(IMatchRepository matchStorage, ITeamRepository teamRepository,ISportRepository sportsRepository)
         {
-            this.matchService = new MatchService(matchStorage);
-            this.teamStorage = teamStorage;
+            matchService = new MatchService(matchStorage,teamRepository,sportsRepository);
+            sportsStorage = sportsRepository;
+            teamStorage = teamRepository;
             fixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
         }
 
