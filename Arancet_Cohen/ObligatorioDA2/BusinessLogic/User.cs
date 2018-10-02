@@ -1,5 +1,5 @@
 ﻿using System;
-using BusinessLogicExceptions;
+using BusinessLogic.Exceptions;
 using System.Net.Mail;
 using System.Collections.Generic;
 
@@ -124,12 +124,18 @@ namespace BusinessLogic
 
         public bool HasFavouriteTeam(Team aTeam)
         {
-            throw new NotImplementedException();
+            return favourites.Contains(aTeam);
         }
 
         public void RemoveFavouriteTeam(Team aTeam)
         {
-            throw new NotImplementedException();
+            if (favourites.Contains(aTeam))
+            {
+                favourites.Remove(aTeam);
+            }
+            else {
+                throw new TeamNotFollowedException();
+            }
         }
 
         public override bool Equals(object obj)
