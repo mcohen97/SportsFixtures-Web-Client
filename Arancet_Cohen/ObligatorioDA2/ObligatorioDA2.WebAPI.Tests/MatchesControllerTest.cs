@@ -3,6 +3,7 @@ using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
@@ -33,7 +34,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Sport played = new Sport("Football");
             Team home = new Team("Patriots", "aPhoto", played);
             Team away = new Team("Falcons", "aPhoto", played);
-            Match built = new Match(home, away, DateTime.Now, played);
+            Match built = new Match(1,home, away, DateTime.Now, played);
             return built;
         }
 
@@ -122,6 +123,43 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage,toThrow.Message);
+        }
+
+        [TestMethod]
+        public void GetMatchTest() {
+            //Arrange.
+            matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Returns(testMatch);
+
+            //Act.
+            IActionResult result =controller.Get(1);
+            OkObjectResult foundResult = result as OkObjectResult;
+            MatchModelOut match = foundResult.Value as MatchModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(foundResult);
+            Assert.AreEqual(200, foundResult.StatusCode);
+            Assert.IsNotNull(match);
+            Assert.AreEqual(1, match.Id);
+        }
+
+        [TestMethod]
+        public void GetNotExistingMatchTest() {
+            //Arrange.
+            Exception toThrow = new MatchNotFoundException();
+            matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Get(1);
+            BadRequestObjectResult notFoundresult = result as BadRequestObjectResult;
+            ErrorModelOut error = notFoundresult.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFoundresult);
+            Assert.AreEqual(400, notFoundresult.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
 
     }
