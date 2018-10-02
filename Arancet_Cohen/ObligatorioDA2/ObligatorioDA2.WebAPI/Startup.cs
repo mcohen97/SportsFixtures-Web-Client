@@ -21,6 +21,7 @@ using System.Text;
 using DataRepositoryInterfaces;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Services.Interfaces;
 
 namespace ObligatorioDA2.WebAPI
 {
@@ -58,6 +59,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ITeamRepository ,TeamRepository>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ISportRepository, SportRepository>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
