@@ -8,7 +8,7 @@ using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.Services
 {
-    public class MatchService
+    public class MatchService: IMatchService
     {
         private IMatchRepository matchesStorage;
 
