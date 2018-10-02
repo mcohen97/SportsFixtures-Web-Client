@@ -6,6 +6,7 @@ using DataAccess;
 using DataRepositories;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Services;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -33,7 +34,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             repo = new UserRepository(new DatabaseConnection(options));
             
-            controller = new UsersController(repo, new TeamRepository(new DatabaseConnection(options)));
+            controller = new UsersController(repo, new UserService(repo));
         }
 
         [TestMethod]
