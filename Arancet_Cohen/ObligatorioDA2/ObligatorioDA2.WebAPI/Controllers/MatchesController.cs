@@ -84,5 +84,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
             };
         }
+
+        public IActionResult Get(int MatchId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
