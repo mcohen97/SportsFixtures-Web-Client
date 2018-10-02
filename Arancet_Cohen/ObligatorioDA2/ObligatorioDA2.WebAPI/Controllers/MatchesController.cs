@@ -68,16 +68,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult CreateErrorMessage(Exception e) {
-            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
-            IActionResult errorResult = BadRequest(error);
-            return errorResult;
-        }
-
         private MatchModelOut BuildModelOut(Match aMatch)
         {
            return new MatchModelOut()
             {
+                Id =aMatch.Id,
                 SportName = aMatch.Sport.Name,
                 AwayTeamId = aMatch.AwayTeam.Id,
                 HomeTeamId = aMatch.HomeTeam.Id,
@@ -85,9 +80,33 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
-        public IActionResult Get(int MatchId)
+        [HttpGet("{matchId}")]
+        public IActionResult Get(int matchId)
         {
-            throw new NotImplementedException();
+            IActionResult result;
+            try
+            {
+                result = TryGetMatch(matchId);
+            }
+            catch(MatchNotFoundException e) {
+                result = CreateErrorMessage(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryGetMatch(int matchId)
+        {
+            Match stored = matchService.GetMatch(matchId);
+            MatchModelOut modelOut = BuildModelOut(stored);
+            IActionResult result = Ok(modelOut);
+            return result;
+        }
+
+        private IActionResult CreateErrorMessage(Exception e)
+        {
+            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
+            IActionResult errorResult = BadRequest(error);
+            return errorResult;
         }
     }
 }
