@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -13,7 +14,6 @@ namespace ObligatorioDA2.Services.Tests
     public class UserServiceTest
     {
         private Mock<IUserRepository> users;
-        private Mock<ITeamRepository> teams;
         private IUserService service;
         private User testUser;
         private Team toFollow;
@@ -21,8 +21,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestInitialize]
         public void SetUp() {
             users = new Mock<IUserRepository>();
-            teams = new Mock<ITeamRepository>();
-            service = new UserService(users.Object, teams.Object);
+            service = new UserService(users.Object);
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
@@ -138,7 +137,6 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetUserTeamsTest() {
             Team fake = GetFakeTeam();
-            //teams.Setup(r => r.GetFollowedTeams(testUser.UserName)).Returns(new List<Team>() { fake });
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
@@ -152,6 +150,46 @@ namespace ObligatorioDA2.Services.Tests
         public void GetNotExistentUserTeams() {
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
             ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
+        }
+
+        [TestMethod]
+        public void UnfollowTeamTest() {
+            Team fake = GetFakeTeam();
+            testUser.AddFavourite(fake);
+            users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
+
+            service.UnFollowTeam(testUser.UserName, fake);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Once);
+            Assert.IsFalse(testUser.GetFavouriteTeams().Any());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void UnfollowNotFollowedTeamTest() 
+        {
+            Team fake = GetFakeTeam();
+            testUser.AddFavourite(fake);
+            users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
+
+            service.UnFollowTeam(testUser.UserName, fake);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Once);
+
+            Assert.AreEqual(testUser.GetFavouriteTeams().Count, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void UnfollowNotFoundUserTest() {
+            Team fake = GetFakeTeam();
+            testUser.AddFavourite(fake);
+
+            users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Never);
         }
 
     }
