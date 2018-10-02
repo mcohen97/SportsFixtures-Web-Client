@@ -110,6 +110,13 @@ namespace BusinessLogicTest
             Assert.AreNotEqual(aTeam, differentTeam);
         }
 
+        [TestMethod]
+        public void NotEqualsDifferentSport() {
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
+            Team differentTeam = new Team(2, "TeamA", "", new Sport("anotherSport"));
+            Assert.AreNotEqual(aTeam, differentTeam);
+        }
+
         //Exceptions
 
         [TestMethod]
