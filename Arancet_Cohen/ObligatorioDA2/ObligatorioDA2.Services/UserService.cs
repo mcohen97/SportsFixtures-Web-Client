@@ -11,7 +11,7 @@ namespace ObligatorioDA2.Services
     {
         private IUserRepository usersStorage;
 
-        public UserService(IUserRepository repository, ITeamRepository @object) {
+        public UserService(IUserRepository repository) {
             usersStorage = repository;
         }
 
@@ -42,10 +42,19 @@ namespace ObligatorioDA2.Services
             usersStorage.Modify(follower);
         }
 
+        public void UnFollowTeam(string username, Team fake)
+        {
+            User follower = usersStorage.Get(username);
+            follower.RemoveFavouriteTeam(fake);
+            usersStorage.Modify(follower);
+        }
+
         public ICollection<Team> GetUserTeams(string userName)
         {
             User fetched = usersStorage.Get(userName);
             return fetched.GetFavouriteTeams();
         }
+
+
     }
 }
