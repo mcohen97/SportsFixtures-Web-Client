@@ -208,5 +208,32 @@ namespace BusinessLogicTest
             Assert.AreEqual(toTest.GetFavouriteTeams().Count, 1);
         }
 
+        [TestMethod]
+        public void HasTeamTest() {
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            toTest.AddFavourite(aTeam);
+            Assert.IsTrue(toTest.HasFavouriteTeam(aTeam));
+        }
+
+        [TestMethod]
+        public void DoesNotHaveTeamTest() {
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            Assert.IsTrue(toTest.HasFavouriteTeam(aTeam));
+        }
+
+        [TestMethod]
+        public void RemoveTeamTest() {
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            toTest.AddFavourite(aTeam);
+            toTest.RemoveFavouriteTeam(aTeam);
+            Assert.IsFalse(toTest.HasFavouriteTeam(aTeam));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFollowedException))]
+        public void RemoveNotExistentTest() {
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            toTest.RemoveFavouriteTeam(aTeam);
+        }
     }
 }
