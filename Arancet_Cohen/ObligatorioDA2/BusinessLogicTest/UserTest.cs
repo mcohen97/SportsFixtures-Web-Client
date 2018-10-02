@@ -2,7 +2,7 @@
 using BusinessLogicTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
-using BusinessLogicExceptions;
+using BusinessLogic.Exceptions;
 using Moq;
 using System.Reflection;
 
