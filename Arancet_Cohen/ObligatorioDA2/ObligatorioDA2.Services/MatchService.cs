@@ -11,10 +11,14 @@ namespace ObligatorioDA2.Services
     public class MatchService: IMatchService
     {
         private IMatchRepository matchesStorage;
+        private ITeamRepository teamsStorage;
+        private ISportRepository sportsStorage;
 
-        public MatchService(IMatchRepository matchsRepository)
+        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository)
         {
             matchesStorage = matchsRepository;
+            teamsStorage = teamsRepository;
+            sportsStorage = sportsRepository;
         }
 
         public Match AddMatch(Match aMatch)
@@ -74,6 +78,15 @@ namespace ObligatorioDA2.Services
         public bool Exists(int id)
         {
             return matchesStorage.Exists(id);
+        }
+
+        public Match AddMatch(int homeTeamId, int awayTeamId ,string sportName,DateTime date)
+        {
+            Team home = teamsStorage.Get(homeTeamId);
+            Team away = teamsStorage.Get(awayTeamId);
+            Sport played = sportsStorage.Get(sportName);
+            Match toAdd = new Match(home, away, date,played);
+            return AddMatch(toAdd);
         }
     }
 }

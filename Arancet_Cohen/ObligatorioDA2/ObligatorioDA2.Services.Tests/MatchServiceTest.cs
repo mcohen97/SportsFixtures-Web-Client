@@ -18,6 +18,8 @@ namespace ObligatorioDA2.Services.Tests
     {
         private MatchService serviceToTest;
         private IMatchRepository repoDouble;
+        private ISportRepository sportsDouble;
+        private ITeamRepository teamsDouble;
         private Sport sport;
         private Team teamA;
         private Team teamB;
@@ -37,6 +39,8 @@ namespace ObligatorioDA2.Services.Tests
             matchBvsC = new Match(3, teamB, teamC, DateTime.Now.AddDays(3), sport);
             SetUpRepository();
             repoDouble.Clear();
+            sportsDouble.Clear();
+            teamsDouble.Clear();
         }
 
         private void SetUpRepository() {
@@ -46,20 +50,44 @@ namespace ObligatorioDA2.Services.Tests
                .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             repoDouble = new MatchRepository(context);
-            serviceToTest = new MatchService(repoDouble);
+            sportsDouble = new SportRepository(context);
+            teamsDouble = new TeamRepository(context);
+            serviceToTest = new MatchService(repoDouble,teamsDouble, sportsDouble);
         }
 
         [TestMethod]
-        public void AddMatchTest() {
+        public void AddMatchTest()
+        {
             serviceToTest.AddMatch(matchAvsB);
             Assert.AreEqual(serviceToTest.GetAllMatches().Count, 1);
         }
 
         [TestMethod]
         [ExpectedException(typeof(MatchAlreadyExistsException))]
-        public void AddAlreadyExistentTest() {
+        public void AddAlreadyExistentTest()
+        {
             serviceToTest.AddMatch(matchAvsB);
             Match sameMatch = new Mock<Match>(1, teamA, teamB, matchAvsB.Date.AddDays(1), sport).Object;
+            serviceToTest.AddMatch(sameMatch);
+        }
+
+        [TestMethod]
+        public void AddMatchGivingIdsTest() {
+            sportsDouble.Add(sport);
+            teamsDouble.Add(teamA);
+            teamsDouble.Add(teamB);
+            serviceToTest.AddMatch(matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id,matchAvsB.Sport.Name,matchAvsB.Date);
+            Assert.AreEqual(serviceToTest.GetAllMatches().Count, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(MatchAlreadyExistsException))]
+        public void AddGivingIdsAlreadyExistentTest() {
+            sportsDouble.Add(sport);
+            teamsDouble.Add(teamA);
+            teamsDouble.Add(teamB);
+            Match added =serviceToTest.AddMatch(matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id, matchAvsB.Sport.Name, matchAvsB.Date);
+            Match sameMatch = new Mock<Match>(added.Id, teamA, teamB, matchAvsB.Date.AddDays(1), sport).Object;
             serviceToTest.AddMatch(sameMatch);
         }
 

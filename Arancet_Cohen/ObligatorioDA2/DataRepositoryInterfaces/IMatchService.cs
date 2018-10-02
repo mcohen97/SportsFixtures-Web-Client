@@ -9,6 +9,8 @@ namespace DataRepositoryInterfaces
     {
         Match AddMatch(Match aMatch);
 
+        Match AddMatch(int homeTeamId, int awayTeamId, string sportName, DateTime date);
+
         ICollection<Match> GetAllMatches();
 
         Match GetMatch(int anId);
