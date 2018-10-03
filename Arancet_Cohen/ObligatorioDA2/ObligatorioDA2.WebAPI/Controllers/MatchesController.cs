@@ -102,12 +102,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult CreateErrorMessage(Exception e)
-        {
-            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
-            IActionResult errorResult = BadRequest(error);
-            return errorResult;
-        }
 
         public IActionResult Put(int id, MatchModelIn aMatch)
         {
@@ -145,6 +139,32 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = CreatedAtRoute("GetMatchById", output);
             }
             return result;
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            IActionResult result;
+            try {
+                result =TryToDelete(id);
+            }
+            catch (MatchNotFoundException e) {
+                result = CreateErrorMessage(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryToDelete(int id)
+        {
+            matchService.DeleteMatch(id);
+            return Ok();
+        }
+
+        private IActionResult CreateErrorMessage(Exception e)
+        {
+            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
+            IActionResult errorResult = BadRequest(error);
+            return errorResult;
         }
     }
 }
