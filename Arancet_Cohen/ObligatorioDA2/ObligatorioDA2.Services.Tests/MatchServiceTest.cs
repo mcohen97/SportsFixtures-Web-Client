@@ -148,6 +148,28 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        public void ModifyGivingIdsTest() {
+            serviceToTest.AddMatch(matchAvsB);
+            Match modifiedAvsB = new Match(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport);
+            serviceToTest.ModifyMatch(modifiedAvsB.Id, teamB.Id, teamA.Id, modifiedAvsB.Date, sport.Name);
+            Match stored = serviceToTest.GetMatch(matchAvsB.Id);
+            Assert.AreEqual(modifiedAvsB.Date, stored.Date);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(MatchNotFoundException))]
+        public void ModifyNoMatchWithIdTest() {
+            serviceToTest.AddMatch(matchAvsB);     
+            serviceToTest.ModifyMatch(matchAvsB.Id, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void ModifyNoTeamWithIdTest() {
+
+        }
+
+        [TestMethod]
         public void GetAllMatchesTest() {
             serviceToTest.AddMatch(matchAvsC);
             serviceToTest.AddMatch(matchAvsB);
