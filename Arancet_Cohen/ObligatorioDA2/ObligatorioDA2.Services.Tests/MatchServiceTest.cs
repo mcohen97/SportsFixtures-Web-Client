@@ -227,7 +227,31 @@ namespace ObligatorioDA2.Services.Tests
 
         }
 
+        [TestMethod]
+        public void CommentOnMatchTest() {
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
+            User commentarist = new User(identity, true);
+            Match added =repoDouble.Add(matchAvsB);
+            serviceToTest.CommentOnMatch(matchAvsB, new Commentary("This is a comment", commentarist));
+            Match stored = repoDouble.Get(added.Id);
+            Assert.AreEqual(stored.GetAllCommentaries().Count, 1);
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(MatchNotFoundException))]
+        public void CommentOnMatchNotFoundTest() {
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
+            User commentarist = new User(identity, true);
+            serviceToTest.CommentOnMatch(matchAvsB, new Commentary("This is a comment", commentarist));
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(CommentAlreadyExistsExcepton))]
+        public void CommentAlreadyExistsTest() {
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
+            User commentarist = new User(identity, true);
+            serviceToTest.CommentOnMatch(matchAvsB, new Commentary(1,"This is a comment", commentarist));
+            serviceToTest.CommentOnMatch(matchAvsB, new Commentary(1,"This is another comment", commentarist));
+        }
     }
 }
