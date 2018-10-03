@@ -96,8 +96,7 @@ namespace ObligatorioDA2.Services.Tests
             sportsDouble.Add(sport);
             teamsDouble.Add(teamA);
             teamsDouble.Add(teamB);
-            serviceToTest.AddMatch(3,matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id, matchAvsB.Sport.Name, matchAvsB.Date);
-            Match stored = serviceToTest.GetMatch(3);
+            Match stored = serviceToTest.AddMatch(3,matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id, matchAvsB.Sport.Name, matchAvsB.Date);
             Assert.AreEqual(stored.Date, matchAvsB.Date);
         }
 
