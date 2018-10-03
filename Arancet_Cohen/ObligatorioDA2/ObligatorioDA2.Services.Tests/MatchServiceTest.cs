@@ -232,6 +232,7 @@ namespace ObligatorioDA2.Services.Tests
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
             Match added =repoDouble.Add(matchAvsB);
+            SetUpRepository();
             serviceToTest.CommentOnMatch(matchAvsB, new Commentary("This is a comment", commentarist));
             Match stored = repoDouble.Get(added.Id);
             Assert.AreEqual(stored.GetAllCommentaries().Count, 1);
@@ -246,10 +247,12 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(CommentAlreadyExistsExcepton))]
+        [ExpectedException(typeof(CommentAlreadyExistsException))]
         public void CommentAlreadyExistsTest() {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
+            Match added = repoDouble.Add(matchAvsB);
+            SetUpRepository();
             serviceToTest.CommentOnMatch(matchAvsB, new Commentary(1,"This is a comment", commentarist));
             serviceToTest.CommentOnMatch(matchAvsB, new Commentary(1,"This is another comment", commentarist));
         }
