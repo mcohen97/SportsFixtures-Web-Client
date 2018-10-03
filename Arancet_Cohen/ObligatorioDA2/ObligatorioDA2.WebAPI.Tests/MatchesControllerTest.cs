@@ -238,6 +238,37 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, badRequest.StatusCode);
         }
 
+        [TestMethod]
+        public void DeleteTest() {
+            //Act.
+            IActionResult result =controller.Delete(3);
+            OkResult okResult = result as OkResult;
+
+            //Assert.
+            matchService.Verify(ms => ms.DeleteMatch(3), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+        }
+
+        [TestMethod]
+        public void DeleteNotExistentTest() {
+            //Arrange.
+            Exception toThrow = new MatchNotFoundException();
+            matchService.Setup(ms => ms.DeleteMatch(3)).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Delete(3);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.AreEqual(error.ErrorMessage,toThrow.Message);
+        }
+
     }
    
 }
