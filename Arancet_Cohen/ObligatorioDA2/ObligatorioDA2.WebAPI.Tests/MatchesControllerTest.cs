@@ -173,8 +173,11 @@ namespace ObligatorioDA2.WebAPI.Tests
             MatchModelOut modified = okResult.Value as MatchModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<Match>()), Times.Once);
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<Match>()), Times.Never);
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<DateTime>(), It.IsAny<string>()), Times.Once);
+
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>()), Times.Never);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
@@ -185,20 +188,29 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void PutAdd() {
             //Arrange.
-            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<Match>())).Throws(new MatchNotFoundException());
+            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<DateTime>(),It.IsAny<string>())).Throws(new MatchNotFoundException());
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testMatch);
+
             MatchModelIn input = BuildMatchModelIn(testMatch);
 
             //Act.
             IActionResult result = controller.Put(1, input);
-            OkObjectResult okResult = result as OkObjectResult;
-            MatchModelOut modified = okResult.Value as MatchModelOut;
+            CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
+            MatchModelOut modified = createdResult.Value as MatchModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<Match>()), Times.Once);
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<Match>()), Times.Once);
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<DateTime>(), It.IsAny<string>()), Times.Once);
+
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
             Assert.IsNotNull(result);
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.AreEqual("GetMatchById", createdResult.RouteName);
             Assert.IsNotNull(modified);
             Assert.AreEqual(modified.Id, testMatch.Id);
         }
@@ -215,11 +227,15 @@ namespace ObligatorioDA2.WebAPI.Tests
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
-            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<Match>()), Times.Never);
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<Match>()), Times.Never);
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<DateTime>(), It.IsAny<string>()), Times.Never);
+
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>()), Times.Never);
+
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400, badRequest.Value);
+            Assert.AreEqual(400, badRequest.StatusCode);
         }
 
     }
