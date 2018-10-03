@@ -92,6 +92,16 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        public void AddAssignedGivingIdsTest() {
+            sportsDouble.Add(sport);
+            teamsDouble.Add(teamA);
+            teamsDouble.Add(teamB);
+            serviceToTest.AddMatch(3,matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id, matchAvsB.Sport.Name, matchAvsB.Date);
+            Match stored = serviceToTest.GetMatch(3);
+            Assert.AreEqual(stored.Date, matchAvsB.Date);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void GetUnexistentMatchTest() {
             serviceToTest.GetMatch(9);
@@ -159,14 +169,14 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void ModifyNoMatchWithIdTest() {
-            serviceToTest.AddMatch(matchAvsB);     
-            serviceToTest.ModifyMatch(matchAvsB.Id, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
+            serviceToTest.ModifyMatch(5, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
         public void ModifyNoTeamWithIdTest() {
-
+            serviceToTest.AddMatch(matchAvsB);
+            serviceToTest.ModifyMatch(matchAvsB.Id, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
         }
 
         [TestMethod]
