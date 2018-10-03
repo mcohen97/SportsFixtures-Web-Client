@@ -5,6 +5,8 @@ using BusinessLogic;
 using DataRepositoryInterfaces;
 using System.Linq;
 using ObligatorioDA2.Services.Exceptions;
+using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.Services
 {
@@ -103,5 +105,16 @@ namespace ObligatorioDA2.Services
             ModifyMatch(toModify);
         }
 
+        public void CommentOnMatch(Match aMatch, Commentary aComment)
+        {
+            try
+            {
+                aMatch.AddCommentary(aComment);
+                ModifyMatch(aMatch);
+            }
+            catch (InvalidMatchDataExcpetion) {
+                throw new CommentAlreadyExistsException();
+            }
+        }
     }
 }
