@@ -108,5 +108,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult errorResult = BadRequest(error);
             return errorResult;
         }
+
+        public IActionResult Put(int id, MatchModelIn aMatch)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
