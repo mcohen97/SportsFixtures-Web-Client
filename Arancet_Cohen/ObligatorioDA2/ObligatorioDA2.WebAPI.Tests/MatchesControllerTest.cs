@@ -203,6 +203,25 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(modified.Id, testMatch.Id);
         }
 
+        [TestMethod]
+        public void PutNotValidTest() {
+            //Arrange.
+            MatchModelIn modelIn = new MatchModelIn() { };
+            //We need to force the error in de ModelState.
+            controller.ModelState.AddModelError("", "Error");
+
+            //Act.
+            IActionResult result = controller.Put(1, modelIn);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+
+            //Assert.
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<Match>()), Times.Never);
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<Match>()), Times.Never);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.Value);
+        }
+
     }
    
 }
