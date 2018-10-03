@@ -162,6 +162,47 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
 
+        [TestMethod]
+        public void PutModifyMatchTest() {
+            //Arrange.
+            MatchModelIn input = BuildMatchModelIn(testMatch);
+
+            //Act.
+            IActionResult result = controller.Put(1, input);
+            OkObjectResult okResult = result as OkObjectResult;
+            MatchModelOut modified = okResult.Value as MatchModelOut;
+
+            //Assert.
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<Match>()), Times.Once);
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<Match>()), Times.Never);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(modified);
+            Assert.AreEqual(modified.Id, testMatch.Id);
+        }
+
+        [TestMethod]
+        public void PutAdd() {
+            //Arrange.
+            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<Match>())).Throws(new MatchNotFoundException());
+            MatchModelIn input = BuildMatchModelIn(testMatch);
+
+            //Act.
+            IActionResult result = controller.Put(1, input);
+            OkObjectResult okResult = result as OkObjectResult;
+            MatchModelOut modified = okResult.Value as MatchModelOut;
+
+            //Assert.
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<Match>()), Times.Once);
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<Match>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(modified);
+            Assert.AreEqual(modified.Id, testMatch.Id);
+        }
+
     }
    
 }
