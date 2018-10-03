@@ -80,7 +80,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
-        [HttpGet("{matchId}")]
+        [HttpGet("{matchId}", Name = "GetMatchById")]
         public IActionResult Get(int matchId)
         {
             IActionResult result;
@@ -111,7 +111,40 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         public IActionResult Put(int id, MatchModelIn aMatch)
         {
-            throw new NotImplementedException();
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = TryPut(id, aMatch);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult TryPut(int id, MatchModelIn aMatch)
+        {
+            IActionResult result;
+            try {
+
+                matchService.ModifyMatch(id, aMatch.HomeTeamId,
+                     aMatch.AwayTeamId, aMatch.Date, aMatch.SportName);
+                MatchModelOut output = new MatchModelOut()
+                {
+                    Id = id,
+                    SportName = aMatch.SportName,
+                    HomeTeamId = aMatch.HomeTeamId,
+                    AwayTeamId = aMatch.AwayTeamId,
+                    Date = aMatch.Date
+                };
+                result = Ok(output);
+            } catch (EntityNotFoundException e) {
+                Match added = matchService.AddMatch(id, aMatch.HomeTeamId,
+                     aMatch.AwayTeamId, aMatch.SportName,aMatch.Date);
+                MatchModelOut output = BuildModelOut(added);
+                result = CreatedAtRoute("GetMatchById", output);
+            }
+            return result;
         }
     }
 }
