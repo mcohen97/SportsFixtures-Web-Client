@@ -82,11 +82,26 @@ namespace ObligatorioDA2.Services
 
         public Match AddMatch(int homeTeamId, int awayTeamId ,string sportName,DateTime date)
         {
+            return AddMatch(0, homeTeamId,awayTeamId,sportName,date);
+        }
+
+        public Match AddMatch(int idMatch, int homeTeamId, int awayTeamId, string sportName, DateTime date)
+        {
             Team home = teamsStorage.Get(homeTeamId);
             Team away = teamsStorage.Get(awayTeamId);
             Sport played = sportsStorage.Get(sportName);
-            Match toAdd = new Match(home, away, date,played);
+            Match toAdd = new Match(idMatch,home, away, date, played);
             return AddMatch(toAdd);
         }
+
+        public void ModifyMatch(int idMatch, int idHome, int idAway, DateTime date, string sportName)
+        {
+            Team home = teamsStorage.Get(idHome);
+            Team away = teamsStorage.Get(idAway);
+            Sport played = sportsStorage.Get(sportName);
+            Match toModify = new Match(idMatch, home, away, date, played);
+            ModifyMatch(toModify);
+        }
+
     }
 }

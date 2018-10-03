@@ -158,7 +158,11 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void ModifyGivingIdsTest() {
+            sportsDouble.Add(sport);
+            teamsDouble.Add(teamA);
+            teamsDouble.Add(teamB);
             serviceToTest.AddMatch(matchAvsB);
+            SetUpRepository();
             Match modifiedAvsB = new Match(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport);
             serviceToTest.ModifyMatch(modifiedAvsB.Id, teamB.Id, teamA.Id, modifiedAvsB.Date, sport.Name);
             Match stored = serviceToTest.GetMatch(matchAvsB.Id);
@@ -168,6 +172,10 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void ModifyNoMatchWithIdTest() {
+            sportsDouble.Add(sport);
+            teamsDouble.Add(teamA);
+            teamsDouble.Add(teamB);
+            teamsDouble.Add(teamC);
             serviceToTest.ModifyMatch(5, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
         }
 
