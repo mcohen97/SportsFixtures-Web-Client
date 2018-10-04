@@ -113,37 +113,32 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Put(string username, [FromBody] UserModelIn toModify)
         {
-            IActionResult toReturn;
+            IActionResult result;
             if (ModelState.IsValid)
             {
-                ModifyValidUser(username, toModify);
-                toReturn = Ok();
+                result =ModifyValidUser(username, toModify);
             }
             else {
-                toReturn = BadRequest(ModelState);
+                result = BadRequest(ModelState);
             }
-            return toReturn;
+            return result;
         }
 
-        private void ModifyValidUser(string id, UserModelIn toModify)
+        private IActionResult ModifyValidUser(string id, UserModelIn input)
         {
-            UserId identity = new UserId
-            {
-                Name = toModify.Name,
-                Surname = toModify.Surname,
-                UserName = toModify.Username,
-                Password = toModify.Password,
-                Email = toModify.Email
-            };
-            User converted = factory.CreateFollower(identity);
+            IActionResult result;
+            User toModify = BuildUser(input);
+            UserModelOut output = CreateModelOut(toModify);
             try
             {
-                service.ModifyUser(converted);
+                service.ModifyUser(toModify);
+                result = Ok(output);
             }
             catch(UserNotFoundException) {
-                service.AddUser(converted);
+                service.AddUser(toModify);
+                result = CreatedAtRoute("GetUserById", output);
             }
-
+            return result;
         }
 
         [HttpDelete("{username}")]
