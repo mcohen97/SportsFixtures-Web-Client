@@ -12,6 +12,8 @@ using System;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using System.Collections.Generic;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -75,7 +77,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void CreateValidUserTest()
-        {          
+        {
             //Act.
             IActionResult result = controller.Post(input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
@@ -89,7 +91,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual("GetUserById", createdResult.RouteName);
             Assert.AreEqual(modelOut.Username, input.Username);
         }
-      
+
         [TestMethod]
         public void CreateFailedUserTest()
         {
@@ -104,7 +106,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             controller.ModelState.AddModelError("", "Error");
 
             //Act.
-            IActionResult result = controller.Post(modelIn);            
+            IActionResult result = controller.Post(modelIn);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
@@ -115,7 +117,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void CreateAlreadyExistentUserTest() {
+        public void CreateAlreadyExistentUserTest()
+        {
             //Arrange.
             Exception toThrow = new UserAlreadyExistsException();
             service.Setup(us => us.AddUser(It.IsAny<User>())).Throws(toThrow);
@@ -149,7 +152,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             };
 
             //Act.
-            IActionResult result = controller.Put(modelIn.Username,modelIn);
+            IActionResult result = controller.Put(modelIn.Username, modelIn);
             OkObjectResult okResult = result as OkObjectResult;
             UserModelOut modified = okResult.Value as UserModelOut;
 
@@ -184,11 +187,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(added);
             Assert.AreEqual("GetUserById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual(modelIn.Username,added.Username);
+            Assert.AreEqual(modelIn.Username, added.Username);
         }
 
         [TestMethod]
-        public void PutBadFormatTest() {
+        public void PutBadFormatTest()
+        {
             var model = new UserModelIn()
             {
                 Surname = "surname1",
@@ -196,7 +200,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Email = "mail@domain.com"
             };
             controller.ModelState.AddModelError("", "Error");
-            IActionResult result =controller.Put("username", model);
+            IActionResult result = controller.Put("username", model);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequest);
         }
@@ -205,7 +209,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void DeleteTest()
         {
             //Act.
-            IActionResult result =controller.Delete("username");
+            IActionResult result = controller.Delete("username");
             OkResult deletedResult = result as OkResult;
 
             //Assert.
@@ -235,7 +239,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void GetAllTest() {
+        public void GetAllTest()
+        {
             //Arrange.
             ICollection<User> fakeList = new List<User>() { GetFakeUser(), GetFakeUser(), GetFakeUser() };
             service.Setup(us => us.GetAllUsers()).Returns(fakeList);
@@ -254,7 +259,48 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(fakeList.Count, list.Count);
         }
 
-        private User GetFakeUser() {
+        [TestMethod]
+        public void FollowTeamTest()
+        {
+            //Arrange.
+            controller.HttpContext.User = new GenericPrincipal(new GenericIdentity("username"), new string[0]);
+
+            //Act.
+            IActionResult result = controller.FollowTeam(3);
+            OkObjectResult okResult = result as OkObjectResult;
+            OkModelOut okMessage = okResult.Value as OkModelOut;
+
+            //Assert.
+            service.Verify(us => us.FollowTeam("usernamme", 3));
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200,okResult.StatusCode);
+            Assert.IsNotNull(okMessage);
+        }
+
+        [TestMethod]
+        public void FollowTeamNotExistentTest() {
+            //Arrange.
+            controller.HttpContext.User = new GenericPrincipal(new GenericIdentity("username"), new string[0]);
+            Exception toThrow = new TeamNotFoundException();
+            service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.FollowTeam(3);
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            service.Verify(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+        }
+
+        private User GetFakeUser()
+        {
             UserId identity = new UserId()
             {
                 Name = "name",
