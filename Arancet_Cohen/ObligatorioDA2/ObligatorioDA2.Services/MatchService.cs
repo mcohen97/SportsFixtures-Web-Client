@@ -17,11 +17,16 @@ namespace ObligatorioDA2.Services
         private ISportRepository sportsStorage;
         private IUserRepository usersStorage;
 
-        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository, IUserRepository usersRepository)
+        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository)
         {
             matchesStorage = matchsRepository;
             teamsStorage = teamsRepository;
             sportsStorage = sportsRepository;
+        }
+
+        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository, IUserRepository usersRepository)
+            : this(matchsRepository, teamsRepository, sportsRepository)
+        {
             usersStorage = usersRepository;
         }
 
