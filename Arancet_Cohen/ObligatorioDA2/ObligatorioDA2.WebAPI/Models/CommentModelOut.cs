@@ -11,6 +11,8 @@ namespace ObligatorioDA2.WebAPI.Models
 
         public string Text { get; set; }
 
-        public int MakerId { get; set; }
+        public string MakerUsername { get; set; }
+
+        public int MatchId { get; set; }
     }
 }
