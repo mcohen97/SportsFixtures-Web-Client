@@ -29,7 +29,6 @@ namespace DataRepositoryInterfaces
 
         bool Exists(int id);
 
-        void CommentOnMatch(Match aMatch, Commentary aComment);
         void CommentOnMatch(int matchId, string userName, string text);
 
     }

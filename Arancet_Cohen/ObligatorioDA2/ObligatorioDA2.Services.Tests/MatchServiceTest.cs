@@ -231,36 +231,6 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void CommentOnMatchTest() {
-            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
-            User commentarist = new User(identity, true);
-            Match added = repoRepo.Add(matchAvsB);
-            SetUpRepository();
-            serviceToTest.CommentOnMatch(matchAvsB, new Commentary("This is a comment", commentarist));
-            Match stored = repoRepo.Get(added.Id);
-            Assert.AreEqual(stored.GetAllCommentaries().Count, 1);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(MatchNotFoundException))]
-        public void CommentOnMatchNotFoundTest() {
-            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
-            User commentarist = new User(identity, true);
-            serviceToTest.CommentOnMatch(matchAvsB, new Commentary("This is a comment", commentarist));
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(CommentAlreadyExistsException))]
-        public void CommentAlreadyExistsTest() {
-            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
-            User commentarist = new User(identity, true);
-            Match added = repoRepo.Add(matchAvsB);
-            SetUpRepository();
-            serviceToTest.CommentOnMatch(matchAvsB, new Commentary(1, "This is a comment", commentarist));
-            serviceToTest.CommentOnMatch(matchAvsB, new Commentary(1, "This is another comment", commentarist));
-        }
-
-        [TestMethod]
         public void CommentOnMatchByIdsTest() {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
@@ -288,6 +258,5 @@ namespace ObligatorioDA2.Services.Tests
             Match added = repoRepo.Add(matchAvsB);
             serviceToTest.CommentOnMatch(added.Id, "usernae", "a Comment");
         }
-
     }
 }

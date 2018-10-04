@@ -112,24 +112,15 @@ namespace ObligatorioDA2.Services
             ModifyMatch(toModify);
         }
 
-        public void CommentOnMatch(Match aMatch, Commentary aComment)
-        {
-            try
-            {
-                aMatch.AddCommentary(aComment);
-                ModifyMatch(aMatch);
-            }
-            catch (InvalidMatchDataExcpetion) {
-                throw new CommentAlreadyExistsException();
-            }
-        }
 
-        public void CommentOnMatch(int matchId, string userName, string text)
+        public Commentary CommentOnMatch(int matchId, string userName, string text)
         {
-            Match match = matchesStorage.Get(matchId);
+            /*Match match = matchesStorage.Get(matchId);
             User commentarist = usersStorage.Get(userName);
             match.AddCommentary(new Commentary(text, commentarist));
-            ModifyMatch(match);
+            ModifyMatch(match);*/
+            User commentarist = usersStorage.Get(userName);
+            return matchesStorage.CommentOnMatch(matchId, new Commentary(text, commentarist));
         }
     }
 }
