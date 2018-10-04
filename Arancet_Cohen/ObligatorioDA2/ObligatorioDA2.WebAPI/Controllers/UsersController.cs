@@ -30,7 +30,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
       
-        [HttpGet("{username}", Name = "GetById")]
+        [HttpGet("{username}", Name = "GetUserById")]
         public IActionResult Get(string username)
         {
             IActionResult result;
@@ -88,28 +88,25 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         private IActionResult AddValidUser(UserModelIn user) {
-            UserId identity = new UserId
-            {
-                Name = user.Name,
-                Surname = user.Surname,
-                UserName = user.Username,
-                Password = user.Password,
-                Email = user.Email
-            };
 
-            User toAdd =user.IsAdmin ? factory.CreateAdmin(identity):factory.CreateFollower(identity);
+            IActionResult result;
+            try
+            {
+                result = TryAddUser(user);
+            }
+            catch (UserAlreadyExistsException e) {
+                ErrorModelOut error = CreateErrorModel(e);
+                result = BadRequest(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryAddUser(UserModelIn user)
+        {
+            User toAdd = BuildUser(user);
             service.AddUser(toAdd);
-            User added = service.GetUser(toAdd.UserName); 
-           
-            var addedUser = new UserModelOut()
-            {
-                Username = added.UserName,
-                Name = added.Name,
-                Surname = added.Surname,
-                Email = added.Email
-            };
-
-            return CreatedAtRoute("GetById", new { username = added.UserName }, addedUser);
+            UserModelOut modelOut = CreateModelOut(toAdd);
+            return CreatedAtRoute("GetUserById", modelOut);
         }
 
         [HttpPut("{username}")]
@@ -163,6 +160,32 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = new NotFoundResult();
             }
             return result;
+        }
+
+        private UserModelOut CreateModelOut(User added)
+        {
+            UserModelOut built = new UserModelOut()
+            {
+                Username = added.UserName,
+                Name = added.Name,
+                Surname = added.Surname,
+                Email = added.Email
+            };
+            return built;
+        }
+
+        private User BuildUser(UserModelIn modelIn)
+        {
+            UserId identity = new UserId
+            {
+                Name = modelIn.Name,
+                Surname = modelIn.Surname,
+                UserName = modelIn.Username,
+                Password = modelIn.Password,
+                Email = modelIn.Email
+            };
+            User built = modelIn.IsAdmin ? factory.CreateAdmin(identity) : factory.CreateFollower(identity);
+            return built;
         }
     }
 }
