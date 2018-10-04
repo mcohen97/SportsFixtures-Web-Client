@@ -55,6 +55,9 @@ namespace ObligatorioDA2.Services
             return fetched.GetFavouriteTeams();
         }
 
-
+        public ICollection<User> GetAllUsers()
+        {
+            return usersStorage.GetAll();
+        }
     }
 }

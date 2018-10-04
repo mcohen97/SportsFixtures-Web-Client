@@ -14,5 +14,6 @@ namespace ObligatorioDA2.Services.Interfaces
         void FollowTeam(string username, Team toFollow);
         ICollection<Team> GetUserTeams(string userName);
         void UnFollowTeam(string userName, Team fake);
+        ICollection<User> GetAllUsers();
     }
 }
