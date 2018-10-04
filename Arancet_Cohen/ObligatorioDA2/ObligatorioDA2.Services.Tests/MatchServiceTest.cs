@@ -42,6 +42,7 @@ namespace ObligatorioDA2.Services.Tests
             repoRepo.Clear();
             sportsRepo.Clear();
             teamsRepo.Clear();
+            usersRepo.Clear();
         }
 
         private void SetUpRepository() {
@@ -263,8 +264,11 @@ namespace ObligatorioDA2.Services.Tests
         public void CommentOnMatchByIdsTest() {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
             usersRepo.Add(commentarist);
             Match added = repoRepo.Add(matchAvsB);
+            SetUpRepository();
             serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "a Comment");
         }
 
