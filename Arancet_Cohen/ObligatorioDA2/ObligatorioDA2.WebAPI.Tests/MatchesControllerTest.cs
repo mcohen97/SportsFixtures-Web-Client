@@ -269,6 +269,29 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(error.ErrorMessage,toThrow.Message);
         }
 
+        [TestMethod]
+        public void CommentOnMatchTest() {
+            //Arrange.
+            CommentModelIn input = new CommentModelIn() {
+                Text = "this is a comment",
+                MakerUsername = "username"
+            };
+
+            //Act.
+            IActionResult result = controller.CommentOnMatch(3, input);
+            CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
+            CommentModelOut comment = createdResult.Value as CommentModelOut;
+
+            //Assert.
+            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text));
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.AreEqual("GetCommentById", createdResult.RouteValues);
+            Assert.IsNotNull(comment);
+            Assert.AreEqual(comment.Text, input.Text);
+        }
+
     }
    
 }
