@@ -29,7 +29,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             factory = new UserFactory();
         }
 
-      
+        [HttpGet]
+        public IActionResult Get()
+        {
+            ICollection<User> users =service.GetAllUsers();
+            ICollection<UserModelOut> output = users.Select(u => CreateModelOut(u)).ToList();
+            return Ok(output);
+        }
+
         [HttpGet("{username}", Name = "GetUserById")]
         public IActionResult Get(string username)
         {
@@ -183,5 +190,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             User built = modelIn.IsAdmin ? factory.CreateAdmin(identity) : factory.CreateFollower(identity);
             return built;
         }
+
     }
 }
