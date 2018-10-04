@@ -11,6 +11,7 @@ using BusinessLogic;
 using System;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -231,6 +232,26 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(404, notFound.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+        }
+
+        [TestMethod]
+        public void GetAllTest() {
+            //Arrange.
+            ICollection<User> fakeList = new List<User>() { GetFakeUser(), GetFakeUser(), GetFakeUser() };
+
+
+            //Act.
+            IActionResult result = controller.Get();
+            OkObjectResult listResult = result as OkObjectResult;
+            ICollection<UserModelOut> list = listResult.Value as ICollection<UserModelOut>;
+
+            //Assert.
+            service.Verify(us => us.GetAllUsers(), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(listResult);
+            Assert.AreEqual(200, listResult);
+            Assert.IsNotNull(list);
+            Assert.AreEqual(fakeList.Count, list.Count);
         }
 
         private User GetFakeUser() {
