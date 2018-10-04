@@ -149,6 +149,14 @@ namespace DataRepositories
 
         public Commentary CommentOnMatch(int idMatch, Commentary aComment)
         {
+            if (!context.Matches.Any(m => m.Id == idMatch)) {
+                throw new MatchNotFoundException();
+            }
+            return CommentOnExistingMatch(idMatch, aComment);
+        }
+
+        private Commentary CommentOnExistingMatch(int idMatch, Commentary aComment)
+        {
             CommentEntity comment = commentConverter.ToEntity(aComment);
             MatchEntity commented = context.Matches.Include(m => m.Commentaries).First(m => m.Id == idMatch);
             commented.Commentaries.Add(comment);
