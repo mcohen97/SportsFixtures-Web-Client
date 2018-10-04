@@ -147,29 +147,22 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Email = "mail@domain.com"
             };
 
-            var modifiedModelIn = new UserModelIn()
-            {
-                Name = "name2",
-                Surname = "surname2",
-                Username = "username",
-                Password = "password2",
-                Email = "mail@domain.com"
-            };
-
             //Act.
-            CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(modelIn);
-            UserModelOut created = (UserModelOut)result.Value;
-            controller.Put(created.Username, modifiedModelIn);
-            OkObjectResult getResult = controller.Get(created.Username) as OkObjectResult;
-            UserModelOut updated = getResult.Value as UserModelOut;
+            IActionResult result = controller.Put(modelIn.Username,modelIn);
+            OkObjectResult okResult = result as OkObjectResult;
+            UserModelOut modified = okResult.Value as UserModelOut;
 
             //Assert.
-            Assert.AreEqual("name2", updated.Name);
+            service.Verify(us => us.ModifyUser(It.IsAny<User>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(modified);
         }
 
         [TestMethod]
         public void PutCreateTest()
         {
+            //Arrange.
             var modelIn = new UserModelIn()
             {
                 Name = "name1",
@@ -178,11 +171,19 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Password = "password1",
                 Email = "mail@domain.com"
             };
+            service.Setup(us => us.ModifyUser(It.IsAny<User>())).Throws(new UserNotFoundException());
 
-            controller.Put("username", modelIn);
-            OkObjectResult getResult = controller.Get("username") as OkObjectResult;
-            UserModelOut updated = getResult.Value as UserModelOut;
-            Assert.AreEqual("name1", updated.Name);
+            //Act.
+            IActionResult result = controller.Put("username", modelIn);
+            CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
+            UserModelOut added = createdResult.Value as UserModelOut;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(createdResult);
+            Assert.IsNotNull(added);
+            Assert.AreEqual("GetUserById", createdResult.RouteName);
+            Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.AreEqual(modelIn.Username,added.Username);
         }
 
         [TestMethod]
@@ -202,19 +203,34 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void DeleteTest()
         {
-            CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(input);
-            UserModelOut created = (UserModelOut)result.Value;
-            controller.Delete(created.Username);
-            IActionResult fetchedById = controller.Get(created.Username);
-            NotFoundResult wasDeleted = fetchedById as NotFoundResult;
-            Assert.IsNotNull(wasDeleted);
+            //Act.
+            IActionResult result =controller.Delete("username");
+            OkResult deletedResult = result as OkResult;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(deletedResult);
+            Assert.AreEqual(200, deletedResult.StatusCode);
         }
 
         [TestMethod]
         public void DeleteNotExistentTest()
         {
-            NotFoundResult deleteResult = controller.Delete("notExistent") as NotFoundResult;
-            Assert.IsNotNull(deleteResult);
+            //Arrange.
+            Exception toThrow = new UserNotFoundException();
+            service.Setup(ms => ms.DeleteUser("notExistent")).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Delete("notExistent");
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
 
         private User GetFakeUser() {
