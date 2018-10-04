@@ -161,7 +161,6 @@ namespace DataRepositories
             MatchEntity commented = context.Matches.Include(m => m.Commentaries).First(m => m.Id == idMatch);
             commented.Commentaries.Add(comment);
             context.Attach(comment).State = EntityState.Added;
-            var x = context.Entry(comment.Maker).State;
             context.SaveChanges();
             return commentConverter.ToComment(comment);
         }
