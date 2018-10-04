@@ -166,5 +166,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult errorResult = BadRequest(error);
             return errorResult;
         }
+
+        [HttpPost("comments")]
+        public IActionResult CommentOnMatch(CommentModelIn input)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
