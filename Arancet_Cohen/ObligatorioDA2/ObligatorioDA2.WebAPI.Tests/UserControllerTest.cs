@@ -113,6 +113,26 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, badRequest.StatusCode);
         }
 
+        [TestMethod]
+        public void CreateAlreadyExistentUserTest() {
+            //Arrange.
+            Exception toThrow = new UserAlreadyExistsException();
+            service.Setup(us => us.AddUser(It.IsAny<User>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Post(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            service.Verify(us => us.AddUser(It.IsAny<User>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+        }
+
 
         [TestMethod]
         public void PutModifyTest()
