@@ -24,7 +24,7 @@ namespace ObligatorioDA2.Services.Tests
         public void SetUp() {
             users = new Mock<IUserRepository>();
             teams = new Mock<ITeamRepository>();
-            service = new UserService(users.Object);
+            service = new UserService(users.Object,teams.Object);
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
@@ -236,6 +236,7 @@ namespace ObligatorioDA2.Services.Tests
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
+            teams.Setup(r => r.Get(fake.Id)).Returns(fake);
 
             service.UnFollowTeam(testUser.UserName, fake.Id);
 
