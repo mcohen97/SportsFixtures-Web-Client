@@ -118,5 +118,10 @@ namespace ObligatorioDA2.Services
             User commentarist = usersStorage.Get(userName);
             return matchesStorage.CommentOnMatch(matchId, new Commentary(text, commentarist));
         }
+
+        public ICollection<Commentary> GetMatchCommentaries(int matchId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
