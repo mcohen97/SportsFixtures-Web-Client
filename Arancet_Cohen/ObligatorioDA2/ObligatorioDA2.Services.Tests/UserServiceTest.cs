@@ -199,7 +199,7 @@ namespace ObligatorioDA2.Services.Tests
             ICollection<User> fakeUsers = new List<User>() { testUser, testUser, testUser };
             users.Setup(r => r.GetAll()).Returns(fakeUsers);
 
-            ICollection<User> stored = service.GetAllTeams();
+            ICollection<User> stored = service.GetAllUsers();
 
             Assert.AreEqual(stored.Count,fakeUsers.Count);
         }
