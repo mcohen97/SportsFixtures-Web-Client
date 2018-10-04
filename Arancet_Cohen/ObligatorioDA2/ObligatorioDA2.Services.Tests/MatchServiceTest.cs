@@ -54,7 +54,7 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo = new SportRepository(context);
             teamsRepo = new TeamRepository(context);
             usersRepo = new UserRepository(context);
-            serviceToTest = new MatchService(repoRepo, teamsRepo, sportsRepo);
+            serviceToTest = new MatchService(repoRepo, teamsRepo, sportsRepo,usersRepo);
         }
 
         [TestMethod]
