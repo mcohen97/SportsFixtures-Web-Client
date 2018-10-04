@@ -282,7 +282,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(UserNotFoundException))]
         public void CommentNoUserWithIdTest() {
             Match added = repoRepo.Add(matchAvsB);
-            serviceToTest.CommentOnMatch(added.Id, "username", "a Comment");
+            serviceToTest.CommentOnMatch(added.Id, "usernae", "a Comment");
         }
 
     }

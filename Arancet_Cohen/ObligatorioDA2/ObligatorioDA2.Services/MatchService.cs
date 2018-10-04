@@ -116,5 +116,10 @@ namespace ObligatorioDA2.Services
                 throw new CommentAlreadyExistsException();
             }
         }
+
+        public void CommentOnMatch(int matchId, string userName, string text)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
