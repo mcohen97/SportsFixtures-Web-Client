@@ -170,7 +170,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost("comments")]
         public IActionResult CommentOnMatch(CommentModelIn input)
         {
-            throw new NotImplementedException();
+            Commentary created =matchService.CommentOnMatch(input.MatchId, input.MakerUsername, input.Text);
+            CommentModelOut output = new CommentModelOut
+            {
+                Id = created.Id,
+                MakerUsername = input.MakerUsername,
+                MatchId = input.MatchId,
+                Text = input.Text
+            };
+            return CreatedAtRoute("GetCommentById",output);
+
         }
     }
 }
