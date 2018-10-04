@@ -160,17 +160,36 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok();
         }
 
-        private IActionResult CreateErrorMessage(Exception e)
-        {
-            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
-            IActionResult errorResult = BadRequest(error);
-            return errorResult;
-        }
-
         [HttpPost("comments")]
         public IActionResult CommentOnMatch(CommentModelIn input)
         {
-            Commentary created =matchService.CommentOnMatch(input.MatchId, input.MakerUsername, input.Text);
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = AddValidFormatComment(input);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult AddValidFormatComment(CommentModelIn input)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryAddComment(input);
+            }
+            catch (EntityNotFoundException e) {
+                result = CreateErrorMessage(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryAddComment(CommentModelIn input)
+        {
+            Commentary created = matchService.CommentOnMatch(input.MatchId, input.MakerUsername, input.Text);
             CommentModelOut output = new CommentModelOut
             {
                 Id = created.Id,
@@ -178,8 +197,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 MatchId = input.MatchId,
                 Text = input.Text
             };
-            return CreatedAtRoute("GetCommentById",output);
+            return CreatedAtRoute("GetCommentById", output);
+        }
 
+        private IActionResult CreateErrorMessage(Exception e)
+        {
+            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
+            IActionResult errorResult = BadRequest(error);
+            return errorResult;
         }
     }
 }
