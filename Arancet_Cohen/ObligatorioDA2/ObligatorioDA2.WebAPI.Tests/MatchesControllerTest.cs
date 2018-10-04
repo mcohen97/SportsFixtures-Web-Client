@@ -289,13 +289,86 @@ namespace ObligatorioDA2.WebAPI.Tests
             CommentModelOut comment = createdResult.Value as CommentModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text));
+            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text),Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual("GetCommentById", createdResult.RouteName);
             Assert.IsNotNull(comment);
             Assert.AreEqual(comment.Text, input.Text);
+        }
+
+        [TestMethod]
+        public void CommentWithBadFormatTest() {
+            //Arrange.
+            CommentModelIn input = new CommentModelIn()
+            {
+                Text = "this is a comment",
+            };
+            controller.ModelState.AddModelError("", "Error");
+
+            //Act.
+            IActionResult result = controller.CommentOnMatch(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+
+            //Assert.
+            matchService.Verify(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), input.Text), Times.Never);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+        }
+
+        [TestMethod]
+        public void CreateCommentInNoExistingMatch() {
+            //Arrange.
+            CommentModelIn input = new CommentModelIn()
+            {
+                Text = "this is a comment",
+                MakerUsername = "username",
+                MatchId = 3
+            };
+            Exception toThrow = new MatchNotFoundException();
+            matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.CommentOnMatch(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+        }
+
+        [TestMethod]
+        public void CreateCommentByNoExistingUser() {
+            //Arrange.
+            CommentModelIn input = new CommentModelIn()
+            {
+                Text = "this is a comment",
+                MakerUsername = "username",
+                MatchId = 3
+            };
+            Exception toThrow = new UserNotFoundException();
+            matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.CommentOnMatch(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+
         }
 
         private User GetFakeUser()
