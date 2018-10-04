@@ -7,6 +7,10 @@ using DataRepositories;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.Services;
+using Moq;
+using BusinessLogic;
+using System;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -14,47 +18,58 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class UserControllerTest
     {
         UsersController controller;
-        UserRepository repo;
+        Mock<UserService> service;
         UserModelIn input;
 
         [TestInitialize]
         public void SetUp()
         {
 
-            InstantiateController();
-            repo.Clear();
+            service = new Mock<UserService>();
+            controller = new UsersController(service.Object);
             input = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Password = "password", Email = "JHetfield@gmail.com" };
-        }
-
-        private void InstantiateController()
-        {
-            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "UserRepository")
-                .Options;
-
-            repo = new UserRepository(new DatabaseConnection(options));
-            
-            controller = new UsersController(repo, new UserService(repo));
         }
 
         [TestMethod]
         public void GetTest()
         {
-            IActionResult postResult = controller.Post(input);
-            CreatedAtRouteResult createdResult = postResult as CreatedAtRouteResult;
-            UserModelOut modelOut = createdResult.Value as UserModelOut;
-            IActionResult fetchedById = controller.Get(modelOut.Username);
-            OkObjectResult okResult = fetchedById as OkObjectResult;
-            UserModelOut userData = okResult.Value as UserModelOut;
-            Assert.AreEqual(modelOut.Username, userData.Username);
+            //Arrange.
+            User fake = GetFakeUser();
+            service.Setup(us => us.GetUser(fake.UserName)).Returns(fake);
+
+            //Act.
+            IActionResult result = controller.Get(fake.UserName);
+            OkObjectResult okResult = result as OkObjectResult;
+            UserModelOut modelOut = okResult.Value as UserModelOut;
+
+            //Assert.
+            service.Verify(us => us.GetUser(fake.UserName), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(modelOut);
+            Assert.AreEqual(modelOut.Username, fake.UserName);
         }
 
         [TestMethod]
         public void GetNotExistentTest()
         {
-            IActionResult fetchedById = controller.Get("username");
-            NotFoundResult result = fetchedById as NotFoundResult;
-            Assert.AreEqual(result.StatusCode, 404);
+            //Arrange.
+            Exception toThrow = new UserNotFoundException();
+            service.Setup(us => us.GetUser(It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Get("username");
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            service.Verify(us => us.GetUser("username"), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
 
         [TestMethod]
@@ -265,6 +280,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void PutModifyTest()
         {
+            //Arrange.
             var modelIn = new UserModelIn()
             {
                 Name = "name1",
@@ -283,12 +299,14 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Email = "mail@domain.com"
             };
 
+            //Act.
             CreatedAtRouteResult result = (CreatedAtRouteResult)controller.Post(modelIn);
-            InstantiateController();
             UserModelOut created = (UserModelOut)result.Value;
             controller.Put(created.Username, modifiedModelIn);
             OkObjectResult getResult = controller.Get(created.Username) as OkObjectResult;
             UserModelOut updated = getResult.Value as UserModelOut;
+
+            //Assert.
             Assert.AreEqual("name2", updated.Name);
         }
 
@@ -340,6 +358,19 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             NotFoundResult deleteResult = controller.Delete("notExistent") as NotFoundResult;
             Assert.IsNotNull(deleteResult);
+        }
+
+        private User GetFakeUser() {
+            UserId identity = new UserId()
+            {
+                Name = "name",
+                Surname = "surname",
+                UserName = "username",
+                Password = "password",
+                Email = "mail@mail.com"
+            };
+            User created = new User(identity, false);
+            return created;
         }
     }
 }
