@@ -157,7 +157,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = Ok();
             }
             catch (UserNotFoundException e) {
-                result = new NotFoundResult();
+                ErrorModelOut error = CreateErrorModel(e);
+                result = new NotFoundObjectResult(error);
             }
             return result;
         }
