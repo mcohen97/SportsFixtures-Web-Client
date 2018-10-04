@@ -17,7 +17,7 @@ namespace ObligatorioDA2.Services.Tests
     public class MatchServiceTest
     {
         private MatchService serviceToTest;
-        private IMatchRepository repoRepo;
+        private IMatchRepository matchesRepo;
         private ISportRepository sportsRepo;
         private ITeamRepository teamsRepo;
         private IUserRepository usersRepo;
@@ -39,7 +39,7 @@ namespace ObligatorioDA2.Services.Tests
             matchAvsC = new Match(2, teamA, teamC, DateTime.Now.AddDays(2), sport);
             matchBvsC = new Match(3, teamB, teamC, DateTime.Now.AddDays(3), sport);
             SetUpRepository();
-            repoRepo.Clear();
+            matchesRepo.Clear();
             sportsRepo.Clear();
             teamsRepo.Clear();
             usersRepo.Clear();
@@ -51,11 +51,12 @@ namespace ObligatorioDA2.Services.Tests
                .UseInMemoryDatabase(databaseName: "MatchService")
                .Options;
             DatabaseConnection context = new DatabaseConnection(options);
-            repoRepo = new MatchRepository(context);
+            matchesRepo = new MatchRepository(context);
             sportsRepo = new SportRepository(context);
             teamsRepo = new TeamRepository(context);
             usersRepo = new UserRepository(context);
-            serviceToTest = new MatchService(repoRepo, teamsRepo, sportsRepo,usersRepo);
+            serviceToTest = new MatchService(matchesRepo, teamsRepo, sportsRepo,usersRepo);
+            context.Comments.RemoveRange(context.Comments);
         }
 
         [TestMethod]
@@ -237,7 +238,7 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             usersRepo.Add(commentarist);
-            Match added = repoRepo.Add(matchAvsB);
+            Match added = matchesRepo.Add(matchAvsB);
             SetUpRepository();
             serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "a Comment");
         }
@@ -255,7 +256,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void CommentNoUserWithIdTest() {
-            Match added = repoRepo.Add(matchAvsB);
+            Match added = matchesRepo.Add(matchAvsB);
             serviceToTest.CommentOnMatch(added.Id, "usernae", "a Comment");
         }
 
@@ -266,8 +267,7 @@ namespace ObligatorioDA2.Services.Tests
             usersRepo.Add(commentarist);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            usersRepo.Add(commentarist);
-            Match added = repoRepo.Add(matchAvsB);
+            Match added = matchesRepo.Add(matchAvsB);
             SetUpRepository();
             serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "a Comment");
             serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "another Comment");
