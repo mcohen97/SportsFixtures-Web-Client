@@ -83,7 +83,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Assert.
             service.Verify(us => us.AddUser(It.IsAny<User>()), Times.Once);
             Assert.IsNotNull(result);
-            Assert.IsNull(createdResult);
+            Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual("GetUserById", createdResult.RouteName);
             Assert.AreEqual(modelOut.Username, input.Username);
