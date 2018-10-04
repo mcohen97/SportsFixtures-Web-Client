@@ -83,13 +83,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return toReturn;
         }
 
-        /*[HttpPost("{username}/teams")]
-        public void Post(string username,TeamModelIn modelIn) {
-            Team toFollow = new Team(modelIn.Name);
-
-            users.AddFollowedTeam(username,modelIn.SportName,toFollow);
-        }*/
-
         private IActionResult AddValidUser(UserModelIn user) {
             UserId identity = new UserId
             {
