@@ -73,209 +73,46 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void CreateValidUserResultTest()
-        {
-            //Arrange
+        public void CreateValidUserTest()
+        {          
+            //Act.
+            IActionResult result = controller.Post(input);
+            CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
+            UserModelOut modelOut = createdResult.Value as UserModelOut;
 
-            var result = controller.Post(input);
-
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as UserModelOut;
-
-            //Assert
-            Assert.IsNotNull(createdResult);
-        }
-
-        [TestMethod]
-        public void CreateValidUserCreaatedRouteTest()
-        {
-            //Arrange
-            var result = controller.Post(input);
-
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as UserModelOut;
-
-            //Assert
-            Assert.AreEqual("GetById", createdResult.RouteName);
-        }
-
-        [TestMethod]
-        public void CreateValidUserCodeTest()
-        {
-            //Arrange
-            var result = controller.Post(input);
-
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as UserModelOut;
-
-            //Assert
-
+            //Assert.
+            service.Verify(us => us.AddUser(It.IsAny<User>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.AreEqual("GetUserById", createdResult.RouteName);
+            Assert.AreEqual(modelOut.Username, input.Username);
         }
-
+      
         [TestMethod]
-        public void CreateValidUserOutPutUsernameTest()
+        public void CreateFailedUserTest()
         {
-            //Arrange
-            var result = controller.Post(input);
-
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as UserModelOut;
-
-            //Assert
-            Assert.AreEqual(input.Username, modelOut.Username);
-        }
-
-        [TestMethod]
-        public void CreateValidUserOutPutNameTest()
-        {
-            //Arrange
-            var result = controller.Post(input);
-
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as UserModelOut;
-
-            //Assert
-            Assert.AreEqual(input.Name, modelOut.Name);
-        }
-
-        [TestMethod]
-        public void CreateValidUserOutPutSurnameTest()
-        {
-            //Arrange
-            var result = controller.Post(input);
-
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as UserModelOut;
-
-            //Assert
-            Assert.AreEqual(input.Surname, modelOut.Surname);
-        }
-
-        [TestMethod]
-        public void CreateValidUserOutPutEmailTest()
-        {
-            //Arrange
-            var result = controller.Post(input);
-
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as UserModelOut;
-
-            //Assert
-            Assert.AreEqual(input.Email, modelOut.Email);
-        }
-
-        [TestMethod]
-        public void CreateFailedUserRequiredMailTest()
-        {
-            //Arrange
+            //Arrange.
             var modelIn = new UserModelIn()
             {
                 Name = "name",
                 Surname = "surname",
-                Username = "username",
                 Password = "password"
             };
-            //We need to force the error in de ModelState
+            //We need to force the error in de ModelState.
             controller.ModelState.AddModelError("", "Error");
-            var result = controller.Post(modelIn);
-            //Act
-            var createdResult = result as BadRequestObjectResult;
-            //Assert
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual(400, createdResult.StatusCode);
+
+            //Act.
+            IActionResult result = controller.Post(modelIn);            
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+
+            //Assert.
+            service.Verify(us => us.AddUser(It.IsAny<User>()), Times.Never);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
         }
 
-        [TestMethod]
-        public void CreateFailedUserRequiredPasswordTest()
-        {
-            //Arrange
-            var modelIn = new UserModelIn()
-            {
-                Name = "name",
-                Surname = "surname",
-                Username = "username",
-                Email = "email"
-            };
-            //We need to force the error in de ModelState
-            controller.ModelState.AddModelError("", "Error");
-            var result = controller.Post(modelIn);
-            //Act
-            var createdResult = result as BadRequestObjectResult;
-            //Assert
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual(400, createdResult.StatusCode);
-        }
-
-        [TestMethod]
-        public void CreateFailedUserRequiredUsernameTest()
-        {
-            //Arrange
-            var modelIn = new UserModelIn()
-            {
-                Name = "name",
-                Surname = "surname",
-                Password = "password",
-                Email = "email"
-            };
-            //We need to force the error in de ModelState
-            controller.ModelState.AddModelError("", "Error");
-            var result = controller.Post(modelIn);
-            //Act
-            var createdResult = result as BadRequestObjectResult;
-            //Assert
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual(400, createdResult.StatusCode);
-        }
-
-        [TestMethod]
-        public void CreateFailedUserRequiredNameTest()
-        {
-            //Arrange
-            var modelIn = new UserModelIn()
-            {
-                Surname = "surname",
-                Username = "username",
-                Password = "password",
-                Email = "email"
-            };
-            //We need to force the error in de ModelState
-            controller.ModelState.AddModelError("", "Error");
-            var result = controller.Post(modelIn);
-            //Act
-            var createdResult = result as BadRequestObjectResult;
-            //Assert
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual(400, createdResult.StatusCode);
-        }
-
-        [TestMethod]
-        public void CreateFailedUserRequiredSurnameTest()
-        {
-            //Arrange
-            var modelIn = new UserModelIn()
-            {
-                Name = "name",
-                Username = "username",
-                Password = "password",
-                Email = "email"
-            };
-            //We need to force the error in de ModelState
-            controller.ModelState.AddModelError("", "Error");
-            var result = controller.Post(modelIn);
-            //Act
-            var createdResult = result as BadRequestObjectResult;
-            //Assert
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual(400, createdResult.StatusCode);
-        }
 
         [TestMethod]
         public void PutModifyTest()
