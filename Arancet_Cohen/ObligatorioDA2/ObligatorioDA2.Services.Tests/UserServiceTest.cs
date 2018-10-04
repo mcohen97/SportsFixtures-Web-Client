@@ -15,6 +15,7 @@ namespace ObligatorioDA2.Services.Tests
     public class UserServiceTest
     {
         private Mock<IUserRepository> users;
+        private Mock<ITeamRepository> teams;
         private IUserService service;
         private User testUser;
         private Team toFollow;
@@ -22,6 +23,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestInitialize]
         public void SetUp() {
             users = new Mock<IUserRepository>();
+            teams = new Mock<ITeamRepository>();
             service = new UserService(users.Object);
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
@@ -136,6 +138,40 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        public void FollowByIdTest() {
+            service.FollowTeam(testUser.UserName, toFollow.Id);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            teams.Verify(r => r.Get(toFollow.Id), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void FollowTeamNotExistentUserIdTest()
+        {
+            users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
+
+            service.FollowTeam(testUser.UserName, toFollow.Id);
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            teams.Verify(r => r.Get(toFollow.Id), Times.Never);
+            users.Verify(r => r.Modify(testUser), Times.Never);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void FollowNotExistentTeamIdTest()
+        {
+            users.Setup(r => r.Modify(testUser)).Throws(new TeamNotFoundException());
+
+            service.FollowTeam(testUser.UserName, toFollow.Id);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            teams.Verify(r => r.Get(toFollow.Id), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Never);
+        }
+
+        [TestMethod]
         public void GetUserTeamsTest() {
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
@@ -191,6 +227,52 @@ namespace ObligatorioDA2.Services.Tests
             service.UnFollowTeam(testUser.UserName,fake);
 
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Never);
+        }
+
+        [TestMethod]
+        public void UnfollowTeamIdTest()
+        {
+            Team fake = GetFakeTeam();
+            testUser.AddFavourite(fake);
+            users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
+
+            service.UnFollowTeam(testUser.UserName, fake.Id);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            teams.Verify(r => r.Get(fake.Id), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Once);
+            Assert.IsFalse(testUser.GetFavouriteTeams().Any());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFollowedException))]
+        public void UnfollowNotFollowedTeamIdTest()
+        {
+            Team fake = GetFakeTeam();
+            users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
+
+            service.UnFollowTeam(testUser.UserName, fake.Id);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            teams.Verify(r => r.Get(fake.Id), Times.Once);
+            users.Verify(r => r.Modify(testUser), Times.Never);
+
+            Assert.AreEqual(0, testUser.GetFavouriteTeams().Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void UnfollowNotFoundUserIdTest()
+        {
+            Team fake = GetFakeTeam();
+            users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
+            testUser.AddFavourite(fake);
+
+            service.UnFollowTeam(testUser.UserName, fake.Id);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
+            teams.Verify(r => r.Get(fake.Id), Times.Never);
             users.Verify(r => r.Modify(testUser), Times.Never);
         }
 
