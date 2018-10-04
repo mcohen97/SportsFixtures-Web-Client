@@ -15,12 +15,14 @@ namespace ObligatorioDA2.Services
         private IMatchRepository matchesStorage;
         private ITeamRepository teamsStorage;
         private ISportRepository sportsStorage;
+        private IUserRepository usersStorage;
 
-        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository)
+        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository, IUserRepository usersRepository)
         {
             matchesStorage = matchsRepository;
             teamsStorage = teamsRepository;
             sportsStorage = sportsRepository;
+            usersStorage = usersRepository;
         }
 
         public Match AddMatch(Match aMatch)
@@ -119,7 +121,10 @@ namespace ObligatorioDA2.Services
 
         public void CommentOnMatch(int matchId, string userName, string text)
         {
-            throw new NotImplementedException();
+            Match match = matchesStorage.Get(matchId);
+            User commentarist = usersStorage.Get(userName);
+            match.AddCommentary(new Commentary(text, commentarist));
+            ModifyMatch(match);
         }
     }
 }
