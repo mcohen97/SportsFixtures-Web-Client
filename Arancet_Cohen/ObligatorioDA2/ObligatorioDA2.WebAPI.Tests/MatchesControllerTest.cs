@@ -274,11 +274,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange.
             CommentModelIn input = new CommentModelIn() {
                 Text = "this is a comment",
-                MakerUsername = "username"
+                MakerUsername = "username",
+                MatchId = 3
             };
 
             //Act.
-            IActionResult result = controller.CommentOnMatch(3, input);
+            IActionResult result = controller.CommentOnMatch(input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             CommentModelOut comment = createdResult.Value as CommentModelOut;
 
