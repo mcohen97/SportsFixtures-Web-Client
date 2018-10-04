@@ -238,7 +238,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetAllTest() {
             //Arrange.
             ICollection<User> fakeList = new List<User>() { GetFakeUser(), GetFakeUser(), GetFakeUser() };
-
+            service.Setup(us => us.GetAllUsers()).Returns(fakeList);
 
             //Act.
             IActionResult result = controller.Get();
@@ -249,7 +249,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             service.Verify(us => us.GetAllUsers(), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(listResult);
-            Assert.AreEqual(200, listResult);
+            Assert.AreEqual(200, listResult.StatusCode);
             Assert.IsNotNull(list);
             Assert.AreEqual(fakeList.Count, list.Count);
         }
