@@ -97,8 +97,15 @@ namespace DataRepositories
 
         private Match GetExistentMatch(int anId)
         {
-            MatchEntity entity = context.Matches.First(me => me.Id == anId);
+            MatchEntity entity = context.Matches
+                .Include(m=>m.HomeTeam)
+                .Include(m=>m.AwayTeam)
+                .Include(m=>m.SportEntity)
+                .Include(m => m.Commentaries)
+                .First(me => me.Id == anId);
+
             Match conversion = matchConverter.ToMatch(entity);
+            context.Entry(entity).State = EntityState.Detached;
             return conversion;
         }
 
