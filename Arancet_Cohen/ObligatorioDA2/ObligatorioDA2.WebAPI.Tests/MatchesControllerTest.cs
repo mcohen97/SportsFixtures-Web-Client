@@ -272,11 +272,16 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CommentOnMatchTest() {
             //Arrange.
+            User commentarist = GetFakeUser();
+            Commentary made = new Commentary("this is a comment", commentarist);
+
             CommentModelIn input = new CommentModelIn() {
                 Text = "this is a comment",
                 MakerUsername = "username",
                 MatchId = 3
             };
+            matchService.Setup(ms => ms.CommentOnMatch(input.MatchId, input.MakerUsername, input.Text)).Returns(made);
+
 
             //Act.
             IActionResult result = controller.CommentOnMatch(input);
@@ -288,11 +293,16 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual("GetCommentById", createdResult.RouteValues);
+            Assert.AreEqual("GetCommentById", createdResult.RouteName);
             Assert.IsNotNull(comment);
             Assert.AreEqual(comment.Text, input.Text);
         }
 
+        private User GetFakeUser()
+        {
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "email@email.com" };
+            return new User(identity, true);
+        }
     }
    
 }
