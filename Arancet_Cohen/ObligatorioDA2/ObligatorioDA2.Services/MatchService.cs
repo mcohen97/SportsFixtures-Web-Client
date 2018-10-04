@@ -121,7 +121,8 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Commentary> GetMatchCommentaries(int matchId)
         {
-            throw new NotImplementedException();
+            Match stored = GetMatch(matchId);
+            return stored.GetAllCommentaries();
         }
     }
 }
