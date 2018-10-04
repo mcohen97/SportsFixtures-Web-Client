@@ -20,13 +20,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        IUserRepository users;
         IUserService service;
         UserFactory factory;
 
 
-        public UsersController(IUserRepository usersRepo, IUserService aService) {
-            users = usersRepo;
+        public UsersController(IUserService aService) {
             service = aService;
             factory = new UserFactory();
         }
@@ -41,13 +39,19 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 UserModelOut toReturn = TryGetUser(username);
                 result= Ok(toReturn);
             }catch (UserNotFoundException e) {
-                result = new NotFoundResult();
+                ErrorModelOut error = CreateErrorModel(e);
+                result = new NotFoundObjectResult(error);
             }
             return result;
         }
 
+        private ErrorModelOut CreateErrorModel(Exception e)
+        {
+            return new ErrorModelOut() { ErrorMessage = e.Message };
+        }
+
         private UserModelOut TryGetUser(string username) {
-            User queried = users.Get(username);
+            User queried = service.GetUser(username);
             UserModelOut toReturn = new UserModelOut
             {
                 Name = queried.Name,
@@ -94,8 +98,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
 
             User toAdd =user.IsAdmin ? factory.CreateAdmin(identity):factory.CreateFollower(identity);
-            users.Add(toAdd);
-            User added = users.Get(toAdd); 
+            service.AddUser(toAdd);
+            User added = service.GetUser(toAdd.UserName); 
            
             var addedUser = new UserModelOut()
             {
@@ -137,10 +141,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             User converted = factory.CreateFollower(identity);
             try
             {
-                users.Modify(converted);
+                service.ModifyUser(converted);
             }
             catch(UserNotFoundException) {
-                users.Add(converted);
+                service.AddUser(converted);
             }
 
         }
@@ -152,7 +156,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                users.Delete(username);
+                service.DeleteUser(username);
                 result = Ok();
             }
             catch (UserNotFoundException e) {
