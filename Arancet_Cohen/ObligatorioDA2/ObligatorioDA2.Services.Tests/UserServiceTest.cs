@@ -194,5 +194,15 @@ namespace ObligatorioDA2.Services.Tests
             users.Verify(r => r.Modify(testUser), Times.Never);
         }
 
+        [TestMethod]
+        public void GetAllUsersTest() {
+            ICollection<User> fakeUsers = new List<User>() { testUser, testUser, testUser };
+            users.Setup(r => r.GetAll()).Returns(fakeUsers);
+
+            ICollection<User> stored = service.GetAllTeams();
+
+            Assert.AreEqual(stored.Count,fakeUsers.Count);
+        }
+
     }
 }
