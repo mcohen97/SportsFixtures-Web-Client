@@ -115,10 +115,6 @@ namespace ObligatorioDA2.Services
 
         public Commentary CommentOnMatch(int matchId, string userName, string text)
         {
-            /*Match match = matchesStorage.Get(matchId);
-            User commentarist = usersStorage.Get(userName);
-            match.AddCommentary(new Commentary(text, commentarist));
-            ModifyMatch(match);*/
             User commentarist = usersStorage.Get(userName);
             return matchesStorage.CommentOnMatch(matchId, new Commentary(text, commentarist));
         }
