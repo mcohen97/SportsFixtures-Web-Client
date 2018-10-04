@@ -6,11 +6,11 @@ using DataAccess;
 using DataRepositories;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
-using ObligatorioDA2.Services;
 using Moq;
 using BusinessLogic;
 using System;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services.Interfaces;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -18,14 +18,14 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class UserControllerTest
     {
         UsersController controller;
-        Mock<UserService> service;
+        Mock<IUserService> service;
         UserModelIn input;
 
         [TestInitialize]
         public void SetUp()
         {
 
-            service = new Mock<UserService>();
+            service = new Mock<IUserService>();
             controller = new UsersController(service.Object);
             input = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Password = "password", Email = "JHetfield@gmail.com" };
         }
