@@ -258,5 +258,22 @@ namespace ObligatorioDA2.Services.Tests
             Match added = repoRepo.Add(matchAvsB);
             serviceToTest.CommentOnMatch(added.Id, "usernae", "a Comment");
         }
+
+        [TestMethod]
+        public void GetMatchCommentsTest() {
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
+            User commentarist = new User(identity, true);
+            usersRepo.Add(commentarist);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            usersRepo.Add(commentarist);
+            Match added = repoRepo.Add(matchAvsB);
+            SetUpRepository();
+            serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "another Comment");
+            ICollection<Commentary> comments = serviceToTest.GetMatchCommentaries(added.Id);
+            Assert.AreEqual(comments.Count, 2);
+        }
+
     }
 }
