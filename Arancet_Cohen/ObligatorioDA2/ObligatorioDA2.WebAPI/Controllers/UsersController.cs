@@ -72,10 +72,45 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost, Route("teams")]
         [Authorize]
         public IActionResult FollowTeam([FromBody] TeamModelIn aTeam) {
-           string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-            Team toFollow = new Team(aTeam.Id, aTeam.Name, aTeam.Photo, new Sport(aTeam.SportName));
-            service.FollowTeam(username,toFollow);
-            return Ok();
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = FollowValidFormatTeam(aTeam);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult FollowValidFormatTeam(TeamModelIn aTeam)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryFollowTeam(aTeam);
+            }
+            catch (EntityNotFoundException e1)
+            {
+                ErrorModelOut error = CreateErrorModel(e1);
+                result = NotFound(error);
+            }
+            catch (EntityAlreadyExistsException e2)
+            {
+                ErrorModelOut error = CreateErrorModel(e2);
+                result = BadRequest(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryFollowTeam(TeamModelIn aTeam)
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+            //Team toFollow = new Team(aTeam.Id, aTeam.Name, aTeam.Photo, new Sport(aTeam.SportName));
+            //service.FollowTeam(username, toFollow);
+            service.FollowTeam(username, aTeam.Id);
+            OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
+            return Ok(okMessage);
         }
 
         [HttpPost]
