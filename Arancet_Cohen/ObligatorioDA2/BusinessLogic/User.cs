@@ -123,6 +123,9 @@ namespace BusinessLogic
             {
                 favourites.Add(team);
             }
+            else {
+                throw new InvalidUserDataException("User already follows team");
+            }
         }
 
         public bool HasFavouriteTeam(Team aTeam)
