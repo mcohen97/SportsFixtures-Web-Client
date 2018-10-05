@@ -22,10 +22,86 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void SetUp() {
             team = new Team(2,"Nacional", "/MyResource/Nacional.png", new Sport("Soccer"));
             repo = new Mock<ITeamRepository>();
-            repo.Setup(r => r.Get("Soccer","Nacional")).Returns(team);
-            repo.Setup(r => r.Get(It.Is<string>(i => !i.Equals("Soccer")), It.Is<string>(i => !i.Equals("Nacional"))))
-                .Throws(new TeamNotFoundException());
             controller = new TeamsController(repo.Object);
+        }
+
+        [TestMethod]
+        public void GetTeamByNamesTest()
+        {
+
+            //Arrange.
+            repo.Setup(r => r.Get(team.Sport.Name, team.Name)).Returns(team);
+
+            //Act.
+            IActionResult result = controller.Get("Soccer", "Nacional");
+            OkObjectResult okResult = result as OkObjectResult;
+            TeamModelOut resultTeam = okResult.Value as TeamModelOut;
+
+            //Assert.
+            repo.Verify(r => r.Get("Soccer", "Nacional"), Times.Once);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(resultTeam.Name, team.Name);
+        }
+
+        [TestMethod]
+        public void GetTeamByNamesNotFoundTest()
+        {
+            //Arrange.
+            Exception toThrow = new TeamNotFoundException();
+            repo.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Get("Basketball", "DreamTeam");
+            NotFoundObjectResult notFoundResult = result as NotFoundObjectResult;
+            ErrorModelOut error = notFoundResult.Value as ErrorModelOut;
+
+            //Assert.
+            repo.Verify(r => r.Get("Basketball", "DreamTeam"), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(404, notFoundResult.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
+        [TestMethod]
+        public void GetTeamByIdTest() {
+            //Arrange.
+            repo.Setup(r => r.Get(2)).Returns(team);
+
+            //Act.
+            IActionResult result = controller.Get(2);
+            OkObjectResult okResult = result as OkObjectResult;
+            TeamModelOut resultTeam = okResult.Value as TeamModelOut;
+
+            //Assert.
+            repo.Verify(r => r.Get(2), Times.Once);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(resultTeam.Name, team.Name);
+        }
+
+        [TestMethod]
+        public void GetTeamByIdNotFoundTest() {
+            //Arrange.
+            Exception toThrow = new TeamNotFoundException();
+            repo.Setup(r => r.Get(It.IsAny<int>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Get(2);
+            NotFoundObjectResult notFoundResult = result as NotFoundObjectResult;
+            ErrorModelOut error = notFoundResult.Value as ErrorModelOut;
+
+            //Assert.
+            repo.Verify(r => r.Get(2), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(404, notFoundResult.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
         [TestMethod]
@@ -59,7 +135,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void CreateFailedTeamRequiredNameTest()
+        public void CreateFailedTeamRequiredFieldsTest()
         {
             //Arrange.
            TeamModelIn modelIn = new TeamModelIn() {
@@ -97,29 +173,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
-        [TestMethod]
-        public void GetTeamOk() {
 
-            IActionResult result = controller.Get("Soccer","Nacional") as IActionResult;
-            OkObjectResult okResult = result as OkObjectResult;
-            TeamModelOut resultTeam = okResult.Value as TeamModelOut;
-
-            repo.Verify(r => r.Get("Soccer", "Nacional"), Times.Once);
-            Assert.IsNotNull(okResult);
-            Assert.IsNotNull(okResult.Value);
-            Assert.AreEqual(200,okResult.StatusCode);
-            Assert.AreEqual(resultTeam.Name, team.Name);
-        }
-
-        [TestMethod]
-        public void GetTeamNotFoundTest() {
-            IActionResult result = controller.Get("Basketball", "DreamTeam") as IActionResult;
-            NotFoundObjectResult notFoundResult = result as NotFoundObjectResult;
-
-            repo.Verify(r => r.Get("Basketball", "DreamTeam"), Times.Once);
-            Assert.IsNotNull(notFoundResult);
-            Assert.AreEqual(notFoundResult.StatusCode, 404);
-        }
 
         [TestMethod]
         public void PutTest() {
