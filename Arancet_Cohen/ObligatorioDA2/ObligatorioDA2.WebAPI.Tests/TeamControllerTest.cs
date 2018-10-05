@@ -8,6 +8,7 @@ using BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using DataRepositoryInterfaces;
 using System;
+using System.Collections.Generic;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -23,6 +24,26 @@ namespace ObligatorioDA2.WebAPI.Tests
             team = new Team(2,"Nacional", "/MyResource/Nacional.png", new Sport("Soccer"));
             repo = new Mock<ITeamRepository>();
             controller = new TeamsController(repo.Object);
+        }
+
+        [TestMethod]
+        public void GetAllTeamsTest() {
+            //Arrange.
+            ICollection<Team> dummyTeams = new List<Team>() { team, team, team };
+            repo.Setup(r => r.GetAll()).Returns(dummyTeams);
+
+            //Act.
+            IActionResult result = controller.Get();
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<TeamModelOut> allTeams = okResult.Value as ICollection<TeamModelOut>;
+
+            //Assert.
+            repo.Verify(r => r.GetAll(), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(allTeams);
+            Assert.AreEqual(dummyTeams.Count,allTeams.Count);
         }
 
         [TestMethod]
