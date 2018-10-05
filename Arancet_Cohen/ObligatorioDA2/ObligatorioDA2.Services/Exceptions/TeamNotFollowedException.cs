@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLogic.Exceptions
+namespace ObligatorioDA2.Services.Exceptions
 {
     public class TeamNotFollowedException:Exception
     {
