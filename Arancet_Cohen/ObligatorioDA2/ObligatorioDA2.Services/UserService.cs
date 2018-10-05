@@ -1,6 +1,7 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Exceptions;
 using DataRepositoryInterfaces;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -38,17 +39,32 @@ namespace ObligatorioDA2.Services
             usersStorage.Modify(testUser);
         }
 
-        public void FollowTeam(string username, Team toFollow)
-        {
-            User follower =usersStorage.Get(username);
-            follower.AddFavourite(toFollow);
-            usersStorage.Modify(follower);
-        }
-
         public void FollowTeam(string userName, int idTeam)
         {
             Team toFollow = teamsStorage.Get(idTeam);
             FollowTeam(userName, toFollow);
+        }
+
+        public void FollowTeam(string username, Team toFollow)
+        {
+            try {
+                TryFollowTeam(username, toFollow);
+            }
+            catch (InvalidUserDataException) {
+                throw new TeamAlreadyFollowedException();
+            }
+        }
+
+        private void TryFollowTeam(string username, Team toFollow) {
+            User follower = usersStorage.Get(username);
+            follower.AddFavourite(toFollow);
+            usersStorage.Modify(follower);
+        }
+
+        public void UnFollowTeam(string userName, int idTeam)
+        {
+            Team toUnfollow = teamsStorage.Get(idTeam);
+            UnFollowTeam(userName, toUnfollow);
         }
 
         public void UnFollowTeam(string username, Team fake)
@@ -69,11 +85,6 @@ namespace ObligatorioDA2.Services
             usersStorage.Modify(follower);
         }
 
-        public void UnFollowTeam(string userName, int idTeam)
-        {
-            Team toUnfollow = teamsStorage.Get(idTeam);
-            UnFollowTeam(userName, toUnfollow);
-        }
 
         public ICollection<Team> GetUserTeams(string userName)
         {
