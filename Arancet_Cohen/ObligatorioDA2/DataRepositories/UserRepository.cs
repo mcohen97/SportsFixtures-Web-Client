@@ -154,7 +154,11 @@ namespace DataRepositories
                                                 .Any(ut => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
                                                 && f.TeamEntityName.Equals(ut.TeamEntityName)));
             //context.Entry(newFavourites).State = EntityState.Added;
-            context.AttachRange(newFavourites);
+            ICollection<UserTeam> just4test = newFavourites.ToList();
+            //context.AttachRange(newFavourites);
+            foreach (UserTeam ut in newFavourites) {
+                context.Entry(ut).State = EntityState.Added;
+            }
         }
 
 
