@@ -7,6 +7,7 @@ using RepositoryInterface;
 using BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using DataRepositoryInterfaces;
+using System;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -30,41 +31,69 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateValidTeamTest()
         {
-            //Arrange
-            var modelIn = new TeamModelIn() {
-                 Name = "DreamTeam", 
-                 Photo = "/MyResource/DreamTeam.png",
-                 SportName = "Soccer"
-            };
-            var result = controller.Post(modelIn);
+            //Arrange.
+            TeamModelIn input = CreateTeamModelIn();
 
-            //Act
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as TeamModelOut;
+            //Act.
+            IActionResult result = controller.Post(input);
+            CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
+            TeamModelOut modelOut = createdResult.Value as TeamModelOut;
 
             //Assert
             repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual("GetById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual(modelIn.Name, modelOut.Name);
+            Assert.AreEqual(input.Name, modelOut.Name);
+        }
+
+        private TeamModelIn CreateTeamModelIn()
+        {
+            return new TeamModelIn()
+            {
+                Name = "DreamTeam",
+                Photo = "/MyResource/DreamTeam.png",
+                SportName = "Soccer"
+            };
         }
 
         [TestMethod]
         public void CreateFailedTeamRequiredNameTest()
         {
-            //Arrange
-           var modelIn = new TeamModelIn() {
+            //Arrange.
+           TeamModelIn modelIn = new TeamModelIn() {
                  Photo = "/MyResource/DreamTeam.png"
             };
-            //We need to force the error in de ModelState
+            //We need to force the error in de ModelState.
             controller.ModelState.AddModelError("", "Error");
-            var result = controller.Post(modelIn);
-            //Act
-            var createdResult = result as BadRequestObjectResult;
-            //Assert
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual(400, createdResult.StatusCode);
+
+            //Act.
+            IActionResult result = controller.Post(modelIn);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            
+            //Assert.
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+        }
+
+        [TestMethod]
+        public void CreateAlreadyExistingTeam() {
+            //Arrange.
+            Exception toThrow = new TeamAlreadyExistsException();
+            repo.Setup(tr => tr.Add(It.IsAny<Team>())).Throws(toThrow);
+            TeamModelIn input = CreateTeamModelIn();
+
+            //Act.
+            IActionResult result = controller.Post(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
         [TestMethod]
