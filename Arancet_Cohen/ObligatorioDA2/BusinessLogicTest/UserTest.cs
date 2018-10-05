@@ -230,7 +230,7 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TeamNotFollowedException))]
+        [ExpectedException(typeof(InvalidUserDataException))]
         public void RemoveNotExistentTest() {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             toTest.RemoveFavouriteTeam(aTeam);
