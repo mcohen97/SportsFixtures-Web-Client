@@ -351,6 +351,91 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400,badRequest.StatusCode);
         }
 
+        [TestMethod]
+        public void UnFollowTeamTest() {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+            TeamModelIn input = GetTeamModelIn();
+
+            //Act.
+            IActionResult result = controller.UnFollowTeam(input);
+            OkObjectResult okResult = result as OkObjectResult;
+            OkModelOut okModel = okResult.Value as OkModelOut;
+
+            //Assert.
+            service.Verify(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(okModel);
+        }
+
+        [TestMethod]
+        public void UnfollowTeamNotFoundTest() {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+            TeamModelIn input = GetTeamModelIn();
+            Exception toThrow = new TeamNotFoundException();
+            service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.UnFollow(input);
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            service.Verify(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+        }
+
+        [TestMethod]
+        public void UnfollowNotFollowedTest() {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+            TeamModelIn input = GetTeamModelIn();
+            Exception toThrow = new TeamNotFollowedException();
+            service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.UnFollow(input);
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            service.Verify(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+        }
+
+        [TestMethod]
+        public void UnfollowInvalidTeamTest() {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+            controller.ModelState.AddModelError("", "Error");
+            TeamModelIn input = new TeamModelIn() { };
+
+            //Act.
+            IActionResult result = controller.UnFollow(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+
+            //Assert.
+            service.Verify(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+        }
+
         private TeamModelIn GetTeamModelIn()
         {
             TeamModelIn fake = new TeamModelIn() { Name = "Internazionale de Milano", SportName = "Soccer", Id = 3, Photo="" };
