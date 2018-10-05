@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BusinessLogic;
 using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok();
+            ICollection<Team> allOfThem = teams.GetAll();
+            ICollection<TeamModelOut> conversion = allOfThem.Select(t => BuildTeamModelOut(t)).ToList();
+            return Ok(conversion);
         }
 
         [HttpGet("{id}")]
