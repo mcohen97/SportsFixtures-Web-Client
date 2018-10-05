@@ -65,27 +65,55 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] TeamModelIn team)
         {
-            IActionResult toReturn;
+            IActionResult result;
             if (ModelState.IsValid)
             {
-                Team toAdd = new Team(team.Name, team.Photo, new Sport(team.SportName));
-
-                teams.Add(toAdd);
-
-                TeamModelOut addedTeam = new TeamModelOut()
-                {
-                    Id = 1,
-                    Name = team.Name,
-                    Photo = team.Photo
-                };
-
-                toReturn = CreatedAtRoute("GetById", new { id = addedTeam.Id }, addedTeam);
+                result = AddValidTeam(team);
             }
             else
             {
-                toReturn = BadRequest(ModelState);
+                result = BadRequest(ModelState);
             }
-            return toReturn;
+            return result;
+        }
+
+        private IActionResult AddValidTeam(TeamModelIn team)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryAddTeam(team);
+            }
+            catch (TeamAlreadyExistsException e) {
+                ErrorModelOut error = CreateErrorModel(e);
+                result = BadRequest(error);
+            }
+            return result;
+        }
+
+        private ErrorModelOut CreateErrorModel(TeamAlreadyExistsException e)
+        {
+            return new ErrorModelOut() { ErrorMessage = e.Message };
+        }
+
+        private IActionResult TryAddTeam(TeamModelIn team)
+        {
+            IActionResult result;
+            Team toAdd = new Team(team.Name, team.Photo, new Sport(team.SportName));
+            Team added = teams.Add(toAdd);
+            TeamModelOut modelOut = BuildTeamModelOut(added);
+            return CreatedAtRoute("GetTeamById", modelOut);
+        }
+
+        private TeamModelOut BuildTeamModelOut(Team toReturn)
+        {
+            TeamModelOut output= new TeamModelOut()
+            {
+                Id = toReturn.Id,
+                Name = toReturn.Name,
+                Photo = toReturn.Photo
+            };
+            return output;
         }
 
         [HttpPut("{id}")]
