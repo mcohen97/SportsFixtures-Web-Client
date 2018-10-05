@@ -442,7 +442,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
             Team aTeam = new Team("aTeam", "aPhoto", new Sport("aSport"));
-            service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Returns(new List<Team>() { aTeam, aTeam, aTeam });
+            ICollection<Team> list2return = new List<Team>() { aTeam, aTeam, aTeam };
+            service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Returns(list2return);
 
             //Act.
             IActionResult result = controller.GetFollowedTeams();
@@ -455,7 +456,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(teamsFollowed);
-            Assert.AreEqual(teamsFollowed.Count, 1);
+            Assert.AreEqual(list2return.Count,teamsFollowed.Count);
         }
 
         private TeamModelIn GetTeamModelIn()
