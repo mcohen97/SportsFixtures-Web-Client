@@ -264,7 +264,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void FollowTeamTest()
         {
             //Arrange.
-            controller.HttpContext.User = new GenericPrincipal(new GenericIdentity("username"), new string[0]);
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
             TeamModelIn input = GetTeamModelIn();
 
             //Act.
@@ -273,12 +274,37 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkModelOut okMessage = okResult.Value as OkModelOut;
 
             //Assert.
-            service.Verify(us => us.FollowTeam("usernamme", 3));
+            service.Verify(us => us.FollowTeam("username", 3));
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200,okResult.StatusCode);
             Assert.IsNotNull(okMessage);
         }
+
+       /* [TestMethod]
+        public void FollowTeamAlreadyFollowing() {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+
+            Exception toThrow = new User();
+            service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+            TeamModelIn input = GetTeamModelIn();
+
+            //Act.
+            IActionResult result = controller.FollowTeam(input);
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            service.Verify(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+
+        }*/
 
         [TestMethod]
         public void FollowTeamNotExistentTest() {
@@ -309,8 +335,10 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void FollowTeamInvalidFormatTest() {
 
             //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
             controller.ModelState.AddModelError("", "Error");
-            TeamModelIn input = GetTeamModelIn();
+            TeamModelIn input = new TeamModelIn() { };
 
             //Act.
             IActionResult result =controller.FollowTeam(input);
@@ -320,7 +348,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             service.Verify(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400,badRequest);
+            Assert.AreEqual(400,badRequest.StatusCode);
         }
 
         private TeamModelIn GetTeamModelIn()
