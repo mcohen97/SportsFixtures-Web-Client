@@ -194,68 +194,57 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
-
-
         [TestMethod]
         public void PutTest() {
-            //Arrange
-            var modelIn = new TeamModelIn()
-            {
-                Name = "DreamTeam",
-                Photo = "/MyResource/DreamTeam.png",
-                SportName = "Soccer"
-            };
+            //Arrange.
+            TeamModelIn input = CreateTeamModelIn();
 
-            IActionResult result = controller.Put("Soccer",modelIn);
-            OkResult okResult = result as OkResult;
+            //Act.
+            IActionResult result = controller.Put(2,input);
+            OkObjectResult okResult = result as OkObjectResult;
+            TeamModelOut modified = okResult.Value as TeamModelOut;
 
-            //verify it modifies but not adds
+            //Assert.
             repo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
             repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Never);
+            Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
-            Assert.AreEqual(okResult.StatusCode, 200);
+            Assert.AreEqual(200,okResult.StatusCode);
         }
 
         [TestMethod]
         public void PutAddTest() {
 
-            //make repository throw not existing exception, so that it has to add
+            //Arrange.
             repo.Setup(r => r.Modify(It.IsAny<Team>())).Throws(new TeamNotFoundException());
+            TeamModelIn input = CreateTeamModelIn();
 
-            var modelIn = new TeamModelIn()
-            {
-                Name = "Nacional",
-                Photo = "/MyResource/DreamTeam.png",
-                SportName= "Soccer"
-                
-            };
+            //Act.
+            IActionResult result =controller.Put(2,input);
+            CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
+            TeamModelOut modelOut = createdResult.Value as TeamModelOut;
 
-            //act
-            IActionResult result =controller.Put("Soccer",modelIn);
-            var createdResult = result as CreatedAtRouteResult;
-            var modelOut = createdResult.Value as TeamModelOut;
-
-            //assert
+            //Assert.
             repo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
             repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
             Assert.AreEqual("GetTeamById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual(modelIn.Name, modelOut.Name);
+            Assert.AreEqual(input.Id, modelOut.Name);
         }
 
         [TestMethod]
         public void PutWrongFormatTest() {
-            //Arrange
-            var modelIn = new TeamModelIn()
-            {
-                Photo = "/MyResource/DreamTeam.png"
-            };
-            //We need to force the error in de ModelState
+            //Arrange.
+            TeamModelIn modelIn = new TeamModelIn(){Photo = "/MyResource/DreamTeam.png"};
+            //We need to force the error in de ModelState.
             controller.ModelState.AddModelError("", "Error");
-            IActionResult result = controller.Put("Soccer",modelIn);
-            //Act
+
+            //Act.
+            IActionResult result = controller.Put(2,modelIn);
             BadRequestObjectResult createdResult = result as BadRequestObjectResult;
-            //Assert
+
+            //Assert.
+            Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(400, createdResult.StatusCode);
         }
