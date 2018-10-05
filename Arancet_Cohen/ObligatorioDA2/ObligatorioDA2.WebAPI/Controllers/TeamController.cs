@@ -184,5 +184,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             return result;
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
