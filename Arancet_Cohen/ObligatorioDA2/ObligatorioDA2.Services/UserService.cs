@@ -1,4 +1,5 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Exceptions;
 using DataRepositoryInterfaces;
 using ObligatorioDA2.Services.Interfaces;
 using System;
@@ -51,6 +52,17 @@ namespace ObligatorioDA2.Services
         }
 
         public void UnFollowTeam(string username, Team fake)
+        {
+            try
+            {
+                TryUnFollow(username, fake);
+            }
+            catch (InvalidUserDataException) {
+                throw new TeamNotFollowedException();
+            }
+        }
+
+        private void TryUnFollow(string username, Team fake)
         {
             User follower = usersStorage.Get(username);
             follower.RemoveFavouriteTeam(fake);
