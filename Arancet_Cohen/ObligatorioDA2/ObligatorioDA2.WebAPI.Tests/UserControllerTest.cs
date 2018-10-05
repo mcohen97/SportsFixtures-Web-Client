@@ -381,7 +381,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
             //Act.
-            IActionResult result = controller.UnFollow(input);
+            IActionResult result = controller.UnFollowTeam(input);
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
@@ -404,7 +404,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
             //Act.
-            IActionResult result = controller.UnFollow(input);
+            IActionResult result = controller.UnFollowTeam(input);
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
@@ -426,7 +426,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             TeamModelIn input = new TeamModelIn() { };
 
             //Act.
-            IActionResult result = controller.UnFollow(input);
+            IActionResult result = controller.UnFollowTeam(input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
