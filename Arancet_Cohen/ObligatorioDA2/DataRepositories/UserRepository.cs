@@ -122,12 +122,14 @@ namespace DataRepositories
             if (AnyWithThisUserName(aUser.UserName))
             {
                 UserEntity entity = userMapper.ToEntity(aUser);
-
-                foreach (UserTeam team in userMapper.GetUserTeams(aUser)) {
+                ICollection<UserTeam> favourites = userMapper.GetUserTeams(aUser);
+                RemoveMissing(favourites);
+                AddNewFavourites(favourites);
+               /* foreach (UserTeam team in userMapper.GetUserTeams(aUser)) {
                     if (!context.UserTeams.Any(ut=>ut.Team.Equals(team.Team) && ut.Follower.Equals(team.Follower))) {
                         context.Entry(team).State=EntityState.Added;
                     }
-                }
+                }*/
                 context.Update(entity);
                 context.SaveChanges();
             }
@@ -136,6 +138,25 @@ namespace DataRepositories
                 throw new UserNotFoundException();
             }
         }
+
+        private void RemoveMissing(ICollection<UserTeam> favourites)
+        {
+            IQueryable<UserTeam> missing = context.UserTeams
+                .Where(ut => !favourites.Any(f => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
+                                                && f.TeamEntityName.Equals(ut.TeamEntityName)));
+            context.UserTeams.RemoveRange(missing);
+        }
+
+        private void AddNewFavourites(ICollection<UserTeam> favourites)
+        {
+            IEnumerable<UserTeam> newFavourites = favourites
+                                                .Where(f => !context.UserTeams
+                                                .Any(ut => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
+                                                && f.TeamEntityName.Equals(ut.TeamEntityName)));
+            //context.Entry(newFavourites).State = EntityState.Added;
+            context.AttachRange(newFavourites);
+        }
+
 
         private bool AnyWithThisUserName(string userName)
         {
