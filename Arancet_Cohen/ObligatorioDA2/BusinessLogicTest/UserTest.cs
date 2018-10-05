@@ -209,6 +209,14 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(InvalidUserDataException))]
+        public void AddAlreadyFollowingTeamTest() {
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            toTest.AddFavourite(aTeam);
+            toTest.AddFavourite(aTeam);
+        }
+
+        [TestMethod]
         public void HasTeamTest() {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             toTest.AddFavourite(aTeam);
