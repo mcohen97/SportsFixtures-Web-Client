@@ -20,7 +20,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestInitialize]
         public void SetUp() {
-            team = new Team(2,"Nacional", "aPath",new Sport("Soccer"));
+            team = new Team(2,"Nacional", "/MyResource/Nacional.png", new Sport("Soccer"));
             repo = new Mock<ITeamRepository>();
             repo.Setup(r => r.Get("Soccer","Nacional")).Returns(team);
             repo.Setup(r => r.Get(It.Is<string>(i => !i.Equals("Soccer")), It.Is<string>(i => !i.Equals("Nacional"))))
@@ -33,6 +33,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             //Arrange.
             TeamModelIn input = CreateTeamModelIn();
+            repo.Setup(r => r.Add(It.IsAny<Team>())).Returns(team);
 
             //Act.
             IActionResult result = controller.Post(input);
@@ -42,7 +43,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Assert
             repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
             Assert.IsNotNull(createdResult);
-            Assert.AreEqual("GetById", createdResult.RouteName);
+            Assert.AreEqual("GetTeamById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(input.Name, modelOut.Name);
         }
@@ -51,9 +52,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             return new TeamModelIn()
             {
-                Name = "DreamTeam",
-                Photo = "/MyResource/DreamTeam.png",
-                SportName = "Soccer"
+                Name = team.Name,
+                Photo = team.Photo,
+                SportName = team.Sport.Name
             };
         }
 
