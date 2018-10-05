@@ -119,7 +119,10 @@ namespace BusinessLogic
         }
 
         public void AddFavourite(Team team) {
-            favourites.Add(team);
+            if (!favourites.Contains(team))
+            {
+                favourites.Add(team);
+            }
         }
 
         public bool HasFavouriteTeam(Team aTeam)
@@ -134,7 +137,7 @@ namespace BusinessLogic
                 favourites.Remove(aTeam);
             }
             else {
-                throw new TeamNotFollowedException();
+                throw new InvalidUserDataException("User does not follow the team");
             }
         }
 
