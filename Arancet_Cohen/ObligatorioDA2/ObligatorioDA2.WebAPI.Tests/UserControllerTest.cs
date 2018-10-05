@@ -436,6 +436,28 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, badRequest.StatusCode);
         }
 
+        [TestMethod]
+        public void GetFollowedTeamsTest() {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+            Team aTeam = new Team("aTeam", "aPhoto", new Sport("aSport"));
+            service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Returns(new List<Team>() { aTeam, aTeam, aTeam });
+
+            //Act.
+            IActionResult result = controller.GetFollowedTeams();
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<TeamModelOut> teamsFollowed = okResult.Value as ICollection<TeamModelOut>;
+
+            //Assert.
+            service.Verify(us => us.GetUserTeams("username"), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(teamsFollowed);
+            Assert.AreEqual(teamsFollowed.Count, 1);
+        }
+
         private TeamModelIn GetTeamModelIn()
         {
             TeamModelIn fake = new TeamModelIn() { Name = "Internazionale de Milano", SportName = "Soccer", Id = 3, Photo="" };
