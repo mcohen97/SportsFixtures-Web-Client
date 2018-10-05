@@ -26,6 +26,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok();
         }
 
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         [HttpGet("{sportName}/{teamName}", Name = "GetTeamById")]
         public IActionResult Get(string sportName, string teamName)
