@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -281,30 +282,29 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okMessage);
         }
 
-       /* [TestMethod]
+        [TestMethod]
         public void FollowTeamAlreadyFollowing() {
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
 
-            Exception toThrow = new User();
+            Exception toThrow = new TeamAlreadyFollowedException();
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
             TeamModelIn input = GetTeamModelIn();
 
             //Act.
             IActionResult result = controller.FollowTeam(input);
-            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            BadRequestObjectResult notFound = result as BadRequestObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
             //Assert.
             service.Verify(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFound);
-            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.AreEqual(400, notFound.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
-
-        }*/
+        }
 
         [TestMethod]
         public void FollowTeamNotExistentTest() {
