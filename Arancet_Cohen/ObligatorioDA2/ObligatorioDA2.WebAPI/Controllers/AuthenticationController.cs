@@ -27,7 +27,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             logger = aService;
         }
 
-        // POST api/<controller>
         [HttpPost]
         public IActionResult Authenticate([FromBody]LoginModelIn user)
         {
