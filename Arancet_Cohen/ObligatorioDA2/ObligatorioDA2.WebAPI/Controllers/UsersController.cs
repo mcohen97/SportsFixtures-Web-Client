@@ -53,10 +53,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private ErrorModelOut CreateErrorModel(Exception e)
-        {
-            return new ErrorModelOut() { ErrorMessage = e.Message };
-        }
 
         private UserModelOut TryGetUser(string username) {
             User queried = service.GetUser(username);
@@ -70,7 +66,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return toReturn;
         }
 
-        [HttpPost, Route("teams")]
+        [HttpPost, Route("followed-teams")]
         [Authorize]
         public IActionResult FollowTeam([FromBody] TeamModelIn aTeam) {
             IActionResult result;
@@ -113,6 +109,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
             return Ok(okMessage);
         }
+
+        [HttpDelete, Route("followed-teams")]
+        [Authorize]
         public IActionResult UnFollowTeam(TeamModelIn input)
         {
             IActionResult result;
@@ -191,6 +190,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return CreatedAtRoute("GetUserById", modelOut);
         }
 
+        private ErrorModelOut CreateErrorModel(Exception e)
+        {
+            return new ErrorModelOut() { ErrorMessage = e.Message };
+        }
+
+
         [HttpPut("{username}")]
         [Authorize(Roles = "Admin")]
         public IActionResult Put(string username, [FromBody] UserModelIn toModify)
@@ -254,6 +259,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return built;
         }
 
+        [HttpGet("followed-teams")]
+        [Authorize]
         public IActionResult GetFollowedTeams()
         {
             string currentUser = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
