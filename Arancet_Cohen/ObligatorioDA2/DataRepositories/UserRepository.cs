@@ -125,11 +125,6 @@ namespace DataRepositories
                 ICollection<UserTeam> favourites = userMapper.GetUserTeams(aUser);
                 RemoveMissing(favourites);
                 AddNewFavourites(favourites);
-               /* foreach (UserTeam team in userMapper.GetUserTeams(aUser)) {
-                    if (!context.UserTeams.Any(ut=>ut.Team.Equals(team.Team) && ut.Follower.Equals(team.Follower))) {
-                        context.Entry(team).State=EntityState.Added;
-                    }
-                }*/
                 context.Update(entity);
                 context.SaveChanges();
             }
@@ -153,9 +148,7 @@ namespace DataRepositories
                                                 .Where(f => !context.UserTeams
                                                 .Any(ut => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
                                                 && f.TeamEntityName.Equals(ut.TeamEntityName)));
-            //context.Entry(newFavourites).State = EntityState.Added;
             ICollection<UserTeam> just4test = newFavourites.ToList();
-            //context.AttachRange(newFavourites);
             foreach (UserTeam ut in newFavourites) {
                 context.Entry(ut).State = EntityState.Added;
             }
