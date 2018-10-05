@@ -281,7 +281,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             repo.Verify(r => r.Delete(2), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFound);
-            Assert.AreEqual(400, notFound.StatusCode);
+            Assert.AreEqual(404, notFound.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
