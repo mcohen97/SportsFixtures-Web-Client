@@ -104,11 +104,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private ErrorModelOut CreateErrorModel(TeamAlreadyExistsException e)
-        {
-            return new ErrorModelOut() { ErrorMessage = e.Message };
-        }
-
         private IActionResult TryAddTeam(TeamModelIn team)
         {
             IActionResult result;
@@ -176,7 +171,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 teams.Delete(sportName, teamName);
-                result = Ok();
+                OkModelOut message = new OkModelOut() { OkMessage = "The team was deleted successfully" };
+                result = Ok(message);
             }
             catch (TeamNotFoundException e)
             {
@@ -188,7 +184,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            throw new NotImplementedException();
+            IActionResult result;
+            try
+            {
+                teams.Delete(id);
+                OkModelOut message = new OkModelOut { OkMessage = "The team was deleted succesfully" };
+                result = Ok(message);
+            }
+            catch (TeamNotFoundException e)
+            {
+                ErrorModelOut error = CreateErrorModel(e);
+                result = NotFound(error);
+            }
+            return result;
+        }
+
+        private ErrorModelOut CreateErrorModel(Exception e)
+        {
+            return new ErrorModelOut() { ErrorMessage = e.Message };
         }
     }
 }
