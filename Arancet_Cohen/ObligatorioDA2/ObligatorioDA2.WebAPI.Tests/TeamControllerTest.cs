@@ -229,7 +229,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             repo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
             Assert.AreEqual("GetTeamById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual(input.Id, modelOut.Name);
+            Assert.AreEqual(2, modelOut.Id);
         }
 
         [TestMethod]
