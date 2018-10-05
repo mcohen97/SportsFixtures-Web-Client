@@ -18,8 +18,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         public TeamsController(ITeamRepository aRepo)
         {
             teams = aRepo;
-
-
         }
         [HttpGet]
         public IActionResult Get()
@@ -132,12 +130,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(string sportName, [FromBody] TeamModelIn value)
+        public IActionResult Put(int teamId, [FromBody] TeamModelIn value)
         {
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = PutValid(sportName, value);
+                result = PutValid(teamId, value);
             }
             else
             {
@@ -146,36 +144,29 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult PutValid(string sportName, TeamModelIn value)
+        private IActionResult PutValid(int teamId, TeamModelIn value)
         {
             IActionResult result;
             try
             {
                 Team toModify = new Team(1,value.Name, value.Photo,new Sport("Soccer"));
                 teams.Modify(toModify);
-                result = Ok();
+                TeamModelOut output = CreateModelOut(toModify);
+                result = Ok(output);
             }
             catch (TeamNotFoundException)
             {
-                result = PostId(sportName, value);
+                result = PostId(teamId, value);
             }
             return result;
         }
 
-        private IActionResult PostId(string sportName, TeamModelIn team)
+        private IActionResult PostId(int teamId, TeamModelIn team)
         {
-            Team toAdd = new Team(1,team.Name, team.Photo,new Sport(team.SportName));
-
+            Team toAdd = new Team(teamId,team.Name, team.Photo,new Sport(team.SportName));
             teams.Add(toAdd);
-
-            TeamModelOut addedTeam = new TeamModelOut()
-            {
-                SportName = sportName,
-                Name = team.Name,
-                Photo = team.Photo
-            };
-
-            return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);
+            TeamModelOut addedTeam = CreateModelOut(toAdd);
+            return CreatedAtRoute("GetTeamById", addedTeam);
         }
 
         [HttpDelete("{sportName}/{teamName}")]
