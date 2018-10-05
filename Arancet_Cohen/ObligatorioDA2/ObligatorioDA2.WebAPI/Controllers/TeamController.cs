@@ -40,7 +40,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             catch (TeamNotFoundException e)
             {
-                result = new NotFoundObjectResult(e.Message);
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = new NotFoundObjectResult(error);
             }
             return result;
         }
