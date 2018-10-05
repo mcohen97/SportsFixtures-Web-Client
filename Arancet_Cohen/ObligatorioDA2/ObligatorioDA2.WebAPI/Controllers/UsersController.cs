@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -95,7 +96,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 ErrorModelOut error = CreateErrorModel(e1);
                 result = NotFound(error);
             }
-            catch (EntityAlreadyExistsException e2)
+            catch (TeamAlreadyFollowedException e2)
             {
                 ErrorModelOut error = CreateErrorModel(e2);
                 result = BadRequest(error);
