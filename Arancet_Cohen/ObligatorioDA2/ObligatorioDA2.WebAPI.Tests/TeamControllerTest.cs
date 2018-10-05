@@ -250,11 +250,51 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void DeleteByIdTest()
+        {
+
+            //Act.
+            IActionResult result = controller.Delete(2);
+            OkObjectResult okResult = result as OkObjectResult;
+            OkModelOut okMessage = okResult.Value as OkModelOut;
+
+            //Assert.
+            repo.Verify(r => r.Delete(2), Times.Once);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(okResult.StatusCode, 200);
+            Assert.IsNotNull(okMessage);
+        }
+
+        [TestMethod]
+        public void DeleteByIdNotExistentTest()
+        {
+            //Arrange.
+            Exception toThrow = new TeamNotFoundException();
+            repo.Setup(r => r.Delete(It.IsAny<int>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Delete(2);
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+            
+            //Assert.
+            repo.Verify(r => r.Delete(2), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(400, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
+        [TestMethod]
         public void DeleteTest() {
 
+            //Act.
             IActionResult result =controller.Delete("Soccer","Nacional");
-            OkResult okResult = result as OkResult;
+            OkObjectResult okResult = result as OkObjectResult;
+            OkModelOut okMessage = okResult.Value as OkModelOut;
 
+            //Assert.
             repo.Verify(r => r.Delete("Soccer", "Nacional"), Times.Once);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(okResult.StatusCode, 200);
