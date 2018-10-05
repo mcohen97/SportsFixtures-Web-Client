@@ -240,6 +240,28 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
+        private User BuildUser(UserModelIn modelIn)
+        {
+            UserId identity = new UserId
+            {
+                Name = modelIn.Name,
+                Surname = modelIn.Surname,
+                UserName = modelIn.Username,
+                Password = modelIn.Password,
+                Email = modelIn.Email
+            };
+            User built = modelIn.IsAdmin ? factory.CreateAdmin(identity) : factory.CreateFollower(identity);
+            return built;
+        }
+
+        public IActionResult GetFollowedTeams()
+        {
+            string currentUser = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+            ICollection<Team> followed = service.GetUserTeams(currentUser);
+            ICollection<TeamModelOut> converted = followed.Select(t => CreateModelOut(t)).ToList();
+            return Ok(converted);
+        }
+
         private UserModelOut CreateModelOut(User added)
         {
             UserModelOut built = new UserModelOut()
@@ -252,17 +274,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return built;
         }
 
-        private User BuildUser(UserModelIn modelIn)
+        private TeamModelOut CreateModelOut(Team stored)
         {
-            UserId identity = new UserId
+            TeamModelOut built = new TeamModelOut()
             {
-                Name = modelIn.Name,
-                Surname = modelIn.Surname,
-                UserName = modelIn.Username,
-                Password = modelIn.Password,
-                Email = modelIn.Email
+                Id= stored.Id,
+                Name= stored.Name,
+                SportName = stored.Sport.Name,
+                Photo= stored.Photo
             };
-            User built = modelIn.IsAdmin ? factory.CreateAdmin(identity) : factory.CreateFollower(identity);
             return built;
         }
 
