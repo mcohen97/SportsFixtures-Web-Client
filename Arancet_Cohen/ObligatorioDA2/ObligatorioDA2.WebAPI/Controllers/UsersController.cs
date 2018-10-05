@@ -113,6 +113,45 @@ namespace ObligatorioDA2.WebAPI.Controllers
             OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
             return Ok(okMessage);
         }
+        public IActionResult UnFollowTeam(TeamModelIn input)
+        {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = UnFollowValidFormat(input);
+            }
+            else {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult UnFollowValidFormat(TeamModelIn input)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryUnFollow(input);
+            }
+            catch (EntityNotFoundException e) {
+                ErrorModelOut error = CreateErrorModel(e);
+                result = NotFound(error);
+            }
+            catch (TeamNotFollowedException e)
+            {
+                ErrorModelOut error = CreateErrorModel(e);
+                result = NotFound(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryUnFollow(TeamModelIn input)
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+            service.UnFollowTeam(username,input.Id);
+            OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
+            return Ok(okMessage);
+        }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
