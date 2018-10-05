@@ -29,19 +29,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("{sportName}/{teamName}", Name = "GetTeamById")]
-        public IActionResult Get(string sportName, string teamName)
-        {
             IActionResult result;
-            Team fetched;
             try
             {
-                fetched = TryGetTeam(sportName, teamName);
-                TeamModelOut transferObject = CreateModelOut(fetched);
-                result = Ok(transferObject);
+                Team fetched = teams.Get(id);
+                TeamModelOut output = CreateModelOut(fetched);
+                result = Ok(output);
             }
             catch (TeamNotFoundException e)
             {
@@ -51,9 +44,22 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private Team TryGetTeam(string sportName, string teamName)
+        [HttpGet("{sportName}/{teamName}", Name = "GetTeamById")]
+        public IActionResult Get(string sportName, string teamName)
         {
-            return teams.Get(sportName, teamName);
+            IActionResult result;
+            try
+            {
+                Team fetched = teams.Get(sportName, teamName);
+                TeamModelOut transferObject = CreateModelOut(fetched);
+                result = Ok(transferObject);
+            }
+            catch (TeamNotFoundException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = new NotFoundObjectResult(error);
+            }
+            return result;
         }
 
         private TeamModelOut CreateModelOut(Team fetched)
