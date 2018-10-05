@@ -14,6 +14,7 @@ using ObligatorioDA2.Services.Interfaces;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -264,9 +265,10 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             //Arrange.
             controller.HttpContext.User = new GenericPrincipal(new GenericIdentity("username"), new string[0]);
+            TeamModelIn input = GetTeamModelIn();
 
             //Act.
-            IActionResult result = controller.FollowTeam(3);
+            IActionResult result = controller.FollowTeam(input);
             OkObjectResult okResult = result as OkObjectResult;
             OkModelOut okMessage = okResult.Value as OkModelOut;
 
@@ -280,13 +282,17 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void FollowTeamNotExistentTest() {
+
             //Arrange.
-            controller.HttpContext.User = new GenericPrincipal(new GenericIdentity("username"), new string[0]);
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+
             Exception toThrow = new TeamNotFoundException();
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+            TeamModelIn input = GetTeamModelIn();
 
             //Act.
-            IActionResult result = controller.FollowTeam(3);
+            IActionResult result = controller.FollowTeam(input);
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
@@ -299,6 +305,41 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
 
+        [TestMethod]
+        public void FollowTeamInvalidFormatTest() {
+
+            //Arrange.
+            controller.ModelState.AddModelError("", "Error");
+            TeamModelIn input = GetTeamModelIn();
+
+            //Act.
+            IActionResult result =controller.FollowTeam(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+
+            //Assert.
+            service.Verify(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400,badRequest);
+        }
+
+        private TeamModelIn GetTeamModelIn()
+        {
+            TeamModelIn fake = new TeamModelIn() { Name = "Internazionale de Milano", SportName = "Soccer", Id = 3, Photo="" };
+            return fake;
+        }
+        private ControllerContext GetFakeControllerContext() {
+            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", "username") };
+
+            Mock<ClaimsPrincipal> cp = new Mock<ClaimsPrincipal>();
+            cp.Setup(m => m.Claims).Returns(fakeClaims);
+            Mock<HttpContext> contextMock = new Mock<HttpContext>();
+            contextMock.Setup(ctx => ctx.User).Returns(cp.Object);
+
+            Mock<ControllerContext> controllerContextMock = new Mock<ControllerContext>();
+            controllerContextMock.Object.HttpContext = contextMock.Object;
+            return controllerContextMock.Object;
+        }
         private User GetFakeUser()
         {
             UserId identity = new UserId()
