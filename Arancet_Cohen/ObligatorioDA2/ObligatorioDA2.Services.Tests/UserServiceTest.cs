@@ -117,6 +117,16 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(TeamAlreadyFollowedException))]
+        public void FollowAlreadyFollowingTeam() {
+            service.FollowTeam(testUser.UserName, toFollow);
+            service.FollowTeam(testUser.UserName, toFollow);
+
+            users.Verify(r => r.Get(testUser.UserName), Times.Exactly(2));
+            users.Verify(r => r.Modify(testUser), Times.Never);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void FollowTeamNotExistentUserTest() {
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
