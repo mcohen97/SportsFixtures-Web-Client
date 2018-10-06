@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.InMemory;
 using RepositoryInterface;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using Match = BusinessLogic.Match;
 
 namespace DataRepositoriesTest
 {
@@ -20,11 +21,14 @@ namespace DataRepositoriesTest
     {
         private ITeamRepository teamsStorage;
         private ISportRepository sportsStorage;
+        private IUserRepository usersStorage;
+        private IMatchRepository matchesStorage;
+
 
         [TestInitialize]
-        public void TestInitialize(){
+        public void TestInitialize() {
             SetUpRepository();
-            ClearDataBase();        
+            ClearDataBase();
         }
         private void SetUpRepository() {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
@@ -33,25 +37,29 @@ namespace DataRepositoriesTest
             DatabaseConnection context = new DatabaseConnection(options);
             sportsStorage = new SportRepository(context);
             teamsStorage = new TeamRepository(context);
+            usersStorage = new UserRepository(context);
+            matchesStorage = new MatchRepository(context);
         }
 
         private void ClearDataBase()
         {
+            usersStorage.Clear();
+            matchesStorage.Clear();
             teamsStorage.Clear();
             sportsStorage.Clear();
         }
 
         [TestMethod]
-        public void NoTeamsTest(){
+        public void NoTeamsTest() {
             bool noTeams = teamsStorage.IsEmpty();
             Assert.IsTrue(noTeams);
         }
 
         [TestMethod]
-        public void AddTeamTest(){
+        public void AddTeamTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
-            Assert.AreEqual(1,teamsStorage.GetAll().Count);
+            Assert.AreEqual(1, teamsStorage.GetAll().Count);
         }
 
         [TestMethod]
@@ -69,21 +77,21 @@ namespace DataRepositoriesTest
             ITeamRepository specific = (ITeamRepository)teamsStorage;
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
-            Team teamInDb = specific.Get("Soccer","DreamTeam");
+            Team teamInDb = specific.Get("Soccer", "DreamTeam");
             Assert.AreEqual("DreamTeam", teamInDb.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
         public void GetNotExistentTeamTest() {
-            Team teamInDb = teamsStorage.Get("Soccer","DreamTeam");
+            Team teamInDb = teamsStorage.Get("Soccer", "DreamTeam");
         }
 
         [TestMethod]
         public void ExistsTeamWithSportTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
-            bool result = teamsStorage.Exists("Soccer",team.Object.Name);
+            bool result = teamsStorage.Exists("Soccer", team.Object.Name);
             Assert.IsTrue(result);
         }
 
@@ -92,7 +100,7 @@ namespace DataRepositoriesTest
             Team team1 = new Team(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             Team team2 = new Team(2, "DreamTeam2", "MyResources/DreamTeam2.png", new Sport("Soccer"));
             teamsStorage.Add(team1);
-            bool result = teamsStorage.Exists("Basketball",team1.Name);
+            bool result = teamsStorage.Exists("Basketball", team1.Name);
             Assert.IsFalse(result);
         }
 
@@ -100,8 +108,27 @@ namespace DataRepositoriesTest
         public void DeleteTest() {
             Team team = new Team(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team);
-            teamsStorage.Delete("Soccer",team.Name);
+            teamsStorage.Delete("Soccer", team.Name);
             Assert.IsTrue(teamsStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        public void DeleteWithMatchesTest() {
+            Sport played = new Sport("Soccer");
+            Team team1 = new Team(1, "DreamTeam", "MyResources/DreamTeam.png", played);
+            Team team2 = new Team(2, "DreamTeam2", "MyResources/DreamTeam2.png", played);
+            Match match = new Match(1, team1, team2, DateTime.Now, played);      
+            teamsStorage.Add(team1);
+            teamsStorage.Add(team2);
+            matchesStorage.Add(match);
+            teamsStorage.Delete(1);
+            Assert.IsTrue(matchesStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void DeleteByIdNotExistentTest() {
+            teamsStorage.Delete(3);
         }
 
 
@@ -129,8 +156,6 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(TeamNotFoundException))]
         public void ModifyNotExistentTest() {
             Mock<Team> team = new Mock<Team>(1,"DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
-            //teamsStorage.Add(team.Object);
-            //SetUpRepository();
             teamsStorage.Modify(team.Object);
         }
 
@@ -207,7 +232,6 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         public void GetUserTeamsTest() {
-            IUserRepository userRepository = GetUsersRepository();
             User fake = GetFakeUser();
             
             ICollection<Team> teams = GetFakeTeams();
@@ -215,9 +239,8 @@ namespace DataRepositoriesTest
                 teamsStorage.Add(created);
                 fake.AddFavourite(created);
             }       
-            userRepository.Add(fake);
-            //ICollection<Team> followedTeams = teamsStorage.GetFollowedTeams(fake.UserName);
-            ICollection<Team> followedTeams=userRepository.Get(fake.UserName).GetFavouriteTeams();
+            usersStorage.Add(fake);
+            ICollection<Team> followedTeams=usersStorage.Get(fake.UserName).GetFavouriteTeams();
             Assert.AreEqual(followedTeams.Count, 3);
         }
 
@@ -249,6 +272,20 @@ namespace DataRepositoriesTest
             Assert.AreEqual(teamsStorage.Get(aTeam.Id), aTeam);
         }
 
+        [TestMethod]
+        public void GetTeamsFollowedTest() {
+            User follower = GetFakeUser();
+            usersStorage.Add(follower);
+            foreach (Team dummy in GetFakeTeams()) {
+                teamsStorage.Add(dummy);
+                follower.AddFavourite(dummy);
+            }
+            usersStorage.Modify(follower);
+
+            ICollection<Team> retrieved =teamsStorage.GetFollowedTeams("JohnDoe");
+            Assert.AreEqual(3, retrieved.Count);
+        }
+
         private User GetFakeUser()
         {
             UserId identity = new UserId
@@ -262,15 +299,7 @@ namespace DataRepositoriesTest
             return new User(identity, true);
         }
 
-        private IUserRepository GetUsersRepository()
-        {
-            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-               .UseInMemoryDatabase(databaseName: "UsersRepository")
-               .Options;
-            DatabaseConnection context = new DatabaseConnection(options);
-            IUserRepository usersStorage = new UserRepository(context);
-            return usersStorage;
-        }
+       
 
         private ICollection<Team> GetFakeTeams()
         {
@@ -281,10 +310,6 @@ namespace DataRepositoriesTest
                 new Team(3, "DreamTeam3", "MyResources/DreamTeam.png",played)
             };
             return teams;
-        }
-
-
-        
-        
+        }       
     }
 }
