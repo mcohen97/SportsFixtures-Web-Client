@@ -120,6 +120,10 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetMatchesOfSportTest() {
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            teamsRepo.Add(teamC);
+
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchBvsC);
             ICollection<Match> matches = serviceToTest.GetAllMatches(sport.Name);
@@ -134,6 +138,10 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetMatchesFromTeamTest() {
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            teamsRepo.Add(teamC);
+
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchAvsC);
             serviceToTest.AddMatch(matchBvsC);
