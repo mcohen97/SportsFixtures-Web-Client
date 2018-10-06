@@ -96,7 +96,7 @@ namespace DataRepositoriesTest
         public void ExistsUserTest()
         {
             usersStorage.Add(user);
-            bool result = usersStorage.Exists(user);
+            bool result = usersStorage.Exists(user.UserName);
             Assert.IsTrue(result);
         }
 
@@ -108,7 +108,7 @@ namespace DataRepositoriesTest
             User user1 = factory.CreateAdmin(userId1);
             User user2 = factory.CreateAdmin(userId2);
             usersStorage.Add(user1);
-            bool result = usersStorage.Exists(user2);
+            bool result = usersStorage.Exists(user2.UserName);
             Assert.IsFalse(result);
         }
 
