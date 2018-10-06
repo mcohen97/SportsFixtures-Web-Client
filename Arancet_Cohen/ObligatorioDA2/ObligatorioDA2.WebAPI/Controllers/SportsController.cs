@@ -138,5 +138,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             return result;
         }
+
+        [HttpGet("{name}/teams")]
+        public IActionResult GetTeams(string name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
