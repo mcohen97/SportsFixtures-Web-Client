@@ -186,6 +186,12 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(SportNotFoundException))]
+        public void GetTeamsOfNoExistingSportTest() {
+            teamsStorage.GetTeams("Soccer");
+        }
+
+        [TestMethod]
         public void GetByIdTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
