@@ -76,11 +76,6 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public bool Exists(Match record)
-        {
-            return AnyWithId(record.Id);
-        }
-
         public Match Get(int anId)
         {
             Match toReturn;
@@ -133,13 +128,6 @@ namespace DataRepositories
             {
                 throw new MatchNotFoundException();
             }
-        }
-
-        private void ModifyExistent(Match aMatch)
-        {
-            MatchEntity toAdd = matchConverter.ToEntity(aMatch);
-            context.Entry(toAdd).State = EntityState.Modified;
-            context.SaveChanges();
         }
 
         private bool AnyWithId(int anId)
