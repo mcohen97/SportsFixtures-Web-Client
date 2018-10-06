@@ -68,17 +68,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private MatchModelOut BuildModelOut(Match aMatch)
-        {
-           return new MatchModelOut()
-            {
-                Id =aMatch.Id,
-                SportName = aMatch.Sport.Name,
-                AwayTeamId = aMatch.AwayTeam.Id,
-                HomeTeamId = aMatch.HomeTeam.Id,
-                CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
-            };
-        }
 
         [HttpGet("{matchId}", Name = "GetMatchById")]
         public IActionResult Get(int matchId)
@@ -209,7 +198,31 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         public IActionResult GetBySport(string sportName)
         {
-            throw new NotImplementedException();
+            IActionResult result;
+            try {
+                ICollection<Match> matches = matchService.GetAllMatches(sportName);
+                ICollection<MatchModelOut> output = matches.Select(m => BuildModelOut(m)).ToList();
+                result = Ok(output);
+            }
+            catch (SportNotFoundException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
+            }
+            return result;
         }
+
+        private MatchModelOut BuildModelOut(Match aMatch)
+        {
+            return new MatchModelOut()
+            {
+                Id = aMatch.Id,
+                SportName = aMatch.Sport.Name,
+                AwayTeamId = aMatch.AwayTeam.Id,
+                HomeTeamId = aMatch.HomeTeam.Id,
+                CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
+            };
+        }
+
     }
 }
