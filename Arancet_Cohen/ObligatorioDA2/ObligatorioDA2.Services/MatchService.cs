@@ -76,11 +76,18 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Match> GetAllMatches(string sportName)
         {
+            if (!sportsStorage.Exists(sportName)) {
+                throw new SportNotFoundException();
+            }
             return matchesStorage.GetAll().Where(m => m.Sport.Name.Equals(sportName)).ToList();
         }
 
         public ICollection<Match> GetAllMatches(int idTeam)
         {
+            if (!teamsStorage.Exists(idTeam))
+            {
+                throw new TeamNotFoundException();
+            }
             return matchesStorage.GetAll().Where(m => m.HomeTeam.Id.Equals(idTeam) || m.AwayTeam.Id.Equals(idTeam)).ToList();
         }
 
