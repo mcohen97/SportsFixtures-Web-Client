@@ -74,14 +74,14 @@ namespace ObligatorioDA2.Services
             matchesStorage.Modify(aMatch);
         }
 
-        public ICollection<Match> GetAllMatches(Sport sport)
+        public ICollection<Match> GetAllMatches(string sportName)
         {
-            return matchesStorage.GetAll().Where(m => m.Sport.Equals(sport)).ToList();
+            return matchesStorage.GetAll().Where(m => m.Sport.Name.Equals(sportName)).ToList();
         }
 
-        public ICollection<Match> GetAllMatches(Team team)
+        public ICollection<Match> GetAllMatches(int idTeam)
         {
-            return matchesStorage.GetAll().Where(m => m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)).ToList();
+            return matchesStorage.GetAll().Where(m => m.HomeTeam.Id.Equals(idTeam) || m.AwayTeam.Id.Equals(idTeam)).ToList();
         }
 
         public bool Exists(int id)

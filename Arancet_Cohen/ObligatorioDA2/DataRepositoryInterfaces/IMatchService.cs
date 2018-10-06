@@ -23,9 +23,9 @@ namespace DataRepositoryInterfaces
 
         void ModifyMatch(int idMatch, int idHome, int idAway, DateTime date, string sportName);
 
-        ICollection<Match> GetAllMatches(Sport sport);
+        ICollection<Match> GetAllMatches(string sportName);
 
-        ICollection<Match> GetAllMatches(Team team);
+        ICollection<Match> GetAllMatches(int teamId);
 
         bool Exists(int id);
 
