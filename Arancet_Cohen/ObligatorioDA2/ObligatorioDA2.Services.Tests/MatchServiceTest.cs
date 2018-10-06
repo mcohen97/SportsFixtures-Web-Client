@@ -122,8 +122,14 @@ namespace ObligatorioDA2.Services.Tests
         public void GetMatchesOfSportTest() {
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchBvsC);
-            ICollection<Match> matches = serviceToTest.GetAllMatches(sport);
+            ICollection<Match> matches = serviceToTest.GetAllMatches(sport.Name);
             Assert.AreEqual(matches.Count, 2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SportNotFoundException))]
+        public void GetMatchesOfNotExistingSportTest() {
+            serviceToTest.GetAllMatches(sport.Name);
         }
 
         [TestMethod]
@@ -131,8 +137,14 @@ namespace ObligatorioDA2.Services.Tests
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchAvsC);
             serviceToTest.AddMatch(matchBvsC);
-            ICollection<Match> matches = serviceToTest.GetAllMatches(teamA);
+            ICollection<Match> matches = serviceToTest.GetAllMatches(teamA.Id);
             Assert.AreEqual(2, matches.Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TeamNotFoundException))]
+        public void GetMatchesOfNotExistingTeamTest() {
+            serviceToTest.GetAllMatches(matchAvsB.Id); 
         }
 
         [TestMethod]
