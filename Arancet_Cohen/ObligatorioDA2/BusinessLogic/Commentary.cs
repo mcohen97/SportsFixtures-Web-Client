@@ -22,8 +22,6 @@ namespace BusinessLogic
         public int Id { get;  set; }
         public string Text { get{return text;}  set{SetText(value);} }
 
-        public object User { get; internal set; }
-
         private void SetText(string value)
         {
             if(value == null)
@@ -36,10 +34,14 @@ namespace BusinessLogic
         }
 
         public override bool Equals(object obj){
-            if(obj == null)
+            if (obj == null)
+            {
                 return false;
-            if(!(obj is Commentary))
+            }
+            if (!(obj is Commentary))
+            {
                 return false;
+            }
             
             Commentary commentaryCompared = (Commentary) obj;
             

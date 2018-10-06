@@ -79,7 +79,12 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void EqualsNullTest(){
-            Assert.AreNotEqual(commentary, null);
+            Assert.IsFalse(commentary.Equals(null));
+        }
+
+        [TestMethod]
+        public void EqualsDifferenceTypeTest() {
+            Assert.IsFalse(commentary.Equals(""));
         }
 
         [TestMethod]
