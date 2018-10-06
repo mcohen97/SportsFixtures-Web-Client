@@ -36,6 +36,7 @@ namespace DataRepositories
                 context.Users.Add(entity);
                 context.UserTeams.AddRange(follower_teams);
                 context.SaveChanges();
+                context.Entry(entity).State = EntityState.Detached;
                 added = aUser;
             }
             else
@@ -147,7 +148,6 @@ namespace DataRepositories
                                                 .Where(f => !context.UserTeams
                                                 .Any(ut => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
                                                 && f.TeamEntityName.Equals(ut.TeamEntityName)));
-            ICollection<UserTeam> just4test = newFavourites.ToList();
             foreach (UserTeam ut in newFavourites) {
                 context.Entry(ut).State = EntityState.Added;
             }

@@ -20,6 +20,7 @@ namespace DataRepositoriesTest
     public class UserRepositoryTest
     {
         IUserRepository usersStorage;
+        ITeamRepository teamsStorage;
         UserId userId;
         UserFactory factory;
         User user;
@@ -39,15 +40,18 @@ namespace DataRepositoriesTest
             user = factory.CreateAdmin(userId);
             CreateRepository();
             usersStorage.Clear();
+            teamsStorage.Clear();
         }
 
         private void CreateRepository() {
 
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "UserRepository")
+                .UseInMemoryDatabase(databaseName: "UserRepositoryTest")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             usersStorage = new UserRepository(context);
+            teamsStorage = new TeamRepository(context);
+            context.UserTeams.RemoveRange(context.UserTeams);
         }
 
         [TestMethod]
@@ -148,6 +152,19 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        public void ModifyAddedTeams() {
+            UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username", Password = "password1", Email = "mail1@domain.com" };
+            User user = factory.CreateAdmin(userId1);
+            usersStorage.Add(user);
+            Team fakeTeam = GetFakeTeam();
+            teamsStorage.Add(fakeTeam);
+            user.AddFavourite(fakeTeam);
+            usersStorage.Modify(user);
+            User stored = usersStorage.Get(user.UserName);
+            Assert.AreEqual(1, stored.GetFavouriteTeams().Count);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
         public void ModifyUserNotExistsTest()
         {
@@ -193,6 +210,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetUserFollowedTeamsTest() {
             Team toFollow = GetFakeTeam();
+            teamsStorage.Add(toFollow);
             user.AddFavourite(toFollow);
             usersStorage.Add(user);
             CreateRepository();
