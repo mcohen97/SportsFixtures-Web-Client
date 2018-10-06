@@ -224,5 +224,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
+        public IActionResult GetByTeam(int teamId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
