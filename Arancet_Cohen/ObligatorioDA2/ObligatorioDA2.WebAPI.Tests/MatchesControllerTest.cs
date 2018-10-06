@@ -371,6 +371,45 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         }
 
+        [TestMethod]
+        public void GetTeamMatchesTest() {
+            //Arrange.
+            ICollection<Match> dummies = new List<Match>() { testMatch, testMatch, testMatch };
+            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Returns(dummies);
+
+            //Act.
+            IActionResult result = controller.GetBySport("Soccer");
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<MatchModelOut> matches = okResult.Value as ICollection<MatchModelOut>;
+
+            //Assert.
+            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<int>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(matches);
+            Assert.AreEqual(dummies.Count, matches.Count);
+        }
+
+        [TestMethod]
+        public void GetTeamMatchesNotFoundTest() {
+            //Arrange.
+            Exception toThrow = new TeamNotFoundException();
+            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.GetBySport("Soccer");
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
         private User GetFakeUser()
         {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "email@email.com" };
