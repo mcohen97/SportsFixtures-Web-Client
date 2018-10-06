@@ -436,7 +436,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetTeamMatchesNotFoundTest()
         {
             //Arrange.
-            Exception toThrow = new SportNotFoundException();
+            Exception toThrow = new TeamNotFoundException();
             matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Throws(toThrow);
 
             //Act.
