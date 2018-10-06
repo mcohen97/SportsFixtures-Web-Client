@@ -159,10 +159,14 @@ namespace DataRepositories
 
         public ICollection<Team> GetTeams(string sportName)
         {
+            if (!context.Sports.Any(s => s.Name.Equals(sportName)))
+            {
+                throw new SportNotFoundException();
+            }
             return GetAll().Where(t => t.Sport.Name == sportName).ToList();
         }
 
-        private bool Exists(int id)
+        public bool Exists(int id)
         {
             return context.Teams.Any(t => t.Identity == id);
         }
@@ -177,11 +181,6 @@ namespace DataRepositories
             context.Teams.Remove(toDelete);
             DeleteMatches(toDelete);
             context.SaveChanges();
-        }
-
-        public bool Exists(Team record)
-        {
-            return Exists(record.Sport.Name, record.Name);
         }
 
         public Team Get(int id)
