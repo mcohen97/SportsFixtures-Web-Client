@@ -188,7 +188,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             ICollection<TeamModelOut> teams = okResult.Value as ICollection<TeamModelOut>;
 
             //Assert.
-            //sportsRepo.Verify(r => r.E(It.IsAny<string>()), Times.Once);
             teamsRepo.Verify(r => r.GetTeams(It.IsAny<string>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
@@ -201,7 +200,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetSportTeamsNotFoundTest() {
             //Arrange.
             Exception toThrow = new SportNotFoundException();
-            sportsRepo.Setup(r => r.Get(It.IsAny<string>())).Throws(toThrow);
+            teamsRepo.Setup(r => r.GetTeams(It.IsAny<string>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controllerToTest.GetTeams("Dummy");
@@ -209,9 +208,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
             //Assert.
-            //sportsRepo.Verify(r => r.Exists(It.IsAny<string>()), Times.Once);
-            teamsRepo.Verify(r => r.GetTeams(It.IsAny<string>()), Times.Never);
-
+            teamsRepo.Verify(r => r.GetTeams(It.IsAny<string>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
     }
