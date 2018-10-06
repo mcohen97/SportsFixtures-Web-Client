@@ -4,6 +4,7 @@ using BusinessLogic;
 using System.Collections.Generic;
 using Moq;
 using BusinessLogic.Exceptions;
+using Match = BusinessLogic.Match;
 
 namespace BusinessLogicTest
 {
@@ -14,7 +15,7 @@ namespace BusinessLogicTest
         private Mock<Team> teamB;
         private Mock<Sport> sport;
         private DateTime date;
-        private BusinessLogic.Match match;
+        private Match match;
         private Mock<Commentary> commentary1;
         private Mock<Commentary> commentary2;
         private Mock<Commentary> commentary3;
@@ -99,6 +100,12 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
+        public void GetSportTest() {
+            Sport played =match.Sport;
+            Assert.AreEqual("Soccer",played.Name);
+        }
+
+        [TestMethod]
         public void SetDateTimeTest(){
             DateTime newDate = new DateTime(2019,2,2,12,0,0);
             match.Date = newDate;
@@ -175,6 +182,12 @@ namespace BusinessLogicTest
         public void HomeEqualsAwayTest()
         {
             match.AwayTeam = teamA.Object;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        public void SetNullSportTest() {
+            match = new Match(3, teamA.Object, teamB.Object, date, null);
         }
 
         [TestMethod]

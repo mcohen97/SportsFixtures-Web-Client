@@ -19,7 +19,7 @@ namespace BusinessLogic
             HomeTeam = home;
             AwayTeam = away;
             Date = date;
-            sport = aSport;
+            Sport = aSport;
             commentaries = new List<Commentary>();
         }
 
