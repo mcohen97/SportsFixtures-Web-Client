@@ -7,7 +7,7 @@ using BusinessLogic.Factories;
 namespace BusinessLogicTest
 {
     [TestClass]
-    class UserFactoryTest
+    public class UserFactoryTest
     {
         UserId identity;
         User anAdmin;
@@ -72,7 +72,7 @@ namespace BusinessLogicTest
 
         [TestMethod]
         public void IsNotAdmin() {
-            Assert.IsFalse(factoryAdmin.IsAdmin);
+            Assert.IsFalse(factoryFollower.IsAdmin);
         }
     }
 }
