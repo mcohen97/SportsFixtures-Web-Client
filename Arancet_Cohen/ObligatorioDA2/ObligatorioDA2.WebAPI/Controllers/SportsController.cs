@@ -14,9 +14,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class SportsController : ControllerBase
     {
         private ISportRepository sports;
-        public SportsController(ISportRepository aRepo)
+        private ITeamRepository teams;
+        public SportsController(ISportRepository sportsRepo, ITeamRepository teamsRepo )
         {
-            sports = aRepo;
+            sports = sportsRepo;
+            teams = teamsRepo;
         }
 
         [HttpPost]
@@ -142,7 +144,29 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet("{name}/teams")]
         public IActionResult GetTeams(string name)
         {
-            throw new NotImplementedException();
+            IActionResult result;
+            try
+            {
+                ICollection<Team> sportTeams = teams.GetTeams(name);
+                ICollection<TeamModelOut> output = sportTeams.Select(t => CreateModelOut(t)).ToList();
+                result = Ok(output);
+            }
+            catch (SportNotFoundException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
+            }
+            return result;
+        }
+
+        private TeamModelOut CreateModelOut(Team aTeam)
+        {
+            return new TeamModelOut()
+            {
+                Id = aTeam.Id,
+                SportName = aTeam.Sport.Name,
+                Name = aTeam.Name,
+                Photo = aTeam.Photo
+            };
         }
     }
 }
