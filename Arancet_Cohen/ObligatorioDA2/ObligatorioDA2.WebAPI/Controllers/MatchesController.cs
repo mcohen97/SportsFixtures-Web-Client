@@ -212,6 +212,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
+        public IActionResult GetByTeam(int teamId)
+        {
+            IActionResult result;
+            try
+            {
+                ICollection<Match> matches = matchService.GetAllMatches(teamId);
+                ICollection<MatchModelOut> output = matches.Select(m => BuildModelOut(m)).ToList();
+                result = Ok(output);
+            }
+            catch (TeamNotFoundException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
+            }
+            return result;
+        }
         private MatchModelOut BuildModelOut(Match aMatch)
         {
             return new MatchModelOut()
@@ -222,11 +237,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 HomeTeamId = aMatch.HomeTeam.Id,
                 CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
             };
-        }
-
-        public IActionResult GetByTeam(int teamId)
-        {
-            throw new NotImplementedException();
         }
     }
 }
