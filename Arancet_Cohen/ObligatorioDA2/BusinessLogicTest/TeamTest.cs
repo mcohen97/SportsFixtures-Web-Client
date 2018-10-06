@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BusinessLogic;
 using BusinessLogic.Exceptions;
 using Moq;
+using System.Collections.Generic;
 
 namespace BusinessLogicTest
 {
@@ -94,14 +95,6 @@ namespace BusinessLogicTest
             Assert.AreEqual(aTeam, sameTeam);
         }
 
-        /*[TestMethod]
-        public void EqualsByIdTest()
-        {
-            Team aTeam = new Team(1, "TeamA", "somePath");
-            Team differentTeam = new Team(1, "TeamB", "");
-            Assert.AreEqual(aTeam, differentTeam);
-        }*/
-
         [TestMethod]
         public void NotEqualsTest()
         {
@@ -115,6 +108,20 @@ namespace BusinessLogicTest
             Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
             Team differentTeam = new Team(2, "TeamA", "", new Sport("anotherSport"));
             Assert.AreNotEqual(aTeam, differentTeam);
+        }
+
+        [TestMethod]
+        public void NotEqualsDifferentTypeTest()
+        {
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
+            Assert.IsFalse(aTeam.Equals("this should be false"));
+        }
+
+        [TestMethod]
+        public void GetHashCodeTest() {
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
+            int hashCode= 539060726 + EqualityComparer<string>.Default.GetHashCode("TeamA");
+            Assert.AreEqual(hashCode, aTeam.GetHashCode());
         }
 
         //Exceptions
@@ -148,6 +155,12 @@ namespace BusinessLogicTest
         {
             Team team = new Team(1, "name","photo", new Sport("aSport"));
             team.Photo = null;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidSportDataException))]
+        public void SetNullSportTest() {
+            Team team = new Team(1, "name", "photo", null);
         }
     }
 }
