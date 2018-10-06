@@ -206,5 +206,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult errorResult = BadRequest(error);
             return errorResult;
         }
+
+        public IActionResult GetBySport(string sportName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
