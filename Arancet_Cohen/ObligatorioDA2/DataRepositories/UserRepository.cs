@@ -110,10 +110,9 @@ namespace DataRepositories
 
        
 
-        public bool Exists(User entity)
+        public bool Exists(string username)
         {
-            UserEntity record = userMapper.ToEntity(entity);
-            bool doesExist = context.Users.Any(u => u.UserName.Equals(entity.UserName));
+            bool doesExist = context.Users.Any(u => u.UserName.Equals(username));
             return doesExist;
         }
 

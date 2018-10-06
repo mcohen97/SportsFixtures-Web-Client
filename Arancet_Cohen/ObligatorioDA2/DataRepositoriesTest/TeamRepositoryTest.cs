@@ -221,7 +221,7 @@ namespace DataRepositoriesTest
             Sport sport = new Mock<Sport>("Soccer").Object;
             Team aTeam = new Mock<Team>(1, "DreamTeam", "photo", sport).Object;
             aTeam = teamsStorage.Add(aTeam);
-            Assert.IsTrue(teamsStorage.Exists(aTeam));
+            Assert.IsTrue(teamsStorage.Exists(aTeam.Id));
         }
 
         [TestMethod]
@@ -231,7 +231,7 @@ namespace DataRepositoriesTest
             Team aTeam = new Mock<Team>(1, "DreamTeam", "photo", sport).Object;
             aTeam = teamsStorage.Add(aTeam);
             teamsStorage.Delete(aTeam.Id);
-            Assert.IsFalse(teamsStorage.Exists(aTeam));
+            Assert.IsFalse(teamsStorage.Exists(aTeam.Id));
         }
 
         [TestMethod]

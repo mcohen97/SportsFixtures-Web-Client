@@ -14,7 +14,7 @@ namespace RepositoryInterface
 
         void Delete(K id);
 
-        bool Exists(T record);
+        bool Exists(K record);
 
         void Clear();
 

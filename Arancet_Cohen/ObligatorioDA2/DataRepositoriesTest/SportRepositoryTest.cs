@@ -103,7 +103,7 @@ namespace DataRepositoriesTest
         public void ExistsTeamTest()
         {
             sportStorage.Add(sportA.Object);
-            bool result = sportStorage.Exists(sportA.Object);
+            bool result = sportStorage.Exists(sportA.Object.Name);
             Assert.IsTrue(result);
         }
 
@@ -112,7 +112,7 @@ namespace DataRepositoriesTest
         {
 
             sportStorage.Add(sportA.Object);
-            bool result = sportStorage.Exists(sportB.Object);
+            bool result = sportStorage.Exists(sportB.Object.Name);
             Assert.IsFalse(result);
         }
 

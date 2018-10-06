@@ -26,7 +26,7 @@ namespace DataRepositories
 
         public Sport Add(Sport sport)
         {
-            if (Exists(sport))
+            if (Exists(sport.Name))
                 throw new SportAlreadyExistsException();
 
             SportEntity entity = mapper.ToEntity(sport);
@@ -55,12 +55,7 @@ namespace DataRepositories
             context.SaveChanges();
         }
 
-        public bool Exists(Sport record)
-        {
-            return Exists(record.Name);
-        }
-
-        private bool Exists(string name)
+        public bool Exists(string name)
         {
             return context.Sports.Any(s => s.Name == name);
         }
@@ -77,7 +72,7 @@ namespace DataRepositories
 
         public void Modify(Sport entity)
         {
-            if (!Exists(entity))
+            if (!Exists(entity.Name))
                 throw new SportNotFoundException();
 
             SportEntity modified = mapper.ToEntity(entity);
@@ -95,6 +90,6 @@ namespace DataRepositories
             return mapper.ToSport(sportInDb);
         }
 
-        
+ 
     }
 }
