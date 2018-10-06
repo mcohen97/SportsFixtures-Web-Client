@@ -10,9 +10,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         {
         }
 
-        public SportNotFoundException(string message) : base(message)
-        {
-        }
-
     }
 }

@@ -9,8 +9,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
     {
         public EntityAlreadyExistsException() {
         }
-        public EntityAlreadyExistsException(string message):base(message) {
-
-        }
     }
 }

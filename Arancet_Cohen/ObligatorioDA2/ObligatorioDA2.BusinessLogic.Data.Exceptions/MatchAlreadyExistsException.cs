@@ -10,9 +10,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         public MatchAlreadyExistsException()
         {
         }
-
-        public MatchAlreadyExistsException(string message) : base(message)
-        {
-        }
     }
 }

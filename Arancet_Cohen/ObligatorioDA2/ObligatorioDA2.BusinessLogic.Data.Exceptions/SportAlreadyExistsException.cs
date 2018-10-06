@@ -10,9 +10,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         {
         }
 
-        public SportAlreadyExistsException(string message) : base(message)
-        {
-        }
-
     }
 }

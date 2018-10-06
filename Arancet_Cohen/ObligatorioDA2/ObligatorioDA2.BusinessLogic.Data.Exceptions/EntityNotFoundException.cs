@@ -9,8 +9,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         public EntityNotFoundException() {
         }
 
-        public EntityNotFoundException(string message) : base(message) {
-
-        }
     }
 }
