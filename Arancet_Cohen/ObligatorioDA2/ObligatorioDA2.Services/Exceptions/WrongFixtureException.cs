@@ -14,12 +14,5 @@ namespace ObligatorioDA2.Services.Exceptions
         {
         }
 
-        public WrongFixtureException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected WrongFixtureException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

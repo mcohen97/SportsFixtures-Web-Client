@@ -14,13 +14,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         public MatchAlreadyExistsException(string message) : base(message)
         {
         }
-
-        public MatchAlreadyExistsException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected MatchAlreadyExistsException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

@@ -14,12 +14,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         {
         }
 
-        public SportNotFoundException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected SportNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

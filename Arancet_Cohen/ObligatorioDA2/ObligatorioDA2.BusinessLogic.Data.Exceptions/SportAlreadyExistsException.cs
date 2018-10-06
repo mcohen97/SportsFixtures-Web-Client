@@ -14,12 +14,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         {
         }
 
-        public SportAlreadyExistsException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected SportAlreadyExistsException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }
