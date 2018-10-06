@@ -106,7 +106,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryAddTeam(TeamModelIn team)
         {
-            IActionResult result;
             Team toAdd = new Team(team.Name, team.Photo, new Sport(team.SportName));
             Team added = teams.Add(toAdd);
             TeamModelOut modelOut = BuildTeamModelOut(added);
