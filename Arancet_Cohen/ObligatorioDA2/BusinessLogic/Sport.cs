@@ -16,12 +16,14 @@ namespace BusinessLogic
 
         private void SetName(string value)
         {
-            if(value == null)
+            if (value == null)
+            {
                 throw new InvalidSportDataException("Name can't be null");
-            
-            if(value == "")
+            }
+            if (value == "")
+            {
                 throw new InvalidSportDataException("Name can't be empty");
-
+            }
             name = value;
         }
 
@@ -33,7 +35,9 @@ namespace BusinessLogic
         public override bool Equals(object obj)
         {
             if (obj == null || !(obj is Sport))
+            {
                 return false;
+            }
 
             var sport = obj as Sport;
             return name == sport.name;
