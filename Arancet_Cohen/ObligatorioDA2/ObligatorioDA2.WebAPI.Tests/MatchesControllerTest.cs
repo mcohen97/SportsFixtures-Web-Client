@@ -372,10 +372,10 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void GetTeamMatchesTest() {
+        public void GetSportMatchesTest() {
             //Arrange.
             ICollection<Match> dummies = new List<Match>() { testMatch, testMatch, testMatch };
-            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Returns(dummies);
+            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<string>())).Returns(dummies);
 
             //Act.
             IActionResult result = controller.GetBySport("Soccer");
@@ -383,7 +383,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ICollection<MatchModelOut> matches = okResult.Value as ICollection<MatchModelOut>;
 
             //Assert.
-            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<int>()), Times.Once);
+            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<string>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
@@ -392,10 +392,10 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void GetTeamMatchesNotFoundTest() {
+        public void GetSportMatchesNotFoundTest() {
             //Arrange.
-            Exception toThrow = new TeamNotFoundException();
-            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Throws(toThrow);
+            Exception toThrow = new SportNotFoundException();
+            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<string>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.GetBySport("Soccer");
@@ -403,6 +403,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
             //Assert.
+            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<string>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFound);
             Assert.AreEqual(404, notFound.StatusCode);
