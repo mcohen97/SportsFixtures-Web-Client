@@ -138,5 +138,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             return result;
         }
+
+        public IActionResult CreateFixture(FixtureModelIn input)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
