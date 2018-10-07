@@ -43,8 +43,32 @@ namespace DataRepositories
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
-            context.SaveChanges();
+
+            //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
+            if (aMatch.Id > 0 && context.Database.IsSqlServer())
+            {
+                SaveWithIdentityInsert();
+            }
+            else
+            {
+                context.SaveChanges();
+            }
             return matchConverter.ToMatch(toAdd);
+        }
+
+        private void SaveWithIdentityInsert()
+        {
+            context.Database.OpenConnection();
+            try
+            {
+                context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Matches ON");
+                context.SaveChanges();
+                context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Matches OFF");
+            }
+            finally
+            {
+                context.Database.CloseConnection();
+            }
         }
 
         public void Clear()
