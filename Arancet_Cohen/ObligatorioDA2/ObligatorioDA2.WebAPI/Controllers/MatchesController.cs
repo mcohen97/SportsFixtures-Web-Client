@@ -29,6 +29,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             ICollection<Match> matches = matchService.GetAllMatches();
@@ -37,6 +38,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Post([FromBody] MatchModelIn input)
         {
             IActionResult result;
@@ -70,6 +72,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         [HttpGet("{matchId}", Name = "GetMatchById")]
+        [Authorize]
         public IActionResult Get(int matchId)
         {
             IActionResult result;
@@ -91,7 +94,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-
+        [HttpPut("{id}")]
         public IActionResult Put(int id, MatchModelIn aMatch)
         {
             IActionResult result;
@@ -131,6 +134,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             IActionResult result;
@@ -150,6 +154,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("comments")]
+        [Authorize]
         public IActionResult CommentOnMatch(CommentModelIn input)
         {
             IActionResult result;
@@ -196,6 +201,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return errorResult;
         }
 
+        [HttpGet("sport/{sportName}")]
+        [Authorize]
         public IActionResult GetBySport(string sportName)
         {
             IActionResult result;
@@ -212,6 +219,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
+        [HttpGet("team/{teamId}")]
         public IActionResult GetByTeam(int teamId)
         {
             IActionResult result;
