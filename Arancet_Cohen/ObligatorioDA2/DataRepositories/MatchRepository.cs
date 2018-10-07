@@ -113,6 +113,7 @@ namespace DataRepositories
                 .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
 
             ICollection<Match> translation = entities.Select(m => matchConverter.ToMatch(m)).ToList();
+
             return translation;
         }
 
@@ -126,6 +127,11 @@ namespace DataRepositories
             if (Exists(aMatch.Id))
             {
                 MatchEntity converted = matchConverter.ToEntity(aMatch);
+                if (context.Matches.Any(m => m.Id == aMatch.Id)) {
+                    MatchEntity old = context.Matches.First(m => m.Id == aMatch.Id);
+                    context.Entry(old).State = EntityState.Detached;
+                }
+
                 context.Entry(converted).State = EntityState.Modified;
                 context.SaveChanges();
             }

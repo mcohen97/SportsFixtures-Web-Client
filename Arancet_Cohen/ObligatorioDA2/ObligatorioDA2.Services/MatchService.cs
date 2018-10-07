@@ -33,17 +33,23 @@ namespace ObligatorioDA2.Services
         public Match AddMatch(Match aMatch)
         {
 
-            if (DateOccupied(aMatch.HomeTeam, aMatch.Date))
+            if (DateOccupied(aMatch.Id,aMatch.HomeTeam, aMatch.Date))
                 throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
-            if (DateOccupied(aMatch.AwayTeam, aMatch.Date))
+            if (DateOccupied(aMatch.Id, aMatch.AwayTeam, aMatch.Date))
                 throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
 
             return matchesStorage.Add(aMatch);
         }
 
-        private bool DateOccupied(Team team, DateTime date)
+        private bool DateOccupied(int matchId,Team team, DateTime date)
         {
-            return matchesStorage.GetAll().Any(m => (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
+            if (matchId > 0)
+            {
+                return matchesStorage.GetAll().Any(m => (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
+            }
+            else {
+                return matchesStorage.GetAll().Any(m =>(m.Id != matchId) && (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
+            }
         }
 
         private bool SameDates(DateTime date1, DateTime date2)
@@ -71,6 +77,11 @@ namespace ObligatorioDA2.Services
 
         public void ModifyMatch(Match aMatch)
         {
+            if (DateOccupied(aMatch.Id, aMatch.HomeTeam, aMatch.Date))
+                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
+            if (DateOccupied(aMatch.Id, aMatch.AwayTeam, aMatch.Date))
+                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
+
             matchesStorage.Modify(aMatch);
         }
 

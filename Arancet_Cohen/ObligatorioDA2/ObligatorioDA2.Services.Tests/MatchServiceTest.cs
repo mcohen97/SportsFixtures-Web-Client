@@ -163,6 +163,9 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void ModifyTest() {
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            teamsRepo.Add(teamC);
             serviceToTest.AddMatch(matchAvsB);
             Match modifiedAvsB = new Match(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport);
             SetUpRepository();
