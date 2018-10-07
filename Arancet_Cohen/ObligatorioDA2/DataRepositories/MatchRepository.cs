@@ -96,7 +96,7 @@ namespace DataRepositories
                 .Include(m=>m.HomeTeam)
                 .Include(m=>m.AwayTeam)
                 .Include(m=>m.SportEntity)
-                .Include(m => m.Commentaries)
+                .Include(m => m.Commentaries).ThenInclude(c => c.Maker)
                 .First(me => me.Id == anId);
 
             Match conversion = matchConverter.ToMatch(entity);
