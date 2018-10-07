@@ -7,7 +7,7 @@ using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.Services
 {
-    public class FixtureService
+    public class FixtureService : IFixtureService
     {
         private MatchService matchService;
         private ITeamRepository teamStorage;
