@@ -37,7 +37,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 Team fetched = teams.Get(id);
-                TeamModelOut output = CreateModelOut(fetched);
+                TeamModelOut output = BuildTeamModelOut(fetched);
                 result = Ok(output);
             }
             catch (TeamNotFoundException e)
@@ -56,7 +56,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 Team fetched = teams.Get(sportName, teamName);
-                TeamModelOut transferObject = CreateModelOut(fetched);
+                TeamModelOut transferObject = BuildTeamModelOut(fetched);
                 result = Ok(transferObject);
             }
             catch (TeamNotFoundException e)
@@ -65,17 +65,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = new NotFoundObjectResult(error);
             }
             return result;
-        }
-
-        private TeamModelOut CreateModelOut(Team fetched)
-        {
-            TeamModelOut toReturn = new TeamModelOut()
-            {
-                Id = fetched.Id,
-                Name = fetched.Name,
-                Photo = fetched.Photo
-            };
-            return toReturn;
         }
 
 
@@ -117,16 +106,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return CreatedAtRoute("GetTeamById",new {id =added.Id } ,modelOut);
         }
 
-        private TeamModelOut BuildTeamModelOut(Team toReturn)
-        {
-            TeamModelOut output= new TeamModelOut()
-            {
-                Id = toReturn.Id,
-                Name = toReturn.Name,
-                Photo = toReturn.Photo
-            };
-            return output;
-        }
 
         [HttpPut("{teamId}")]
         [Authorize(Roles = "Admin")]
@@ -151,7 +130,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 Team toModify = new Team(teamId,value.Name, value.Photo,new Sport(value.SportName));
                 teams.Modify(toModify);
-                TeamModelOut output = CreateModelOut(toModify);
+                TeamModelOut output = BuildTeamModelOut(toModify);
                 result = Ok(output);
             }
             catch (TeamNotFoundException)
@@ -165,7 +144,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             Team toAdd = new Team(teamId,team.Name, team.Photo,new Sport(team.SportName));
             teams.Add(toAdd);
-            TeamModelOut addedTeam = CreateModelOut(toAdd);
+            TeamModelOut addedTeam = BuildTeamModelOut(toAdd);
             return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);
         }
 
@@ -204,6 +183,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = NotFound(error);
             }
             return result;
+        }
+
+        private TeamModelOut BuildTeamModelOut(Team toReturn)
+        {
+            TeamModelOut output = new TeamModelOut()
+            {
+                Id = toReturn.Id,
+                Name = toReturn.Name,
+                Photo = toReturn.Photo
+            };
+            return output;
         }
 
         private ErrorModelOut CreateErrorModel(Exception e)
