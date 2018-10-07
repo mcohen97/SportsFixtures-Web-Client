@@ -90,6 +90,15 @@ namespace DataRepositoriesTest
             Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
         }
 
+        [TestMethod]
+        public void GetCommentsTest() {
+            Mock<Commentary> dummy = BuildFakeCommentary();
+            match.Object.AddCommentary(dummy.Object);
+            matchesStorage.Add(match.Object);
+            ICollection<Commentary> allComments = matchesStorage.GetComments();
+            Assert.AreEqual(1, allComments.Count);
+        }
+
         private Mock<Commentary> BuildFakeCommentary()
         {
             UserId identity = new UserId() {
