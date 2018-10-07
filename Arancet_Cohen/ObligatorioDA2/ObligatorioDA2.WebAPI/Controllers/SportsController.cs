@@ -40,12 +40,22 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult CreateValidSport(SportModelIn modelIn)
         {
+            IActionResult result;
+            try {
+                result = TryAddSport(modelIn);
+            }
+            catch (SportAlreadyExistsException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryAddSport(SportModelIn modelIn)
+        {
             Sport toAdd = new Sport(modelIn.Name);
             sports.Add(toAdd);
-            SportModelOut modelOut = new SportModelOut()
-            {
-                Name = toAdd.Name
-            };
+            SportModelOut modelOut = new SportModelOut(){Name = toAdd.Name};
             IActionResult result = CreatedAtRoute("GetById", modelOut);
             return result;
         }
