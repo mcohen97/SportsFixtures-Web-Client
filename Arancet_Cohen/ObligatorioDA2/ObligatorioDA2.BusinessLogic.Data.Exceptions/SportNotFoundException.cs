@@ -6,7 +6,7 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
     [Serializable]
     public class SportNotFoundException : Exception
     {
-        public SportNotFoundException()
+        public SportNotFoundException():base("Sport not found")
         {
         }
 
