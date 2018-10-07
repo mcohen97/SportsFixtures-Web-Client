@@ -77,12 +77,19 @@ namespace DataRepositories
             {
                 UserEntity toDelete = GetEntityByUsername(username);
                 context.Users.Remove(toDelete);
+                DeleteComments(username);
                 context.SaveChanges();
             }
             else
             {
                 throw new UserNotFoundException();
             }
+        }
+
+        private void DeleteComments(string username)
+        {
+            IQueryable<CommentEntity> commentsToDelete = context.Comments.Where(c => c.Maker.UserName.Equals(username));
+            context.Comments.RemoveRange(commentsToDelete);
         }
 
         private UserEntity GetEntityByUsername(string aUserName) {
