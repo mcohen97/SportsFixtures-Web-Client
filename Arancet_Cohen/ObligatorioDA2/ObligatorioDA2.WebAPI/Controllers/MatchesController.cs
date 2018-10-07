@@ -58,7 +58,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 Match added = matchService.AddMatch(input.HomeTeamId, input.AwayTeamId, input.SportName, input.Date);
-                MatchModelOut output =BuildModelOut(added);
+                MatchModelOut output = BuildModelOut(added);
                 result = CreatedAtRoute("GetMatchById", output);
             }
             catch (EntityNotFoundException e) {
@@ -80,7 +80,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGetMatch(matchId);
             }
-            catch(MatchNotFoundException e) {
+            catch (MatchNotFoundException e) {
                 result = CreateErrorMessage(e);
             }
             return result;
@@ -126,7 +126,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = Ok(output);
             } catch (EntityNotFoundException e) {
                 Match added = matchService.AddMatch(id, aMatch.HomeTeamId,
-                     aMatch.AwayTeamId, aMatch.SportName,aMatch.Date);
+                     aMatch.AwayTeamId, aMatch.SportName, aMatch.Date);
                 MatchModelOut output = BuildModelOut(added);
                 result = CreatedAtRoute("GetMatchById", output);
             }
@@ -139,7 +139,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             IActionResult result;
             try {
-                result =TryToDelete(id);
+                result = TryToDelete(id);
             }
             catch (MatchNotFoundException e) {
                 result = CreateErrorMessage(e);
@@ -153,9 +153,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpPost("comments")]
+        [HttpPost("{matchId}/comments")]
         [Authorize]
-        public IActionResult CommentOnMatch(CommentModelIn input)
+        public IActionResult CommentOnMatch(int matchId,CommentModelIn input)
         {
             IActionResult result;
             if (ModelState.IsValid)
@@ -245,6 +245,32 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 HomeTeamId = aMatch.HomeTeam.Id,
                 CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
             };
+        }
+
+        [HttpGet("{matchId}/comments")]
+        public IActionResult GetMatchComments(int matchId) {
+
+            ICollection<Commentary> matchComments = matchService.GetMatchCommentaries(matchId);
+            ICollection<CommentModelOut> output = matchComments.Select(c => BuildCommentModelOut(c)).ToList();
+            return Ok(output);
+        }
+
+        [HttpGet("comments")]
+        public IActionResult GetAllComments()
+        {
+            ICollection<Commentary> allComments = matchService.GetAllCommentaries();
+            ICollection<CommentModelOut> output = allComments.Select(c => BuildCommentModelOut(c)).ToList();
+            return Ok(output);
+        }
+
+        private CommentModelOut BuildCommentModelOut(Commentary aComment) {
+            CommentModelOut comment = new CommentModelOut()
+            {
+                Id = aComment.Id,
+                MakerUsername = aComment.Maker.UserName,
+                Text = aComment.Text
+            };
+            return comment;
         }
     }
 }
