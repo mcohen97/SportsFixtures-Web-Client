@@ -122,7 +122,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateAlreadyExistentUserTest()
         {
             //Arrange.
-           
+            Exception toThrow = new UserAlreadyExistsException();
+            service.Setup(us => us.AddUser(It.IsAny<User>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Post(input);

@@ -6,6 +6,9 @@ using DataRepositoryInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
+using ObligatorioDA2.Services;
+using DataRepositories;
+using ObligatorioDA2.Services.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -14,9 +17,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class SportsController : ControllerBase
     {
         private ISportRepository sports;
+        private IMatchRepository matches;
+        private ITeamRepository teams;
+
         public SportsController(ISportRepository aRepo)
         {
             sports = aRepo;
+        }
+        public SportsController(ISportRepository sportRepo, IMatchRepository matchRepo, ITeamRepository teamRepo) : this(sportRepo)
+        {
+            matches = matchRepo;
+            teams = teamRepo;
         }
 
         [HttpPost]
@@ -139,9 +150,56 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        public IActionResult CreateFixture(FixtureModelIn input)
+        [HttpPost("{sportName}"), Route("Fixture")]
+        public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
         {
-            throw new NotImplementedException();
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                IFixtureService fixture = new FixtureService(matches, teams, sports);
+                result = CreateValid(input, sportName, fixture);
+            }
+            else
+                result = BadRequest(ModelState);
+
+            return result;
+        }
+
+        private IActionResult CreateValid(FixtureModelIn input, string sportName, IFixtureService fixture)
+        {
+            IActionResult result;
+            try
+            {
+                fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 2, 5);
+                Sport sport = sports.Get(sportName);
+                ICollection<Match> added = fixture.AddFixture(sport);
+                ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
+                foreach (Match match in added)
+                {
+                    addedModelOut.Add(new MatchModelOut()
+                    {
+                        Id = match.Id,
+                        AwayTeamId = match.AwayTeam.Id,
+                        HomeTeamId = match.HomeTeam.Id,
+                        SportName = match.Sport.Name,
+                        Date = match.Date,
+                        CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()
+                    });
+                }
+                result = Created("fixture-generator", addedModelOut);
+            }
+            catch (WrongFixtureException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
+            }
+            catch (TeamNotFoundException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
+            }
+
+            return result;
         }
     }
 }

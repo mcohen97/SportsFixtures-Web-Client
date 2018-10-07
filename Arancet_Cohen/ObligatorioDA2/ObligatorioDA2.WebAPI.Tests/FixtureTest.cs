@@ -9,6 +9,7 @@ using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Match = BusinessLogic.Match;
 
@@ -20,26 +21,22 @@ namespace ObligatorioDA2.WebAPI.Tests
         SportsController controller;
         Sport testSport;
         Mock<ISportRepository> sportsRepo;
+        Mock<IMatchRepository> matchesRepo;
+        Mock<ITeamRepository> teamsRepo;
         ICollection<Team> teamsCollection;
         ICollection<Match> matchesCollection;
-        IFixtureService fixtureService;
 
         [TestInitialize]
         public void Initialize()
         {
-            SetUpController();
             SetUpData();
-            ConfigureFixtureService();
-        }
-
-        private void ConfigureFixtureService()
-        {
-            fixtureService = new Mock<IFixtureService>().Object;
-            Mock.Get(fixtureService).Setup(f => f.AddFixture(teamsCollection)).Returns(matchesCollection);
+            SetUpController();
         }
 
         private void SetUpData()
         {
+            testSport = new Sport("Football");
+
             Team teamA = new Team(1, "teamA", "photo", testSport);
             Team teamB = new Team(2, "teamB", "photo", testSport);
             Team teamC = new Team(3, "teamC", "photo", testSport);
@@ -65,14 +62,20 @@ namespace ObligatorioDA2.WebAPI.Tests
         private void SetUpController()
         {
             sportsRepo = new Mock<ISportRepository>();
-
-            testSport = new Sport("Football");
-
             sportsRepo.Setup(r => r.Get((testSport.Name))).Returns(testSport);
             sportsRepo.Setup(r => r.Get(It.Is<String>(x => (x != testSport.Name)))).Throws(new SportNotFoundException());
             sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() { testSport });
 
-            controller = new SportsController(sportsRepo.Object);
+            matchesRepo = new Mock<IMatchRepository>();
+            matchesRepo.Setup(m => m.Add(It.IsAny<Match>())).Returns((Match mat) => { return mat; });
+            matchesRepo.Setup(m => m.Exists(It.IsAny<Match>())).Returns(false);
+            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Match>());
+
+            teamsRepo = new Mock<ITeamRepository>();
+            teamsRepo.Setup(t => t.GetTeams(It.IsAny<string>())).Returns(teamsCollection);
+            teamsRepo.Setup(t => t.GetAll()).Returns(teamsCollection);
+
+            controller = new SportsController(sportsRepo.Object, matchesRepo.Object, teamsRepo.Object);
         }
 
         [TestMethod]
@@ -87,12 +90,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             };
 
             //Act
-            IActionResult result = controller.CreateFixture(input);
+            IActionResult result = controller.CreateOneMatchFixture(testSport.Name,input);
             CreatedResult createdResult = result as CreatedResult;
             ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
 
             //Assert
-            Mock.Get(fixtureService).Verify(s => s.AddFixture(teamsCollection), Times.Once);
+            //Mock.Get(fixtureService).Verify(s => s.AddFixture(testSport), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -109,48 +112,53 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Month = DateTime.Now.Month,
                 Year = DateTime.Now.Year
             };
-            Exception toThrow = new WrongFixtureException();
-            Mock.Get(fixtureService).Setup(s => s.AddFixture(It.IsAny<ICollection<Team>>())).Throws(toThrow);
+            matchesRepo.Setup(m => m.GetAll()).Returns(matchesCollection);
+            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(matchesCollection);
 
 
             //Act
-            IActionResult result = controller.CreateFixture(input);
+            IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert
-            Mock.Get(fixtureService).Verify(s => s.AddFixture(teamsCollection), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
-            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+            Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
+        }
+
+        private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Match> matches)
+        {
+            ICollection<string> errorMessagges = new List<string>();
+            foreach (Match aMatch in matches)
+            {
+                errorMessagges.Add(aMatch.HomeTeam.Name + " already has a match on date " + new DateTime(aMatch.Date.Year,aMatch.Date.Month,aMatch.Date.Day));
+                errorMessagges.Add(aMatch.AwayTeam.Name + " already has a match on date " + new DateTime(aMatch.Date.Year, aMatch.Date.Month, aMatch.Date.Day));
+            }
+            return errorMessagges;
         }
 
         [TestMethod]
-        public void CreateFixtureTeamNotFoundTest()
+        public void CreateFixtureBadModelTest()
         {
             //Arrange
             FixtureModelIn input = new FixtureModelIn()
             {
-                Day = DateTime.Now.Day,
-                Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year
-            };
-            Exception toThrow = new TeamNotFoundException();
-            Mock.Get(fixtureService).Setup(s => s.AddFixture(It.IsAny<ICollection<Team>>())).Throws(toThrow);
 
+            };
+            controller.ModelState.AddModelError("", "Error");
 
             //Act
-            IActionResult result = controller.CreateFixture(input);
+            IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert
-            Mock.Get(fixtureService).Verify(s => s.AddFixture(teamsCollection), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
-            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
+
     }
 }
