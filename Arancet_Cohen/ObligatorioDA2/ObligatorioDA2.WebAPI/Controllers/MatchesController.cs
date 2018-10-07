@@ -124,7 +124,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
                     Date = aMatch.Date
                 };
                 result = Ok(output);
-            } catch (EntityNotFoundException e) {
+            }
+            catch (TeamAlreadyHasMatchException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
+            }catch (EntityNotFoundException e) {
                 Match added = matchService.AddMatch(id, aMatch.HomeTeamId,
                      aMatch.AwayTeamId, aMatch.SportName, aMatch.Date);
                 MatchModelOut output = BuildModelOut(added);
@@ -153,7 +157,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpPost("{matchId}/comments")]
+        [HttpPost("{matchId}/comments", Name = "GetCommentMatchComments")]
         [Authorize]
         public IActionResult CommentOnMatch(int matchId,CommentModelIn input)
         {
@@ -191,7 +195,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 MatchId = input.MatchId,
                 Text = input.Text
             };
-            return CreatedAtRoute("GetCommentById", output);
+            return CreatedAtRoute("GetCommentMatchComments",new {matchId =input.MatchId }, output);
         }
 
         private IActionResult CreateErrorMessage(Exception e)
