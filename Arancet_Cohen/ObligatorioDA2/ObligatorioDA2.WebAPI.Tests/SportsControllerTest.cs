@@ -63,6 +63,30 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void CreateSportAlreadyExistingTest() {
+            //Arrange.
+            Exception toThrow = new SportAlreadyExistsException();
+            sportsRepo.Setup(r => r.Add(It.IsAny<Sport>())).Throws(toThrow);
+            SportModelIn input = new SportModelIn()
+            {
+                Name = "Soccer"
+            };
+
+            //Act.
+            IActionResult result = controllerToTest.Post(input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            sportsRepo.Verify(r => r.Add(It.IsAny<Sport>()), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400,badRequest.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
+        [TestMethod]
         public void CreateInvalidSportTest() {
             SportModelIn input = new SportModelIn();
 
