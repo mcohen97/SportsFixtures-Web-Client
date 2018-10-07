@@ -284,7 +284,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
 
             //Act.
-            IActionResult result = controller.CommentOnMatch(input);
+            IActionResult result = controller.CommentOnMatch(3,input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             CommentModelOut comment = createdResult.Value as CommentModelOut;
 
@@ -308,7 +308,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             controller.ModelState.AddModelError("", "Error");
 
             //Act.
-            IActionResult result = controller.CommentOnMatch(input);
+            IActionResult result = controller.CommentOnMatch(3,input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
@@ -331,7 +331,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
 
             //Act.
-            IActionResult result = controller.CommentOnMatch(input);
+            IActionResult result = controller.CommentOnMatch(3,input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
@@ -357,7 +357,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
 
             //Act.
-            IActionResult result = controller.CommentOnMatch(input);
+            IActionResult result = controller.CommentOnMatch(3,input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
@@ -369,6 +369,50 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
 
+        }
+
+        [TestMethod]
+        public void ViewAllMatchCommentsTest() {
+            //Arrange.
+            User dummyUser = GetFakeUser();
+            Commentary dummyComment = new Commentary("Comment", dummyUser);
+            ICollection<Commentary> fakeList = new List<Commentary>() { dummyComment, dummyComment, dummyComment };
+            matchService.Setup(ms => ms.GetMatchCommentaries(It.IsAny<int>())).Returns(fakeList);
+
+            //Act.
+            IActionResult result = controller.GetMatchComments(3);
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<CommentModelOut> comments = okResult.Value as ICollection<CommentModelOut>;
+
+            //Do.
+            matchService.Verify(ms => ms.GetMatchCommentaries(It.IsAny<int>()),Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(comments);
+            Assert.AreEqual(fakeList.Count, comments.Count);
+        }
+
+        [TestMethod]
+        public void ViewAllTheCommentsTest() {
+            //Arrange.
+            User dummyUser = GetFakeUser();
+            Commentary dummyComment = new Commentary("Comment", dummyUser);
+            ICollection<Commentary> fakeList = new List<Commentary>() { dummyComment, dummyComment, dummyComment };
+            matchService.Setup(ms => ms.GetAllCommentaries()).Returns(fakeList);
+
+            //Act.
+            IActionResult result = controller.GetAllComments();
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<CommentModelOut> comments =okResult.Value as ICollection<CommentModelOut>;
+
+            //Do.
+            matchService.Verify(ms => ms.GetAllCommentaries(), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(comments);
+            Assert.AreEqual(fakeList.Count, comments.Count);
         }
 
         [TestMethod]
