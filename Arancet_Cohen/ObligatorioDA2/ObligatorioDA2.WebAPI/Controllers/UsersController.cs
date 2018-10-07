@@ -31,6 +31,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             ICollection<User> users =service.GetAllUsers();
@@ -39,6 +40,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet("{username}", Name = "GetUserById")]
+        [Authorize]
         public IActionResult Get(string username)
         {
             IActionResult result;
@@ -103,8 +105,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryFollowTeam(TeamModelIn aTeam)
         {
             string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-            //Team toFollow = new Team(aTeam.Id, aTeam.Name, aTeam.Photo, new Sport(aTeam.SportName));
-            //service.FollowTeam(username, toFollow);
             service.FollowTeam(username, aTeam.Id);
             OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
             return Ok(okMessage);
