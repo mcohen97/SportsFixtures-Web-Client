@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BusinessLogic;
 using DataRepositoryInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
@@ -20,6 +21,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             teams = aRepo;
         }
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             ICollection<Team> allOfThem = teams.GetAll();
@@ -28,6 +30,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult Get(int id)
         {
             IActionResult result;
@@ -46,6 +49,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet("{sportName}/{teamName}", Name = "GetTeamById")]
+        [Authorize]
         public IActionResult Get(string sportName, string teamName)
         {
             IActionResult result;
@@ -76,6 +80,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Post([FromBody] TeamModelIn team)
         {
             IActionResult result;
@@ -123,7 +128,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return output;
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{teamId}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Put(int teamId, [FromBody] TeamModelIn value)
         {
             IActionResult result;
@@ -143,7 +149,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Team toModify = new Team(1,value.Name, value.Photo,new Sport("Soccer"));
+                Team toModify = new Team(teamId,value.Name, value.Photo,new Sport(value.SportName));
                 teams.Modify(toModify);
                 TeamModelOut output = CreateModelOut(toModify);
                 result = Ok(output);
@@ -164,6 +170,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{sportName}/{teamName}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(string sportName, string teamName)
         {
             IActionResult result;
@@ -181,6 +188,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             IActionResult result;
