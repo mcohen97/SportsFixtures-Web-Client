@@ -106,7 +106,12 @@ namespace DataRepositories
 
         public ICollection<Match> GetAll()
         {
-            IQueryable<MatchEntity> entities = context.Matches;
+            IQueryable<MatchEntity> entities = context.Matches
+                .Include(m => m.HomeTeam)
+                .Include(m => m.AwayTeam)
+                .Include(m => m.SportEntity)
+                .Include(m => m.Commentaries);
+
             ICollection<Match> translation = entities.Select(m => matchConverter.ToMatch(m)).ToList();
             return translation;
         }
