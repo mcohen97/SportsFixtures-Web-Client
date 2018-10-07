@@ -248,7 +248,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        [HttpPost("{sportName}"), Route("HomeAwayFixture")]
+        [HttpPost("{sportName}/HomeAwayFixture")]
         [Authorize(Roles = "Admin")]
         public IActionResult CreateHomeAwayFixture(string sportName, FixtureModelIn input)
         {
