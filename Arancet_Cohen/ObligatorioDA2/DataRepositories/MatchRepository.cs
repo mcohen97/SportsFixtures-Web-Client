@@ -110,7 +110,7 @@ namespace DataRepositories
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Include(m => m.SportEntity)
-                .Include(m => m.Commentaries);
+                .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
 
             ICollection<Match> translation = entities.Select(m => matchConverter.ToMatch(m)).ToList();
             return translation;
