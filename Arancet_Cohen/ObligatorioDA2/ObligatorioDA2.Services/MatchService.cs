@@ -131,5 +131,10 @@ namespace ObligatorioDA2.Services
             Match stored = GetMatch(matchId);
             return stored.GetAllCommentaries();
         }
+
+        public ICollection<Commentary> GetAllCommentaries()
+        {
+            return matchesStorage.GetComments();
+        }
     }
 }
