@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BusinessLogic;
 using DataRepositoryInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
@@ -22,6 +23,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Post([FromBody]SportModelIn modelIn)
         {
             IActionResult result;
@@ -49,6 +51,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             ICollection<Sport> allOfThem = sports.GetAll();
@@ -59,6 +62,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         [HttpGet("{name}", Name = "GetSportById")]
+        [Authorize]
         public IActionResult Get(string name)
         {
 
@@ -83,6 +87,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{name}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(string name)
         {
             IActionResult result;
@@ -104,6 +109,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPut("{name}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Put(string name, [FromBody] SportModelIn modelIn)
         {
             IActionResult result;
@@ -142,6 +148,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet("{name}/teams")]
+        [Authorize]
         public IActionResult GetTeams(string name)
         {
             IActionResult result;
