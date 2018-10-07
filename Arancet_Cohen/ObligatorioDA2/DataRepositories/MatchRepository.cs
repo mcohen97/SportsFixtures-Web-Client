@@ -163,5 +163,11 @@ namespace DataRepositories
             return context.Matches.Any(m => m.Id == id);
         }
 
+        public ICollection<Commentary> GetComments()
+        {
+            IQueryable<CommentEntity> allComments = context.Comments.Include(c => c.Maker);
+            ICollection<Commentary> conversion = allComments.Select(c => commentConverter.ToComment(c)).ToList();
+            return conversion;
+        }
     }
 }

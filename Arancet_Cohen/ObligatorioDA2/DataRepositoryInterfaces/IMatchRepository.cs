@@ -9,9 +9,7 @@ namespace DataRepositoryInterfaces
     public interface IMatchRepository : IRepository<Match, int>
     {
 
-        bool Exists(int id);
-
         Commentary CommentOnMatch(int idMatch, Commentary aComment);
-
+        ICollection<Commentary> GetComments();
     }
 }
