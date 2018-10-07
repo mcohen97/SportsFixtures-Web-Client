@@ -24,7 +24,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         Mock<IMatchRepository> matchesRepo;
         Mock<ITeamRepository> teamsRepo;
         ICollection<Team> teamsCollection;
-        ICollection<Match> matchesCollection;
+        ICollection<Match> oneMatchCollection;
+        ICollection<Match> homeAwayMatchCollection;
 
         [TestInitialize]
         public void Initialize()
@@ -48,14 +49,29 @@ namespace ObligatorioDA2.WebAPI.Tests
                 teamC,
                 teamD
             };
-            matchesCollection = new List<Match>
+            oneMatchCollection = new List<Match>
             {
                 new Match(1, teamA, teamB, DateTime.Now.AddDays(1), testSport),
                 new Match(2, teamC, teamD, DateTime.Now.AddDays(1), testSport),
-                new Match(3, teamA, teamC, DateTime.Now.AddDays(2), testSport),
-                new Match(4, teamD, teamB, DateTime.Now.AddDays(2), testSport),
-                new Match(5, teamA, teamD, DateTime.Now.AddDays(3), testSport),
-                new Match(6, teamC, teamB, DateTime.Now.AddDays(4), testSport)
+                new Match(3, teamA, teamC, DateTime.Now.AddDays(8), testSport),
+                new Match(4, teamD, teamB, DateTime.Now.AddDays(8), testSport),
+                new Match(5, teamA, teamD, DateTime.Now.AddDays(16), testSport),
+                new Match(6, teamC, teamB, DateTime.Now.AddDays(16), testSport)
+            };
+            homeAwayMatchCollection = new List<Match>
+            {
+                new Match(1, teamA, teamB, DateTime.Now.AddDays(1), testSport),
+                new Match(2, teamC, teamD, DateTime.Now.AddDays(1), testSport),
+                new Match(3, teamA, teamC, DateTime.Now.AddDays(8), testSport),
+                new Match(4, teamD, teamB, DateTime.Now.AddDays(8), testSport),
+                new Match(5, teamA, teamD, DateTime.Now.AddDays(16), testSport),
+                new Match(6, teamC, teamB, DateTime.Now.AddDays(16), testSport),
+                new Match(7, teamB, teamA, DateTime.Now.AddDays(24), testSport),
+                new Match(8, teamD, teamC, DateTime.Now.AddDays(24), testSport),
+                new Match(9, teamC, teamA, DateTime.Now.AddDays(32), testSport),
+                new Match(10, teamB, teamD, DateTime.Now.AddDays(32), testSport),
+                new Match(11, teamD, teamA, DateTime.Now.AddDays(40), testSport),
+                new Match(12, teamB, teamC, DateTime.Now.AddDays(40), testSport)
             };
         }
 
@@ -99,7 +115,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual(modelOut.Count, matchesCollection.Count);
+            Assert.AreEqual(modelOut.Count, oneMatchCollection.Count);
         }
 
         [TestMethod]
@@ -112,8 +128,8 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Month = DateTime.Now.Month,
                 Year = DateTime.Now.Year
             };
-            matchesRepo.Setup(m => m.GetAll()).Returns(matchesCollection);
-            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(matchesCollection);
+            matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
+            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(oneMatchCollection);
 
 
             //Act
@@ -145,12 +161,80 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange
             FixtureModelIn input = new FixtureModelIn()
             {
-
             };
             controller.ModelState.AddModelError("", "Error");
 
             //Act
             IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+        }
+
+        [TestMethod]
+        public void CreateHomeAwayFixtureTest()
+        {
+            //Arrange
+            FixtureModelIn input = new FixtureModelIn()
+            {
+                Day = DateTime.Now.Day,
+                Month = DateTime.Now.Month,
+                Year = DateTime.Now.Year
+            };
+
+            //Act
+            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
+            CreatedResult createdResult = result as CreatedResult;
+            ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.AreEqual(modelOut.Count, homeAwayMatchCollection.Count);
+        }
+
+        [TestMethod]
+        public void CreateHomeAwayFixtureWrongFixtureTest()
+        {
+            //Arrange
+            FixtureModelIn input = new FixtureModelIn()
+            {
+                Day = DateTime.Now.Day,
+                Month = DateTime.Now.Month,
+                Year = DateTime.Now.Year
+            };
+            matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
+            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(homeAwayMatchCollection);
+
+
+            //Act
+            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
+        }
+
+        [TestMethod]
+        public void CreateHomeAwayFixtureBadModelTest()
+        {
+            //Arrange
+            FixtureModelIn input = new FixtureModelIn()
+            {
+            };
+            controller.ModelState.AddModelError("", "Error");
+
+            //Act
+            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 

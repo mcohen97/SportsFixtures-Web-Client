@@ -9,6 +9,7 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.Services;
 using DataRepositories;
 using ObligatorioDA2.Services.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -150,13 +151,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        [HttpPost("{sportName}"), Route("Fixture")]
+        [HttpPost("{sportName}"), Route("OneMatchFixture")]
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
         {
             IActionResult result;
             if (ModelState.IsValid)
             {
-                IFixtureService fixture = new FixtureService(matches, teams, sports);
+                IFixtureService fixture = new FixtureService(matches, teams, sports)
+                {
+                    FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7)
+                };
                 result = CreateValid(input, sportName, fixture);
             }
             else
@@ -170,7 +175,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 2, 5);
                 Sport sport = sports.Get(sportName);
                 ICollection<Match> added = fixture.AddFixture(sport);
                 ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
@@ -198,6 +202,25 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = NotFound(error);
             }
+
+            return result;
+        }
+
+        [HttpPost("{sportName}"), Route("HomeAwayFixture")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult CreateHomeAwayFixture(string sportName, FixtureModelIn input)
+        {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                IFixtureService fixture = new FixtureService(matches, teams, sports)
+                {
+                    FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 2, 5)
+                };
+                result = CreateValid(input, sportName, fixture);
+            }
+            else
+                result = BadRequest(ModelState);
 
             return result;
         }
