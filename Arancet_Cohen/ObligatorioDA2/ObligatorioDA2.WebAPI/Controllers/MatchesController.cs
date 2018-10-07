@@ -132,7 +132,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Match added = matchService.AddMatch(id, aMatch.HomeTeamId,
                      aMatch.AwayTeamId, aMatch.SportName, aMatch.Date);
                 MatchModelOut output = BuildModelOut(added);
-                result = CreatedAtRoute("GetMatchById", output);
+                result = CreatedAtRoute("GetMatchById",new {matchId =added.Id } ,output);
             }
             return result;
         }
