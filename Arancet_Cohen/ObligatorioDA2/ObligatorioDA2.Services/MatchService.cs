@@ -34,9 +34,9 @@ namespace ObligatorioDA2.Services
         {
 
             if (DateOccupied(aMatch.HomeTeam, aMatch.Date))
-                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam + "already has a match on date" + aMatch.Date);
+                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
             if (DateOccupied(aMatch.AwayTeam, aMatch.Date))
-                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam + "already has a match on date" + aMatch.Date);
+                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
 
             return matchesStorage.Add(aMatch);
         }
