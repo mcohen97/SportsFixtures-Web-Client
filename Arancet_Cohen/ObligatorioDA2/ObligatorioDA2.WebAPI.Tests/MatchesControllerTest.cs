@@ -239,6 +239,31 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void PutDateOccupiedTest() {
+            //Arrange.
+            Exception toThrow = new TeamAlreadyHasMatchException();
+            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<DateTime>(), It.IsAny<string>())).Throws(toThrow);
+            MatchModelIn input = BuildMatchModelIn(testMatch);
+
+            //Act.
+            IActionResult result = controller.Put(1, input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<DateTime>(), It.IsAny<string>()), Times.Once);
+
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<DateTime>()), Times.Never);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
+        [TestMethod]
         public void DeleteTest() {
             //Act.
             IActionResult result =controller.Delete(3);
