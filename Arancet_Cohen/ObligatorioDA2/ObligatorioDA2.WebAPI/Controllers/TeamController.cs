@@ -190,6 +190,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             TeamModelOut output = new TeamModelOut()
             {
                 Id = toReturn.Id,
+                SportName = toReturn.Sport.Name,
                 Name = toReturn.Name,
                 Photo = toReturn.Photo
             };
