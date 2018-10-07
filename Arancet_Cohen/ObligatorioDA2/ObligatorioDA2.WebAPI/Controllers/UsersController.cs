@@ -187,7 +187,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             User toAdd = BuildUser(user);
             service.AddUser(toAdd);
             UserModelOut modelOut = CreateModelOut(toAdd);
-            return CreatedAtRoute("GetUserById", modelOut);
+            return CreatedAtRoute("GetUserById",new {username = toAdd.UserName} ,modelOut);
         }
 
         private ErrorModelOut CreateErrorModel(Exception e)
@@ -223,7 +223,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             catch(UserNotFoundException) {
                 service.AddUser(toModify);
-                result = CreatedAtRoute("GetUserById", output);
+                result = CreatedAtRoute("GetUserById",new { username= toModify.UserName} ,output);
             }
             return result;
         }

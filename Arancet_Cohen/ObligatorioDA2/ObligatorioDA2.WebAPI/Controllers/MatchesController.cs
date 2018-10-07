@@ -59,7 +59,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 Match added = matchService.AddMatch(input.HomeTeamId, input.AwayTeamId, input.SportName, input.Date);
                 MatchModelOut output = BuildModelOut(added);
-                result = CreatedAtRoute("GetMatchById", output);
+                result = CreatedAtRoute("GetMatchById",new {matchId = added.Id }, output);
             }
             catch (EntityNotFoundException e) {
                 result = CreateErrorMessage(e);
@@ -243,6 +243,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 SportName = aMatch.Sport.Name,
                 AwayTeamId = aMatch.AwayTeam.Id,
                 HomeTeamId = aMatch.HomeTeam.Id,
+                Date= aMatch.Date,
                 CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
             };
         }

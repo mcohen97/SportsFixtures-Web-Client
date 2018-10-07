@@ -22,11 +22,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ITeamRepository teams;
         private IMatchRepository matches;
 
-        public SportsController(ISportRepository sportsRepo, ITeamRepository teamsRepo)
-        {
-            sports = sportsRepo;
-            teams = teamsRepo;
-        }
 
         public SportsController(ISportRepository sportRepo, IMatchRepository matchRepo, ITeamRepository teamRepo)
         {
@@ -69,7 +64,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             Sport toAdd = new Sport(modelIn.Name);
             sports.Add(toAdd);
             SportModelOut modelOut = new SportModelOut(){Name = toAdd.Name};
-            IActionResult result = CreatedAtRoute("GetById", modelOut);
+            IActionResult result = CreatedAtRoute("GetSportById",new {name = toAdd.Name },modelOut);
             return result;
         }
 
@@ -165,7 +160,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 sports.Add(toAdd);
                 SportModelOut modelOut = new SportModelOut() { Name = toAdd.Name };
-                result = CreatedAtRoute("GetById", modelOut);
+                result = CreatedAtRoute("GetSportById",new { name= toAdd.Name} ,modelOut);
             }
             return result;
         }
@@ -199,7 +194,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
-        [HttpPost("{sportName}"), Route("OneMatchFixture")]
+        [HttpPost("{sportName}/OneMatchFixture")]
         [Authorize(Roles = "Admin")]
         public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
         {

@@ -29,7 +29,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(conversion);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetTeamById")]
         [Authorize]
         public IActionResult Get(int id)
         {
@@ -48,7 +48,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        [HttpGet("{sportName}/{teamName}", Name = "GetTeamById")]
+        [HttpGet("{sportName}/{teamName}")]
         [Authorize]
         public IActionResult Get(string sportName, string teamName)
         {
@@ -114,7 +114,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             Team toAdd = new Team(team.Name, team.Photo, new Sport(team.SportName));
             Team added = teams.Add(toAdd);
             TeamModelOut modelOut = BuildTeamModelOut(added);
-            return CreatedAtRoute("GetTeamById", modelOut);
+            return CreatedAtRoute("GetTeamById",new {id =added.Id } ,modelOut);
         }
 
         private TeamModelOut BuildTeamModelOut(Team toReturn)
@@ -166,7 +166,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             Team toAdd = new Team(teamId,team.Name, team.Photo,new Sport(team.SportName));
             teams.Add(toAdd);
             TeamModelOut addedTeam = CreateModelOut(toAdd);
-            return CreatedAtRoute("GetTeamById", addedTeam);
+            return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);
         }
 
         [HttpDelete("{sportName}/{teamName}")]
