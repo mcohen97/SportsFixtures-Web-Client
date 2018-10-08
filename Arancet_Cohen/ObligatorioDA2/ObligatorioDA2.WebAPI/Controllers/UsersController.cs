@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
+using System.Net;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -34,6 +35,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
+            IActionResult result;
+            try {
+                result = TryGetAll();
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryGetAll()
+        {
             ICollection<User> users = service.GetAllUsers();
             ICollection<UserModelOut> output = users.Select(u => CreateModelOut(u)).ToList();
             return Ok(output);
@@ -48,9 +61,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 UserModelOut toReturn = TryGetUser(username);
                 result = Ok(toReturn);
-            } catch (UserNotFoundException e) {
+            }
+            catch (UserNotFoundException e)
+            {
                 ErrorModelOut error = CreateErrorModel(e);
                 result = new NotFoundObjectResult(error);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -104,10 +122,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryFollowTeam(TeamModelIn aTeam)
         {
-            string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-            service.FollowTeam(username, aTeam.Id);
-            OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
-            return Ok(okMessage);
+            IActionResult result;
+            try
+            {
+                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+                service.FollowTeam(username, aTeam.Id);
+                OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
+                result = Ok(okMessage);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
+            return result;
         }
 
         [HttpDelete, Route("followed-teams")]
@@ -146,10 +172,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryUnFollow(TeamModelIn input)
         {
-            string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-            service.UnFollowTeam(username, input.Id);
-            OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
-            return Ok(okMessage);
+            IActionResult result;
+            try
+            {
+                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+                service.UnFollowTeam(username, input.Id);
+                OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
+                result = Ok(okMessage);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
+            return result;          
         }
 
         [HttpPost]
@@ -175,9 +209,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryAddUser(user);
             }
-            catch (UserAlreadyExistsException e) {
+            catch (UserAlreadyExistsException e)
+            {
                 ErrorModelOut error = CreateErrorModel(e);
                 result = BadRequest(error);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -221,9 +259,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 service.ModifyUser(toModify);
                 result = Ok(output);
             }
-            catch (UserNotFoundException) {
+            catch (UserNotFoundException)
+            {
                 service.AddUser(toModify);
                 result = CreatedAtRoute("GetUserById", new { username = toModify.UserName }, output);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -238,9 +280,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 service.DeleteUser(username);
                 result = Ok();
             }
-            catch (UserNotFoundException e) {
+            catch (UserNotFoundException e)
+            {
                 ErrorModelOut error = CreateErrorModel(e);
                 result = new NotFoundObjectResult(error);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -268,9 +314,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGetFollowedTeams(username);
             }
-            catch (UserNotFoundException e) {
+            catch (UserNotFoundException e)
+            {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = BadRequest(error);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -304,6 +354,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Photo= stored.Photo
             };
             return built;
+        }
+
+        private IActionResult NoDataAccess(DataInaccessibleException e)
+        {
+            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
+            return internalError;
         }
 
     }
