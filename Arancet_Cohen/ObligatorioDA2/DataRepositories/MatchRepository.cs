@@ -205,7 +205,7 @@ namespace DataRepositories
             if (!context.Comments.Any(c => c.Id == id)) {
                 throw new CommentNotFoundException();
             }
-            CommentEntity retrieved = context.Comments.First(c => c.Id == id);
+            CommentEntity retrieved = context.Comments.Include(c =>c.Maker).First(c => c.Id == id);
             return commentConverter.ToComment(retrieved);
         }
     }

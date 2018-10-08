@@ -157,14 +157,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok();
         }
 
-        [HttpPost("{matchId}/comments", Name = "GetCommentMatchComments")]
+        [HttpPost("{matchId}/comments")]
         [Authorize]
         public IActionResult CommentOnMatch(int matchId,CommentModelIn input)
         {
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = AddValidFormatComment(input);
+                result = AddValidFormatComment(matchId,input);
             }
             else {
                 result = BadRequest(ModelState);
@@ -172,12 +172,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult AddValidFormatComment(CommentModelIn input)
+        private IActionResult AddValidFormatComment(int matchId,CommentModelIn input)
         {
             IActionResult result;
             try
             {
-                result = TryAddComment(input);
+                result = TryAddComment(matchId,input);
             }
             catch (EntityNotFoundException e) {
                 result = CreateErrorMessage(e);
@@ -185,13 +185,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult TryAddComment(CommentModelIn input)
+        private IActionResult TryAddComment(int matchId,CommentModelIn input)
         {
-            Commentary created = matchService.CommentOnMatch(input.MatchId, input.MakerUsername, input.Text);
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+            Commentary created = matchService.CommentOnMatch(matchId, username, input.Text);
             CommentModelOut output = new CommentModelOut
             {
                 Id = created.Id,
-                MakerUsername = input.MakerUsername,
+                MakerUsername = username,
                 Text = input.Text
             };
             return CreatedAtRoute("GetCommentById",new {id =created.Id }, output);
@@ -251,7 +252,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
-        [HttpGet("{matchId}/comments")]
+        [HttpGet("{matchId}/comments", Name = "GetCommentMatchComments")]
         public IActionResult GetMatchComments(int matchId) {
 
             ICollection<Commentary> matchComments = matchService.GetMatchCommentaries(matchId);

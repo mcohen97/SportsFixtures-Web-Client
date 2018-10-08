@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
 using DataRepositoryInterfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -9,6 +10,7 @@ using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using Match = BusinessLogic.Match;
 
@@ -297,15 +299,15 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CommentOnMatchTest() {
             //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
             User commentarist = GetFakeUser();
             Commentary made = new Commentary("this is a comment", commentarist);
 
             CommentModelIn input = new CommentModelIn() {
-                Text = "this is a comment",
-                MakerUsername = "username",
-                MatchId = 3
+                Text = "this is a comment"
             };
-            matchService.Setup(ms => ms.CommentOnMatch(input.MatchId, input.MakerUsername, input.Text)).Returns(made);
+            matchService.Setup(ms => ms.CommentOnMatch(3, "username", input.Text)).Returns(made);
 
 
             //Act.
@@ -314,7 +316,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             CommentModelOut comment = createdResult.Value as CommentModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text),Times.Once);
+            matchService.Verify(ms => ms.CommentOnMatch(3, "username", input.Text),Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -346,11 +348,11 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateCommentInNoExistingMatch() {
             //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
             CommentModelIn input = new CommentModelIn()
             {
-                Text = "this is a comment",
-                MakerUsername = "username",
-                MatchId = 3
+                Text = "this is a comment"
             };
             Exception toThrow = new MatchNotFoundException();
             matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
@@ -361,7 +363,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text), Times.Once);
+            matchService.Verify(ms => ms.CommentOnMatch(3, "username", input.Text), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
@@ -372,11 +374,11 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateCommentByNoExistingUser() {
             //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
             CommentModelIn input = new CommentModelIn()
             {
-                Text = "this is a comment",
-                MakerUsername = "username",
-                MatchId = 3
+                Text = "this is a comment"
             };
             Exception toThrow = new UserNotFoundException();
             matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
@@ -387,7 +389,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.CommentOnMatch(3, input.MakerUsername, input.Text), Times.Once);
+            matchService.Verify(ms => ms.CommentOnMatch(3, "username", input.Text), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
@@ -565,6 +567,20 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "email@email.com" };
             return new User(identity, true);
+        }
+
+        private ControllerContext GetFakeControllerContext()
+        {
+            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", "username") };
+
+            Mock<ClaimsPrincipal> cp = new Mock<ClaimsPrincipal>();
+            cp.Setup(m => m.Claims).Returns(fakeClaims);
+            Mock<HttpContext> contextMock = new Mock<HttpContext>();
+            contextMock.Setup(ctx => ctx.User).Returns(cp.Object);
+
+            Mock<ControllerContext> controllerContextMock = new Mock<ControllerContext>();
+            controllerContextMock.Object.HttpContext = contextMock.Object;
+            return controllerContextMock.Object;
         }
     }
    
