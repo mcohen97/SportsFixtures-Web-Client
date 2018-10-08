@@ -78,6 +78,29 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void GetNoDataAccessTest() {
+            
+             //Arrange.
+             Exception toThrow = new DataInaccessibleException();
+            service.Setup(us => us.GetUser(It.IsAny<string>())).Throws(toThrow);
+
+
+            //Act.
+            IActionResult result = controller.Get("username");
+            ObjectResult noData = result as ObjectResult;
+            ErrorModelOut error = noData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(noData);
+            Assert.AreEqual(500,noData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+           
+
+        }
+
+        [TestMethod]
         public void CreateValidUserTest()
         {
             //Act.
@@ -137,6 +160,29 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
+        }
+
+        [TestMethod]
+        public void CreateUserNoDataAccessTest()
+        {
+            
+             //Arrange.
+             Exception toThrow = new DataInaccessibleException();
+             service.Setup(us => us.AddUser(It.IsAny<User>())).Throws(toThrow);
+
+
+            //Act.
+            IActionResult result = controller.Post(input);
+            ObjectResult noData = result as ObjectResult;
+            ErrorModelOut error = noData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(noData);
+            Assert.AreEqual(500,noData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+           
         }
 
 
@@ -208,6 +254,36 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void PutUserNoDataAccessTest()
+        {
+
+            //Arrange.
+            UserModelIn modelIn = new UserModelIn()
+            {
+                Name = "name1",
+                Surname = "surname1",
+                Username = "username",
+                Password = "password1",
+                Email = "mail@domain.com"
+            };
+            Exception toThrow = new DataInaccessibleException();
+            service.Setup(us => us.ModifyUser(It.IsAny<User>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Put("username", modelIn);
+            ObjectResult noData = result as ObjectResult;
+            ErrorModelOut error = noData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(noData);
+            Assert.AreEqual(500,noData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+           
+        }
+
+        [TestMethod]
         public void DeleteTest()
         {
             //Act.
@@ -241,6 +317,27 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void DeleteUserNoDataAccessTest()
+        { 
+            //Arrange.
+            Exception toThrow = new DataInaccessibleException();
+            service.Setup(us => us.DeleteUser(It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Delete("username");
+            ObjectResult notData = result as ObjectResult;
+            ErrorModelOut error = notData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notData);
+            Assert.AreEqual(500,notData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+           
+        }
+
+        [TestMethod]
         public void GetAllTest()
         {
             //Arrange.
@@ -259,6 +356,27 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(200, listResult.StatusCode);
             Assert.IsNotNull(list);
             Assert.AreEqual(fakeList.Count, list.Count);
+        }
+
+        [TestMethod]
+        public void GetAllUsersNoDataAccessTest()
+        {
+            //Arrange.
+            Exception toThrow = new DataInaccessibleException();
+            service.Setup(us => us.GetAllUsers()).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.Get();
+            ObjectResult notData = result as ObjectResult;
+            ErrorModelOut error = notData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notData);
+            Assert.AreEqual(500,notData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+
         }
 
         [TestMethod]
@@ -352,6 +470,31 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void FollowTeamNoDataAccessTest()
+        {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+            Exception toThrow = new DataInaccessibleException();
+            TeamModelIn input = GetTeamModelIn();
+            service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+
+
+            //Act.
+            IActionResult result = controller.FollowTeam(input);
+            ObjectResult noData = result as ObjectResult;
+            ErrorModelOut error = noData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(noData);
+            Assert.AreEqual(500,noData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+           
+        }
+
+        [TestMethod]
         public void UnFollowTeamTest() {
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
@@ -437,6 +580,29 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
+        public void UnfollowTeamNoDataAccessTest()
+        {
+            //Arrange.
+            ControllerContext fakeContext = GetFakeControllerContext();
+            controller.ControllerContext = fakeContext;
+            Exception toThrow = new DataInaccessibleException();
+             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+             TeamModelIn input = GetTeamModelIn();
+
+            //Act.
+            IActionResult result = controller.UnFollowTeam(input);
+            ObjectResult notData = result as ObjectResult;
+            ErrorModelOut error = notData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notData);
+            Assert.AreEqual(500,notData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+        }
+
+        [TestMethod]
         public void GetFollowedTeamsTest() {
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
@@ -477,6 +643,27 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
 
+        }
+
+        [TestMethod]
+        public void GetFollowedTeamsNoDataAccessTest()
+        {
+             //Arrange.
+             Exception toThrow = new DataInaccessibleException();
+            service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.GetFollowedTeams("username");
+            ObjectResult notData = result as ObjectResult;
+            ErrorModelOut error = notData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notData);
+            Assert.AreEqual(500,notData.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
+           
         }
 
         private TeamModelIn GetTeamModelIn()
