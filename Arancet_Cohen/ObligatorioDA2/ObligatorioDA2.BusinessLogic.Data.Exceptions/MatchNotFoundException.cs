@@ -6,5 +6,9 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
 {
     public class MatchNotFoundException:EntityNotFoundException
     {
+        public MatchNotFoundException():base("Match not found")
+        {
+
+        }
     }
 }

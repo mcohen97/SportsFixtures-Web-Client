@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BusinessLogic;
 using DataRepositoryInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
@@ -21,11 +22,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ITeamRepository teams;
         private IFixtureService fixture;
 
-        public SportsController(ISportRepository sportsRepo, ITeamRepository teamsRepo)
-        {
-            sports = sportsRepo;
-            teams = teamsRepo;
-        }
 
         public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, IFixtureService fixtureService)
         {
@@ -35,6 +31,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Post([FromBody]SportModelIn modelIn)
         {
             IActionResult result;
@@ -51,17 +48,28 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult CreateValidSport(SportModelIn modelIn)
         {
+            IActionResult result;
+            try {
+                result = TryAddSport(modelIn);
+            }
+            catch (SportAlreadyExistsException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryAddSport(SportModelIn modelIn)
+        {
             Sport toAdd = new Sport(modelIn.Name);
             sports.Add(toAdd);
-            SportModelOut modelOut = new SportModelOut()
-            {
-                Name = toAdd.Name
-            };
-            IActionResult result = CreatedAtRoute("GetById", modelOut);
+            SportModelOut modelOut = new SportModelOut(){Name = toAdd.Name};
+            IActionResult result = CreatedAtRoute("GetSportById",new {name = toAdd.Name },modelOut);
             return result;
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             ICollection<Sport> allOfThem = sports.GetAll();
@@ -72,6 +80,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         [HttpGet("{name}", Name = "GetSportById")]
+        [Authorize]
         public IActionResult Get(string name)
         {
 
@@ -96,6 +105,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{name}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(string name)
         {
             IActionResult result;
@@ -117,6 +127,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPut("{name}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Put(string name, [FromBody] SportModelIn modelIn)
         {
             IActionResult result;
@@ -149,13 +160,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 sports.Add(toAdd);
                 SportModelOut modelOut = new SportModelOut() { Name = toAdd.Name };
-                result = CreatedAtRoute("GetById", modelOut);
+                result = CreatedAtRoute("GetSportById",new { name= toAdd.Name} ,modelOut);
             }
             return result;
         }
 
 
         [HttpGet("{name}/teams")]
+        [Authorize]
         public IActionResult GetTeams(string name)
         {
             IActionResult result;
@@ -182,7 +194,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
-        [HttpPost("{sportName}"), Route("OneMatchFixture")]
+        [HttpPost("{sportName}/OneMatchFixture")]
         [Authorize(Roles = "Admin")]
         public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
         {
@@ -233,7 +245,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        [HttpPost("{sportName}"), Route("HomeAwayFixture")]
+        [HttpPost("{sportName}/HomeAwayFixture")]
         [Authorize(Roles = "Admin")]
         public IActionResult CreateHomeAwayFixture(string sportName, FixtureModelIn input)
         {

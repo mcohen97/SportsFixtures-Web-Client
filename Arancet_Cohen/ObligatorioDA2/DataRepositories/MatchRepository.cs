@@ -43,8 +43,32 @@ namespace DataRepositories
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
-            context.SaveChanges();
+
+            //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
+            if (aMatch.Id > 0 && context.Database.IsSqlServer())
+            {
+                SaveWithIdentityInsert();
+            }
+            else
+            {
+                context.SaveChanges();
+            }
             return matchConverter.ToMatch(toAdd);
+        }
+
+        private void SaveWithIdentityInsert()
+        {
+            context.Database.OpenConnection();
+            try
+            {
+                context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Matches ON");
+                context.SaveChanges();
+                context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Matches OFF");
+            }
+            finally
+            {
+                context.Database.CloseConnection();
+            }
         }
 
         public void Clear()
@@ -96,7 +120,7 @@ namespace DataRepositories
                 .Include(m=>m.HomeTeam)
                 .Include(m=>m.AwayTeam)
                 .Include(m=>m.SportEntity)
-                .Include(m => m.Commentaries)
+                .Include(m => m.Commentaries).ThenInclude(c => c.Maker)
                 .First(me => me.Id == anId);
 
             Match conversion = matchConverter.ToMatch(entity);
@@ -106,8 +130,14 @@ namespace DataRepositories
 
         public ICollection<Match> GetAll()
         {
-            IQueryable<MatchEntity> entities = context.Matches;
+            IQueryable<MatchEntity> entities = context.Matches
+                .Include(m => m.HomeTeam)
+                .Include(m => m.AwayTeam)
+                .Include(m => m.SportEntity)
+                .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
+
             ICollection<Match> translation = entities.Select(m => matchConverter.ToMatch(m)).ToList();
+
             return translation;
         }
 
@@ -121,6 +151,11 @@ namespace DataRepositories
             if (Exists(aMatch.Id))
             {
                 MatchEntity converted = matchConverter.ToEntity(aMatch);
+                if (context.Matches.Any(m => m.Id == aMatch.Id)) {
+                    MatchEntity old = context.Matches.First(m => m.Id == aMatch.Id);
+                    context.Entry(old).State = EntityState.Detached;
+                }
+
                 context.Entry(converted).State = EntityState.Modified;
                 context.SaveChanges();
             }
@@ -158,5 +193,11 @@ namespace DataRepositories
             return context.Matches.Any(m => m.Id == id);
         }
 
+        public ICollection<Commentary> GetComments()
+        {
+            IQueryable<CommentEntity> allComments = context.Comments.Include(c => c.Maker);
+            ICollection<Commentary> conversion = allComments.Select(c => commentConverter.ToComment(c)).ToList();
+            return conversion;
+        }
     }
 }

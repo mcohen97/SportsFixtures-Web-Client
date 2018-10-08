@@ -108,27 +108,54 @@ namespace DataRepositories
             if (context.Sports.Contains(toStore.Sport)) {
                 context.Entry(toStore.Sport).State = EntityState.Unchanged;
             }
-            context.SaveChanges();
+            //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
+            if (aTeam.Id > 0 && context.Database.IsSqlServer())
+            {
+                SaveWithIdentityInsert();
+            }
+            else {
+                context.SaveChanges();
+            }
+
             return mapper.ToTeam(toStore);
 
         }
 
-        public void Modify(Team aTeam)
-        {
+        private void SaveWithIdentityInsert()
+        {         
+            context.Database.OpenConnection();
             try
             {
-                TryModify(aTeam);
+                context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Teams ON");
+                context.SaveChanges();
+                context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT dbo.Teams OFF");
+            }
+            finally
+            {
+                context.Database.CloseConnection();
+            }
+        }
+
+        public void Modify(Team aTeam)
+        {
+            TeamEntity entity = mapper.ToEntity(aTeam);
+            try
+            {
+                TryModify(entity);
             }
             catch (DbUpdateException)
             {
+                context.Entry(entity).State = EntityState.Detached;
                 throw new TeamNotFoundException();
             }
         }
 
-        private void TryModify(Team aTeam)
+        private void TryModify(TeamEntity entity)
         {
-            TeamEntity entity = mapper.ToEntity(aTeam);
-            context.Entry(entity).State = EntityState.Modified;
+
+            //context.Entry(entity).State = EntityState.Modified;
+            //context.Update(entity);
+            context.Teams.Update(entity);
             context.SaveChanges();
         }
 

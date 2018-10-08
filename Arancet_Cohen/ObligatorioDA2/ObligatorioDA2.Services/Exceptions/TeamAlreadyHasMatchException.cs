@@ -5,7 +5,7 @@ namespace ObligatorioDA2.Services.Exceptions
 {
     public class TeamAlreadyHasMatchException : Exception
     {
-        public TeamAlreadyHasMatchException()
+        public TeamAlreadyHasMatchException():base("One of these teams already plays in this date")
         {
         }
 

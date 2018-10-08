@@ -60,7 +60,7 @@ namespace ObligatorioDA2.Services.Tests
         private void SetUpRepository()
         {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "MatchRepository")
+                .UseInMemoryDatabase(databaseName: "FixtureService")
                 .Options;
             DatabaseConnection context = new DatabaseConnection(options);
             matchStorage = new MatchRepository(context);

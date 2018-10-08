@@ -20,23 +20,25 @@ namespace DataRepositoriesTest
         ISportRepository sportsStorage;
         Mock<BusinessLogic.Match> match;
         Mock<Sport> sport;
+        DatabaseConnection context;
 
         [TestInitialize]
         public void SetUp() {
             sport = new Mock<Sport>("Soccer");
             SetUpRepository();
-            match = BuildFakeMatch(); 
+            match = BuildFakeMatch();
+            context.Comments.RemoveRange(context.Comments);
             matchesStorage.Clear();
             sportsStorage.Clear();
         }
 
         private void SetUpRepository() {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "MatchRepository")
+                .UseInMemoryDatabase(databaseName: "MatchRepositoryTest")
                 .Options;
-            DatabaseConnection context = new DatabaseConnection(options);
+            context = new DatabaseConnection(options);
             matchesStorage = new MatchRepository(context);
-            sportsStorage = new SportRepository(context); 
+            sportsStorage = new SportRepository(context);
         }
 
         private Mock<BusinessLogic.Match> BuildFakeMatch()
@@ -88,6 +90,20 @@ namespace DataRepositoriesTest
             matchesStorage.Add(match.Object);
             Match retrieved = matchesStorage.Get(match.Object.Id);
             Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
+        }
+
+        [TestMethod]
+        public void GetCommentsTest() {
+            Mock<Commentary> dummy = BuildFakeCommentary();
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
+            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport.Object);
+            Match match = new Match(3, home.Object, away.Object, DateTime.Now, sport.Object);
+
+            matchesStorage.Add(match);
+            matchesStorage.CommentOnMatch(3, dummy.Object);
+
+            ICollection<Commentary> allComments = matchesStorage.GetComments();
+            Assert.AreEqual(1, allComments.Count);
         }
 
         private Mock<Commentary> BuildFakeCommentary()

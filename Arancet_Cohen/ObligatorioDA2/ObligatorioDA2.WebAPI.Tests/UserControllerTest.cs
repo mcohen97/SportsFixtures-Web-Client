@@ -440,13 +440,12 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetFollowedTeamsTest() {
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             Team aTeam = new Team("aTeam", "aPhoto", new Sport("aSport"));
             ICollection<Team> list2return = new List<Team>() { aTeam, aTeam, aTeam };
             service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Returns(list2return);
 
             //Act.
-            IActionResult result = controller.GetFollowedTeams();
+            IActionResult result = controller.GetFollowedTeams("username");
             OkObjectResult okResult = result as OkObjectResult;
             ICollection<TeamModelOut> teamsFollowed = okResult.Value as ICollection<TeamModelOut>;
 
@@ -457,6 +456,27 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(teamsFollowed);
             Assert.AreEqual(list2return.Count,teamsFollowed.Count);
+        }
+
+        [TestMethod]
+        public void GetFollowedTeamsNotExistingUserTest() {
+            //Arrange.
+            Exception toThrow = new UserNotFoundException();
+            service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.GetFollowedTeams("username");
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert.
+            service.Verify(us => us.GetUserTeams("username"), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+
         }
 
         private TeamModelIn GetTeamModelIn()

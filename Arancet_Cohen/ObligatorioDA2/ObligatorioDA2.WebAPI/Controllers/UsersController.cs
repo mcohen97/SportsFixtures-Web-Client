@@ -31,22 +31,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
-            ICollection<User> users =service.GetAllUsers();
+            ICollection<User> users = service.GetAllUsers();
             ICollection<UserModelOut> output = users.Select(u => CreateModelOut(u)).ToList();
             return Ok(output);
         }
 
         [HttpGet("{username}", Name = "GetUserById")]
+        [Authorize]
         public IActionResult Get(string username)
         {
             IActionResult result;
             try
             {
                 UserModelOut toReturn = TryGetUser(username);
-                result= Ok(toReturn);
-            }catch (UserNotFoundException e) {
+                result = Ok(toReturn);
+            } catch (UserNotFoundException e) {
                 ErrorModelOut error = CreateErrorModel(e);
                 result = new NotFoundObjectResult(error);
             }
@@ -103,8 +105,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryFollowTeam(TeamModelIn aTeam)
         {
             string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-            //Team toFollow = new Team(aTeam.Id, aTeam.Name, aTeam.Photo, new Sport(aTeam.SportName));
-            //service.FollowTeam(username, toFollow);
             service.FollowTeam(username, aTeam.Id);
             OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
             return Ok(okMessage);
@@ -147,7 +147,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryUnFollow(TeamModelIn input)
         {
             string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-            service.UnFollowTeam(username,input.Id);
+            service.UnFollowTeam(username, input.Id);
             OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
             return Ok(okMessage);
         }
@@ -187,7 +187,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             User toAdd = BuildUser(user);
             service.AddUser(toAdd);
             UserModelOut modelOut = CreateModelOut(toAdd);
-            return CreatedAtRoute("GetUserById", modelOut);
+            return CreatedAtRoute("GetUserById", new { username = toAdd.UserName }, modelOut);
         }
 
         private ErrorModelOut CreateErrorModel(Exception e)
@@ -203,7 +203,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result =ModifyValidUser(username, toModify);
+                result = ModifyValidUser(username, toModify);
             }
             else {
                 result = BadRequest(ModelState);
@@ -221,9 +221,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 service.ModifyUser(toModify);
                 result = Ok(output);
             }
-            catch(UserNotFoundException) {
+            catch (UserNotFoundException) {
                 service.AddUser(toModify);
-                result = CreatedAtRoute("GetUserById", output);
+                result = CreatedAtRoute("GetUserById", new { username = toModify.UserName }, output);
             }
             return result;
         }
@@ -259,12 +259,25 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return built;
         }
 
-        [HttpGet("followed-teams")]
+        [HttpGet("{username}/followed-teams")]
         [Authorize]
-        public IActionResult GetFollowedTeams()
+        public IActionResult GetFollowedTeams(string username)
         {
-            string currentUser = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-            ICollection<Team> followed = service.GetUserTeams(currentUser);
+            IActionResult result;
+            try
+            {
+                result = TryGetFollowedTeams(username);
+            }
+            catch (UserNotFoundException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryGetFollowedTeams(string username)
+        {
+            ICollection<Team> followed = service.GetUserTeams(username);
             ICollection<TeamModelOut> converted = followed.Select(t => CreateModelOut(t)).ToList();
             return Ok(converted);
         }

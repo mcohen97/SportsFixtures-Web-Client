@@ -16,7 +16,7 @@ namespace ObligatorioDA2.Services.Tests
     [TestClass]
     public class MatchServiceTest
     {
-        private MatchService serviceToTest;
+        private IMatchService serviceToTest;
         private IMatchRepository matchesRepo;
         private ISportRepository sportsRepo;
         private ITeamRepository teamsRepo;
@@ -55,7 +55,7 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo = new SportRepository(context);
             teamsRepo = new TeamRepository(context);
             usersRepo = new UserRepository(context);
-            serviceToTest = new MatchService(matchesRepo, teamsRepo, sportsRepo,usersRepo);
+            serviceToTest = new MatchService(matchesRepo, teamsRepo, sportsRepo, usersRepo);
             context.Comments.RemoveRange(context.Comments);
         }
 
@@ -152,7 +152,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
         public void GetMatchesOfNotExistingTeamTest() {
-            serviceToTest.GetAllMatches(matchAvsB.Id); 
+            serviceToTest.GetAllMatches(matchAvsB.Id);
         }
 
         [TestMethod]
@@ -163,6 +163,9 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void ModifyTest() {
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            teamsRepo.Add(teamC);
             serviceToTest.AddMatch(matchAvsB);
             Match modifiedAvsB = new Match(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport);
             SetUpRepository();
@@ -287,12 +290,34 @@ namespace ObligatorioDA2.Services.Tests
             usersRepo.Add(commentarist);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            Match added = matchesRepo.Add(matchAvsB);
+            teamsRepo.Add(teamC);
+            Match added1 = matchesRepo.Add(matchAvsB);
+            Match added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
-            serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "a Comment");
-            serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "another Comment");
-            ICollection<Commentary> comments = serviceToTest.GetMatchCommentaries(added.Id);
+            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "another Comment");
+            serviceToTest.CommentOnMatch(added2.Id, commentarist.UserName, "a Comment");
+            ICollection<Commentary> comments = serviceToTest.GetMatchCommentaries(added1.Id);
             Assert.AreEqual(comments.Count, 2);
+        }
+
+        [TestMethod]
+        public void GetCommentsTest() {
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
+            User commentarist = new User(identity, true);
+            usersRepo.Add(commentarist);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            teamsRepo.Add(teamC);
+            Match added1 = matchesRepo.Add(matchAvsB);
+            Match added2 = matchesRepo.Add(matchAvsC);
+            SetUpRepository();
+            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "another Comment");
+            serviceToTest.CommentOnMatch(added2.Id, commentarist.UserName, "a Comment");
+            ICollection<Commentary> comments = serviceToTest.GetAllCommentaries();
+            Assert.AreEqual(comments.Count, 3);
+
         }
 
     }

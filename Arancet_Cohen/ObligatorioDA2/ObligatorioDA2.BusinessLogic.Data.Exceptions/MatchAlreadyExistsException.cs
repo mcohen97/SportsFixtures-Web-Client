@@ -7,7 +7,7 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
 {
     public class MatchAlreadyExistsException : EntityAlreadyExistsException
     {
-        public MatchAlreadyExistsException()
+        public MatchAlreadyExistsException():base("This match already exists")
         {
         }
     }
