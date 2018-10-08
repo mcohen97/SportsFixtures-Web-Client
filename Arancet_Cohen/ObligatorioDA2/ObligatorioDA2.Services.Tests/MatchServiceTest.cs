@@ -337,7 +337,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(CommentNotFoundException))]
-        public void GetCommentTest()
+        public void GetNotExistingCommentTest()
         {
             Commentary retrieved = serviceToTest.GetComment(3);
         }
