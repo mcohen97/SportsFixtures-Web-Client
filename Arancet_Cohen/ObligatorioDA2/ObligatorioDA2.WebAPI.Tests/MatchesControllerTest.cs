@@ -409,13 +409,38 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkObjectResult okResult = result as OkObjectResult;
             ICollection<CommentModelOut> comments = okResult.Value as ICollection<CommentModelOut>;
 
-            //Do.
+            //Assert.
             matchService.Verify(ms => ms.GetMatchCommentaries(It.IsAny<int>()),Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(comments);
             Assert.AreEqual(fakeList.Count, comments.Count);
+        }
+
+       [TestMethod]
+        public void ViewCommentTest() {
+            //Arrange.
+            User dummyUser = GetFakeUser();
+            Commentary dummyComment = new Commentary("Comment", dummyUser);
+            matchService.Setup(ms => ms.GetComment(3)).Returns(dummyComment);
+
+            //Act.
+            IActionResult result = controller.GetComment(3);
+            OkObjectResult okResult = result as OkObjectResult;
+            CommentModelOut comment = okResult.Value as CommentModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(comment);
+            Assert.AreEqual(dummyComment.Text,comment.Text);
+        }
+
+        [TestMethod]
+        public void ViewNotExistingCommentTest() {
+    
         }
 
         [TestMethod]
