@@ -32,6 +32,7 @@ namespace BusinessLogic
             int matchesCount = teamsCount * (teamsCount -1) / 2; //Combinations(teams, 2);
             int matchesPerRound =  teamsCount / 2;
 
+            
             Team[,] actualRound = InitializeRound(teams);
             int matchesAdded = 0;
             int actualRoundLength = 0;
@@ -103,8 +104,15 @@ namespace BusinessLogic
                 newRound[1, i-1] = actualRound[1, i];
             }
 
-            newRound[0,1] = goesUp;
-            newRound[1,newRound.GetLength(1)-1] = goesDown;
+            if (actualRound.GetLength(1) == 1)
+            {
+                newRound[0, 0] = goesUp;
+                newRound[1, 0] = goesDown;
+            } else
+            {
+                newRound[0, 1] = goesUp;
+                newRound[1, newRound.GetLength(1) - 1] = goesDown;
+            }
 
             return newRound;
         }

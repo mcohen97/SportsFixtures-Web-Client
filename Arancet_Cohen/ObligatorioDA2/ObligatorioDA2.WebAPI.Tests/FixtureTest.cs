@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
@@ -23,6 +24,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         Mock<ISportRepository> sportsRepo;
         Mock<IMatchRepository> matchesRepo;
         Mock<ITeamRepository> teamsRepo;
+        IFixtureService fixture;
         ICollection<Team> teamsCollection;
         ICollection<Match> oneMatchCollection;
         ICollection<Match> homeAwayMatchCollection;
@@ -91,7 +93,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             teamsRepo.Setup(t => t.GetTeams(It.IsAny<string>())).Returns(teamsCollection);
             teamsRepo.Setup(t => t.GetAll()).Returns(teamsCollection);
 
-            controller = new SportsController(sportsRepo.Object, matchesRepo.Object, teamsRepo.Object);
+            fixture = new FixtureService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
+            
+            controller = new SportsController(sportsRepo.Object, teamsRepo.Object, fixture);
         }
 
         [TestMethod]
