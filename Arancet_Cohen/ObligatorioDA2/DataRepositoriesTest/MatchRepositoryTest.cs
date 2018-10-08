@@ -115,13 +115,14 @@ namespace DataRepositoriesTest
             Match match = new Match(3, home.Object, away.Object, DateTime.Now, sport.Object);
 
             matchesStorage.Add(match);
-            Commentary comment = matchesStorage.CommentOnMatch(3, dummy.Object);
-            Assert.AreEqual(dummy.Object.Text, comment.Text);
+            Commentary added = matchesStorage.CommentOnMatch(3, dummy.Object);
+            Commentary retrieved = matchesStorage.GetComment(added.Id);
+            Assert.AreEqual(dummy.Object.Text, retrieved.Text);
         }
 
         [TestMethod]
         [ExpectedException(typeof(CommentNotFoundException))]
-        public void GetCommentTest()
+        public void GetNotExistingCommentTest()
         {
             matchesStorage.GetComment(3);
         }
