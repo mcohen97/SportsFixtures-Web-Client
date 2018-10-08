@@ -320,5 +320,27 @@ namespace ObligatorioDA2.Services.Tests
 
         }
 
+        [TestMethod]
+        public void GetCommentTest() {
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
+            User commentarist = new User(identity, true);
+            usersRepo.Add(commentarist);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            teamsRepo.Add(teamC);
+            Match added1 = matchesRepo.Add(matchAvsB);
+            Match added2 = matchesRepo.Add(matchAvsC);
+            SetUpRepository();
+            Commentary comment =serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
+            Commentary retrieved = serviceToTest.GetComment(comment.Id);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CommentNotFoundException))]
+        public void GetCommentTest()
+        {
+            Commentary retrieved = serviceToTest.GetComment(3);
+        }
+
     }
 }
