@@ -106,27 +106,6 @@ namespace DataRepositoriesTest
             Assert.AreEqual(1, allComments.Count);
         }
 
-
-        [TestMethod]
-        public void GetCommentTest()
-        {
-            Mock<Commentary> dummy = BuildFakeCommentary();
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport.Object);
-            Match match = new Match(3, home.Object, away.Object, DateTime.Now, sport.Object);
-
-            matchesStorage.Add(match);
-            Commentary comment = matchesStorage.CommentOnMatch(3, dummy.Object);
-            Assert.AreEqual(dummy.Object.Text,comment.Text);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(CommentNotFoundException))]
-        public void GetCommentTest()
-        {
-            matchesStorage.GetComment(3);
-        }
-
         private Mock<Commentary> BuildFakeCommentary()
         {
             UserId identity = new UserId() {
@@ -211,7 +190,6 @@ namespace DataRepositoriesTest
         public void DeleteUnexistentTest() {
             matchesStorage.Delete(match.Object.Id);
         }
-
 
     }
 }
