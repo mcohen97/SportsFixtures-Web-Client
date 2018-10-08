@@ -147,5 +147,10 @@ namespace ObligatorioDA2.Services
         {
             return matchesStorage.GetComments();
         }
+
+        public Commentary GetComment(int id)
+        {
+            return matchesStorage.GetComment(id);
+        }
     }
 }

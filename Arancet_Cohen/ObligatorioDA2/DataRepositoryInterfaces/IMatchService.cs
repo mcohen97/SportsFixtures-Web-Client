@@ -33,5 +33,6 @@ namespace DataRepositoryInterfaces
 
         ICollection<Commentary> GetMatchCommentaries(int matchId);
         ICollection<Commentary> GetAllCommentaries();
+        Commentary GetComment(int id);
     }
 }
