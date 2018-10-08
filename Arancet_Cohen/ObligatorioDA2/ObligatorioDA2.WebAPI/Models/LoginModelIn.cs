@@ -8,9 +8,9 @@ namespace ObligatorioDA2.WebAPI.Models
 {
     public class LoginModelIn
     {
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Username { get; set; }
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Password { get; set; }
     }
 }

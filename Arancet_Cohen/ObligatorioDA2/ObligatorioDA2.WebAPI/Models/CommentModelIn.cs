@@ -8,7 +8,7 @@ namespace ObligatorioDA2.WebAPI.Models
 {
     public class CommentModelIn
     {
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Text { get; set; }
     }
 }

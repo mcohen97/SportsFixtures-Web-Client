@@ -7,10 +7,10 @@ namespace ObligatorioDA2.WebAPI.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        public string Name { get; set; }  
+        [Required(AllowEmptyStrings = false)]
+        public string Name { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string SportName { get; set; }
 
         public string Photo{ get; set; }
