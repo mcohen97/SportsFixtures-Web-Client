@@ -4,6 +4,7 @@ using BusinessLogic;
 using DataRepositoryInterfaces;
 using System.Linq;
 using ObligatorioDA2.Services.Exceptions;
+using BusinessLogic.Exceptions;
 
 namespace ObligatorioDA2.Services
 {
@@ -39,7 +40,11 @@ namespace ObligatorioDA2.Services
             }
             catch (TeamAlreadyHasMatchException e)
             {
-
+                RollBack(added);
+                throw new WrongFixtureException(e.Message);
+            }
+            catch (InvalidTeamCountException e)
+            {
                 RollBack(added);
                 throw new WrongFixtureException(e.Message);
             }
