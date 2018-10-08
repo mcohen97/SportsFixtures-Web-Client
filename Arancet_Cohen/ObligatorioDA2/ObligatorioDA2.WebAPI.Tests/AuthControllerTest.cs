@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using DataRepositoryInterfaces;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
+using System;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -46,31 +47,39 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void LoginNotFoundTest() {
             //arrange
-            logger.Setup(l => l.Login("otherUsername", "aPassword")).Throws(new UserNotFoundException());
+            Exception toThrow = new UserNotFoundException();
+            logger.Setup(l => l.Login("otherUsername", "aPassword")).Throws(toThrow);
 
             //act
             LoginModelIn credentials = new LoginModelIn() { Username = "otherUsername", Password = "aPassword" };
             IActionResult result = controllerToTest.Authenticate(credentials);
             BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequestResult.Value as ErrorModelOut;
 
             //assert
             logger.VerifyAll();
             Assert.IsNotNull(badRequestResult);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
         [TestMethod]
         public void LoginWrongPasswordTest() {
             //arrange
-            logger.Setup(l => l.Login("aUsername", "otherPassword")).Throws(new WrongPasswordException());
+            Exception toThrow = new WrongPasswordException();
+            logger.Setup(l => l.Login("aUsername", "otherPassword")).Throws(toThrow);
 
             //act
             LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "otherPassword" };
             IActionResult result = controllerToTest.Authenticate(credentials);
             BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequestResult.Value as ErrorModelOut;
 
             //assert
             logger.VerifyAll();
             Assert.IsNotNull(badRequestResult);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message,error.ErrorMessage);
         }
 
         [TestMethod]
