@@ -20,13 +20,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
     {
         private ISportRepository sports;
         private ITeamRepository teams;
-        private IMatchRepository matches;
+        private IFixtureService fixture;
 
 
-        public SportsController(ISportRepository sportRepo, IMatchRepository matchRepo, ITeamRepository teamRepo)
+        public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, IFixtureService fixtureService)
         {
             sports = sportRepo;
-            matches = matchRepo;
+            fixture = fixtureService;
             teams = teamRepo;
         }
 
@@ -201,10 +201,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                IFixtureService fixture = new FixtureService(matches, teams, sports)
-                {
-                    FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7)
-                };
+                fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);               
                 result = CreateValid(input, sportName, fixture);
             }
             else
@@ -255,10 +252,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                IFixtureService fixture = new FixtureService(matches, teams, sports)
-                {
-                    FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 2, 5)
-                };
+                fixture.FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 2, 5);
                 result = CreateValid(input, sportName, fixture);
             }
             else
