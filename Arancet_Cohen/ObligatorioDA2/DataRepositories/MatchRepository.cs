@@ -199,5 +199,14 @@ namespace DataRepositories
             ICollection<Commentary> conversion = allComments.Select(c => commentConverter.ToComment(c)).ToList();
             return conversion;
         }
+
+        public Commentary GetComment(int id)
+        {
+            if (!context.Comments.Any(c => c.Id == id)) {
+                throw new CommentNotFoundException();
+            }
+            CommentEntity retrieved = context.Comments.First(c => c.Id == id);
+            return commentConverter.ToComment(retrieved);
+        }
     }
 }

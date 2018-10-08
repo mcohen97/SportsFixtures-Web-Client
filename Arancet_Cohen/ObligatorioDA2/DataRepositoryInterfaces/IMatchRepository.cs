@@ -10,6 +10,7 @@ namespace DataRepositoryInterfaces
     {
 
         Commentary CommentOnMatch(int idMatch, Commentary aComment);
+        Commentary GetComment(int id);
         ICollection<Commentary> GetComments();
     }
 }
