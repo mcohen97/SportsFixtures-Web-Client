@@ -52,11 +52,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             catch (UserNotFoundException e1)
             {
-                result = BadRequest(e1.Message);
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e1.Message };
+                result = BadRequest(error);
             }
             catch (WrongPasswordException e2)
             {
-                result = BadRequest(e2.Message);
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e2.Message };
+                result = BadRequest(error);
             }
             return result;
         }
