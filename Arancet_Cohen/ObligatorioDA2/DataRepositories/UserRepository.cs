@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using System.Data.Common;
 
 namespace DataRepositories
 {
@@ -27,6 +28,19 @@ namespace DataRepositories
         }
 
         public User Add(User aUser)
+        {
+            User added;
+            try
+            {
+                added = TryAdd(aUser);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return added;
+        }
+
+        private User TryAdd(User aUser)
         {
             User added;
             if (!AnyWithThisUserName(aUser.UserName))
@@ -48,12 +62,26 @@ namespace DataRepositories
 
         public User Get(string aUserName)
         {
+            User stored;
+            try
+            {
+                stored = TryGet(aUserName);
+
+            }
+            catch (DbException e) {
+                throw new DataInaccessibleException();
+            }
+            return stored;
+        }
+
+        private User TryGet(string aUserName)
+        {
             User toReturn;
             if (AnyWithThisUserName(aUserName))
             {
                 UserEntity retrieved = GetEntityByUsername(aUserName);
-                ICollection<TeamEntity> teams = GetFollowedTeams(aUserName); 
-                toReturn = userMapper.ToUser(retrieved,teams);
+                ICollection<TeamEntity> teams = GetFollowedTeams(aUserName);
+                toReturn = userMapper.ToUser(retrieved, teams);
                 context.Entry(retrieved).State = EntityState.Detached;
             }
             else
@@ -72,6 +100,16 @@ namespace DataRepositories
         }
 
         public void Delete(string username)
+        {
+            try {
+                TryDelete(username);
+            }
+            catch (DbException e) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryDelete(string username)
         {
             if (AnyWithThisUserName(username))
             {
@@ -98,10 +136,24 @@ namespace DataRepositories
 
         public ICollection<User> GetAll()
         {
+            ICollection<User> allOfThem;
+            try
+            {
+                allOfThem = TryGetAll();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return allOfThem;
+        }
+
+        private ICollection<User> TryGetAll()
+        {
             IQueryable<UserEntity> query = context.Users;
             ICollection<User> users = new List<User>();
 
-            foreach (UserEntity user in query) {
+            foreach (UserEntity user in query)
+            {
                 IQueryable<TeamEntity> followed = context.UserTeams
                     .Where(ue => ue.UserEntityUserName.Equals(user.UserName))
                     .Select(ue => ue.Team);
@@ -113,18 +165,50 @@ namespace DataRepositories
 
         public bool IsEmpty()
         {
-            return !context.Users.Any();
+            bool empty;
+            try
+            {
+                empty = !context.Users.Any();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        return empty;
         }
 
        
 
         public bool Exists(string username)
         {
-            bool doesExist = context.Users.Any(u => u.UserName.Equals(username));
+            bool doesExist;
+            try
+            {
+                doesExist = AskIfExists(username);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
             return doesExist;
         }
 
+        private bool AskIfExists(string username)
+        {
+            return context.Users.Any(u => u.UserName.Equals(username));
+
+        }
+
         public void Modify(User aUser)
+        {
+            try
+            {
+                TryModify(aUser);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryModify(User aUser)
         {
             if (AnyWithThisUserName(aUser.UserName))
             {
@@ -174,13 +258,24 @@ namespace DataRepositories
 
         public void Clear()
         {
+            try
+            {
+                TryClear();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryClear()
+        {
             IQueryable<UserEntity> allOfThem = context.Users;
-            foreach (UserEntity existent in allOfThem) {
+            foreach (UserEntity existent in allOfThem)
+            {
                 context.Users.Remove(existent);
             }
             context.SaveChanges();
         }
-
     }
 }
 
