@@ -440,7 +440,21 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void ViewNotExistingCommentTest() {
-    
+            //Arrange.
+            Exception toThrow = new CommentNotFoundException();
+            matchService.Setup(ms => ms.GetComment(3)).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controller.GetComment(3);
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.AreEqual(404, notFound.StatusCode);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
 
         [TestMethod]
