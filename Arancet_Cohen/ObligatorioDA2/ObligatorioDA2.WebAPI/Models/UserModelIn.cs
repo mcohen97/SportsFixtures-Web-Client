@@ -7,16 +7,23 @@ namespace ObligatorioDA2.WebAPI.Models
         public UserModelIn()
         {
         }
-        [Required]
+
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
-        [Required]
+
+        [Required(AllowEmptyStrings = false)]
         public string Surname { get; set; }
-        [Required]
+
+        [Required(AllowEmptyStrings = false)]
         public string Username { get; set; }
-        [Required]
+
+        [Required(AllowEmptyStrings = false)]
         public string Password { get; set; }
+
+        [ValidMail]
         [Required]
         public string Email { get; set; }
+
         [Required]
         public bool IsAdmin { get; set; }
     }
