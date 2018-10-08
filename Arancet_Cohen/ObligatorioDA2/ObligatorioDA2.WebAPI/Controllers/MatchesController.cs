@@ -61,7 +61,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 MatchModelOut output = BuildModelOut(added);
                 result = CreatedAtRoute("GetMatchById",new {matchId = added.Id }, output);
             }
-            catch (EntityNotFoundException e) {
+            catch (DataAccessException e) {
                 result = CreateErrorMessage(e);
             }
             catch (TeamAlreadyHasMatchException e) {
@@ -128,7 +128,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             catch (TeamAlreadyHasMatchException e) {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = BadRequest(error);
-            }catch (EntityNotFoundException e) {
+            }catch (DataAccessException e) {
                 Match added = matchService.AddMatch(id, aMatch.HomeTeamId,
                      aMatch.AwayTeamId, aMatch.SportName, aMatch.Date);
                 MatchModelOut output = BuildModelOut(added);
@@ -179,7 +179,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryAddComment(matchId,input);
             }
-            catch (EntityNotFoundException e) {
+            catch (DataAccessException e) {
                 result = CreateErrorMessage(e);
             }
             return result;
