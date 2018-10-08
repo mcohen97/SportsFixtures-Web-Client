@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
 {
-    public class EntityNotFoundException:Exception
+    public abstract class EntityNotFoundException:DataAccessException
     {
-        public EntityNotFoundException(string aMessage):base(aMessage) {}
+        public EntityNotFoundException(string aMessage) : base(aMessage) { }
 
     }
 }
