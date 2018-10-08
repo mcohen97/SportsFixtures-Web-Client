@@ -13,7 +13,7 @@ namespace ObligatorioDA2.WebAPI.Models
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            string email =(string)validationContext.ObjectInstance;
+            string email =((UserModelIn)validationContext.ObjectInstance).Email;
             
             ValidationResult result;
 
