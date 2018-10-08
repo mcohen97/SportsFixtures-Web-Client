@@ -192,10 +192,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 Id = created.Id,
                 MakerUsername = input.MakerUsername,
-                MatchId = input.MatchId,
                 Text = input.Text
             };
-            return CreatedAtRoute("GetCommentMatchComments",new {matchId =input.MatchId }, output);
+            return CreatedAtRoute("GetCommentById",new {id =created.Id }, output);
         }
 
         private IActionResult CreateErrorMessage(Exception e)
@@ -276,6 +275,34 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Text = aComment.Text
             };
             return comment;
+        }
+
+        [HttpGet("comments/{id}", Name = "GetCommentById")]
+        public IActionResult GetComment(int id)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryGetComment(id);
+
+            }
+            catch (CommentNotFoundException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryGetComment(int id)
+        {
+            Commentary comment = matchService.GetComment(id);
+            CommentModelOut output = new CommentModelOut
+            {
+                Id = comment.Id,
+                MakerUsername = comment.Maker.UserName,
+                Text = comment.Text
+            };
+            return Ok(output);
         }
     }
 }
