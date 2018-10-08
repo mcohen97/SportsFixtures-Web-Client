@@ -320,7 +320,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual("GetCommentById", createdResult.RouteName);
+            Assert.AreEqual("GetCommentMatchComments", createdResult.RouteName);
             Assert.IsNotNull(comment);
             Assert.AreEqual(comment.Text, input.Text);
         }

@@ -40,7 +40,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             sportsRepo.Setup(r => r.Get(It.Is<String>(x => (x != "Tennis") && (x !="Basketball")))).Throws(new SportNotFoundException());
             sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport("Basketball"), new Sport("Tennis") });
 
-            controllerToTest = new SportsController(sportsRepo.Object,matchesRepo.Object,teamsRepo.Object);
+            IFixtureService dummyService = new Mock<IFixtureService>().Object;
+
+            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService);
         }
 
         [TestMethod]

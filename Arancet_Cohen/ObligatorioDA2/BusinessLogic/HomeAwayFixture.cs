@@ -1,3 +1,4 @@
+using BusinessLogic.Exceptions;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +22,9 @@ namespace BusinessLogic
 
         public override ICollection<Match> GenerateFixture(ICollection<Team> teams)
         {
+            if (teams.Count < 2)
+                throw new InvalidTeamCountException("Can not generate any fixture with less than 2 teams");
+
             ICollection<Match> generatedFixture = new List<Match>();
 
             if(teams.Count % 2 != 0)
@@ -126,8 +130,16 @@ namespace BusinessLogic
                 newRound[1, i-1] = actualRound[1, i];
             }
 
-            newRound[0,1] = goesUp;
-            newRound[1,newRound.GetLength(1)-1] = goesDown;
+            if (actualRound.GetLength(1) == 1)
+            {
+                newRound[0, 0] = goesUp;
+                newRound[1, 0] = goesDown;
+            }
+            else
+            {
+                newRound[0, 1] = goesUp;
+                newRound[1, newRound.GetLength(1) - 1] = goesDown;
+            }
 
             return newRound;
         }
