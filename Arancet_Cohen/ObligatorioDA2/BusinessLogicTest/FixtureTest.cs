@@ -214,6 +214,24 @@ namespace BusinessLogicTest
             );
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamCountException))]
+        public void LessThan2TeamsHomeAwayTest()
+        {
+            while(teams.Count > 1)
+                teams.Remove(teams.Last());
+            ICollection<BusinessLogic.Match> fixtureResult = homeAwayFixture.GenerateFixture(teams);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidTeamCountException))]
+        public void LessThan2TeamsOneMatchTest()
+        {
+            while (teams.Count > 1)
+                teams.Remove(teams.Last());
+            ICollection<BusinessLogic.Match> fixtureResult = oneMatchFixture.GenerateFixture(teams);
+        }
+
 
     }
 }
