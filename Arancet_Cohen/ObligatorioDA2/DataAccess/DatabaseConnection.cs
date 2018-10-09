@@ -1,8 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using ObligatorioDA2.DataAccess.Entities;
 
 namespace ObligatorioDA2.Data.DataAccess

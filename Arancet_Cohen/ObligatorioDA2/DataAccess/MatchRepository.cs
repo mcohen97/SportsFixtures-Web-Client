@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
 using ObligatorioDA2.DataAccess.Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 

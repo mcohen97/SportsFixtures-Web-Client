@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net.Mail;
-using System.Threading.Tasks;
+
 
 namespace ObligatorioDA2.WebAPI.Models
 {

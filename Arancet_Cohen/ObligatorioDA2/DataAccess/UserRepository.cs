@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Data.DataAccess;
