@@ -56,7 +56,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 MatchModelOut output = BuildModelOut(added);
                 result = CreatedAtRoute("GetMatchById",new {matchId = added.Id }, output);
             }
-            catch (DataAccessException e) {
+            catch (EntityNotFoundException e) {
                 result = CreateErrorMessage(e);
             }
             catch (TeamAlreadyHasMatchException e) {
