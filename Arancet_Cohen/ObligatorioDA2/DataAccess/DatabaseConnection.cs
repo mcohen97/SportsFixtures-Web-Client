@@ -23,13 +23,13 @@ namespace ObligatorioDA2.Data.DataAccess
 
             modelBuilder.Entity<SportEntity>().HasKey(t => t.Name);
             modelBuilder.Entity<UserEntity>().HasKey(u => u.UserName);
-            modelBuilder.Entity<TeamEntity>().HasKey(t => t.Identity);
+            modelBuilder.Entity<TeamEntity>().HasKey(t => t.TeamNumber);
             modelBuilder.Entity<TeamEntity>().HasAlternateKey(t => new { t.SportEntityName, t.Name });
             modelBuilder.Entity<UserTeam>().HasKey(ut => new { ut.TeamEntityName,ut.TeamEntitySportEntityName, ut.UserEntityUserName});
 
       
 
-            modelBuilder.Entity<TeamEntity>().Property(u => u.Identity).ValueGeneratedOnAdd();
+            modelBuilder.Entity<TeamEntity>().Property(u => u.TeamNumber).ValueGeneratedOnAdd();
             modelBuilder.Entity<MatchEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<CommentEntity>().Property(u => u.Id).ValueGeneratedOnAdd();
         }   

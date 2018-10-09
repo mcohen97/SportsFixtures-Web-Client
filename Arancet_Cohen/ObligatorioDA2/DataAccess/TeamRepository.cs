@@ -307,7 +307,7 @@ namespace ObligatorioDA2.Data.Repositories
 
         private bool AskIfExists(int id)
         {
-            return context.Teams.Any(t => t.Identity == id);
+            return context.Teams.Any(t => t.TeamNumber == id);
         }
 
         public void Delete(int id)
@@ -328,7 +328,7 @@ namespace ObligatorioDA2.Data.Repositories
                 throw new TeamNotFoundException();
 
             TeamEntity toDelete = context.Teams
-                .First(t => t.Identity == id);
+                .First(t => t.TeamNumber == id);
             context.Teams.Remove(toDelete);
             DeleteMatches(toDelete);
             context.SaveChanges();
@@ -353,7 +353,7 @@ namespace ObligatorioDA2.Data.Repositories
                 throw new TeamNotFoundException();
 
             TeamEntity entity = context.Teams
-                .FirstOrDefault(e => e.Identity == id);
+                .FirstOrDefault(e => e.TeamNumber == id);
             Team converted = mapper.ToTeam(entity);
             return converted;
         }

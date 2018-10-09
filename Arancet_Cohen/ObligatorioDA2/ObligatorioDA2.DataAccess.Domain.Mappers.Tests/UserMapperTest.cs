@@ -115,7 +115,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 Name = "Partisanos Fc",
                 SportEntityName = "Soccer",
                 Sport = new SportEntity() {Name= "Soccer" },
-                Identity = 1,
+                TeamNumber = 1,
                 Photo = "aPhoto"
             };
             User conversion = toTest.ToUser(toGet, new List<TeamEntity>() { entity});

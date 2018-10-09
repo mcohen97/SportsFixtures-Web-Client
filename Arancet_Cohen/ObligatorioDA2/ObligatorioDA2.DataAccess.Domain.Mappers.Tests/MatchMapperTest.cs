@@ -17,8 +17,8 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         [TestInitialize]
         public void SetUp() {
             testMapper = new MatchMapper();
-            TeamEntity homeTest = new TeamEntity { Identity =3,SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
-            TeamEntity awayTest = new TeamEntity { Identity =4,SportEntityName= "Soccer", Name = "Torque", Photo = "aPath" };
+            TeamEntity homeTest = new TeamEntity { TeamNumber =3,SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
+            TeamEntity awayTest = new TeamEntity { TeamNumber =4,SportEntityName= "Soccer", Name = "Torque", Photo = "aPath" };
             entity = new MatchEntity()
             {
                 Id = 3,

@@ -11,12 +11,12 @@ namespace ObligatorioDA2.Data.Entities
 
         public TeamEntity(int id, string name, string photo)
         {
-            Identity = id;
+            TeamNumber = id;
             Name = name;
             Photo = photo;
         }
 
-        public int Identity { get; set; }
+        public int TeamNumber { get; set; }
         public string Name { get; set; }
 
         public string Photo { get; set; }
