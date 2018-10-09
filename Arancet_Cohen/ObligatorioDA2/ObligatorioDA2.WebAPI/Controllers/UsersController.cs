@@ -17,8 +17,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        IUserService service;
-        UserFactory factory;
+        private IUserService service;
+        private UserFactory factory;
 
 
         public UsersController(IUserService aService) {
@@ -79,106 +79,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Email = queried.Email
             };
             return toReturn;
-        }
-
-        [HttpPost, Route("followed-teams")]
-        [Authorize]
-        public IActionResult FollowTeam([FromBody] TeamModelIn aTeam) {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = FollowValidFormatTeam(aTeam);
-            }
-            else {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private IActionResult FollowValidFormatTeam(TeamModelIn aTeam)
-        {
-            IActionResult result;
-            try
-            {
-                result = TryFollowTeam(aTeam);
-            }
-            catch (EntityNotFoundException e1)
-            {
-                ErrorModelOut error = CreateErrorModel(e1);
-                result = NotFound(error);
-            }
-            catch (TeamAlreadyFollowedException e2)
-            {
-                ErrorModelOut error = CreateErrorModel(e2);
-                result = BadRequest(error);
-            }
-            return result;
-        }
-
-        private IActionResult TryFollowTeam(TeamModelIn aTeam)
-        {
-            IActionResult result;
-            try
-            {
-                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-                service.FollowTeam(username, aTeam.Id);
-                OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
-                result = Ok(okMessage);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
-            return result;
-        }
-
-        [HttpDelete, Route("followed-teams")]
-        [Authorize]
-        public IActionResult UnFollowTeam(TeamModelIn input)
-        {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = UnFollowValidFormat(input);
-            }
-            else {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private IActionResult UnFollowValidFormat(TeamModelIn input)
-        {
-            IActionResult result;
-            try
-            {
-                result = TryUnFollow(input);
-            }
-            catch (EntityNotFoundException e) {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = NotFound(error);
-            }
-            catch (TeamNotFollowedException e)
-            {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = NotFound(error);
-            }
-            return result;
-        }
-
-        private IActionResult TryUnFollow(TeamModelIn input)
-        {
-            IActionResult result;
-            try
-            {
-                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
-                service.UnFollowTeam(username, input.Id);
-                OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
-                result = Ok(okMessage);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
-            return result;          
         }
 
         [HttpPost]
@@ -298,6 +198,112 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
             User built = modelIn.IsAdmin ? factory.CreateAdmin(identity) : factory.CreateFollower(identity);
             return built;
+        }
+
+        [HttpPost, Route("followed-teams")]
+        [Authorize]
+        public IActionResult FollowTeam([FromBody] TeamModelIn aTeam)
+        {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = FollowValidFormatTeam(aTeam);
+            }
+            else
+            {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult FollowValidFormatTeam(TeamModelIn aTeam)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryFollowTeam(aTeam);
+            }
+            catch (EntityNotFoundException e1)
+            {
+                ErrorModelOut error = CreateErrorModel(e1);
+                result = NotFound(error);
+            }
+            catch (TeamAlreadyFollowedException e2)
+            {
+                ErrorModelOut error = CreateErrorModel(e2);
+                result = BadRequest(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryFollowTeam(TeamModelIn aTeam)
+        {
+            IActionResult result;
+            try
+            {
+                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+                service.FollowTeam(username, aTeam.Id);
+                OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
+                result = Ok(okMessage);
+            }
+            catch (DataInaccessibleException e)
+            {
+                result = NoDataAccess(e);
+            }
+            return result;
+        }
+
+        [HttpDelete, Route("followed-teams")]
+        [Authorize]
+        public IActionResult UnFollowTeam(TeamModelIn aTeam)
+        {
+            IActionResult result;
+            if (ModelState.IsValid)
+            {
+                result = UnFollowValidFormat(aTeam);
+            }
+            else
+            {
+                result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult UnFollowValidFormat(TeamModelIn input)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryUnFollow(input);
+            }
+            catch (EntityNotFoundException e)
+            {
+                ErrorModelOut error = CreateErrorModel(e);
+                result = NotFound(error);
+            }
+            catch (TeamNotFollowedException e)
+            {
+                ErrorModelOut error = CreateErrorModel(e);
+                result = NotFound(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryUnFollow(TeamModelIn input)
+        {
+            IActionResult result;
+            try
+            {
+                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+                service.UnFollowTeam(username, input.Id);
+                OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
+                result = Ok(okMessage);
+            }
+            catch (DataInaccessibleException e)
+            {
+                result = NoDataAccess(e);
+            }
+            return result;
         }
 
         [HttpGet("{username}/followed-teams")]
