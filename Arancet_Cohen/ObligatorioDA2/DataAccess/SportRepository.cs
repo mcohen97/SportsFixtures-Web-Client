@@ -7,10 +7,12 @@ using ObligatorioDA2.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ObligatorioDA2.Data.Repositories.Interfaces;
+using System;
+using System.Data.Common;
 
 namespace ObligatorioDA2.Data.Repositories
 {
-    public class SportRepository :ISportRepository
+    public class SportRepository : ISportRepository
     {
         private DatabaseConnection context;
         private SportMapper mapper;
@@ -23,6 +25,19 @@ namespace ObligatorioDA2.Data.Repositories
 
         public Sport Add(Sport sport)
         {
+            Sport added;
+            try
+            {
+                added = TryAdd(sport);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return added;
+        }
+
+        private Sport TryAdd(Sport sport)
+        {
             if (Exists(sport.Name))
                 throw new SportAlreadyExistsException();
 
@@ -34,6 +49,17 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Clear()
         {
+            try
+            {
+                TryClear();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryClear()
+        {
             foreach (SportEntity sport in context.Sports)
             {
                 context.Sports.Remove(sport);
@@ -42,6 +68,17 @@ namespace ObligatorioDA2.Data.Repositories
         }
 
         public void Delete(string name)
+        {
+            try
+            {
+                TryDelete(name);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryDelete(string name)
         {
             if (!Exists(name))
             {
@@ -67,14 +104,41 @@ namespace ObligatorioDA2.Data.Repositories
                     context.Comments.RemoveRange(match.Commentaries);
                 }
             }
-            
+
         }
 
         public bool Exists(string name)
         {
+            bool exists;
+            try
+            {
+                exists = AskIfExists(name);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return exists;
+        }
+
+        private bool AskIfExists(string name)
+        {
             return context.Sports.Any(s => s.Name == name);
         }
+
         public ICollection<Sport> GetAll()
+        {
+            ICollection<Sport> allOfThem;
+            try
+            {
+                allOfThem = TryGetAll();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return allOfThem;
+        }
+
+        private ICollection<Sport> TryGetAll()
         {
             IQueryable<Sport> query = context.Sports.Select(s => mapper.ToSport(s));
             return query.ToList();
@@ -82,10 +146,34 @@ namespace ObligatorioDA2.Data.Repositories
 
         public bool IsEmpty()
         {
+            bool empty;
+            try
+            {
+                empty = AskIfEmpty();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return empty;
+        }
+
+        private bool AskIfEmpty()
+        {
             return !context.Sports.Any();
         }
 
         public void Modify(Sport entity)
+        {
+            try
+            {
+                TryModify(entity);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryModify(Sport entity)
         {
             if (!Exists(entity.Name))
                 throw new SportNotFoundException();
@@ -97,6 +185,19 @@ namespace ObligatorioDA2.Data.Repositories
 
         public Sport Get(string name)
         {
+            Sport toGet;
+            try
+            {
+                toGet = TryGet(name);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return toGet;
+        }
+
+        private Sport TryGet(string name)
+        {
             if (!Exists(name))
             {
                 throw new SportNotFoundException();
@@ -104,7 +205,5 @@ namespace ObligatorioDA2.Data.Repositories
             SportEntity sportInDb = context.Sports.First(s => s.Name == name);
             return mapper.ToSport(sportInDb);
         }
-
- 
     }
 }

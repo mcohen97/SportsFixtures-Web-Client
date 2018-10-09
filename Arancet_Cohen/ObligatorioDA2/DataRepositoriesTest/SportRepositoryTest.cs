@@ -10,6 +10,7 @@ using ObligatorioDA2.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Data.Common;
 
 namespace DataRepositoriesTest
 {
@@ -50,6 +51,17 @@ namespace DataRepositoriesTest
             return context;
         }
 
+        private void CreateDisconnectedDatabase()
+        {
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "UserRepositoryTest")
+                .Options;
+            Mock<DatabaseConnection> contextMock = new Mock<DatabaseConnection>(options);
+            Mock<DbException> toThrow = new Mock<DbException>();
+            contextMock.Setup(c => c.Sports).Throws(toThrow.Object);
+            sportStorage = new SportRepository(contextMock.Object);
+        }
+
         private void ClearDataBase(DatabaseConnection context)
         {
             foreach (SportEntity sport in context.Sports)
@@ -64,6 +76,13 @@ namespace DataRepositoriesTest
         {
             bool noSports = sportStorage.IsEmpty();
             Assert.IsTrue(noSports);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void IsEmptyNoAccessTest() {
+            CreateDisconnectedDatabase();
+            sportStorage.IsEmpty();
         }
 
         [TestMethod]
@@ -82,6 +101,13 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void AddSportNoAccessTest() {
+            CreateDisconnectedDatabase();
+            sportStorage.Add(sportA.Object);
+        }
+
+        [TestMethod]
         public void GetSportTest()
         {
             ISportRepository specific = (ISportRepository)sportStorage;
@@ -94,8 +120,14 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportNotFoundException))]
         public void GetNotExistentTeamTest()
         {
-            ISportRepository specific = (ISportRepository)sportStorage;
-            Sport teamInDb = specific.Get("DreamSport");
+            Sport teamInDb = sportStorage.Get("DreamSport");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetSportNoAccessTest() {
+            CreateDisconnectedDatabase();
+            sportStorage.Get("DreamSport");
         }
 
         [TestMethod]
@@ -116,6 +148,14 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ExistsNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            sportStorage.Exists("DreamSport");
+        }
+
+        [TestMethod]
         public void DeleteTest()
         {
             sportStorage.Add(sportA.Object);
@@ -133,11 +173,11 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SportNotFoundException))]
-        public void DeleteByIdNotExistentTest()
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void DeleteNoAccessTest()
         {
-            sportStorage.Add(sportA.Object);
-            sportStorage.Delete(sportB.Object.Name);
+            CreateDisconnectedDatabase();
+            sportStorage.Delete("DreamSport");
         }
 
         [TestMethod]
@@ -159,50 +199,42 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ModifyNoAccessTest() {
+            CreateDisconnectedDatabase();
+            sportStorage.Modify(sportA.Object);
+        }
+
+        [TestMethod]
         public void ClearTest()
         {
-
             sportStorage.Add(sportA.Object);
             sportStorage.Add(sportB.Object);
-
             sportStorage.Clear();
             Assert.IsTrue(sportStorage.IsEmpty());
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ClearNoAccessTest() {
+            CreateDisconnectedDatabase();
+            sportStorage.Clear();
+        }
+
+        [TestMethod]
         public void GetAllTest()
-        {
-      
+        {     
             sportStorage.Add(sportA.Object);
             sportStorage.Add(sportB.Object);
-
             ICollection<Sport> sports = sportStorage.GetAll();
-
             Assert.AreEqual(2, sports.Count);
         }
 
         [TestMethod]
-        public void GetByNameTest()
-        {
-            sportStorage.Add(sportA.Object);
-            ISportRepository specific = (ISportRepository) sportStorage;
-            Sport sportInDb = specific.Get(sportA.Object.Name);
-            Assert.AreEqual("SportA", sportA.Object.Name);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(SportNotFoundException))]
-        public void GetByIdNotExistentSportTest()
-        {
-            Sport sportsInDb = sportStorage.Get(sportA.Object.Name);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(SportNotFoundException))]
-        public void GetByNameNotExistentSportTest()
-        {
-            ISportRepository specific = (ISportRepository)sportStorage;
-            Sport sportsInDb = specific.Get(sportA.Name);
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetAllNoAccessTest() {
+            CreateDisconnectedDatabase();
+            sportStorage.GetAll();
         }
     }
 }
