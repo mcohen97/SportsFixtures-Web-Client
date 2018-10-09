@@ -104,7 +104,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             catch (SportNotFoundException e)
             {
-                result = NotFound(e.Message);
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
             }
             catch (DataInaccessibleException e) {
                 result = NoDataAccess(e);
@@ -142,6 +143,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryDelete(string name)
         {
             sports.Delete(name);
+            OkModelOut okMessage = new OkModelOut() { OkMessage = "Sport was deleted" };
             return Ok();
         }
 
@@ -228,12 +230,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);               
+                fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
                 result = CreateValid(input, sportName, fixture);
             }
             else
+            {
                 result = BadRequest(ModelState);
-
+            }
             return result;
         }
 
