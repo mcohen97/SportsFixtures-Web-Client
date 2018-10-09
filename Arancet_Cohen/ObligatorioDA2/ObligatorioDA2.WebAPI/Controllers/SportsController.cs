@@ -9,6 +9,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
+using System.Net;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -54,6 +55,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = BadRequest(error);
             }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
             return result;
         }
 
@@ -70,12 +74,23 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
+            IActionResult result;
+            try
+            {
+                result = TryGetAll();
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryGetAll()
+        {
             ICollection<Sport> allOfThem = sports.GetAll();
             IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name });
             return Ok(output);
         }
-
-
 
         [HttpGet("{name}", Name = "GetSportById")]
         [Authorize]
@@ -90,6 +105,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             catch (SportNotFoundException e)
             {
                 result = NotFound(e.Message);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
 
@@ -114,6 +132,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             catch (SportNotFoundException e)
             {
                 result = NotFound(e.Message);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -160,6 +181,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 SportModelOut modelOut = new SportModelOut() { Name = toAdd.Name };
                 result = CreatedAtRoute("GetSportById",new { name= toAdd.Name} ,modelOut);
             }
+            catch (DataInaccessibleException e)
+            {
+                result = NoDataAccess(e);
+            }
             return result;
         }
 
@@ -177,6 +202,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             catch (SportNotFoundException e) {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = NotFound(error);
+            }
+            catch (DataInaccessibleException e)
+            {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -208,41 +237,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult CreateValid(FixtureModelIn input, string sportName, IFixtureService fixture)
-        {
-            IActionResult result;
-            try { 
-            Sport sport = sports.Get(sportName);
-                ICollection<Match> added = fixture.AddFixture(sport);
-                ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
-                foreach (Match match in added)
-                {
-                    addedModelOut.Add(new MatchModelOut()
-                    {
-                        Id = match.Id,
-                        AwayTeamId = match.AwayTeam.Id,
-                        HomeTeamId = match.HomeTeam.Id,
-                        SportName = match.Sport.Name,
-                        Date = match.Date,
-                        CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()
-                    });
-                }
-                result = Created("fixture-generator", addedModelOut);
-            }
-            catch (WrongFixtureException e)
-            {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-            }
-            catch (TeamNotFoundException e)
-            {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
-            }
-
-            return result;
-        }
-
         [HttpPost("{sportName}/HomeAwayFixture")]
         [Authorize(Roles = "Admin")]
         public IActionResult CreateHomeAwayFixture(string sportName, FixtureModelIn input)
@@ -257,6 +251,59 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = BadRequest(ModelState);
 
             return result;
+        }
+
+        private IActionResult CreateValid(FixtureModelIn input, string sportName, IFixtureService fixture)
+        {
+            IActionResult result;
+            try {
+                result = TryCreate(input, sportName,fixture);
+            }
+            catch (WrongFixtureException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
+            }
+            catch (TeamNotFoundException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
+            }
+            catch (DataInaccessibleException e)
+            {
+                result = NoDataAccess(e);
+            }
+
+            return result;
+        }
+
+        private IActionResult TryCreate(FixtureModelIn input, string sportName, IFixtureService fixture)
+        {
+            IActionResult result;
+            Sport sport = sports.Get(sportName);
+            ICollection<Match> added = fixture.AddFixture(sport);
+            ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
+            foreach (Match match in added)
+            {
+                addedModelOut.Add(new MatchModelOut()
+                {
+                    Id = match.Id,
+                    AwayTeamId = match.AwayTeam.Id,
+                    HomeTeamId = match.HomeTeam.Id,
+                    SportName = match.Sport.Name,
+                    Date = match.Date,
+                    CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()
+                });
+            }
+            result = Created("fixture-generator", addedModelOut);
+            return result;
+        }
+
+        private IActionResult NoDataAccess(DataInaccessibleException e)
+        {
+            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
+            return internalError;
         }
     }
 }
