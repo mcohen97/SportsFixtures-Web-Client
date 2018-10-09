@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
+using System.Net;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -19,9 +20,23 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             teams = aRepo;
         }
+
         [HttpGet]
         [Authorize]
         public IActionResult Get()
+        {
+            IActionResult result;
+            try
+            {
+                result = TryGet();
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryGet()
         {
             ICollection<Team> allOfThem = teams.GetAll();
             ICollection<TeamModelOut> conversion = allOfThem.Select(t => BuildTeamModelOut(t)).ToList();
@@ -44,6 +59,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = new NotFoundObjectResult(error);
             }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
             return result;
         }
 
@@ -62,6 +80,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = new NotFoundObjectResult(error);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -90,9 +111,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryAddTeam(team);
             }
-            catch (TeamAlreadyExistsException e) {
+            catch (TeamAlreadyExistsException e)
+            {
                 ErrorModelOut error = CreateErrorModel(e);
                 result = BadRequest(error);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -127,7 +152,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Team toModify = new Team(teamId,value.Name, value.Photo,new Sport(value.SportName));
+                Team toModify = new Team(teamId, value.Name, value.Photo, new Sport(value.SportName));
                 teams.Modify(toModify);
                 TeamModelOut output = BuildTeamModelOut(toModify);
                 result = Ok(output);
@@ -135,6 +160,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             catch (TeamNotFoundException)
             {
                 result = PostId(teamId, value);
+            }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
             }
             return result;
         }
@@ -162,6 +190,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = BadRequest(e.Message);
             }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
             return result;
         }
 
@@ -181,6 +212,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 ErrorModelOut error = CreateErrorModel(e);
                 result = NotFound(error);
             }
+            catch (DataInaccessibleException e) {
+                result = NoDataAccess(e);
+            }
             return result;
         }
 
@@ -194,6 +228,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Photo = toReturn.Photo
             };
             return output;
+        }
+        private IActionResult NoDataAccess(DataInaccessibleException e)
+        {
+            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
+            return internalError;
         }
 
         private ErrorModelOut CreateErrorModel(Exception e)
