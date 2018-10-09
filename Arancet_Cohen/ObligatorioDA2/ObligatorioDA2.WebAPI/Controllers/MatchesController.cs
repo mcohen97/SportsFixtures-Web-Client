@@ -106,30 +106,40 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryPut(int id, MatchModelIn aMatch)
         {
             IActionResult result;
-            try {
+            try
+            {
 
                 matchService.ModifyMatch(id, aMatch.HomeTeamId,
                      aMatch.AwayTeamId, aMatch.Date, aMatch.SportName);
-                MatchModelOut output = new MatchModelOut()
-                {
-                    Id = id,
-                    SportName = aMatch.SportName,
-                    HomeTeamId = aMatch.HomeTeamId,
-                    AwayTeamId = aMatch.AwayTeamId,
-                    Date = aMatch.Date
-                };
+                MatchModelOut output = BuildModelout(id, aMatch);
                 result = Ok(output);
             }
-            catch (TeamAlreadyHasMatchException e) {
+            catch (TeamAlreadyHasMatchException e)
+            {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = BadRequest(error);
-            }catch (DataAccessException e) {
-                Match added = matchService.AddMatch(id, aMatch.HomeTeamId,
-                     aMatch.AwayTeamId, aMatch.SportName, aMatch.Date);
+
+            }
+            catch (EntityNotFoundException e)
+            {
+                Match added = matchService.AddMatch(id, aMatch.HomeTeamId, aMatch.AwayTeamId, aMatch.SportName, aMatch.Date);
                 MatchModelOut output = BuildModelOut(added);
-                result = CreatedAtRoute("GetMatchById",new {matchId =added.Id } ,output);
+                result = CreatedAtRoute("GetMatchById", new { matchId = added.Id }, output);
             }
             return result;
+        }
+
+        private MatchModelOut BuildModelout(int id,MatchModelIn aMatch)
+        {
+            MatchModelOut output = new MatchModelOut()
+            {
+                Id = id,
+                SportName = aMatch.SportName,
+                HomeTeamId = aMatch.HomeTeamId,
+                AwayTeamId = aMatch.AwayTeamId,
+                Date = aMatch.Date
+            };
+            return output;
         }
 
         [HttpDelete("{id}")]
@@ -172,9 +182,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                result = TryAddComment(matchId,input);
+                result = TryAddComment(matchId, input);
             }
-            catch (DataAccessException e) {
+            catch (EntityNotFoundException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage =e.Message };
+                result = BadRequest(error);
+            }
+            catch (DataAccessException e)
+            {
                 result = CreateErrorMessage(e);
             }
             return result;
