@@ -10,6 +10,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
+using System.Net;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -56,6 +57,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e2.Message };
                 result = BadRequest(error);
+            }
+            catch (DataInaccessibleException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = StatusCode((int)HttpStatusCode.InternalServerError, error);
             }
             return result;
         }
