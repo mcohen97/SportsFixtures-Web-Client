@@ -20,8 +20,8 @@ namespace ObligatorioDA2.WebAPI.Models
         [Required(AllowEmptyStrings = false)]
         public string Password { get; set; }
 
+        [Required(AllowEmptyStrings = false)]
         [ValidMail]
-        [Required]
         public string Email { get; set; }
 
         [Required]

@@ -18,10 +18,13 @@ namespace ObligatorioDA2.WebAPI.Models
             try
             {
                 MailAddress m = new MailAddress(email);
-                result= ValidationResult.Success;
+                result = ValidationResult.Success;
             }
             catch (FormatException)
             {
+                result = new ValidationResult(GetErrorMessage());
+            }
+            catch (ArgumentNullException) {
                 result = new ValidationResult(GetErrorMessage());
             }
 
