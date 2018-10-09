@@ -44,19 +44,41 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void LoginNotFoundTest() {
-            //arrange
+            //Arrange.
             Exception toThrow = new UserNotFoundException();
             logger.Setup(l => l.Login("otherUsername", "aPassword")).Throws(toThrow);
 
-            //act
+            //Act.
             LoginModelIn credentials = new LoginModelIn() { Username = "otherUsername", Password = "aPassword" };
             IActionResult result = controllerToTest.Authenticate(credentials);
             BadRequestObjectResult badRequestResult = result as BadRequestObjectResult;
             ErrorModelOut error = badRequestResult.Value as ErrorModelOut;
 
-            //assert
+            //Assert.
             logger.VerifyAll();
             Assert.IsNotNull(badRequestResult);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
+        [TestMethod]
+        public void LoginNoDataAccessTest()
+        {
+            //Arrange.
+            Exception toThrow = new DataInaccessibleException();
+            logger.Setup(us => us.Login(It.IsAny<string>(),It.IsAny<string>())).Throws(toThrow);
+            LoginModelIn credentials = new LoginModelIn() { Username = "otherUsername", Password = "aPassword" };
+
+
+            //Act.
+            IActionResult result = controllerToTest.Authenticate(credentials);
+            ObjectResult noData = result as ObjectResult;
+            ErrorModelOut error = noData.Value as ErrorModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(noData);
+            Assert.AreEqual(500, noData.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
