@@ -9,6 +9,7 @@ using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Match = ObligatorioDA2.BusinessLogic.Match;
+using System.Data.Common;
 
 namespace DataRepositoriesTest
 {
@@ -37,6 +38,18 @@ namespace DataRepositoriesTest
             matchesStorage = new MatchRepository(context);
         }
 
+        private void CreateDisconnectedDatabase()
+        {
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "TeamRepositoryTest")
+                .Options;
+            Mock<DatabaseConnection> contextMock = new Mock<DatabaseConnection>(options);
+            Mock<DbException> toThrow = new Mock<DbException>();
+            contextMock.Setup(c => c.Teams).Throws(toThrow.Object);
+            contextMock.Setup(c => c.Sports).Throws(toThrow.Object);
+            teamsStorage = new TeamRepository(contextMock.Object);
+        }
+
         private void ClearDataBase()
         {
             usersStorage.Clear();
@@ -52,6 +65,14 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void IsEmptyNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.IsEmpty();
+        }
+
+
+        [TestMethod]
         public void AddTeamTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
@@ -65,6 +86,14 @@ namespace DataRepositoriesTest
             teamsStorage.Add(team);
             SetUpRepository();
             teamsStorage.Add(team);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void AddTeamNoAccessTest() {
+            CreateDisconnectedDatabase();
+            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            teamsStorage.Add(team.Object);
         }
 
         [TestMethod]
@@ -84,6 +113,13 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.Get("Soccer", "DreamTeam");
+        }
+
+        [TestMethod]
         public void ExistsTeamWithSportTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
@@ -98,6 +134,14 @@ namespace DataRepositoriesTest
             teamsStorage.Add(team1);
             bool result = teamsStorage.Exists("Basketball", team1.Name);
             Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ExistsNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            teamsStorage.Exists("Basketball", "name");
         }
 
         [TestMethod]
@@ -122,6 +166,13 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void DeleteNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.Delete("Soccer", "name");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
         public void DeleteByIdNotExistentTest() {
             teamsStorage.Delete(3);
@@ -135,6 +186,13 @@ namespace DataRepositoriesTest
             Team team2 = new Team(2, "DreamTeam2", "MyResources/DreamTeam2.png", new Sport("Soccer"));
             teamsStorage.Add(team1);
             teamsStorage.Delete(team2.Sport.Name, team2.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void DeleteByIdNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.Delete(3);
         }
 
         [TestMethod]
@@ -156,6 +214,14 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ModifyNoAccessTest() {
+            CreateDisconnectedDatabase();
+            Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
+            teamsStorage.Modify(team.Object);
+        }
+
+        [TestMethod]
         public void ClearTest() {
             Mock<Team> team1 = new Mock<Team>(1, "DreamTeam1", "MyResources/DreamTeam.png", new Sport("Soccer"));
             Mock<Team> team2 = new Mock<Team>(2, "DreamTeam2", "MyResources/DreamTeam.png", new Sport("Soccer"));
@@ -167,6 +233,13 @@ namespace DataRepositoriesTest
 
             teamsStorage.Clear();
             Assert.IsTrue(teamsStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ClearNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.Clear();
         }
 
         [TestMethod]
@@ -185,6 +258,13 @@ namespace DataRepositoriesTest
             ICollection<Team> teams = teamsStorage.GetAll();
             
             Assert.AreEqual(3, teams.Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetAllNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.GetAll();
         }
 
         [TestMethod]
@@ -213,6 +293,13 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetTeamsNoAccess() {
+            CreateDisconnectedDatabase();
+            teamsStorage.GetTeams("Soccer");
+        }
+
+        [TestMethod]
         public void GetByIdTest() {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer"));
             teamsStorage.Add(team.Object);
@@ -224,6 +311,13 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(TeamNotFoundException))]
         public void GetByIdNotExistentTeamTest() {
             Team teamInDb = teamsStorage.Get("Soccer","Nacional");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetByIdNoAccess() {
+            CreateDisconnectedDatabase();
+            teamsStorage.Get("Soccer", "Nacional");
         }
 
         [TestMethod]
@@ -240,6 +334,7 @@ namespace DataRepositoriesTest
             Assert.AreEqual(followedTeams.Count, 3);
         }
 
+
         [TestMethod]
         public void ExistsTeamTest()
         {
@@ -247,6 +342,13 @@ namespace DataRepositoriesTest
             Team aTeam = new Mock<Team>(1, "DreamTeam", "photo", sport).Object;
             aTeam = teamsStorage.Add(aTeam);
             Assert.IsTrue(teamsStorage.Exists(aTeam.Id));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ExistsIdNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.Exists(3);
         }
 
         [TestMethod]
@@ -259,6 +361,7 @@ namespace DataRepositoriesTest
             Assert.IsFalse(teamsStorage.Exists(aTeam.Id));
         }
 
+
         [TestMethod]
         public void GetTeamByIdTest()
         {
@@ -266,6 +369,13 @@ namespace DataRepositoriesTest
             Team aTeam = new Mock<Team>(1, "DreamTeam", "photo", sport).Object;
             aTeam = teamsStorage.Add(aTeam);
             Assert.AreEqual(teamsStorage.Get(aTeam.Id), aTeam);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetTeamByIdNoAccessTest() {
+            CreateDisconnectedDatabase();
+            teamsStorage.Get(3);
         }
 
         [TestMethod]
