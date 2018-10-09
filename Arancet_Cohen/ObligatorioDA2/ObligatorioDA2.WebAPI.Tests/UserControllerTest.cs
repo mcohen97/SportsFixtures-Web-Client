@@ -95,8 +95,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(500,noData.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message,error.ErrorMessage);
-           
-
         }
 
         [TestMethod]
