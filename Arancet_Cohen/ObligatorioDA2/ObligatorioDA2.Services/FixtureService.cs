@@ -34,9 +34,9 @@ namespace ObligatorioDA2.Services
         public ICollection<Match> AddFixture(ICollection<Team> teamsCollection)
         {
             ICollection<Match> added = new List<Match>();
-            ICollection<Match> generatedMatches = fixtureAlgorithm.GenerateFixture(teamsCollection);
             try
             {
+                ICollection<Match> generatedMatches = fixtureAlgorithm.GenerateFixture(teamsCollection);
                 AddMatches(ref added, generatedMatches);
             }
             catch (TeamAlreadyHasMatchException e)
