@@ -1,6 +1,5 @@
-﻿using BusinessLogic;
+﻿using ObligatorioDA2.BusinessLogic;
 using DataAccess;
-using DataRepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
@@ -9,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using RepositoryInterface;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 
-namespace DataRepositories
+namespace ObligatorioDA2.Data.Repositories
 {
     public class MatchRepository : IMatchRepository
     {

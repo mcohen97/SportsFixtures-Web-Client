@@ -1,18 +1,14 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 using Moq;
-using DataAccess;
-using DataRepositoryInterfaces;
-using DataRepositories;
+using ObligatorioDA2.Data.DataAccess;
 using System.Collections.Generic;
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
-using RepositoryInterface;
-using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using Match = BusinessLogic.Match;
+using Match = ObligatorioDA2.BusinessLogic.Match;
 
 namespace DataRepositoriesTest
 {

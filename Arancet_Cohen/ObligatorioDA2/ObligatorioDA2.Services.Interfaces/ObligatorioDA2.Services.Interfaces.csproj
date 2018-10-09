@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessLogicExceptions\BusinessLogic.Exceptions.csproj" />
+    <ProjectReference Include="..\BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
   </ItemGroup>
-
 
 </Project>

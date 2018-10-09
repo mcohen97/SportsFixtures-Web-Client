@@ -6,8 +6,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
-    <ProjectReference Include="..\RepositoryInterface\RepositoryInterface.csproj" />
+    <ProjectReference Include="..\BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

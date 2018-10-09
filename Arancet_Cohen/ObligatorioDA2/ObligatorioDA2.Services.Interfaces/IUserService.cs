@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
 
 namespace ObligatorioDA2.Services.Interfaces
 {

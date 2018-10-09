@@ -10,17 +10,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using DataAccess;
 using Microsoft.EntityFrameworkCore;
-using RepositoryInterface;
-using BusinessLogic;
-using DataRepositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using DataRepositoryInterfaces;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Services.Interfaces;
 
 namespace ObligatorioDA2.WebAPI

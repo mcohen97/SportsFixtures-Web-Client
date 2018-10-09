@@ -14,9 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Domain.Mapper\ObligatorioDA2.DataAccess.Domain.Mappers.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.DataAccess.Entities.csproj" />
+    <ProjectReference Include="..\BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.Data.DataAccess.Entities.csproj" />
   </ItemGroup>
 
 </Project>

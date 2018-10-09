@@ -1,6 +1,6 @@
-﻿using BusinessLogic;
-using BusinessLogic.Exceptions;
-using DataRepositoryInterfaces;
+﻿using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.BusinessLogic.Exceptions;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using System;

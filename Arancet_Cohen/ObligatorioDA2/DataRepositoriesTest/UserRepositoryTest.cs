@@ -1,17 +1,10 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using DataAccess;
-using DataRepositoryInterfaces;
-using DataRepositories;
-using BusinessLogic;
-using BusinessLogic.Factories;
+using ObligatorioDA2.Data.DataAccess;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories;
+using ObligatorioDA2.BusinessLogic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
-using RepositoryInterface;
-using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Data.Common;
 

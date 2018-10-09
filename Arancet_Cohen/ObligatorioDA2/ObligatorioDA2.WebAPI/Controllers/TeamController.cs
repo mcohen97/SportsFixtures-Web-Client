@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BusinessLogic;
-using DataRepositoryInterfaces;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
-using RepositoryInterface;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {

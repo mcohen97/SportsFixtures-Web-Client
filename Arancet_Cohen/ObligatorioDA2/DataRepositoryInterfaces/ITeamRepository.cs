@@ -1,8 +1,7 @@
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
 using System.Collections.Generic;
-using RepositoryInterface;
 
-namespace DataRepositoryInterfaces
+namespace ObligatorioDA2.Data.Repositories.Interfaces
 {
     public interface ITeamRepository : IRepository<Team, int>
     {

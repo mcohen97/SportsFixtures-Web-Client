@@ -3,10 +3,10 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using RepositoryInterface;
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using DataRepositoryInterfaces;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories;
 using System;
 using System.Collections.Generic;
 

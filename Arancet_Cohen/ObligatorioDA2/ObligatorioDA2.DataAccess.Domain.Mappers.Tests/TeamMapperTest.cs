@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
 
@@ -20,13 +20,6 @@ namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
             teamMapper = new TeamMapper();
         }
 
-       /* [TestMethod]
-        public void TeamToEntityTest(){
-            TeamEntity convertedTeam = teamMapper.ToEntity(mockTeam.Object);
-            Assert.AreEqual(convertedTeam.Identity, mockTeam.Object.Id);
-            Assert.AreEqual(convertedTeam.Name, mockTeam.Object.Name);
-            Assert.AreEqual(convertedTeam.Photo, mockTeam.Object.Photo);
-        }*/
 
         [TestMethod]
         public void EntityToTeamTest(){

@@ -1,8 +1,8 @@
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLogic
+namespace ObligatorioDA2.BusinessLogic
 {
     public class HomeAwayFixture : FixtureGenerator
     {

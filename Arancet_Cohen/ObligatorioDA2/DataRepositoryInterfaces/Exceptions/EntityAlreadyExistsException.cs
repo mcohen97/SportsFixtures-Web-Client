@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataRepositories.Exceptions
+namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
 {
     public class EntityAlreadyExistsException:Exception
     {
-        public EntityAlreadyExistsException() : base() {
+        public EntityAlreadyExistsException(string message) : base(message) {
         }
     }
 }

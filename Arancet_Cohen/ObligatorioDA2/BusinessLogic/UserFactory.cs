@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLogic.Factories
+namespace ObligatorioDA2.BusinessLogic
 {
     public class UserFactory
     {

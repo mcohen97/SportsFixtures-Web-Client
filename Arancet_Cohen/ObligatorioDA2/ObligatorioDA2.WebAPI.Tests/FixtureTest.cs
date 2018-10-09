@@ -1,10 +1,11 @@
-﻿using BusinessLogic;
-using DataRepositoryInterfaces;
+﻿using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services;
+using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
@@ -12,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Match = BusinessLogic.Match;
+using Match = ObligatorioDA2.BusinessLogic.Match;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {

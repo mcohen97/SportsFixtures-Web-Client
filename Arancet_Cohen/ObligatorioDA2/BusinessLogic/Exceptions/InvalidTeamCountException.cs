@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Exceptions
+﻿namespace ObligatorioDA2.BusinessLogic.Exceptions
 {
     public class InvalidTeamCountException : System.Exception
     {

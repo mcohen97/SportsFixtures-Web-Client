@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
 using System.Collections.Generic;
-using BusinessLogic.Factories;
 
 namespace BusinessLogicTest
 {

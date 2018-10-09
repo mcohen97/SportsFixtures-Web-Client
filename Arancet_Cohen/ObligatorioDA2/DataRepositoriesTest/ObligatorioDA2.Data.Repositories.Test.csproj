@@ -21,12 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataRepositoryInterfaces\DataRepositoryInterfaces.csproj" />
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-    <ProjectReference Include="..\DataRepositories\DataRepositories.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.DataAccess.Entities.csproj" />
-    <ProjectReference Include="..\RepositoryInterface\RepositoryInterface.csproj" />
+    <ProjectReference Include="..\DataAccess\ObligatorioDA2.Data.DataAccess.csproj" />
+    <ProjectReference Include="..\DataRepositoryInterfaces\ObligatorioDA2.Data.Repositories.Interfaces.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.Data.DataAccess.Entities.csproj" />
   </ItemGroup>
 
 </Project>

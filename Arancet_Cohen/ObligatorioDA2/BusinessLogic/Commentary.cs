@@ -1,7 +1,7 @@
 using System;
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 
-namespace BusinessLogic
+namespace ObligatorioDA2.BusinessLogic
 {
     public class Commentary
     {

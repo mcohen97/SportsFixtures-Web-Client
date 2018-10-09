@@ -1,6 +1,6 @@
 using System;
 
-namespace BusinessLogic.Exceptions
+namespace ObligatorioDA2.BusinessLogic.Exceptions
 {
     [Serializable]
     public class InvalidSportDataException : System.Exception

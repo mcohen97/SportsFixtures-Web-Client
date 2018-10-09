@@ -1,5 +1,5 @@
-﻿using BusinessLogic;
-using DataRepositoryInterfaces;
+﻿using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.Services;

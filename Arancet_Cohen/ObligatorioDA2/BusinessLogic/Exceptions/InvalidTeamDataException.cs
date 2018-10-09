@@ -1,4 +1,4 @@
-namespace BusinessLogic.Exceptions
+namespace ObligatorioDA2.BusinessLogic.Exceptions
 {
     [System.Serializable]
     public class InvalidTeamDataException : System.Exception

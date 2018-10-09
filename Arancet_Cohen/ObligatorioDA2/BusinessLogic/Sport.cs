@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 
 [assembly:InternalsVisibleTo("BusinessLogicTest")]
 [assembly:InternalsVisibleTo("DataRepositoriesTest")]
 
-namespace BusinessLogic
+namespace ObligatorioDA2.BusinessLogic
 {
     public class Sport
     {

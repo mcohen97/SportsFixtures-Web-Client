@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using BusinessLogic;
-using DataAccess;
-using DataRepositories;
-using DataRepositoryInterfaces;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.DataAccess;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.DataAccess.Entities;
-using Match = BusinessLogic.Match;
+using Match = ObligatorioDA2.BusinessLogic.Match;
 
 namespace DataRepositoriesTest
 {
@@ -18,7 +18,7 @@ namespace DataRepositoriesTest
     {
         IMatchRepository matchesStorage;
         ISportRepository sportsStorage;
-        Mock<BusinessLogic.Match> match;
+        Mock<Match> match;
         Mock<Sport> sport;
         DatabaseConnection context;
 
@@ -41,7 +41,7 @@ namespace DataRepositoriesTest
             sportsStorage = new SportRepository(context);
         }
 
-        private Mock<BusinessLogic.Match> BuildFakeMatch()
+        private Mock<Match> BuildFakeMatch()
         {
             Mock<Team> home = new Mock<Team>(3,"Manchester United","aPath", sport.Object);
             Mock<Team> away = new Mock<Team>(5,"Real Madrid", "aPath", sport.Object);
@@ -177,7 +177,7 @@ namespace DataRepositoriesTest
             matchesStorage.Modify(match.Object);
         }
 
-        private Mock<BusinessLogic.Match> BuildModifiedFakeMatch()
+        private Mock<Match> BuildModifiedFakeMatch()
         {
             Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath", sport.Object);
             Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath", sport.Object);

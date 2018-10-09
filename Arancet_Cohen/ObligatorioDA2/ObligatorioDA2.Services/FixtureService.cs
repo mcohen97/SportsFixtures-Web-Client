@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using BusinessLogic;
-using DataRepositoryInterfaces;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 using System.Linq;
 using ObligatorioDA2.Services.Exceptions;
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 
 namespace ObligatorioDA2.Services
 {

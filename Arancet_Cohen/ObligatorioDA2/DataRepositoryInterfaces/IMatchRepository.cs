@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BusinessLogic;
-using RepositoryInterface;
+using ObligatorioDA2.BusinessLogic;
 
-namespace DataRepositoryInterfaces
+namespace ObligatorioDA2.Data.Repositories.Interfaces
 {
     public interface IMatchRepository : IRepository<Match, int>
     {

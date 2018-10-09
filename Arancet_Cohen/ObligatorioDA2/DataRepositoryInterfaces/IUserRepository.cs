@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BusinessLogic;
-using RepositoryInterface;
+using ObligatorioDA2.BusinessLogic;
 
-namespace DataRepositoryInterfaces
+namespace ObligatorioDA2.Data.Repositories.Interfaces
 {
     public interface IUserRepository:IRepository<User,string>
     {
         User Get(User asked);
-        //void AddFollowedTeam(string username, string sportName, Team toFollow);
     }
 }

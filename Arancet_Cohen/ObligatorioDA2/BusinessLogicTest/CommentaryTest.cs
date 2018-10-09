@@ -1,9 +1,9 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
 using System.Collections.Generic;
 using Moq;
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 
 namespace BusinessLogicTest
 {

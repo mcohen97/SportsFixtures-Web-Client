@@ -1,9 +1,9 @@
-﻿using BusinessLogic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ObligatorioDA2.BusinessLogic;
 
-namespace DataRepositoryInterfaces
+namespace ObligatorioDA2.Services.Interfaces
 {
     public interface IFixtureService
     {

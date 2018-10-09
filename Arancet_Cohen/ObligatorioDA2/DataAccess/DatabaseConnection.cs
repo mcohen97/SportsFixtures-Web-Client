@@ -5,7 +5,7 @@ using System.Text;
 using System.Linq;
 using ObligatorioDA2.DataAccess.Entities;
 
-namespace DataAccess
+namespace ObligatorioDA2.Data.DataAccess
 {
     public class DatabaseConnection : DbContext
     {

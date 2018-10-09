@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 using System.Linq;
 
-namespace BusinessLogic
+namespace ObligatorioDA2.BusinessLogic
 {
     public class Match
     {

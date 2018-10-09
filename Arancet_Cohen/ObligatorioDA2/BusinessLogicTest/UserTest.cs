@@ -1,8 +1,8 @@
 ﻿using System;
 using BusinessLogicTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BusinessLogic;
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 using Moq;
 using System.Reflection;
 

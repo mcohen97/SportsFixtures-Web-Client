@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLogic
+namespace ObligatorioDA2.BusinessLogic
 {
     public class UserId
     {

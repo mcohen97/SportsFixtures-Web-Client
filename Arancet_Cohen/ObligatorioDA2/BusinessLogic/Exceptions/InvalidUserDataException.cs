@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogic.Exceptions
+namespace ObligatorioDA2.BusinessLogic.Exceptions
 {
     public class InvalidUserDataException:Exception
     {

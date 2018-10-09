@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BusinessLogic
+namespace ObligatorioDA2.BusinessLogic
 {
     public abstract class FixtureGenerator
     {

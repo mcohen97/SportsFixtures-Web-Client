@@ -1,6 +1,6 @@
 using System;
-using BusinessLogic;
-using DataRepositoryInterfaces;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -8,7 +8,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
-using BusinessLogic.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 
 namespace ObligatorioDA2.Services.Tests
 {

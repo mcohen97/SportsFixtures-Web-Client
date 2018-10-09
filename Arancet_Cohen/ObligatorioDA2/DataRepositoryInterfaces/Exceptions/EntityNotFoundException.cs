@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataRepositories.Exceptions
+namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
 {
     public class EntityNotFoundException:Exception
     {
-        public EntityNotFoundException() : base() {
+        public EntityNotFoundException(string message) : base(message) {
         }
     }
 }

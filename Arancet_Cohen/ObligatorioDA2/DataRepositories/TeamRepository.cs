@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using DataRepositoryInterfaces;
 using DataAccess;
-using BusinessLogic;
-using RepositoryInterface;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.BusinessLogic;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 
-namespace DataRepositories
+namespace ObligatorioDA2.Data.Repositories
 {
     public class TeamRepository : ITeamRepository
     {

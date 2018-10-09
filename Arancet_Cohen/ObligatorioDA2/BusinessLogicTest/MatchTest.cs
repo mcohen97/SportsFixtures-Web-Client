@@ -1,10 +1,10 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BusinessLogic;
+using ObligatorioDA2.BusinessLogic;
 using System.Collections.Generic;
 using Moq;
-using BusinessLogic.Exceptions;
-using Match = BusinessLogic.Match;
+using ObligatorioDA2.BusinessLogic.Exceptions;
+using Match = ObligatorioDA2.BusinessLogic.Match;
 
 namespace BusinessLogicTest
 {
@@ -43,7 +43,7 @@ namespace BusinessLogicTest
             
 
 
-            match = new BusinessLogic.Match(3,teamA.Object, teamB.Object, date,sport.Object);
+            match = new Match(3,teamA.Object, teamB.Object, date,sport.Object);
         }
 
         private Mock<User> CreateUser()

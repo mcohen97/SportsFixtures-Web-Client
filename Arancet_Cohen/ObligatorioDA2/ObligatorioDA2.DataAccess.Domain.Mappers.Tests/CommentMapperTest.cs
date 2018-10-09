@@ -1,4 +1,4 @@
-﻿using BusinessLogic;
+﻿using ObligatorioDA2.BusinessLogic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.DataAccess.Entities;

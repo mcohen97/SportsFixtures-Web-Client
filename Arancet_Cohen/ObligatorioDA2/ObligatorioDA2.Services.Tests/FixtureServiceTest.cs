@@ -1,15 +1,14 @@
-﻿using BusinessLogic;
-using DataAccess;
-using DataRepositories;
-using DataRepositoryInterfaces;
+﻿using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.DataAccess;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Match = BusinessLogic.Match;
+using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 

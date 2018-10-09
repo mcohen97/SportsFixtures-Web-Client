@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataRepositoryInterfaces\DataRepositoryInterfaces.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.Data.Exceptions\ObligatorioDA2.BusinessLogic.Data.Exceptions.csproj" />
+    <ProjectReference Include="..\DataRepositoryInterfaces\ObligatorioDA2.Data.Repositories.Interfaces.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Services.Interfaces\ObligatorioDA2.Services.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>
