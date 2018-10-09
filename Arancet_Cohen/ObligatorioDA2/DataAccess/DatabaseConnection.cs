@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Data.Entities;
 
 namespace ObligatorioDA2.Data.DataAccess
 {

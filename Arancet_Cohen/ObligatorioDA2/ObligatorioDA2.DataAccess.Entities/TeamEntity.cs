@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ObligatorioDA2.DataAccess.Entities
+namespace ObligatorioDA2.Data.Entities
 {
     public class TeamEntity
     {

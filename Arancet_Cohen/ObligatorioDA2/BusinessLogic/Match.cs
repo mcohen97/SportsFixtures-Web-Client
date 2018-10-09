@@ -46,7 +46,7 @@ namespace ObligatorioDA2.BusinessLogic
         public void AddCommentary(Commentary commentary)
         {
             if(HasCommentary(commentary))
-                throw new InvalidMatchDataExcpetion("Commentary already exists in this match");
+                throw new InvalidMatchDataException("Commentary already exists in this match");
             commentaries.Add(commentary);
         }
 
@@ -69,9 +69,9 @@ namespace ObligatorioDA2.BusinessLogic
         private void SetHomeTeam(Team value)
         {
             if(value == null)
-                throw new InvalidMatchDataExcpetion("Home team can't be null");
+                throw new InvalidMatchDataException("Home team can't be null");
             if(value.Equals(awayTeam))
-                throw new InvalidMatchDataExcpetion("Home team can't be same as away team");
+                throw new InvalidMatchDataException("Home team can't be same as away team");
 
             homeTeam = value;
         }
@@ -79,9 +79,9 @@ namespace ObligatorioDA2.BusinessLogic
         private void SetAwayTeam(Team value)
         {
             if(value == null)
-                throw new InvalidMatchDataExcpetion("Away team can't be null");
+                throw new InvalidMatchDataException("Away team can't be null");
             if(value.Equals(homeTeam))
-                throw new InvalidMatchDataExcpetion("Away team can't be same as home team");
+                throw new InvalidMatchDataException("Away team can't be same as home team");
                 
             awayTeam = value;
         }
@@ -95,7 +95,7 @@ namespace ObligatorioDA2.BusinessLogic
         private void SetSport(Sport value)
         {
             if (value == null) {
-                throw new InvalidMatchDataExcpetion();
+                throw new InvalidMatchDataException();
             }
             sport = value;
         }

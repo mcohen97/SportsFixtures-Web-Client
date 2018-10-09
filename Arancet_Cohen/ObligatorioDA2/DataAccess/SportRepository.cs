@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.DataAccess.Domain.Mappers;
+using ObligatorioDA2.Data.DomainMappers;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ObligatorioDA2.Data.Repositories.Interfaces;

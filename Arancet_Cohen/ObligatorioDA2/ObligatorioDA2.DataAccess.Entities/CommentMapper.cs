@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Data.Entities;
 
-namespace ObligatorioDA2.DataAccess.Domain.Mappers
+namespace ObligatorioDA2.Data.DomainMappers.Mappers
 {
     public class CommentMapper
     {

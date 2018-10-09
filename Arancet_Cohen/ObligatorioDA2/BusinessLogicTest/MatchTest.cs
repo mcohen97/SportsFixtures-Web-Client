@@ -164,41 +164,41 @@ namespace BusinessLogicTest
         //Exceptions
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        [ExpectedException(typeof(InvalidMatchDataException))]
         public void SetNullHomeTeamTest()
         {
             match.HomeTeam = null;
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        [ExpectedException(typeof(InvalidMatchDataException))]
         public void SetNullAwayTeamTest()
         {
             match.AwayTeam = null;
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        [ExpectedException(typeof(InvalidMatchDataException))]
         public void HomeEqualsAwayTest()
         {
             match.AwayTeam = teamA.Object;
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        [ExpectedException(typeof(InvalidMatchDataException))]
         public void SetNullSportTest() {
             match = new Match(3, teamA.Object, teamB.Object, date, null);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        [ExpectedException(typeof(InvalidMatchDataException))]
         public void AwayEqualsHomeTest()
         {
             match.HomeTeam = teamB.Object;
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataExcpetion))]
+        [ExpectedException(typeof(InvalidMatchDataException))]
         public void AddAlreadyExistentCommentaryTest()
         {
             match.AddCommentary(commentary1.Object);

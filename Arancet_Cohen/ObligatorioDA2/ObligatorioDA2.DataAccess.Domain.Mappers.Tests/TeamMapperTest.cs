@@ -1,10 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.DataAccess.Entities;
-using ObligatorioDA2.DataAccess.Domain.Mappers;
+using ObligatorioDA2.Data.Entities;
+using ObligatorioDA2.Data.DomainMappers.Mappers;
 
-namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
+namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
     [TestClass]
     public class TeamMapperTest

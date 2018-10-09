@@ -4,7 +4,7 @@ using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
-using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Data.Entities;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
 using System;

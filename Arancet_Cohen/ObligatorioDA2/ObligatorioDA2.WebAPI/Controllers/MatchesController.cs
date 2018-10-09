@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -55,6 +56,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Match added = matchService.AddMatch(input.HomeTeamId, input.AwayTeamId, input.SportName, input.Date);
                 MatchModelOut output = BuildModelOut(added);
                 result = CreatedAtRoute("GetMatchById",new {matchId = added.Id }, output);
+            }
+            catch (InvalidMatchDataException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
             }
             catch (EntityNotFoundException e) {
                 result = CreateErrorMessage(e);
@@ -108,17 +114,19 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-
                 matchService.ModifyMatch(id, aMatch.HomeTeamId,
                      aMatch.AwayTeamId, aMatch.Date, aMatch.SportName);
                 MatchModelOut output = BuildModelout(id, aMatch);
                 result = Ok(output);
             }
+            catch (InvalidMatchDataException e) {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = BadRequest(error);
+            }
             catch (TeamAlreadyHasMatchException e)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = BadRequest(error);
-
             }
             catch (EntityNotFoundException e)
             {

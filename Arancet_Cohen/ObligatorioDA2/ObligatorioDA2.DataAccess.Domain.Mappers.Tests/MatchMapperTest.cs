@@ -1,12 +1,12 @@
 ﻿using ObligatorioDA2.BusinessLogic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using ObligatorioDA2.DataAccess.Entities;
+using ObligatorioDA2.Data.Entities;
 using System;
 using System.Collections.Generic;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 
-namespace ObligatorioDA2.DataAccess.Domain.Mappers.Tests
+namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
     [TestClass]
     public class MatchMapperTest
