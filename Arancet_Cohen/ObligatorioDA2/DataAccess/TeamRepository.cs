@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.DataAccess.Entities;
 using ObligatorioDA2.DataAccess.Domain.Mappers;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-
+using System.Data.Common;
 
 namespace ObligatorioDA2.Data.Repositories
 {
@@ -25,6 +25,17 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Clear()
         {
+            try
+            {
+                TryClear();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryClear()
+        {
             foreach (TeamEntity team in context.Teams)
             {
                 context.Teams.Remove(team);
@@ -32,20 +43,34 @@ namespace ObligatorioDA2.Data.Repositories
             context.SaveChanges();
         }
 
-
         public Team Get(string sportName, string teamName)
         {
-            Team fetched;
-            if (Exists(sportName,teamName)) {
-                fetched = TryGet(sportName, teamName);
-            }else{
-                throw new TeamNotFoundException();
+            try
+            {
+                return TryGet(sportName, teamName);
             }
-        
-            return fetched;
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+
         }
 
         private Team TryGet(string sportName, string teamName)
+        {
+            Team fetched;
+            if (Exists(sportName, teamName))
+            {
+                fetched = GetExistent(sportName, teamName);
+            }
+            else
+            {
+                throw new TeamNotFoundException();
+            }
+
+            return fetched;
+        }
+
+        private Team GetExistent(string sportName, string teamName)
         {
             TeamEntity entity = context.Teams
                 .FirstOrDefault(e => e.Name.Equals(teamName) && e.Sport.Name.Equals(sportName));
@@ -55,11 +80,23 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Delete(string sportName, string teamName)
         {
+            try
+            {
+                TryDelete(sportName, teamName);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private void TryDelete(string sportName, string teamName)
+        {
             if (Exists(sportName, teamName))
             {
                 DeleteValid(sportName, teamName);
             }
-            else {
+            else
+            {
                 throw new TeamNotFoundException();
             }
         }
@@ -87,19 +124,30 @@ namespace ObligatorioDA2.Data.Repositories
 
         public Team Add( Team aTeam)
         {
+            try {
+                return TryAdd(aTeam);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+        }
+
+        private Team TryAdd(Team aTeam)
+        {
             TeamEntity entity = mapper.ToEntity(aTeam);
             Team teamAdded;
-            if (!Exists(entity.Sport.Name,entity.Name))
+            if (!Exists(entity.Sport.Name, entity.Name))
             {
-                teamAdded = TryAdd(aTeam);
+                teamAdded = AddNew(aTeam);
             }
-            else {
+            else
+            {
                 throw new TeamAlreadyExistsException();
             }
             return teamAdded;
         }
 
-        private Team TryAdd(Team aTeam)
+        private Team AddNew(Team aTeam)
         {
             TeamEntity toStore = mapper.ToEntity(aTeam);
             context.Teams.Add(toStore);
@@ -146,28 +194,55 @@ namespace ObligatorioDA2.Data.Repositories
                 context.Entry(entity).State = EntityState.Detached;
                 throw new TeamNotFoundException();
             }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
         }
 
         private void TryModify(TeamEntity entity)
         {
-
-            //context.Entry(entity).State = EntityState.Modified;
-            //context.Update(entity);
             context.Teams.Update(entity);
             context.SaveChanges();
         }
 
         public bool IsEmpty()
         {
-            return !context.Teams.Any();
-        }
+            try
+            {
+                return !context.Teams.Any();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+       }
 
         public bool Exists(string sportName, string teamName)
         {
-            return context.Teams.Any(t => t.Sport.Name.Equals(sportName) && t.Name.Equals(teamName));
+            bool exists;
+            try
+            {
+                exists= context.Teams.Any(t => t.Sport.Name.Equals(sportName) && t.Name.Equals(teamName));
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return exists;
         }
 
         public ICollection<Team> GetAll()
+        {
+            ICollection<Team> all;
+            try
+            {
+                all = TryGetAll();
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return all;
+        }
+
+        private ICollection<Team> TryGetAll()
         {
             IQueryable<TeamEntity> teams = context.Teams;
             ICollection<Team> result = teams.Select(t => mapper.ToTeam(t)).ToList();
@@ -176,13 +251,39 @@ namespace ObligatorioDA2.Data.Repositories
 
         public ICollection<Team> GetFollowedTeams(string username)
         {
-            IQueryable<UserTeam> relationships= context.UserTeams
+            ICollection<Team> followed;
+            try
+            {
+                followed = TryGetFollowedTeams(username);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return followed;
+        }
+
+        private ICollection<Team> TryGetFollowedTeams(string username)
+        {
+            IQueryable<UserTeam> relationships = context.UserTeams
                 .Where(ut => ut.UserEntityUserName.Equals(username));
             IQueryable<TeamEntity> teams = relationships.Select(ut => ut.Team);
             return teams.Select(t => mapper.ToTeam(t)).ToList();
         }
 
         public ICollection<Team> GetTeams(string sportName)
+        {
+            ICollection<Team> teams;
+            try
+            {
+                teams = TryGetTeams(sportName);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return teams;
+        }
+
+        private ICollection<Team> TryGetTeams(string sportName)
         {
             if (!context.Sports.Any(s => s.Name.Equals(sportName)))
             {
@@ -193,10 +294,35 @@ namespace ObligatorioDA2.Data.Repositories
 
         public bool Exists(int id)
         {
+            bool exists;
+            try
+            {
+                exists = AskIfExists(id);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return exists;
+        }
+
+        private bool AskIfExists(int id)
+        {
             return context.Teams.Any(t => t.Identity == id);
         }
 
         public void Delete(int id)
+        {
+            try
+            {
+                TryDelete(id);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+
+        }
+
+        private void TryDelete(int id)
         {
             if (!Exists(id))
                 throw new TeamNotFoundException();
@@ -210,13 +336,26 @@ namespace ObligatorioDA2.Data.Repositories
 
         public Team Get(int id)
         {
+            Team fetched;
+            try
+            {
+                fetched = TryGet(id);
+            }
+            catch (DbException) {
+                throw new DataInaccessibleException();
+            }
+            return fetched;
+        }
+
+        private Team TryGet(int id)
+        {
             if (!Exists(id))
                 throw new TeamNotFoundException();
 
             TeamEntity entity = context.Teams
                 .FirstOrDefault(e => e.Identity == id);
             Team converted = mapper.ToTeam(entity);
-            return converted ;
+            return converted;
         }
     }
 }
