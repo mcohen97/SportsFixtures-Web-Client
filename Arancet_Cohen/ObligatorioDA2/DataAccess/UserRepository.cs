@@ -211,7 +211,7 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 UserEntity entity = userMapper.ToEntity(aUser);
                 ICollection<UserTeam> favourites = userMapper.GetUserTeams(aUser);
-                RemoveMissing(favourites);
+                RemoveMissing(aUser.UserName,favourites);
                 AddNewFavourites(favourites);
                 context.Update(entity);
                 context.SaveChanges();
@@ -222,10 +222,10 @@ namespace ObligatorioDA2.Data.Repositories
             }
         }
 
-        private void RemoveMissing(ICollection<UserTeam> favourites)
+        private void RemoveMissing(string userName, ICollection<UserTeam> favourites)
         {
             IQueryable<UserTeam> missing = context.UserTeams
-                .Where(ut => !favourites.Any(f => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
+                .Where(ut =>ut.UserEntityUserName.Equals(userName) && !favourites.Any(f => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
                                                 && f.TeamEntityName.Equals(ut.TeamEntityName)));
             context.UserTeams.RemoveRange(missing);
         }
@@ -233,9 +233,10 @@ namespace ObligatorioDA2.Data.Repositories
         private void AddNewFavourites(ICollection<UserTeam> favourites)
         {
             IEnumerable<UserTeam> newFavourites = favourites
-                                                .Where(f => !context.UserTeams
-                                                .Any(ut => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
-                                                && f.TeamEntityName.Equals(ut.TeamEntityName)));
+                                                            .Where(f => !(context.UserTeams
+                                                            .Any(ut => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
+                                                            && f.TeamEntityName.Equals(ut.TeamEntityName)
+                                                            && f.UserEntityUserName.Equals(ut.UserEntityUserName))));
             foreach (UserTeam ut in newFavourites) {
                 context.Entry(ut).State = EntityState.Added;
             }
