@@ -230,12 +230,38 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
-                result = CreateValid(input, sportName, fixture);
+                DateTime initialDate;
+                if (ValidDate(input))
+                {
+                    initialDate = new DateTime(input.Year, input.Month, input.Day);
+                    fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
+                    result = CreateValid(input, sportName, fixture);
+                }
+                else
+                {
+                    ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
+                    result = BadRequest(error);
+                }
+                
             }
             else
             {
                 result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private bool ValidDate(FixtureModelIn input)
+        {
+            bool result = true;
+            try
+            {
+                DateTime date = new DateTime(input.Year, input.Month, input.Day);
+                result = date != null;
+            }
+            catch (ArgumentOutOfRangeException exp)
+            {
+                result = false;
             }
             return result;
         }
@@ -247,12 +273,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                fixture.FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 2, 5);
-                result = CreateValid(input, sportName, fixture);
+                DateTime initialDate;
+                if (ValidDate(input))
+                {
+                    initialDate = new DateTime(input.Year, input.Month, input.Day);
+                    fixture.FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
+                    result = CreateValid(input, sportName, fixture);
+                }
+                else
+                {
+                    ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
+                    result = BadRequest(error);
+                }
+
             }
             else
+            {
                 result = BadRequest(ModelState);
-
+            }
             return result;
         }
 

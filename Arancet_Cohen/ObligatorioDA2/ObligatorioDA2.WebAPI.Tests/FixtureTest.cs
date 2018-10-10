@@ -160,7 +160,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Year = DateTime.Now.Year
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
-
+            string errorMessagge = "Invalid date format";
 
             //Act
             IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
@@ -171,7 +171,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
-            //Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
+            Assert.AreEqual(error.ErrorMessage, errorMessagge);
         }
 
         private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Match> matches)
