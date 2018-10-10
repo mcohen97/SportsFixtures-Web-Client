@@ -144,7 +144,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             sports.Delete(name);
             OkModelOut okMessage = new OkModelOut() { OkMessage = "Sport was deleted" };
-            return Ok();
+            return Ok(okMessage);
         }
 
         [HttpPut("{name}")]

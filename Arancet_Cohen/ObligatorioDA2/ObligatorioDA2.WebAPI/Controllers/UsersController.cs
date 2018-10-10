@@ -173,7 +173,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 service.DeleteUser(username);
-                result = Ok();
+                OkModelOut okMessage = new OkModelOut() { OkMessage = "The user has been deleted successfully" };
+                result = Ok(okMessage);
             }
             catch (UserNotFoundException e)
             {

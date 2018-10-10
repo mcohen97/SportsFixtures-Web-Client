@@ -167,7 +167,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryToDelete(int id)
         {
             matchService.DeleteMatch(id);
-            return Ok();
+            OkModelOut okMessage = new OkModelOut() { OkMessage = "The match was deleted successfully" };
+            return Ok(okMessage);
         }
 
         [HttpPost("{matchId}/comments")]
