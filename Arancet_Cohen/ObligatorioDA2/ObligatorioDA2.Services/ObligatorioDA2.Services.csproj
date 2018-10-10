@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataRepositoryInterfaces\ObligatorioDA2.Data.Repositories.Interfaces.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Data.Repositories.Interfaces\ObligatorioDA2.Data.Repositories.Interfaces.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Services.Interfaces\ObligatorioDA2.Services.Interfaces.csproj" />
   </ItemGroup>
 
