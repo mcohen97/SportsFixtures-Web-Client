@@ -78,6 +78,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                         new Claim("Username", userInfo.UserName),
                         },
                expires: DateTime.Now.AddMinutes(5),
+               expires: DateTime.Now.AddMinutes(30),
                signingCredentials: credentials
             );
 
