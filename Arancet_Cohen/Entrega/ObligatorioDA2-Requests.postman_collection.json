@@ -1,0 +1,961 @@
+{
+	"info": {
+		"_postman_id": "408ec6d4-500f-4e23-9973-66508e281fb3",
+		"name": "ObligatorioDA2-Requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "LoginAdmin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a9cf794f-43f7-4d7f-ae20-dc8652e44568",
+						"type": "text/javascript",
+						"exec": [
+							"var jsonResponse = JSON.parse(responseBody);",
+							"pm.globals.set(\"Token\",jsonResponse.token);",
+							"console.log(jsonResponse);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"admin\",\n\t\"password\":\"admin\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}api/authentication",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"authentication"
+					]
+				},
+				"description": "Logs into the app"
+			},
+			"response": []
+		},
+		{
+			"name": "AddUser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"aName\",\n\"surname\": \"aSurname\",\n\"username\": \"aUsername\",\n\"password\": \"aPassword\",\n\"email\": \"anEmail@hotmail.com\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}api/users",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"users"
+					]
+				},
+				"description": "adds a user to the application"
+			},
+			"response": []
+		},
+		{
+			"name": "ModifyTeam",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n\t\"sportname\":\"basketball\",\n\t\"name\":\"danubio\",\n\t\"photo\":\"\"\n\t\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/teams/12",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"teams",
+						"12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddSport",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"soccer\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/sports/",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports",
+						""
+					]
+				},
+				"description": "Adds a sport "
+			},
+			"response": []
+		},
+		{
+			"name": "AddTeam",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"torque\",\n\t\"sportname\":\"soccer\",\n\t\"photo\": \"aPhoto\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/teams",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"teams"
+					]
+				},
+				"description": "Adds a new team"
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteTeam",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/teams/15",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"teams",
+						"15"
+					]
+				},
+				"description": "Deletes a team"
+			},
+			"response": []
+		},
+		{
+			"name": "CreateOneMatchFixture",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"day\":10,\n \"month\":10,\n \"year\":2018\n \n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/sports/soccer/OneMatchFixture",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports",
+						"soccer",
+						"OneMatchFixture"
+					]
+				},
+				"description": "creates fixture of a sport"
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllMatches",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/matches/",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteSport",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/sports/basketball",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports",
+						"basketball"
+					]
+				},
+				"description": "deletes sport"
+			},
+			"response": []
+		},
+		{
+			"name": "GetSport",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/sports/soccer",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports",
+						"soccer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetTeam",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/teams/16",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"teams",
+						"16"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllTeams",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/teams/",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"teams",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetMatch",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/matches/46",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"46"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateHomeAwayFixture",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"day\":12,\n\"month\":12,\n\"year\":2018\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/sports/soccer/HomeAwayFixture",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports",
+						"soccer",
+						"HomeAwayFixture"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddMatch",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"sportname\":\"soccer\",\n\"hometeamid\":17,\n\"awayteamid\":18,\n\"date\":\"12/25/2018\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ModifyMatch",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/matches/42",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"42"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FollowTeam",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"id\": 22,\n        \"name\": \"nacional\",\n        \"sportName\": \"soccer\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/users/followed-teams",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"followed-teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetFollowedTeams",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/users/admin/followed-teams",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"admin",
+						"followed-teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UnFollowTeam",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"id\": 21,\n        \"name\": \"torque\",\n        \"sportName\": \"soccer\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/users/followed-teams",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"followed-teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CommentOnMatch",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"text\":\"the match sucked\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/46/comments",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"46",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetMatchComments",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/matches/46/comments",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"46",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUser",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/users/mcohen98",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"mcohen98"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetComment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/matches/comments/5",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"comments",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetMatchesBySport",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/matches/sport/soccer",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"sport",
+						"soccer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/users/mcohen98/",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"mcohen98",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ModifyUser",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"aName\",\n\"surname\": \"aSurname\",\n\"username\": \"mcohen98\",\n\"password\": \"aPassword\",\n\"email\": \"anEmail@hotmail.com\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/users/mcohen98",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"mcohen98"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllUsers",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{Domain}}/api/users",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginNotAdmin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b73a6425-d216-43b6-ba30-551512f5ef01",
+						"exec": [
+							"var jsonResponse = JSON.parse(responseBody);",
+							"pm.globals.set(\"Token\",jsonResponse.token);",
+							"console.log(jsonResponse);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"aUsername\",\n\t\"password\":\"aPassword\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}api/authentication",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllSports",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/sports",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetMatchesByTeam",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/team/22",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"team",
+						"22"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllComments",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/comments",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "43e5570f-cb2d-426c-a209-cf754caf3719",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "93e580d9-b107-486d-8b74-7d31c3f1dfc9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "766fcfec-1659-46c6-9f9d-ea8c259f28ef",
+			"key": "Domain",
+			"value": "https://localhost:44328/",
+			"type": "string"
+		},
+		{
+			"id": "a1b9b956-e8db-4f50-98d8-11d73edef166",
+			"key": "Token\n",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
