@@ -89,7 +89,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] TeamModelIn team)
         {
             IActionResult result;
@@ -132,7 +132,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         [HttpPut("{teamId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(int teamId, [FromBody] TeamModelIn value)
         {
             IActionResult result;
@@ -176,7 +176,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{sportName}/{teamName}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string sportName, string teamName)
         {
             IActionResult result;
@@ -197,7 +197,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(int id)
         {
             IActionResult result;

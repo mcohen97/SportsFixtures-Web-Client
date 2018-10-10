@@ -82,7 +82,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] UserModelIn user)
         {
             IActionResult toReturn;
@@ -130,7 +130,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         [HttpPut("{username}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(string username, [FromBody] UserModelIn toModify)
         {
             IActionResult result;
@@ -166,7 +166,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{username}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string username)
         {
             IActionResult result;
@@ -241,7 +241,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+                string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
                 service.FollowTeam(username, aTeam.Id);
                 OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
                 result = Ok(okMessage);
@@ -294,7 +294,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+                string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
                 service.UnFollowTeam(username, input.Id);
                 OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
                 result = Ok(okMessage);

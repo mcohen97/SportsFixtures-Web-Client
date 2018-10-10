@@ -30,7 +30,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody]SportModelIn modelIn)
         {
             IActionResult result;
@@ -122,7 +122,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{name}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string name)
         {
             IActionResult result;
@@ -148,7 +148,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPut("{name}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(string name, [FromBody] SportModelIn modelIn)
         {
             IActionResult result;
@@ -224,7 +224,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("{sportName}/OneMatchFixture")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
         {
             IActionResult result;
@@ -241,7 +241,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("{sportName}/HomeAwayFixture")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult CreateHomeAwayFixture(string sportName, FixtureModelIn input)
         {
             IActionResult result;

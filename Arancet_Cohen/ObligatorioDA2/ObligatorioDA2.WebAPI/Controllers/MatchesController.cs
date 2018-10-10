@@ -34,7 +34,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] MatchModelIn input)
         {
             IActionResult result;
@@ -151,7 +151,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(int id)
         {
             IActionResult result;
@@ -205,7 +205,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryAddComment(int matchId,CommentModelIn input)
         {
-            string username = HttpContext.User.Claims.First(c => c.Type.Equals("Username")).Value;
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
             Commentary created = matchService.CommentOnMatch(matchId, username, input.Text);
             CommentModelOut output = new CommentModelOut
             {

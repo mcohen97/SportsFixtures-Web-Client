@@ -75,7 +75,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                audience: "http://localhost:5000",
                claims: new List<Claim>{
                         new Claim(ClaimTypes.Role, AdminOrFollower(userInfo)),
-                        new Claim("Username", userInfo.UserName),
+                        new Claim(AuthenticationConstants.USERNAME_CLAIM, userInfo.UserName),
                         },
                expires: DateTime.Now.AddMinutes(30),
                signingCredentials: credentials
@@ -86,7 +86,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private string AdminOrFollower(User aUser)
         {
-            return aUser.IsAdmin ? "Admin" : "Follower";
+            return aUser.IsAdmin ? AuthenticationConstants.ADMIN_ROLE : AuthenticationConstants.FOLLOWER_ROLE;
         }
     }
 }
