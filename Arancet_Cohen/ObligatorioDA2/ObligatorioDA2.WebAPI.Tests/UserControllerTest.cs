@@ -285,7 +285,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             //Act.
             IActionResult result = controller.Delete("username");
-            OkResult deletedResult = result as OkResult;
+            OkObjectResult deletedResult = result as OkObjectResult;
 
             //Assert.
             Assert.IsNotNull(result);

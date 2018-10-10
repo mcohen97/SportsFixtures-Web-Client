@@ -206,7 +206,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void DeleteTest() {
             IActionResult result = controllerToTest.Delete("Tennis");
 
-            OkResult okResult = result as OkResult;
+            OkObjectResult okResult = result as OkObjectResult;
 
             sportsRepo.Verify(r => r.Delete("Tennis"), Times.Once);
             Assert.IsNotNull(okResult);

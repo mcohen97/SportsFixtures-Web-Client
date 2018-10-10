@@ -269,7 +269,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void DeleteTest() {
             //Act.
             IActionResult result =controller.Delete(3);
-            OkResult okResult = result as OkResult;
+            OkObjectResult okResult = result as OkObjectResult;
 
             //Assert.
             matchService.Verify(ms => ms.DeleteMatch(3), Times.Once);
