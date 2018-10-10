@@ -149,6 +149,31 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
         }
 
+        [TestMethod]
+        public void CreateOneMatchFixtureWrongDateFixtureTest()
+        {
+            //Arrange
+            FixtureModelIn input = new FixtureModelIn()
+            {
+                Day = 99,
+                Month = DateTime.Now.Month,
+                Year = DateTime.Now.Year
+            };
+            matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
+
+
+            //Act
+            IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            //Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
+        }
+
         private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Match> matches)
         {
             ICollection<string> errorMessagges = new List<string>();
@@ -227,6 +252,31 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
+        }
+
+        [TestMethod]
+        public void CreateHomeAwayFixtureWrongDateFixtureTest()
+        {
+            //Arrange
+            FixtureModelIn input = new FixtureModelIn()
+            {
+                Day = 99,
+                Month = DateTime.Now.Month,
+                Year = DateTime.Now.Year
+            };
+            matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
+
+
+            //Act
+            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
+            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            ErrorModelOut error = badRequest.Value as ErrorModelOut;
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(badRequest);
+            Assert.AreEqual(400, badRequest.StatusCode);
+            //Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
         }
 
         [TestMethod]
