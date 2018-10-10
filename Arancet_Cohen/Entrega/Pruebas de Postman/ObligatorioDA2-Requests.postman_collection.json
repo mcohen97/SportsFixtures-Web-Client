@@ -67,7 +67,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"name\":\"aName\",\n\"surname\": \"aSurname\",\n\"username\": \"aUsername\",\n\"password\": \"aPassword\",\n\"email\": \"anEmail@hotmail.com\"\n}"
+					"raw": "{\n\"name\":\"John\",\n\"surname\": \"Doe\",\n\"username\": \"JohnDoe\",\n\"password\": \"aPassword\",\n\"email\": \"John@Doe.com\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}api/users",
@@ -101,14 +101,14 @@
 					"raw": "{\n\t\n\t\"sportname\":\"basketball\",\n\t\"name\":\"danubio\",\n\t\"photo\":\"\"\n\t\n}"
 				},
 				"url": {
-					"raw": "{{Domain}}/api/teams/12",
+					"raw": "{{Domain}}/api/teams/2",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"teams",
-						"12"
+						"2"
 					]
 				}
 			},
@@ -130,7 +130,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"name\":\"soccer\"\n}"
+					"raw": "{\n\"name\":\"handball\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}/api/sports/",
@@ -163,7 +163,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\":\"torque\",\n\t\"sportname\":\"soccer\",\n\t\"photo\": \"aPhoto\"\n}"
+					"raw": "{\n\t\"name\":\"malvin\",\n\t\"sportname\":\"basketball\",\n\t\"photo\": \"foto\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}/api/teams",
@@ -191,14 +191,14 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/teams/15",
+					"raw": "{{Domain}}/api/teams/4",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"teams",
-						"15"
+						"4"
 					]
 				},
 				"description": "Deletes a team"
@@ -224,14 +224,14 @@
 					"raw": "{\n \"day\":10,\n \"month\":10,\n \"year\":2018\n \n}"
 				},
 				"url": {
-					"raw": "{{Domain}}/api/sports/soccer/OneMatchFixture",
+					"raw": "{{Domain}}/api/sports/rugby/OneMatchFixture",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"sports",
-						"soccer",
+						"rugby",
 						"OneMatchFixture"
 					]
 				},
@@ -302,14 +302,14 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/sports/soccer",
+					"raw": "{{Domain}}/api/sports/football",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"sports",
-						"soccer"
+						"football"
 					]
 				}
 			},
@@ -327,14 +327,14 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/teams/16",
+					"raw": "{{Domain}}/api/teams/2",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"teams",
-						"16"
+						"2"
 					]
 				}
 			},
@@ -377,14 +377,14 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/matches/46",
+					"raw": "{{Domain}}/api/matches/2",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"matches",
-						"46"
+						"2"
 					]
 				}
 			},
@@ -409,14 +409,14 @@
 					"raw": "{\n\"day\":12,\n\"month\":12,\n\"year\":2018\n}"
 				},
 				"url": {
-					"raw": "{{Domain}}/api/sports/soccer/HomeAwayFixture",
+					"raw": "{{Domain}}/api/sports/rugby/HomeAwayFixture",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"sports",
-						"soccer",
+						"rugby",
 						"HomeAwayFixture"
 					]
 				}
@@ -464,9 +464,18 @@
 						"key": "Authorization",
 						"value": "Bearer {{Token}}",
 						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
 					}
 				],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": " {\n        \"id\": 1,\n        \"sportName\": \"football\",\n        \"homeTeamId\": 1,\n        \"awayTeamId\": 3,\n        \"date\": \"2018-10-10T00:00:00\"\n    }"
+				},
 				"url": {
 					"raw": "{{Domain}}/api/matches/42",
 					"host": [
@@ -497,7 +506,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n        \"id\": 22,\n        \"name\": \"nacional\",\n        \"sportName\": \"soccer\"\n}"
+					"raw": "{\n        \"id\": 4,\n        \"name\": \"hebraica\",\n        \"sportName\": \"basketball\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}/api/users/followed-teams",
@@ -558,7 +567,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n        \"id\": 21,\n        \"name\": \"torque\",\n        \"sportName\": \"soccer\"\n}"
+					"raw": "{\n        \"id\": 2,\n        \"name\": \"nacional\",\n        \"sportName\": \"football\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}/api/users/followed-teams",
@@ -590,17 +599,17 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"text\":\"the match sucked\"\n}"
+					"raw": "{\n\t\"text\":\"Estuvo arreglado\"\n}"
 				},
 				"url": {
-					"raw": "{{Domain}}/api/matches/46/comments",
+					"raw": "{{Domain}}/api/matches/2/comments",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"matches",
-						"46",
+						"2",
 						"comments"
 					]
 				}
@@ -619,14 +628,14 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/matches/46/comments",
+					"raw": "{{Domain}}/api/matches/2/comments",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"matches",
-						"46",
+						"2",
 						"comments"
 					]
 				}
@@ -645,14 +654,14 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/users/mcohen98",
+					"raw": "{{Domain}}/api/users/aUsername",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"users",
-						"mcohen98"
+						"aUsername"
 					]
 				}
 			},
@@ -665,7 +674,7 @@
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/matches/comments/5",
+					"raw": "{{Domain}}/api/matches/comments/2",
 					"host": [
 						"{{Domain}}"
 					],
@@ -673,7 +682,7 @@
 						"api",
 						"matches",
 						"comments",
-						"5"
+						"2"
 					]
 				}
 			},
@@ -691,7 +700,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/matches/sport/soccer",
+					"raw": "{{Domain}}/api/matches/sport/football",
 					"host": [
 						"{{Domain}}"
 					],
@@ -699,7 +708,7 @@
 						"api",
 						"matches",
 						"sport",
-						"soccer"
+						"football"
 					]
 				}
 			},
@@ -717,14 +726,14 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{Domain}}/api/users/mcohen98/",
+					"raw": "{{Domain}}/api/users/aUsername/",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"users",
-						"mcohen98",
+						"aUsername",
 						""
 					]
 				}
@@ -747,17 +756,17 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"name\":\"aName\",\n\"surname\": \"aSurname\",\n\"username\": \"mcohen98\",\n\"password\": \"aPassword\",\n\"email\": \"anEmail@hotmail.com\"\n}"
+					"raw": "{\n\"name\":\"aName\",\n\"surname\": \"aSurname\",\n\"username\": \"aUsername\",\n\"password\": \"pass\",\n\"email\": \"anEmail@hotmail.com\"\n}"
 				},
 				"url": {
-					"raw": "{{Domain}}/api/users/mcohen98",
+					"raw": "{{Domain}}/api/users/aUsername",
 					"host": [
 						"{{Domain}}"
 					],
 					"path": [
 						"api",
 						"users",
-						"mcohen98"
+						"aUsername"
 					]
 				}
 			},
@@ -878,7 +887,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{Domain}}/api/matches/team/22",
+					"raw": "{{Domain}}/api/matches/team/2",
 					"host": [
 						"{{Domain}}"
 					],
@@ -886,7 +895,7 @@
 						"api",
 						"matches",
 						"team",
-						"22"
+						"2"
 					]
 				}
 			},
@@ -950,6 +959,35 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "DeleteMatch",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/3",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"3"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -976,13 +1014,13 @@
 	],
 	"variable": [
 		{
-			"id": "f08ddf82-8bef-49af-87e1-54ee9023c5b2",
+			"id": "9a515acc-c017-4e65-b7e5-34927cbcb837",
 			"key": "Domain",
 			"value": "https://localhost:44328/",
 			"type": "string"
 		},
 		{
-			"id": "bb4fc0df-a8fe-4817-9886-3eecc4c79f66",
+			"id": "cf944308-0bb2-434f-acc1-f1c3c16dd11a",
 			"key": "Token\n",
 			"value": "",
 			"type": "string"
