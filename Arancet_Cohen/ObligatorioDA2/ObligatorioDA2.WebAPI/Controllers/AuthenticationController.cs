@@ -77,7 +77,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
                         new Claim(ClaimTypes.Role, AdminOrFollower(userInfo)),
                         new Claim("Username", userInfo.UserName),
                         },
-               expires: DateTime.Now.AddMinutes(5),
                expires: DateTime.Now.AddMinutes(30),
                signingCredentials: credentials
             );
