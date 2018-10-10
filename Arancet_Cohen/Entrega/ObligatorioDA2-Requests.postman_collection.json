@@ -920,6 +920,36 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GetSportTeams",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/sports/basketball/teams",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports",
+						"basketball",
+						"teams"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -946,13 +976,13 @@
 	],
 	"variable": [
 		{
-			"id": "766fcfec-1659-46c6-9f9d-ea8c259f28ef",
+			"id": "f08ddf82-8bef-49af-87e1-54ee9023c5b2",
 			"key": "Domain",
 			"value": "https://localhost:44328/",
 			"type": "string"
 		},
 		{
-			"id": "a1b9b956-e8db-4f50-98d8-11d73edef166",
+			"id": "bb4fc0df-a8fe-4817-9886-3eecc4c79f66",
 			"key": "Token\n",
 			"value": "",
 			"type": "string"
