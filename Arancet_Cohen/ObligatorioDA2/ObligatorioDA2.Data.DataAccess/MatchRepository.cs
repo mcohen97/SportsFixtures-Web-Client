@@ -214,7 +214,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 isEmpty = AskIfEmpty();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return isEmpty;
@@ -231,7 +232,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryModify(aMatch);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -248,7 +250,8 @@ namespace ObligatorioDA2.Data.Repositories
             }
         }
 
-        public void ModifyExistent(Match aMatch) {
+        public void ModifyExistent(Match aMatch)
+        {
             MatchEntity converted = matchConverter.ToEntity(aMatch);
             if (context.Matches.Any(m => m.Id == aMatch.Id))
             {
@@ -272,7 +275,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 made = TryComment(idMatch, aComment);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return made;
@@ -304,7 +308,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 exists = AskIfExists(id);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return exists;
@@ -322,7 +327,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 allComments = TryGetComments();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return allComments;
@@ -342,7 +348,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 toReturn = TryGetComment(id);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return toReturn;

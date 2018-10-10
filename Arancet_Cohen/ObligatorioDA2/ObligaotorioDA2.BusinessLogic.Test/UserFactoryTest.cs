@@ -17,7 +17,8 @@ namespace BusinessLogicTest
 
 
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
             identity = new UserId()
             {
                 Name = "name",
@@ -28,10 +29,10 @@ namespace BusinessLogicTest
             };
 
             factory = new UserFactory();
-            anAdmin = new User(identity,true);
+            anAdmin = new User(identity, true);
             factoryAdmin = factory.CreateAdmin(identity);
             aFollower = new User(identity, false);
-            factoryFollower= factory.CreateFollower(identity);
+            factoryFollower = factory.CreateFollower(identity);
         }
 
         [TestMethod]
@@ -65,12 +66,14 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void IsAdminTest() {
+        public void IsAdminTest()
+        {
             Assert.IsTrue(factoryAdmin.IsAdmin);
         }
 
         [TestMethod]
-        public void IsNotAdmin() {
+        public void IsNotAdmin()
+        {
             Assert.IsFalse(factoryFollower.IsAdmin);
         }
     }

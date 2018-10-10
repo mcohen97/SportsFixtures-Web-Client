@@ -9,19 +9,19 @@ namespace ObligatorioDA2.Data.DomainMappers
 {
     public class SportMapper
     {
-      
+
         public SportEntity ToEntity(Sport aSport)
         {
             SportEntity converted = new SportEntity()
             {
-                Name= aSport.Name,
+                Name = aSport.Name,
             };
             return converted;
         }
 
         public Sport ToSport(SportEntity entity)
         {
-            Sport conversion = new Sport( entity.Name);
+            Sport conversion = new Sport(entity.Name);
             return conversion;
         }
     }

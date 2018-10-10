@@ -29,7 +29,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryClear();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -49,7 +50,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 return TryGet(sportName, teamName);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
 
@@ -84,7 +86,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryDelete(sportName, teamName);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -122,12 +125,14 @@ namespace ObligatorioDA2.Data.Repositories
             }
         }
 
-        public Team Add( Team aTeam)
+        public Team Add(Team aTeam)
         {
-            try {
+            try
+            {
                 return TryAdd(aTeam);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -151,7 +156,8 @@ namespace ObligatorioDA2.Data.Repositories
         {
             TeamEntity toStore = mapper.ToEntity(aTeam);
             context.Teams.Add(toStore);
-            if (context.Sports.Contains(toStore.Sport)) {
+            if (context.Sports.Contains(toStore.Sport))
+            {
                 context.Entry(toStore.Sport).State = EntityState.Unchanged;
             }
             //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
@@ -159,7 +165,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 SaveWithIdentityInsert();
             }
-            else {
+            else
+            {
                 context.SaveChanges();
             }
 
@@ -168,7 +175,7 @@ namespace ObligatorioDA2.Data.Repositories
         }
 
         private void SaveWithIdentityInsert()
-        {         
+        {
             context.Database.OpenConnection();
             try
             {
@@ -194,7 +201,8 @@ namespace ObligatorioDA2.Data.Repositories
                 context.Entry(entity).State = EntityState.Detached;
                 throw new TeamNotFoundException();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -211,19 +219,21 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 return !context.Teams.Any();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
-       }
+        }
 
         public bool Exists(string sportName, string teamName)
         {
             bool exists;
             try
             {
-                exists= context.Teams.Any(t => t.Sport.Name.Equals(sportName) && t.Name.Equals(teamName));
+                exists = context.Teams.Any(t => t.Sport.Name.Equals(sportName) && t.Name.Equals(teamName));
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return exists;
@@ -236,7 +246,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 all = TryGetAll();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return all;
@@ -256,7 +267,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 followed = TryGetFollowedTeams(username);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return followed;
@@ -277,7 +289,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 teams = TryGetTeams(sportName);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return teams;
@@ -299,7 +312,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 exists = AskIfExists(id);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return exists;
@@ -316,7 +330,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryDelete(id);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
 
@@ -341,7 +356,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 fetched = TryGet(id);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return fetched;

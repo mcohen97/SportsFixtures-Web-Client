@@ -24,7 +24,8 @@ namespace DataRepositoriesTest
         DatabaseConnection context;
 
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
             sport = new Mock<Sport>("Soccer");
             SetUpRepository();
             match = BuildFakeMatch();
@@ -33,7 +34,8 @@ namespace DataRepositoriesTest
             sportsStorage.Clear();
         }
 
-        private void SetUpRepository() {
+        private void SetUpRepository()
+        {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "MatchRepositoryTest")
                 .Options;
@@ -56,33 +58,37 @@ namespace DataRepositoriesTest
 
         private Mock<Match> BuildFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>(3,"Manchester United","aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(5,"Real Madrid", "aPath", sport.Object);
-            Mock<Match> match = new Mock<Match>(3,home.Object, away.Object, DateTime.Now,sport.Object);
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
+            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport.Object);
+            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now, sport.Object);
             return match;
         }
 
         [TestMethod]
-        public void EmptyTest() {
+        public void EmptyTest()
+        {
             Assert.IsTrue(matchesStorage.IsEmpty());
         }
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void EmptyNoDataAccessTest() {
+        public void EmptyNoDataAccessTest()
+        {
             CreateDisconnectedDatabase();
             matchesStorage.IsEmpty();
         }
 
         [TestMethod]
-        public void AddMatchNotemptyTest() {
+        public void AddMatchNotemptyTest()
+        {
             matchesStorage.Add(match.Object);
             Assert.IsFalse(matchesStorage.IsEmpty());
         }
 
         [TestMethod]
         [ExpectedException(typeof(MatchAlreadyExistsException))]
-        public void AddRepeatedMatchTest() {
+        public void AddRepeatedMatchTest()
+        {
             matchesStorage.Add(match.Object);
             SetUpRepository();
             matchesStorage.Add(match.Object);
@@ -90,27 +96,31 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void AddMatchNoAccessTest() {
+        public void AddMatchNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             matchesStorage.Add(match.Object);
         }
 
         [TestMethod]
-        public void GetMatchHomeTeamTest() {
+        public void GetMatchHomeTeamTest()
+        {
             matchesStorage.Add(match.Object);
             Match retrieved = matchesStorage.Get(match.Object.Id);
             Assert.AreEqual(retrieved.HomeTeam, match.Object.HomeTeam);
         }
 
         [TestMethod]
-        public void GetMatchAwayTeamTest() {
+        public void GetMatchAwayTeamTest()
+        {
             matchesStorage.Add(match.Object);
             Match retrieved = matchesStorage.Get(match.Object.Id);
             Assert.AreEqual(retrieved.AwayTeam, match.Object.AwayTeam);
         }
 
         [TestMethod]
-        public void GetMatchCommentsTest() {
+        public void GetMatchCommentsTest()
+        {
             Mock<Commentary> dummy = BuildFakeCommentary();
             match.Object.AddCommentary(dummy.Object);
             matchesStorage.Add(match.Object);
@@ -129,13 +139,15 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void GetMatchNoAccessTest() {
+        public void GetMatchNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             matchesStorage.Get(2);
         }
 
         [TestMethod]
-        public void GetCommentsTest() {
+        public void GetCommentsTest()
+        {
             Mock<Commentary> dummy = BuildFakeCommentary();
             Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
             Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport.Object);
@@ -168,7 +180,7 @@ namespace DataRepositoriesTest
             Commentary added = matchesStorage.CommentOnMatch(3, dummy.Object);
             Commentary retrieved = matchesStorage.GetComment(added.Id);
             Assert.AreEqual(dummy.Object.Text, retrieved.Text);
-        }   
+        }
 
         [TestMethod]
         [ExpectedException(typeof(CommentNotFoundException))]
@@ -179,27 +191,30 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void GetCommentNoAccessTest() {
+        public void GetCommentNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             matchesStorage.GetComment(3);
         }
 
         private Mock<Commentary> BuildFakeCommentary()
         {
-            UserId identity = new UserId() {
+            UserId identity = new UserId()
+            {
                 Name = "aName",
                 Surname = "aSurname",
                 UserName = "aUsername",
                 Password = "aPassword",
                 Email = "anEmail@aDomain.com"
             };
-            Mock<User> somebody = new Mock<User>(identity,false);
+            Mock<User> somebody = new Mock<User>(identity, false);
             Mock<Commentary> comment = new Mock<Commentary>("Some comment", somebody.Object);
             return comment;
         }
 
         [TestMethod]
-        public void GetAllTest() {
+        public void GetAllTest()
+        {
             matchesStorage.Add(match.Object);
             ICollection<Match> all = matchesStorage.GetAll();
             Assert.AreEqual(all.Count, 1);
@@ -207,13 +222,15 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void GetAllNoAccessTest() {
+        public void GetAllNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             matchesStorage.GetAll();
         }
 
         [TestMethod]
-        public void ModifyTest() {
+        public void ModifyTest()
+        {
             matchesStorage.Add(match.Object);
             Mock<Match> modified = BuildModifiedFakeMatch();
             SetUpRepository();
@@ -226,16 +243,18 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
-        public void ModifyUnexistentItemTest() {
-            Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath", sport.Object);
-            Mock<Match> match = new Mock<Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2),sport.Object);
+        public void ModifyUnexistentItemTest()
+        {
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
+            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport.Object);
+            Mock<Match> match = new Mock<Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
             matchesStorage.Modify(match.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void ModifyNoAccessTest() {
+        public void ModifyNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
             Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport.Object);
@@ -246,21 +265,23 @@ namespace DataRepositoriesTest
 
         private Mock<Match> BuildModifiedFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>(3,"Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(4,"Bayern Munich", "aPath", sport.Object);
-            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2),sport.Object);
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
+            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport.Object);
+            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
             return match;
         }
 
         [TestMethod]
-        public void ExistsTest() {
+        public void ExistsTest()
+        {
             matchesStorage.Add(match.Object);
             bool exists = matchesStorage.Exists(match.Object.Id);
             Assert.IsTrue(exists);
         }
 
         [TestMethod]
-        public void DoesNotExistTest() {
+        public void DoesNotExistTest()
+        {
             bool exists = matchesStorage.Exists(5);
             Assert.IsFalse(exists);
         }
@@ -274,7 +295,8 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        public void DeleteTest() {
+        public void DeleteTest()
+        {
             matchesStorage.Add(match.Object);
             matchesStorage.Delete(match.Object.Id);
             bool exists = matchesStorage.Exists(match.Object.Id);
@@ -283,13 +305,15 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
-        public void DeleteUnexistentTest() {
+        public void DeleteUnexistentTest()
+        {
             matchesStorage.Delete(match.Object.Id);
         }
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void DeleteNoAccessTest() {
+        public void DeleteNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             matchesStorage.Delete(5);
         }

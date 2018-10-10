@@ -16,12 +16,13 @@ namespace BusinessLogicTest
         Mock<User> user;
 
         [TestInitialize]
-        public void TestInitialize(){
+        public void TestInitialize()
+        {
             id = 1;
             text = "The match was so boring";
             UserId identity = GetIdentity();
-            user = new Mock<User>(identity,true);
-            commentary = new Commentary(id, text,user.Object);
+            user = new Mock<User>(identity, true);
+            commentary = new Commentary(id, text, user.Object);
         }
 
         private UserId GetIdentity()
@@ -37,53 +38,62 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void ConstructorTest(){
+        public void ConstructorTest()
+        {
             Assert.IsNotNull(commentary);
         }
 
-         [TestMethod]
-        public void GetIdTest(){
+        [TestMethod]
+        public void GetIdTest()
+        {
             Assert.AreEqual(id, commentary.Id);
         }
 
         [TestMethod]
-        public void SetIdTest(){
+        public void SetIdTest()
+        {
             int newId = 2;
             commentary.Id = newId;
             Assert.AreEqual(newId, commentary.Id);
         }
 
         [TestMethod]
-        public void GetTextTest(){
+        public void GetTextTest()
+        {
             Assert.AreEqual(text, commentary.Text);
         }
 
         [TestMethod]
-        public void SetTextTest(){
+        public void SetTextTest()
+        {
             string newText = "The match was incredible";
             commentary.Text = newText;
             Assert.AreEqual(newText, commentary.Text);
         }
 
         [TestMethod]
-        public void EqualsTest(){
-            Commentary equalCommentary = new Commentary(id, text,user.Object);
+        public void EqualsTest()
+        {
+            Commentary equalCommentary = new Commentary(id, text, user.Object);
             Assert.AreEqual(commentary, equalCommentary);
         }
 
         [TestMethod]
-        public void NotEqualsTest(){
-            Commentary notEqualCommentary = new Commentary(id+1, text, user.Object);
+        public void NotEqualsTest()
+        {
+            Commentary notEqualCommentary = new Commentary(id + 1, text, user.Object);
             Assert.AreNotEqual(commentary, notEqualCommentary);
         }
 
         [TestMethod]
-        public void EqualsNullTest(){
+        public void EqualsNullTest()
+        {
             Assert.IsFalse(commentary.Equals(null));
         }
 
         [TestMethod]
-        public void EqualsDifferenceTypeTest() {
+        public void EqualsDifferenceTypeTest()
+        {
             Assert.IsFalse(commentary.Equals(""));
         }
 
@@ -102,7 +112,8 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void GetUserTest() {
+        public void GetUserTest()
+        {
             Assert.AreEqual(commentary.Maker.UserName, "aUsername");
         }
     }

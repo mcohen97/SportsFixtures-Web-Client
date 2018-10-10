@@ -38,7 +38,8 @@ namespace DataRepositoriesTest
             teamsStorage.Clear();
         }
 
-        private void CreateRepository() {
+        private void CreateRepository()
+        {
 
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "UserRepositoryTest")
@@ -49,7 +50,8 @@ namespace DataRepositoriesTest
             context.UserTeams.RemoveRange(context.UserTeams);
         }
 
-        private void CreateDisconnectedDatabase() {
+        private void CreateDisconnectedDatabase()
+        {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "UserRepositoryTest")
                 .Options;
@@ -68,7 +70,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void IsEmptyNoDataAccessTest() {
+        public void IsEmptyNoDataAccessTest()
+        {
             CreateDisconnectedDatabase();
             usersStorage.IsEmpty();
         }
@@ -83,8 +86,9 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        [ExpectedException (typeof (DataInaccessibleException))]
-        public void AddUserNoDataAccessTest() {
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void AddUserNoDataAccessTest()
+        {
             CreateDisconnectedDatabase();
             usersStorage.Add(user);
         }
@@ -100,7 +104,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetUserTest()
         {
- 
+
             User user = factory.CreateAdmin(userId);
             usersStorage.Add(user);
             User fetched = usersStorage.Get("username");
@@ -116,7 +120,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void GetUserNoConnectionException() {
+        public void GetUserNoConnectionException()
+        {
             CreateDisconnectedDatabase();
             User fetched = usersStorage.Get("username3");
         }
@@ -143,7 +148,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void ExistsNoDataAccessTest() {
+        public void ExistsNoDataAccessTest()
+        {
             CreateDisconnectedDatabase();
             usersStorage.Exists("user");
         }
@@ -170,7 +176,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void DeleteNoDataAccessTest() {
+        public void DeleteNoDataAccessTest()
+        {
             CreateDisconnectedDatabase();
             usersStorage.Delete(user.UserName);
         }
@@ -191,7 +198,8 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        public void ModifyAddedTeams() {
+        public void ModifyAddedTeams()
+        {
             UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username", Password = "password1", Email = "mail1@domain.com" };
             User user = factory.CreateAdmin(userId1);
             usersStorage.Add(user);
@@ -212,14 +220,16 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void ModifyNoDataAccessTest() {
+        public void ModifyNoDataAccessTest()
+        {
             CreateDisconnectedDatabase();
             usersStorage.Modify(user);
 
         }
 
         [TestMethod]
-        public void GetTest() {
+        public void GetTest()
+        {
             User user = factory.CreateAdmin(userId);
             usersStorage.Add(user);
             User fetched = usersStorage.Get(user);
@@ -228,7 +238,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
-        public void GetNotExistentTest() {
+        public void GetNotExistentTest()
+        {
 
             UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username2", Password = "password1", Email = "mail1@domain.com" };
             UserId userId2 = new UserId { Name = "name2", Surname = "surname2", UserName = "username1", Password = "password2", Email = "mail2@domain.com" };
@@ -248,7 +259,8 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        public void ClearUsersTest() {
+        public void ClearUsersTest()
+        {
             usersStorage.Add(user);
             usersStorage.Clear();
             Assert.IsTrue(usersStorage.IsEmpty());
@@ -256,29 +268,32 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void ClearNoDataAccessTest() {
+        public void ClearNoDataAccessTest()
+        {
             CreateDisconnectedDatabase();
             usersStorage.Clear();
         }
 
         [TestMethod]
-        public void DeleteByUsername() {
+        public void DeleteByUsername()
+        {
             usersStorage.Add(user);
             User fetched = usersStorage.Get(user);
             usersStorage.Delete(fetched.UserName);
             Assert.IsTrue(usersStorage.IsEmpty());
         }
 
-        
+
 
         [TestMethod]
-        public void GetUserFollowedTeamsTest() {
+        public void GetUserFollowedTeamsTest()
+        {
             Team toFollow = GetFakeTeam();
             teamsStorage.Add(toFollow);
             user.AddFavourite(toFollow);
             usersStorage.Add(user);
             CreateRepository();
-            User fromDB =usersStorage.Get(user.UserName);
+            User fromDB = usersStorage.Get(user.UserName);
             Assert.AreEqual(fromDB.GetFavouriteTeams().Count, 1);
         }
 

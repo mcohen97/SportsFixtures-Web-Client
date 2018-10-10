@@ -14,7 +14,8 @@ namespace BusinessLogicTest
         private Sport aSport;
 
         [TestInitialize]
-        public void TestInitialize(){
+        public void TestInitialize()
+        {
             int id = 1;
             string name = "TheTeam";
             string photo = "myresource/theteam.png";
@@ -27,7 +28,7 @@ namespace BusinessLogicTest
         {
             Assert.IsNotNull(testTeam);
         }
-        
+
         [TestMethod]
         public void GetIdTest()
         {
@@ -90,7 +91,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void EqualsTest()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath",new Sport("aSport"));
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
             Team sameTeam = new Team(1, "TeamA", "", new Sport("aSport"));
             Assert.AreEqual(aTeam, sameTeam);
         }
@@ -104,7 +105,8 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void NotEqualsDifferentSport() {
+        public void NotEqualsDifferentSport()
+        {
             Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
             Team differentTeam = new Team(2, "TeamA", "", new Sport("anotherSport"));
             Assert.AreNotEqual(aTeam, differentTeam);
@@ -118,9 +120,10 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void GetHashCodeTest() {
+        public void GetHashCodeTest()
+        {
             Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
-            int hashCode= 539060726 + EqualityComparer<string>.Default.GetHashCode("TeamA");
+            int hashCode = 539060726 + EqualityComparer<string>.Default.GetHashCode("TeamA");
             Assert.AreEqual(hashCode, aTeam.GetHashCode());
         }
 
@@ -130,14 +133,14 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void EmptyNameConstructorTest()
         {
-            Team team = new Team(1, "","photo", new Sport("aSport"));
+            Team team = new Team(1, "", "photo", new Sport("aSport"));
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetEmptyNameTest()
         {
-            Team team = new Team(1, "name","photo", new Sport("aSport"));
+            Team team = new Team(1, "name", "photo", new Sport("aSport"));
             team.Name = "";
         }
 
@@ -145,7 +148,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullNameTest()
         {
-            Team team = new Team(1, "name","photo", new Sport("aSport"));
+            Team team = new Team(1, "name", "photo", new Sport("aSport"));
             team.Name = null;
         }
 
@@ -153,13 +156,14 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullPhotoTest()
         {
-            Team team = new Team(1, "name","photo", new Sport("aSport"));
+            Team team = new Team(1, "name", "photo", new Sport("aSport"));
             team.Photo = null;
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidSportDataException))]
-        public void SetNullSportTest() {
+        public void SetNullSportTest()
+        {
             Team team = new Team(1, "name", "photo", null);
         }
     }

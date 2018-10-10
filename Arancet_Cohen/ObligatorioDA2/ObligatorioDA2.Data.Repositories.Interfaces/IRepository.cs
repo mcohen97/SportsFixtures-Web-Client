@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ObligatorioDA2.Data.Repositories.Interfaces
 {
-    public interface IRepository<T,K>
+    public interface IRepository<T, K>
     {
         bool IsEmpty();
 

@@ -30,7 +30,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 added = TryAdd(sport);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return added;
@@ -53,7 +54,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryClear();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -73,7 +75,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryDelete(name);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -94,13 +97,15 @@ namespace ObligatorioDA2.Data.Repositories
         {
             IQueryable<TeamEntity> teams = context.Teams.Where(t => t.SportEntityName.Equals(sportName));
             context.Teams.RemoveRange(teams);
-            foreach (TeamEntity deleted in teams) {
+            foreach (TeamEntity deleted in teams)
+            {
                 IQueryable<MatchEntity> played = context.Matches.Include(m => m.Commentaries)
                     .Where(m => (m.HomeTeam.TeamNumber == deleted.TeamNumber) || (m.AwayTeam.TeamNumber == deleted.TeamNumber));
                 context.Matches.RemoveRange(played);
                 IQueryable<UserTeam> followings = context.UserTeams.Where(t => t.Team.TeamNumber == deleted.TeamNumber);
                 context.UserTeams.RemoveRange(followings);
-                foreach (MatchEntity match in played) {
+                foreach (MatchEntity match in played)
+                {
                     context.Comments.RemoveRange(match.Commentaries);
                 }
             }
@@ -114,7 +119,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 exists = AskIfExists(name);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return exists;
@@ -132,7 +138,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 allOfThem = TryGetAll();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return allOfThem;
@@ -151,7 +158,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 empty = AskIfEmpty();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return empty;
@@ -168,7 +176,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryModify(entity);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -190,7 +199,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 toGet = TryGet(name);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return toGet;

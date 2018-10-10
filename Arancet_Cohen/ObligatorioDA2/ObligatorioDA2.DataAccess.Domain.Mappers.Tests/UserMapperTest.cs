@@ -16,7 +16,8 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         UserFactory factory;
 
         [TestInitialize]
-        public void StartUp() {
+        public void StartUp()
+        {
             factory = new UserFactory();
             UserId identity = new UserId
             {
@@ -74,8 +75,9 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         }
 
         [TestMethod]
-        public void EntityToUserNameTest() {
-            User conversion = toTest.ToUser(toGet,new List<TeamEntity>());
+        public void EntityToUserNameTest()
+        {
+            User conversion = toTest.ToUser(toGet, new List<TeamEntity>());
             Assert.AreEqual(conversion.Name, toGet.Name);
         }
 
@@ -114,16 +116,17 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
             {
                 Name = "Partisanos Fc",
                 SportEntityName = "Soccer",
-                Sport = new SportEntity() {Name= "Soccer" },
+                Sport = new SportEntity() { Name = "Soccer" },
                 TeamNumber = 1,
                 Photo = "aPhoto"
             };
-            User conversion = toTest.ToUser(toGet, new List<TeamEntity>() { entity});
+            User conversion = toTest.ToUser(toGet, new List<TeamEntity>() { entity });
             Assert.AreEqual(conversion.GetFavouriteTeams().Count, 1);
         }
 
         [TestMethod]
-        public void GetUserTeamsTest() {
+        public void GetUserTeamsTest()
+        {
             toStore.AddFavourite(new Team(1, "Nacional", "aPath", new Sport("Soccer")));
             ICollection<UserTeam> relationships = toTest.GetUserTeams(toStore);
             Assert.AreEqual(relationships.Count, 1);

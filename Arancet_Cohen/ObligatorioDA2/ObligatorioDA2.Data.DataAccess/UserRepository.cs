@@ -31,7 +31,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 added = TryAdd(aUser);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return added;
@@ -65,7 +66,8 @@ namespace ObligatorioDA2.Data.Repositories
                 stored = TryGet(aUserName);
 
             }
-            catch (DbException e) {
+            catch (DbException e)
+            {
                 throw new DataInaccessibleException();
             }
             return stored;
@@ -90,18 +92,20 @@ namespace ObligatorioDA2.Data.Repositories
 
         private ICollection<TeamEntity> GetFollowedTeams(string aUserName)
         {
-           return context.UserTeams
-                    .Where(ut => ut.UserEntityUserName.Equals(aUserName))
-                    .Select(ut => ut.Team)
-                    .ToList();
+            return context.UserTeams
+                     .Where(ut => ut.UserEntityUserName.Equals(aUserName))
+                     .Select(ut => ut.Team)
+                     .ToList();
         }
 
         public void Delete(string username)
         {
-            try {
+            try
+            {
                 TryDelete(username);
             }
-            catch (DbException e) {
+            catch (DbException e)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -127,7 +131,8 @@ namespace ObligatorioDA2.Data.Repositories
             context.Comments.RemoveRange(commentsToDelete);
         }
 
-        private UserEntity GetEntityByUsername(string aUserName) {
+        private UserEntity GetEntityByUsername(string aUserName)
+        {
             return context.Users.First(u => u.UserName.Equals(aUserName));
         }
 
@@ -138,7 +143,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 allOfThem = TryGetAll();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return allOfThem;
@@ -167,13 +173,14 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 empty = !context.Users.Any();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
-        return empty;
+            return empty;
         }
 
-       
+
 
         public bool Exists(string username)
         {
@@ -182,7 +189,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 doesExist = AskIfExists(username);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
             return doesExist;
@@ -200,7 +208,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryModify(aUser);
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }
@@ -211,7 +220,7 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 UserEntity entity = userMapper.ToEntity(aUser);
                 ICollection<UserTeam> favourites = userMapper.GetUserTeams(aUser);
-                RemoveMissing(aUser.UserName,favourites);
+                RemoveMissing(aUser.UserName, favourites);
                 AddNewFavourites(favourites);
                 context.Update(entity);
                 context.SaveChanges();
@@ -225,8 +234,8 @@ namespace ObligatorioDA2.Data.Repositories
         private void RemoveMissing(string userName, ICollection<UserTeam> favourites)
         {
             IQueryable<UserTeam> missing = context.UserTeams
-                .Where(ut =>ut.UserEntityUserName.Equals(userName) && !favourites.Any(f => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
-                                                && f.TeamEntityName.Equals(ut.TeamEntityName)));
+                .Where(ut => ut.UserEntityUserName.Equals(userName) && !favourites.Any(f => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
+                                                 && f.TeamEntityName.Equals(ut.TeamEntityName)));
             context.UserTeams.RemoveRange(missing);
         }
 
@@ -237,7 +246,8 @@ namespace ObligatorioDA2.Data.Repositories
                                                             .Any(ut => f.TeamEntitySportEntityName.Equals(ut.TeamEntitySportEntityName)
                                                             && f.TeamEntityName.Equals(ut.TeamEntityName)
                                                             && f.UserEntityUserName.Equals(ut.UserEntityUserName))));
-            foreach (UserTeam ut in newFavourites) {
+            foreach (UserTeam ut in newFavourites)
+            {
                 context.Entry(ut).State = EntityState.Added;
             }
         }
@@ -260,7 +270,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 TryClear();
             }
-            catch (DbException) {
+            catch (DbException)
+            {
                 throw new DataInaccessibleException();
             }
         }

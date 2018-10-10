@@ -14,21 +14,22 @@ namespace ObligatorioDA2.BusinessLogic
         private int id;
         private Sport sport;
 
-        public Team(string name, string photo, Sport aSport) {
+        public Team(string name, string photo, Sport aSport)
+        {
             Name = name;
             Photo = photo;
             Sport = aSport;
         }
-        public Team(int id, string name, string photo, Sport aSport):this(name,photo,aSport)
+        public Team(int id, string name, string photo, Sport aSport) : this(name, photo, aSport)
         {
             Id = id;
         }
 
-        public string Name {get{return name;} set{SetName(value);}}
+        public string Name { get { return name; } set { SetName(value); } }
 
-        public string Photo {get{return photo;} set{SetPhoto(value);}}
+        public string Photo { get { return photo; } set { SetPhoto(value); } }
 
-        public int Id { get{return id;} set{SetId(value);} }
+        public int Id { get { return id; } set { SetId(value); } }
 
         public Sport Sport { get => sport; set => SetSport(value); }
 
@@ -37,28 +38,29 @@ namespace ObligatorioDA2.BusinessLogic
             sport = aSport ?? throw new InvalidSportDataException("Sport can't be null");
         }
 
-        public void SetId(int value){
+        public void SetId(int value)
+        {
             id = value;
         }
 
         private void SetName(string value)
         {
-            if(value == null)
+            if (value == null)
                 throw new InvalidTeamDataException("Name can't be null");
 
-            if(value == "")
+            if (value == "")
                 throw new InvalidTeamDataException("Name can't be empty");
-            
+
             name = value;
         }
 
         private void SetPhoto(string value)
         {
-            if(value == null)
+            if (value == null)
                 throw new InvalidTeamDataException("Photo can't be null");
 
-            photo = value;       
-         }
+            photo = value;
+        }
 
         public override bool Equals(object obj)
         {

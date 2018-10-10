@@ -14,7 +14,7 @@ namespace ObligatorioDA2.BusinessLogic
         private ICollection<Commentary> commentaries;
         public int Id { get; private set; }
 
-        public Match(Team home, Team away, DateTime date,Sport aSport)
+        public Match(Team home, Team away, DateTime date, Sport aSport)
         {
             HomeTeam = home;
             AwayTeam = away;
@@ -23,20 +23,21 @@ namespace ObligatorioDA2.BusinessLogic
             commentaries = new List<Commentary>();
         }
 
-        public Match(int anId, Team home, Team away, DateTime date,Sport sport):this(home,away,date,sport) {
+        public Match(int anId, Team home, Team away, DateTime date, Sport sport) : this(home, away, date, sport)
+        {
             Id = anId;
         }
 
-        public Match(int anId, Team home, Team away, DateTime date, Sport sport, ICollection<Commentary> comments) : this(anId,home, away, date,sport)
+        public Match(int anId, Team home, Team away, DateTime date, Sport sport, ICollection<Commentary> comments) : this(anId, home, away, date, sport)
         {
             commentaries = comments;
         }
 
-        public Team HomeTeam { get{return homeTeam;} set{SetHomeTeam(value);} }
-        public Team AwayTeam { get{return awayTeam;} set{SetAwayTeam(value);} }
-        public DateTime Date { get{return date;} set{SetDate(value);} }
+        public Team HomeTeam { get { return homeTeam; } set { SetHomeTeam(value); } }
+        public Team AwayTeam { get { return awayTeam; } set { SetAwayTeam(value); } }
+        public DateTime Date { get { return date; } set { SetDate(value); } }
 
-        public Sport Sport { get { return sport; }set { SetSport(value); } }
+        public Sport Sport { get { return sport; } set { SetSport(value); } }
 
         public bool HasCommentary(Commentary commentary)
         {
@@ -45,7 +46,7 @@ namespace ObligatorioDA2.BusinessLogic
 
         public void AddCommentary(Commentary commentary)
         {
-            if(HasCommentary(commentary))
+            if (HasCommentary(commentary))
                 throw new InvalidMatchDataException("Commentary already exists in this match");
             commentaries.Add(commentary);
         }
@@ -64,13 +65,13 @@ namespace ObligatorioDA2.BusinessLogic
         {
             commentaries.Clear();
         }
-        
+
 
         private void SetHomeTeam(Team value)
         {
-            if(value == null)
+            if (value == null)
                 throw new InvalidMatchDataException("Home team can't be null");
-            if(value.Equals(awayTeam))
+            if (value.Equals(awayTeam))
                 throw new InvalidMatchDataException("Home team can't be same as away team");
 
             homeTeam = value;
@@ -78,11 +79,11 @@ namespace ObligatorioDA2.BusinessLogic
 
         private void SetAwayTeam(Team value)
         {
-            if(value == null)
+            if (value == null)
                 throw new InvalidMatchDataException("Away team can't be null");
-            if(value.Equals(homeTeam))
+            if (value.Equals(homeTeam))
                 throw new InvalidMatchDataException("Away team can't be same as home team");
-                
+
             awayTeam = value;
         }
 
@@ -94,7 +95,8 @@ namespace ObligatorioDA2.BusinessLogic
 
         private void SetSport(Sport value)
         {
-            if (value == null) {
+            if (value == null)
+            {
                 throw new InvalidMatchDataException();
             }
             sport = value;

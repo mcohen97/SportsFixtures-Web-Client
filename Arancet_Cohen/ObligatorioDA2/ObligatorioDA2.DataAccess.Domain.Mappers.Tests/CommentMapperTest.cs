@@ -12,7 +12,8 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         private Commentary comment;
         private CommentEntity commentEntity;
         [TestInitialize]
-        public void StartUp() {
+        public void StartUp()
+        {
             testMapper = new CommentMapper();
             UserId identity = new UserId
             {
@@ -22,13 +23,14 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 Password = "aPassword",
                 Email = "anEmail@aDomain.com"
             };
-            Mock<User> stub = new Mock<User>(identity,true);
+            Mock<User> stub = new Mock<User>(identity, true);
             comment = new Commentary("this is a comment", stub.Object);
             commentEntity = new CommentEntity()
             {
                 Id = 3,
                 Text = "another comment",
-                Maker = new UserEntity() {
+                Maker = new UserEntity()
+                {
                     Name = "aName",
                     Surname = "aSurname",
                     UserName = "aUsername",
@@ -39,7 +41,8 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         }
 
         [TestMethod]
-        public void CommentToEntityTextTest() {
+        public void CommentToEntityTextTest()
+        {
             CommentEntity entity = testMapper.ToEntity(comment);
             Assert.AreEqual(entity.Text, comment.Text);
         }
@@ -52,26 +55,30 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         }
 
         [TestMethod]
-        public void CommentToEntityIdTest() {
+        public void CommentToEntityIdTest()
+        {
             CommentEntity entity = testMapper.ToEntity(comment);
             Assert.AreEqual(entity.Id, comment.Id);
         }
 
         [TestMethod]
-        public void EntityToCommentTextTest() {
-            Commentary  converted = testMapper.ToComment(commentEntity);
+        public void EntityToCommentTextTest()
+        {
+            Commentary converted = testMapper.ToComment(commentEntity);
             Assert.AreEqual(converted.Text, commentEntity.Text);
         }
 
         [TestMethod]
-        public void EntityToCommentUserTest() {
+        public void EntityToCommentUserTest()
+        {
             Commentary converted = testMapper.ToComment(commentEntity);
             Assert.AreEqual(converted.Maker.UserName, commentEntity.Maker.UserName);
 
         }
 
         [TestMethod]
-        public void EntityToCommentIdTest() {
+        public void EntityToCommentIdTest()
+        {
             Commentary converted = testMapper.ToComment(commentEntity);
             Assert.AreEqual(converted.Id, commentEntity.Id);
         }

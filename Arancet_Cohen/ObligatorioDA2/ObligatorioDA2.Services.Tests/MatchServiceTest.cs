@@ -32,7 +32,8 @@ namespace ObligatorioDA2.Services.Tests
         private Match matchBvsC;
 
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
             sport = new Sport("Soccer");
             teamA = new Team(1, "teamA", "photo", sport);
             teamB = new Team(2, "teamB", "photo", sport);
@@ -47,7 +48,8 @@ namespace ObligatorioDA2.Services.Tests
             usersRepo.Clear();
         }
 
-        private void SetUpRepository() {
+        private void SetUpRepository()
+        {
 
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                .UseInMemoryDatabase(databaseName: "MatchService")
@@ -78,7 +80,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void AddMatchGivingIdsTest() {
+        public void AddMatchGivingIdsTest()
+        {
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
@@ -88,7 +91,8 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(MatchAlreadyExistsException))]
-        public void AddGivingIdsAlreadyExistentTest() {
+        public void AddGivingIdsAlreadyExistentTest()
+        {
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
@@ -98,7 +102,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void AddAssignedGivingIdsTest() {
+        public void AddAssignedGivingIdsTest()
+        {
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
@@ -108,12 +113,14 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
-        public void GetUnexistentMatchTest() {
+        public void GetUnexistentMatchTest()
+        {
             serviceToTest.GetMatch(9);
         }
 
         [TestMethod]
-        public void GetExistentMatchTest() {
+        public void GetExistentMatchTest()
+        {
             serviceToTest.AddMatch(matchAvsB);
             Match retrieved = serviceToTest.GetMatch(matchAvsB.Id);
             Assert.AreEqual(retrieved.Id, matchAvsB.Id);
@@ -121,7 +128,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void GetMatchesOfSportTest() {
+        public void GetMatchesOfSportTest()
+        {
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
@@ -134,12 +142,14 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(SportNotFoundException))]
-        public void GetMatchesOfNotExistingSportTest() {
+        public void GetMatchesOfNotExistingSportTest()
+        {
             serviceToTest.GetAllMatches(sport.Name);
         }
 
         [TestMethod]
-        public void GetMatchesFromTeamTest() {
+        public void GetMatchesFromTeamTest()
+        {
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
@@ -153,18 +163,21 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
-        public void GetMatchesOfNotExistingTeamTest() {
+        public void GetMatchesOfNotExistingTeamTest()
+        {
             serviceToTest.GetAllMatches(matchAvsB.Id);
         }
 
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
-        public void DeleteMatchTest() {
+        public void DeleteMatchTest()
+        {
             serviceToTest.DeleteMatch(3);
         }
 
         [TestMethod]
-        public void ModifyTest() {
+        public void ModifyTest()
+        {
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
@@ -181,12 +194,14 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
-        public void ModifyUnexistentTest() {
+        public void ModifyUnexistentTest()
+        {
             serviceToTest.ModifyMatch(matchAvsC);
         }
 
         [TestMethod]
-        public void ModifyGivingIdsTest() {
+        public void ModifyGivingIdsTest()
+        {
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
@@ -200,7 +215,8 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
-        public void ModifyNoMatchWithIdTest() {
+        public void ModifyNoMatchWithIdTest()
+        {
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
@@ -210,13 +226,15 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
-        public void ModifyNoTeamWithIdTest() {
+        public void ModifyNoTeamWithIdTest()
+        {
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.ModifyMatch(matchAvsB.Id, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
         }
 
         [TestMethod]
-        public void GetAllMatchesTest() {
+        public void GetAllMatchesTest()
+        {
             serviceToTest.AddMatch(matchAvsC);
             serviceToTest.AddMatch(matchAvsB);
             Assert.AreEqual(serviceToTest.GetAllMatches().Count, 2);
@@ -257,7 +275,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void CommentOnMatchByIdsTest() {
+        public void CommentOnMatchByIdsTest()
+        {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
             teamsRepo.Add(teamA);
@@ -280,13 +299,15 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
-        public void CommentNoUserWithIdTest() {
+        public void CommentNoUserWithIdTest()
+        {
             Match added = matchesRepo.Add(matchAvsB);
             serviceToTest.CommentOnMatch(added.Id, "usernae", "a Comment");
         }
 
         [TestMethod]
-        public void GetMatchCommentsTest() {
+        public void GetMatchCommentsTest()
+        {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
             usersRepo.Add(commentarist);
@@ -304,7 +325,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void GetCommentsTest() {
+        public void GetCommentsTest()
+        {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
             usersRepo.Add(commentarist);
@@ -323,7 +345,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void GetCommentTest() {
+        public void GetCommentTest()
+        {
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
             usersRepo.Add(commentarist);
@@ -333,7 +356,7 @@ namespace ObligatorioDA2.Services.Tests
             Match added1 = matchesRepo.Add(matchAvsB);
             Match added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
-            Commentary comment =serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
+            Commentary comment = serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
             Commentary retrieved = serviceToTest.GetComment(comment.Id);
         }
 

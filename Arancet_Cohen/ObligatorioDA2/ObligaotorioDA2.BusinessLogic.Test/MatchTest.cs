@@ -19,31 +19,32 @@ namespace BusinessLogicTest
         private Mock<Commentary> commentary1;
         private Mock<Commentary> commentary2;
         private Mock<Commentary> commentary3;
-        
+
 
 
         [TestInitialize]
-        public void TestInitialize(){
+        public void TestInitialize()
+        {
             //Create mocks
             sport = new Mock<Sport>("Soccer");
-            teamA = new Mock<Team>(1, "TeamA", "Photo/A",sport.Object);
-            teamB = new Mock<Team>(2, "TeamB", "Photo/B",sport.Object);
-            date =  new DateTime(2019,1,25,13,30,0);
+            teamA = new Mock<Team>(1, "TeamA", "Photo/A", sport.Object);
+            teamB = new Mock<Team>(2, "TeamB", "Photo/B", sport.Object);
+            date = new DateTime(2019, 1, 25, 13, 30, 0);
             Mock<User> commentarist = CreateUser();
-            commentary1 = new Mock<Commentary>(1, "Commentary 1",commentarist.Object);
+            commentary1 = new Mock<Commentary>(1, "Commentary 1", commentarist.Object);
             commentary2 = new Mock<Commentary>(2, "Commentary 2", commentarist.Object);
             commentary3 = new Mock<Commentary>(3, "Commentary 3", commentarist.Object);
-            
+
             //Configure mocks
             teamA.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
             teamB.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
             commentary1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 1);
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
-            
 
 
-            match = new Match(3,teamA.Object, teamB.Object, date,sport.Object);
+
+            match = new Match(3, teamA.Object, teamB.Object, date, sport.Object);
         }
 
         private Mock<User> CreateUser()
@@ -61,77 +62,90 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void ConstructorTest(){
+        public void ConstructorTest()
+        {
             Assert.IsNotNull(match);
         }
 
         [TestMethod]
-        public void GetIdTest() {
+        public void GetIdTest()
+        {
             Assert.AreEqual(match.Id, 3);
         }
 
         [TestMethod]
-        public void GetHomeTeamTest(){
+        public void GetHomeTeamTest()
+        {
             Assert.AreEqual(teamA.Object.Id, match.HomeTeam.Id);
         }
 
         [TestMethod]
-        public void GetAwayTeamTest(){
+        public void GetAwayTeamTest()
+        {
             Assert.AreEqual(teamB.Object.Id, match.AwayTeam.Id);
         }
 
         [TestMethod]
-        public void SetHomeTeamTest(){
-            Mock<Team> homeTeam = new Mock<Team>(3, "HomeTeam", "photo",sport.Object);
+        public void SetHomeTeamTest()
+        {
+            Mock<Team> homeTeam = new Mock<Team>(3, "HomeTeam", "photo", sport.Object);
             match.HomeTeam = homeTeam.Object;
             Assert.AreEqual(homeTeam.Object.Id, match.HomeTeam.Id);
         }
 
         [TestMethod]
-        public void SetAwayTeamTest(){
-            Mock<Team> awayTeam = new Mock<Team>(3, "AwayTeam", "photo",sport.Object);
+        public void SetAwayTeamTest()
+        {
+            Mock<Team> awayTeam = new Mock<Team>(3, "AwayTeam", "photo", sport.Object);
             match.AwayTeam = awayTeam.Object;
             Assert.AreEqual(awayTeam.Object.Id, match.AwayTeam.Id);
         }
 
         [TestMethod]
-        public void GetDateTimeTest(){
+        public void GetDateTimeTest()
+        {
             Assert.AreEqual(date, match.Date);
         }
 
         [TestMethod]
-        public void GetSportTest() {
-            Sport played =match.Sport;
-            Assert.AreEqual("Soccer",played.Name);
+        public void GetSportTest()
+        {
+            Sport played = match.Sport;
+            Assert.AreEqual("Soccer", played.Name);
         }
 
         [TestMethod]
-        public void SetDateTimeTest(){
-            DateTime newDate = new DateTime(2019,2,2,12,0,0);
+        public void SetDateTimeTest()
+        {
+            DateTime newDate = new DateTime(2019, 2, 2, 12, 0, 0);
             match.Date = newDate;
             Assert.AreEqual(newDate, match.Date);
         }
 
         [TestMethod]
-        public void MatchHasNotCommentaryTest(){
+        public void MatchHasNotCommentaryTest()
+        {
             Assert.IsFalse(match.HasCommentary(commentary1.Object));
         }
-       
+
         [TestMethod]
-        public void AddCommentaryTest(){
+        public void AddCommentaryTest()
+        {
             match.AddCommentary(commentary1.Object);
             Assert.IsTrue(match.HasCommentary(commentary1.Object));
         }
 
         [TestMethod]
-        public void RemoveCommentaryTest(){
+        public void RemoveCommentaryTest()
+        {
             match.AddCommentary(commentary1.Object);
             match.RemoveCommentary(commentary1.Object);
             Assert.IsFalse(match.HasCommentary(commentary1.Object));
         }
 
         [TestMethod]
-        public void GetAllCommentsTest(){
+        public void GetAllCommentsTest()
+        {
             match.AddCommentary(commentary1.Object);
             match.AddCommentary(commentary2.Object);
             match.AddCommentary(commentary3.Object);
@@ -142,7 +156,8 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void RemoveAllCommentsTest(){
+        public void RemoveAllCommentsTest()
+        {
             match.AddCommentary(commentary1.Object);
             match.AddCommentary(commentary2.Object);
             match.AddCommentary(commentary3.Object);
@@ -155,7 +170,8 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void GetCommentaryTest(){
+        public void GetCommentaryTest()
+        {
             match.AddCommentary(commentary1.Object);
             Commentary commentary = match.GetCommentary(commentary1.Object.Id);
             Assert.AreEqual(commentary.Text, commentary1.Object.Text);
@@ -186,7 +202,8 @@ namespace BusinessLogicTest
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
-        public void SetNullSportTest() {
+        public void SetNullSportTest()
+        {
             match = new Match(3, teamA.Object, teamB.Object, date, null);
         }
 

@@ -11,7 +11,7 @@ namespace ObligatorioDA2.Services.Interfaces
 
         Match AddMatch(int homeTeamId, int awayTeamId, string sportName, DateTime date);
 
-        Match AddMatch(int assignedId,int homeTeamId, int awayTeamId, string sportName, DateTime date);
+        Match AddMatch(int assignedId, int homeTeamId, int awayTeamId, string sportName, DateTime date);
 
         ICollection<Match> GetAllMatches();
 

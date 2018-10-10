@@ -14,26 +14,27 @@ namespace ObligatorioDA2.BusinessLogic
             text = aText;
             Maker = aUser;
         }
-        public Commentary(int id, string text, User aUser):this(text,aUser)
+        public Commentary(int id, string text, User aUser) : this(text, aUser)
         {
             Id = id;
         }
 
-        public int Id { get;  set; }
-        public string Text { get{return text;}  set{SetText(value);} }
+        public int Id { get; set; }
+        public string Text { get { return text; } set { SetText(value); } }
 
         private void SetText(string value)
         {
-            if(value == null)
+            if (value == null)
                 throw new InvalidCommentaryDataException("Text can't be null");
 
-            if(value == "")
+            if (value == "")
                 throw new InvalidCommentaryDataException("Text can't be empty");
 
             text = value;
         }
 
-        public override bool Equals(object obj){
+        public override bool Equals(object obj)
+        {
             if (obj == null)
             {
                 return false;
@@ -42,9 +43,9 @@ namespace ObligatorioDA2.BusinessLogic
             {
                 return false;
             }
-            
-            Commentary commentaryCompared = (Commentary) obj;
-            
+
+            Commentary commentaryCompared = (Commentary)obj;
+
             return Id == commentaryCompared.Id;
         }
     }

@@ -7,13 +7,14 @@ namespace ObligatorioDA2.Data.DomainMappers
     public class TeamMapper
     {
         private SportMapper sportConverter;
-        public TeamMapper() {
+        public TeamMapper()
+        {
             sportConverter = new SportMapper();
         }
         public Team ToTeam(TeamEntity teamEntity)
         {
 
-            Team convertedTeam = new Team(teamEntity.TeamNumber,teamEntity.Name, teamEntity.Photo, new Sport(teamEntity.SportEntityName));
+            Team convertedTeam = new Team(teamEntity.TeamNumber, teamEntity.Name, teamEntity.Photo, new Sport(teamEntity.SportEntityName));
             return convertedTeam;
         }
 

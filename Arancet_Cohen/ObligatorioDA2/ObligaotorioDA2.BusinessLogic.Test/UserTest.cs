@@ -25,7 +25,7 @@ namespace BusinessLogicTest
                 Password = "password",
                 Email = "mail@domain.com"
             };
-            toTest = new User(userId,false);
+            toTest = new User(userId, false);
 
         }
         [TestMethod]
@@ -39,7 +39,7 @@ namespace BusinessLogicTest
         public void SetNameTest()
         {
             userId.Name = "";
-            toTest = new User(userId,true);
+            toTest = new User(userId, true);
 
         }
 
@@ -54,7 +54,7 @@ namespace BusinessLogicTest
         public void SetInvalidSurnameTest()
         {
             userId.Surname = "";
-            toTest = new User(userId,true);
+            toTest = new User(userId, true);
 
         }
 
@@ -69,7 +69,7 @@ namespace BusinessLogicTest
         public void SetInvalidUserNameTest()
         {
             userId.UserName = "";
-            toTest = new User(userId,true);
+            toTest = new User(userId, true);
 
         }
 
@@ -84,7 +84,7 @@ namespace BusinessLogicTest
         public void SetInvalidPasswordTest()
         {
             userId.Password = "";
-            toTest = new User(userId,true);
+            toTest = new User(userId, true);
 
         }
 
@@ -151,7 +151,7 @@ namespace BusinessLogicTest
                 Password = "password2",
                 Email = "mail@domain.com"
             };
-            User another = new User(userId,true);
+            User another = new User(userId, true);
             Assert.IsTrue(toTest.Equals(another));
         }
 
@@ -197,40 +197,46 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void GetTeamsTest() {
+        public void GetTeamsTest()
+        {
             Assert.AreEqual(toTest.GetFavouriteTeams().Count, 0);
         }
 
         [TestMethod]
-        public void AddFavouriteTeamTest() {
-            Team aTeam = new Team(1,"partisanos fc", "aPath",new Sport("aSport"));
+        public void AddFavouriteTeamTest()
+        {
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             toTest.AddFavourite(aTeam);
             Assert.AreEqual(toTest.GetFavouriteTeams().Count, 1);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
-        public void AddAlreadyFollowingTeamTest() {
+        public void AddAlreadyFollowingTeamTest()
+        {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             toTest.AddFavourite(aTeam);
             toTest.AddFavourite(aTeam);
         }
 
         [TestMethod]
-        public void HasTeamTest() {
+        public void HasTeamTest()
+        {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             toTest.AddFavourite(aTeam);
             Assert.IsTrue(toTest.HasFavouriteTeam(aTeam));
         }
 
         [TestMethod]
-        public void DoesNotHaveTeamTest() {
+        public void DoesNotHaveTeamTest()
+        {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             Assert.IsFalse(toTest.HasFavouriteTeam(aTeam));
         }
 
         [TestMethod]
-        public void RemoveTeamTest() {
+        public void RemoveTeamTest()
+        {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             toTest.AddFavourite(aTeam);
             toTest.RemoveFavouriteTeam(aTeam);
@@ -239,7 +245,8 @@ namespace BusinessLogicTest
 
         [TestMethod]
         [ExpectedException(typeof(InvalidUserDataException))]
-        public void RemoveNotExistentTest() {
+        public void RemoveNotExistentTest()
+        {
             Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
             toTest.RemoveFavouriteTeam(aTeam);
         }

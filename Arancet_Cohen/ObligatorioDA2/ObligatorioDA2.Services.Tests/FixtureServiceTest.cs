@@ -53,7 +53,7 @@ namespace ObligatorioDA2.Services.Tests
             SetUpRepository();
             matchStorage.Clear();
             teamStorage.Clear();
-            fixtureService = new FixtureService(matchStorage, teamStorage,sportStorage);
+            fixtureService = new FixtureService(matchStorage, teamStorage, sportStorage);
         }
 
         private void SetUpRepository()
@@ -69,7 +69,7 @@ namespace ObligatorioDA2.Services.Tests
 
         private void AddTeamsToRepo()
         {
-            foreach(Team team in teamsCollection)
+            foreach (Team team in teamsCollection)
             {
                 teamStorage.Add(team);
             }

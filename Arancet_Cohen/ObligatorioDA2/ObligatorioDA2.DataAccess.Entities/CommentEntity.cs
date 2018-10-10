@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatorioDA2.Data.Entities
 {
-    public class CommentEntity 
+    public class CommentEntity
     {
         public int Id { get; set; }
         public UserEntity Maker { get; set; }

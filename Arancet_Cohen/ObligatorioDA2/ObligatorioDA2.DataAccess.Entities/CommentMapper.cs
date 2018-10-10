@@ -10,8 +10,9 @@ namespace ObligatorioDA2.Data.DomainMappers
     {
         private UserMapper usersMapper;
 
-        public CommentMapper() {
-            usersMapper =new UserMapper();
+        public CommentMapper()
+        {
+            usersMapper = new UserMapper();
         }
         public CommentEntity ToEntity(Commentary comment)
         {
@@ -27,8 +28,8 @@ namespace ObligatorioDA2.Data.DomainMappers
 
         public Commentary ToComment(CommentEntity commentEntity)
         {
-            User maker = usersMapper.ToUser(commentEntity.Maker,new List<TeamEntity>());
-            Commentary conversion= new Commentary(commentEntity.Id,commentEntity.Text,maker );
+            User maker = usersMapper.ToUser(commentEntity.Maker, new List<TeamEntity>());
+            Commentary conversion = new Commentary(commentEntity.Id, commentEntity.Text, maker);
             return conversion;
         }
     }

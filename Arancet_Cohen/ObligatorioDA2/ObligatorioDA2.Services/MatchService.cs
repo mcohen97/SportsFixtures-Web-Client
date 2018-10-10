@@ -10,7 +10,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.Services
 {
-    public class MatchService: IMatchService
+    public class MatchService : IMatchService
     {
         private IMatchRepository matchesStorage;
         private ITeamRepository teamsStorage;
@@ -33,7 +33,7 @@ namespace ObligatorioDA2.Services
         public Match AddMatch(Match aMatch)
         {
 
-            if (DateOccupied(aMatch.Id,aMatch.HomeTeam, aMatch.Date))
+            if (DateOccupied(aMatch.Id, aMatch.HomeTeam, aMatch.Date))
                 throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
             if (DateOccupied(aMatch.Id, aMatch.AwayTeam, aMatch.Date))
                 throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
@@ -41,14 +41,15 @@ namespace ObligatorioDA2.Services
             return matchesStorage.Add(aMatch);
         }
 
-        private bool DateOccupied(int matchId,Team team, DateTime date)
+        private bool DateOccupied(int matchId, Team team, DateTime date)
         {
             if (matchId > 0)
             {
                 return matchesStorage.GetAll().Any(m => (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
             }
-            else {
-                return matchesStorage.GetAll().Any(m =>(m.Id != matchId) && (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
+            else
+            {
+                return matchesStorage.GetAll().Any(m => (m.Id != matchId) && (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
             }
         }
 
@@ -87,7 +88,8 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Match> GetAllMatches(string sportName)
         {
-            if (!sportsStorage.Exists(sportName)) {
+            if (!sportsStorage.Exists(sportName))
+            {
                 throw new SportNotFoundException();
             }
             return matchesStorage.GetAll().Where(m => m.Sport.Name.Equals(sportName)).ToList();
@@ -107,9 +109,9 @@ namespace ObligatorioDA2.Services
             return matchesStorage.Exists(id);
         }
 
-        public Match AddMatch(int homeTeamId, int awayTeamId ,string sportName,DateTime date)
+        public Match AddMatch(int homeTeamId, int awayTeamId, string sportName, DateTime date)
         {
-            return AddMatch(0, homeTeamId,awayTeamId,sportName,date);
+            return AddMatch(0, homeTeamId, awayTeamId, sportName, date);
         }
 
         public Match AddMatch(int idMatch, int homeTeamId, int awayTeamId, string sportName, DateTime date)
@@ -117,7 +119,7 @@ namespace ObligatorioDA2.Services
             Team home = teamsStorage.Get(homeTeamId);
             Team away = teamsStorage.Get(awayTeamId);
             Sport played = sportsStorage.Get(sportName);
-            Match toAdd = new Match(idMatch,home, away, date, played);
+            Match toAdd = new Match(idMatch, home, away, date, played);
             return AddMatch(toAdd);
         }
 

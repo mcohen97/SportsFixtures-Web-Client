@@ -38,11 +38,11 @@ namespace ObligatorioDA2.BusinessLogic
             Password = indentification.Password;
             Email = indentification.Email;
             IsAdmin = isAdmin;
-            favourites = new List<Team>();         
+            favourites = new List<Team>();
         }
 
-        public User(UserId anIdentity,bool isAdmin ,ICollection<Team> someTeams)
-            :this(anIdentity,isAdmin)
+        public User(UserId anIdentity, bool isAdmin, ICollection<Team> someTeams)
+            : this(anIdentity, isAdmin)
         {
             favourites = someTeams;
         }
@@ -118,12 +118,14 @@ namespace ObligatorioDA2.BusinessLogic
             return favourites;
         }
 
-        public void AddFavourite(Team team) {
+        public void AddFavourite(Team team)
+        {
             if (!favourites.Contains(team))
             {
                 favourites.Add(team);
             }
-            else {
+            else
+            {
                 throw new InvalidUserDataException("User already follows team");
             }
         }
@@ -139,7 +141,8 @@ namespace ObligatorioDA2.BusinessLogic
             {
                 favourites.Remove(aTeam);
             }
-            else {
+            else
+            {
                 throw new InvalidUserDataException("User does not follow the team");
             }
         }

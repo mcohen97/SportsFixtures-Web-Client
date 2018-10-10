@@ -16,9 +16,9 @@ namespace ObligatorioDA2.Services
         private ISportRepository sportsStorage;
         private FixtureGenerator fixtureAlgorithm;
 
-        public FixtureService(IMatchRepository matchStorage, ITeamRepository teamRepository,ISportRepository sportsRepository)
+        public FixtureService(IMatchRepository matchStorage, ITeamRepository teamRepository, ISportRepository sportsRepository)
         {
-            matchService = new MatchService(matchStorage,teamRepository,sportsRepository);
+            matchService = new MatchService(matchStorage, teamRepository, sportsRepository);
             sportsStorage = sportsRepository;
             teamStorage = teamRepository;
             fixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);

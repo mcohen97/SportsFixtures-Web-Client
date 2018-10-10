@@ -27,12 +27,12 @@ namespace ObligatorioDA2.BusinessLogic
 
             ICollection<Match> generatedFixture = new List<Match>();
 
-            if(teams.Count % 2 != 0)
-                teams.Add(new Team(-1,"Free Match", "Photos/freeMatch.png", new Sport("Free Match")));
+            if (teams.Count % 2 != 0)
+                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", new Sport("Free Match")));
 
             int teamsCount = teams.Count;
-            int matchesCount = teamsCount * (teamsCount -1) / 2; //Combinations(teams, 2);
-            int matchesPerRound =  teamsCount / 2;
+            int matchesCount = teamsCount * (teamsCount - 1) / 2; //Combinations(teams, 2);
+            int matchesPerRound = teamsCount / 2;
 
             Team[,] actualRound = InitializeRound(teams);
             int matchesAdded = 0;
@@ -40,7 +40,8 @@ namespace ObligatorioDA2.BusinessLogic
             DateTime roundDate = initialDate;
             DateTime secondDate = NextDate(roundDate, actualRoundLength);
 
-            while(matchesAdded < matchesCount){
+            while (matchesAdded < matchesCount)
+            {
                 AddMatches(generatedFixture, actualRound, roundDate, secondDate);
                 roundDate = NextDate(roundDate, actualRoundLength);
                 roundDate = NextDate(roundDate, actualRoundLength);
@@ -48,10 +49,10 @@ namespace ObligatorioDA2.BusinessLogic
                 secondDate = NextDate(roundDate, actualRoundLength);
 
                 actualRound = RotateTeams(actualRound);
-                
+
                 matchesAdded += matchesPerRound;
-            
-                if(actualRoundLength == roundLength)
+
+                if (actualRoundLength == roundLength)
                     actualRoundLength = 0;
                 else
                     actualRoundLength++;
@@ -74,8 +75,8 @@ namespace ObligatorioDA2.BusinessLogic
                 Match current = matches.Current;
                 DateTime nextDate = NextDate(current.Date, actualRoundLength);
                 Match newMatch = new Match(current.AwayTeam, current.HomeTeam, nextDate, current.Sport);
-                
-                if(actualRoundLength == roundLength)
+
+                if (actualRoundLength == roundLength)
                     actualRoundLength = 0;
                 else
                     actualRoundLength++;
@@ -86,9 +87,10 @@ namespace ObligatorioDA2.BusinessLogic
         {
             IEnumerator<Match> matches = generatedFixture.GetEnumerator();
             ICollection<Match> matchesToRemove = new List<Match>();
-            while(matches.MoveNext()){
+            while (matches.MoveNext())
+            {
                 Match actual = matches.Current;
-                if(actual.HomeTeam.Id == -1 || actual.AwayTeam.Id == -1)
+                if (actual.HomeTeam.Id == -1 || actual.AwayTeam.Id == -1)
                     matchesToRemove.Add(actual);
             }
 
@@ -101,7 +103,7 @@ namespace ObligatorioDA2.BusinessLogic
         private DateTime NextDate(DateTime roundDate, int actualRoundLength)
         {
             int change = 1;
-            if(actualRoundLength == roundLength)
+            if (actualRoundLength == roundLength)
                 change = daysBetweenRounds;
             DateTime nextDate = roundDate.AddDays(change);
             return nextDate;
@@ -110,24 +112,24 @@ namespace ObligatorioDA2.BusinessLogic
         private Team[,] RotateTeams(Team[,] actualRound)
         {
             Team[,] newRound = new Team[actualRound.GetLength(0), actualRound.GetLength(1)];
-            
+
             //Fixed team
-            newRound[0,0] = actualRound[0,0];
-           
+            newRound[0, 0] = actualRound[0, 0];
+
             //Teams changing rows
             Team goesDown = actualRound[0, actualRound.GetLength(1) - 1];
-            Team goesUp = actualRound[1,0];
+            Team goesUp = actualRound[1, 0];
 
             //Move home teams
             for (int i = 1; i < newRound.GetLength(1) - 1; i++)
             {
-                newRound[0,i+1] = actualRound[0,i];
+                newRound[0, i + 1] = actualRound[0, i];
             }
 
             //Move away teams
             for (int i = 1; i < newRound.GetLength(1); i++)
             {
-                newRound[1, i-1] = actualRound[1, i];
+                newRound[1, i - 1] = actualRound[1, i];
             }
 
             if (actualRound.GetLength(1) == 1)
@@ -146,28 +148,31 @@ namespace ObligatorioDA2.BusinessLogic
 
         private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime firstDate, DateTime secondDate)
         {
-            for(int i = 0; i < actualRound.GetLength(1); i++){
+            for (int i = 0; i < actualRound.GetLength(1); i++)
+            {
                 Sport sport = actualRound[0, i].Sport;
-                Match firstMatch = new Match(actualRound[0,i], actualRound[1,i], firstDate, sport);
-                Match secondMatch = new Match(actualRound[1,i], actualRound[0,i], secondDate, sport);
+                Match firstMatch = new Match(actualRound[0, i], actualRound[1, i], firstDate, sport);
+                Match secondMatch = new Match(actualRound[1, i], actualRound[0, i], secondDate, sport);
 
                 fixture.Add(firstMatch);
                 fixture.Add(secondMatch);
             }
         }
 
-        private Team[,] InitializeRound(ICollection<Team> teams){
+        private Team[,] InitializeRound(ICollection<Team> teams)
+        {
             IEnumerator<Team> enumerator = teams.GetEnumerator();
-            Team[,] actualRound = new Team[2, teams.Count/2];
-            for(int i = 0; i < 2; i++){
-                for(int j = 0; j < actualRound.GetLength(1); j++)
-                    if(enumerator.MoveNext())
-                        actualRound[i,j] = enumerator.Current;
+            Team[,] actualRound = new Team[2, teams.Count / 2];
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < actualRound.GetLength(1); j++)
+                    if (enumerator.MoveNext())
+                        actualRound[i, j] = enumerator.Current;
             }
             return actualRound;
         }
 
-         private void SetInitialDate(DateTime value)
+        private void SetInitialDate(DateTime value)
         {
             initialDate = value;
         }

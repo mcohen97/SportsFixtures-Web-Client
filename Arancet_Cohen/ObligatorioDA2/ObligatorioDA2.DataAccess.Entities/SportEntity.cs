@@ -6,7 +6,8 @@ namespace ObligatorioDA2.Data.Entities
 {
     public class SportEntity
     {
-        public SportEntity() {
+        public SportEntity()
+        {
         }
 
         public string Name { get; set; }

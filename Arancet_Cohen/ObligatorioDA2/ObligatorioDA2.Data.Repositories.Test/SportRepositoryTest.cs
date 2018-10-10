@@ -38,8 +38,8 @@ namespace DataRepositoriesTest
         private void CreateSports()
         {
             sportA = new Mock<Sport>("SportA");
-            sportB = new Mock<Sport>( "SportB");
-         }
+            sportB = new Mock<Sport>("SportB");
+        }
 
         private DatabaseConnection CreateContext()
         {
@@ -80,7 +80,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void IsEmptyNoAccessTest() {
+        public void IsEmptyNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             sportStorage.IsEmpty();
         }
@@ -102,7 +103,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void AddSportNoAccessTest() {
+        public void AddSportNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             sportStorage.Add(sportA.Object);
         }
@@ -125,7 +127,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void GetSportNoAccessTest() {
+        public void GetSportNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             sportStorage.Get("DreamSport");
         }
@@ -167,7 +170,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         [ExpectedException(typeof(SportNotFoundException))]
         public void DeleteNotExistentTest()
-        { 
+        {
             sportStorage.Add(sportA.Object);
             sportStorage.Delete(sportB.Object.Name);
         }
@@ -200,7 +203,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void ModifyNoAccessTest() {
+        public void ModifyNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             sportStorage.Modify(sportA.Object);
         }
@@ -216,14 +220,15 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void ClearNoAccessTest() {
+        public void ClearNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             sportStorage.Clear();
         }
 
         [TestMethod]
         public void GetAllTest()
-        {     
+        {
             sportStorage.Add(sportA.Object);
             sportStorage.Add(sportB.Object);
             ICollection<Sport> sports = sportStorage.GetAll();
@@ -232,7 +237,8 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
-        public void GetAllNoAccessTest() {
+        public void GetAllNoAccessTest()
+        {
             CreateDisconnectedDatabase();
             sportStorage.GetAll();
         }

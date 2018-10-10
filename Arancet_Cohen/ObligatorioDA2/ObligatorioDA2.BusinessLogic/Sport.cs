@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 
-[assembly:InternalsVisibleTo("BusinessLogicTest")]
-[assembly:InternalsVisibleTo("DataRepositoriesTest")]
+[assembly: InternalsVisibleTo("BusinessLogicTest")]
+[assembly: InternalsVisibleTo("DataRepositoriesTest")]
 
 namespace ObligatorioDA2.BusinessLogic
 {
@@ -12,7 +12,7 @@ namespace ObligatorioDA2.BusinessLogic
     {
         private string name;
 
-        public string Name { get{return name;} set{SetName(value);} }
+        public string Name { get { return name; } set { SetName(value); } }
 
         private void SetName(string value)
         {

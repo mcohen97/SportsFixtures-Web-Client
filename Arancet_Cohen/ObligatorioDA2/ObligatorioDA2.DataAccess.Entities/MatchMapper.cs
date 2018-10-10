@@ -19,9 +19,9 @@ namespace ObligatorioDA2.Data.DomainMappers
             commentConverter = new CommentMapper();
             sportConverter = new SportMapper();
         }
-        public MatchEntity ToEntity( Match aMatch)
+        public MatchEntity ToEntity(Match aMatch)
         {
-            SportEntity sportEntity =sportConverter.ToEntity(aMatch.Sport);
+            SportEntity sportEntity = sportConverter.ToEntity(aMatch.Sport);
             MatchEntity conversion = new MatchEntity()
             {
                 Id = aMatch.Id,
@@ -30,7 +30,7 @@ namespace ObligatorioDA2.Data.DomainMappers
                 Date = aMatch.Date,
                 Commentaries = TransformCommentaries(aMatch.GetAllCommentaries()),
                 SportEntity = sportEntity
-               
+
             };
             return conversion;
         }
@@ -48,7 +48,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             ICollection<Commentary> comments = entity.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
             DateTime date = entity.Date;
             Sport sport = sportConverter.ToSport(entity.SportEntity);
-            Match created = new Match(entity.Id, home, away, date,sport,comments);
+            Match created = new Match(entity.Id, home, away, date, sport, comments);
             return created;
         }
     }

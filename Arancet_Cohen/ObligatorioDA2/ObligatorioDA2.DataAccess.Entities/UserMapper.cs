@@ -12,11 +12,12 @@ namespace ObligatorioDA2.Data.DomainMappers
         private UserFactory factory;
         private TeamMapper teamConverter;
 
-        public UserMapper() {
+        public UserMapper()
+        {
             factory = new UserFactory();
             teamConverter = new TeamMapper();
         }
-       
+
         public UserEntity ToEntity(User toConvert)
         {
             UserEntity converted = new UserEntity
@@ -31,9 +32,10 @@ namespace ObligatorioDA2.Data.DomainMappers
             return converted;
         }
 
-        public ICollection<UserTeam> GetUserTeams(User aUser) {
+        public ICollection<UserTeam> GetUserTeams(User aUser)
+        {
             UserEntity userEntity = ToEntity(aUser);
-            ICollection <UserTeam> relationships =aUser.GetFavouriteTeams()
+            ICollection<UserTeam> relationships = aUser.GetFavouriteTeams()
                 .Select(t => BuildRelationship(userEntity, t))
                 .ToList();
             return relationships;
@@ -53,7 +55,8 @@ namespace ObligatorioDA2.Data.DomainMappers
             return relationship;
         }
 
-        public User ToUser(UserEntity toConvert, ICollection<TeamEntity> teamEntities) {
+        public User ToUser(UserEntity toConvert, ICollection<TeamEntity> teamEntities)
+        {
             UserId identity = new UserId()
             {
                 Name = toConvert.Name,
@@ -64,7 +67,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             };
             ICollection<Team> teams = teamEntities.Select(t => teamConverter.ToTeam(t)).ToList();
             User converted;
-            converted = toConvert.IsAdmin? factory.CreateAdmin(identity, teams) : factory.CreateFollower(identity, teams);  
+            converted = toConvert.IsAdmin ? factory.CreateAdmin(identity, teams) : factory.CreateFollower(identity, teams);
             return converted;
         }
     }

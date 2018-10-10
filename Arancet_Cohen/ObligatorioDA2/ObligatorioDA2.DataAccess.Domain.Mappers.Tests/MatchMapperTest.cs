@@ -15,32 +15,35 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         private MatchEntity entity;
         private Mock<BusinessLogic.Match> match;
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
             testMapper = new MatchMapper();
-            TeamEntity homeTest = new TeamEntity { TeamNumber =3,SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
-            TeamEntity awayTest = new TeamEntity { TeamNumber =4,SportEntityName= "Soccer", Name = "Torque", Photo = "aPath" };
+            TeamEntity homeTest = new TeamEntity { TeamNumber = 3, SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
+            TeamEntity awayTest = new TeamEntity { TeamNumber = 4, SportEntityName = "Soccer", Name = "Torque", Photo = "aPath" };
             entity = new MatchEntity()
             {
                 Id = 3,
                 HomeTeam = homeTest,
                 AwayTeam = awayTest,
                 Date = DateTime.Now,
-                SportEntity = new SportEntity() {Name="Soccer"},
+                SportEntity = new SportEntity() { Name = "Soccer" },
                 Commentaries = new List<CommentEntity>()
             };
-            Team homeMock = new Team(3, "Nacional", "aPath",new Sport("Soccer"));
-            Team awayMock = new Team(4, "Torque", "aPath",new Sport("Soccer"));
-            Sport sport = new Sport( "Soccer");
-            match = new Mock<BusinessLogic.Match>(homeMock,awayMock,DateTime.Now,sport);
+            Team homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer"));
+            Team awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer"));
+            Sport sport = new Sport("Soccer");
+            match = new Mock<BusinessLogic.Match>(homeMock, awayMock, DateTime.Now, sport);
         }
 
         [TestMethod]
-        public void MatchToEntityHomeTest() {
-            MatchEntity converted =testMapper.ToEntity(match.Object);
+        public void MatchToEntityHomeTest()
+        {
+            MatchEntity converted = testMapper.ToEntity(match.Object);
             Assert.AreEqual(converted.HomeTeam.Name, entity.HomeTeam.Name);
         }
         [TestMethod]
-        public void MatchToEntityAwayTest() {
+        public void MatchToEntityAwayTest()
+        {
             MatchEntity converted = testMapper.ToEntity(match.Object);
             Assert.AreEqual(converted.AwayTeam.Name, entity.AwayTeam.Name);
         }
@@ -54,16 +57,23 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         [TestMethod]
         public void MatchToEntityCommentsCountTest()
         {
-            UserId identity = new UserId { Name = "aName", Surname = "aSurname",
-                UserName = "aUsername", Password = "aPassword",Email= "anEmail@aDomain.com" };
-            Mock<User> user = new Mock<User>(identity,false);
+            UserId identity = new UserId
+            {
+                Name = "aName",
+                Surname = "aSurname",
+                UserName = "aUsername",
+                Password = "aPassword",
+                Email = "anEmail@aDomain.com"
+            };
+            Mock<User> user = new Mock<User>(identity, false);
             match.Object.AddCommentary(new Commentary("test comment", user.Object));
             MatchEntity converted = testMapper.ToEntity(match.Object);
-            Assert.AreEqual(converted.Commentaries.Count, 1);   
+            Assert.AreEqual(converted.Commentaries.Count, 1);
         }
 
         [TestMethod]
-        public void EntityToMatchHomeTest() {
+        public void EntityToMatchHomeTest()
+        {
             Match conversion = testMapper.ToMatch(entity);
             Assert.AreEqual(match.Object.HomeTeam.Id, conversion.HomeTeam.Id);
         }
@@ -79,7 +89,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void EntityToMatchDateTest()
         {
             Match conversion = testMapper.ToMatch(entity);
-            Assert.AreEqual(match.Object.Date.ToString(),conversion.Date.ToString());
+            Assert.AreEqual(match.Object.Date.ToString(), conversion.Date.ToString());
         }
 
         [TestMethod]
@@ -99,7 +109,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 }
             });
             Match conversion = testMapper.ToMatch(entity);
-            Assert.AreEqual(conversion.GetAllCommentaries().Count, 1);       
+            Assert.AreEqual(conversion.GetAllCommentaries().Count, 1);
         }
     }
 }

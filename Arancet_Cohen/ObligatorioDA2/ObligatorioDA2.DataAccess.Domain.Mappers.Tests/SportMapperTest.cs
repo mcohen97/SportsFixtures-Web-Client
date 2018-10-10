@@ -13,7 +13,8 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         private Mock<Sport> sport;
         private SportEntity entity;
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
             testMapper = new SportMapper();
             sport = new Mock<Sport>("Soccer");
             entity = new SportEntity()
@@ -21,17 +22,19 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 Name = "Soccer",
             };
         }
-    
+
 
         [TestMethod]
-        public void SportToEntityNameTest() {
+        public void SportToEntityNameTest()
+        {
             SportEntity converted = testMapper.ToEntity(sport.Object);
             Assert.AreEqual(converted.Name, entity.Name);
-         }
-     
+        }
+
 
         [TestMethod]
-        public void EntityToSportNameTest() {
+        public void EntityToSportNameTest()
+        {
             Sport converted = testMapper.ToSport(entity);
             Assert.AreEqual(converted.Name, sport.Object.Name);
         }

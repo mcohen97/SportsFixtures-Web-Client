@@ -9,12 +9,13 @@ using System.Text;
 
 namespace ObligatorioDA2.Services
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private IUserRepository usersStorage;
         private ITeamRepository teamsStorage;
 
-        public UserService(IUserRepository usersRepository, ITeamRepository teamRepository) {
+        public UserService(IUserRepository usersRepository, ITeamRepository teamRepository)
+        {
             usersStorage = usersRepository;
             teamsStorage = teamRepository;
         }
@@ -47,15 +48,18 @@ namespace ObligatorioDA2.Services
 
         public void FollowTeam(string username, Team toFollow)
         {
-            try {
+            try
+            {
                 TryFollowTeam(username, toFollow);
             }
-            catch (InvalidUserDataException) {
+            catch (InvalidUserDataException)
+            {
                 throw new TeamAlreadyFollowedException();
             }
         }
 
-        private void TryFollowTeam(string username, Team toFollow) {
+        private void TryFollowTeam(string username, Team toFollow)
+        {
             User follower = usersStorage.Get(username);
             follower.AddFavourite(toFollow);
             usersStorage.Modify(follower);
@@ -73,7 +77,8 @@ namespace ObligatorioDA2.Services
             {
                 TryUnFollow(username, fake);
             }
-            catch (InvalidUserDataException) {
+            catch (InvalidUserDataException)
+            {
                 throw new TeamNotFollowedException();
             }
         }

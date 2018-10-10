@@ -42,13 +42,15 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void NotEqualsNullTest() {
+        public void NotEqualsNullTest()
+        {
             Sport aSport = new Sport("SportA");
             Assert.IsFalse(aSport.Equals(null));
         }
 
         [TestMethod]
-        public void NotEqualsDifferentTypeTest() {
+        public void NotEqualsDifferentTypeTest()
+        {
             Sport aSport = new Sport("SportA");
             Assert.IsFalse(aSport.Equals("different type"));
         }
@@ -59,7 +61,7 @@ namespace BusinessLogicTest
             Sport aSport = new Sport("SportA");
             string newName = "NewName";
             aSport.Name = newName;
-            Assert.AreEqual(newName,aSport.Name);
+            Assert.AreEqual(newName, aSport.Name);
         }
 
         [TestMethod]
@@ -78,6 +80,6 @@ namespace BusinessLogicTest
             sport.Name = null;
         }
 
-      
+
     }
 }

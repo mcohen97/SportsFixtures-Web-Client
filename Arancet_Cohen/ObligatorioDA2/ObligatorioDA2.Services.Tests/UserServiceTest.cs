@@ -22,10 +22,11 @@ namespace ObligatorioDA2.Services.Tests
         private Team toFollow;
 
         [TestInitialize]
-        public void SetUp() {
+        public void SetUp()
+        {
             users = new Mock<IUserRepository>();
             teams = new Mock<ITeamRepository>();
-            service = new UserService(users.Object,teams.Object);
+            service = new UserService(users.Object, teams.Object);
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
@@ -63,7 +64,8 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
-        public void GetNotExistsTest() {
+        public void GetNotExistsTest()
+        {
             User retrieved = service.GetUser("JohnLennon");
         }
 
@@ -76,7 +78,8 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(UserAlreadyExistsException))]
-        public void AddAlreadyExistentUserTest() {
+        public void AddAlreadyExistentUserTest()
+        {
             users.Setup(r => r.Add(testUser)).Throws(new UserAlreadyExistsException());
             service.AddUser(testUser);
         }
@@ -90,13 +93,15 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
-        public void ModifyNotExistentTest() {
+        public void ModifyNotExistentTest()
+        {
             users.Setup(r => r.Modify(testUser)).Throws(new UserNotFoundException());
             service.ModifyUser(testUser);
         }
 
         [TestMethod]
-        public void DeleteUserTest() {
+        public void DeleteUserTest()
+        {
             service.DeleteUser(testUser.UserName);
             users.Verify(r => r.Delete(testUser.UserName));
         }
@@ -110,7 +115,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void FollowTeamtest() {
+        public void FollowTeamtest()
+        {
             service.FollowTeam(testUser.UserName, toFollow);
 
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
@@ -119,14 +125,16 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(TeamAlreadyFollowedException))]
-        public void FollowAlreadyFollowingTeam() {
+        public void FollowAlreadyFollowingTeam()
+        {
             service.FollowTeam(testUser.UserName, toFollow);
             service.FollowTeam(testUser.UserName, toFollow);
         }
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
-        public void FollowTeamNotExistentUserTest() {
+        public void FollowTeamNotExistentUserTest()
+        {
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
 
             service.FollowTeam(testUser.UserName, toFollow);
@@ -134,14 +142,16 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
-        public void FollowNotExistentTeamTest() {
+        public void FollowNotExistentTeamTest()
+        {
             users.Setup(r => r.Modify(testUser)).Throws(new TeamNotFoundException());
 
             service.FollowTeam(testUser.UserName, toFollow);
         }
 
         [TestMethod]
-        public void FollowByIdTest() {
+        public void FollowByIdTest()
+        {
             service.FollowTeam(testUser.UserName, toFollow.Id);
 
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
@@ -169,7 +179,8 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void GetUserTeamsTest() {
+        public void GetUserTeamsTest()
+        {
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
@@ -181,13 +192,15 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
-        public void GetNotExistentUserTeams() {
+        public void GetNotExistentUserTeams()
+        {
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
             ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
         }
 
         [TestMethod]
-        public void UnfollowTeamTest() {
+        public void UnfollowTeamTest()
+        {
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
@@ -201,7 +214,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(TeamNotFollowedException))]
-        public void UnfollowNotFollowedTeamTest() 
+        public void UnfollowNotFollowedTeamTest()
         {
             Team fake = GetFakeTeam();
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
@@ -211,12 +224,13 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(UserNotFoundException))]
-        public void UnfollowNotFoundUserTest() {
+        public void UnfollowNotFoundUserTest()
+        {
             Team fake = GetFakeTeam();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
             testUser.AddFavourite(fake);
 
-            service.UnFollowTeam(testUser.UserName,fake);
+            service.UnFollowTeam(testUser.UserName, fake);
 
 
         }
@@ -259,13 +273,14 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void GetAllUsersTest() {
+        public void GetAllUsersTest()
+        {
             ICollection<User> fakeUsers = new List<User>() { testUser, testUser, testUser };
             users.Setup(r => r.GetAll()).Returns(fakeUsers);
 
             ICollection<User> stored = service.GetAllUsers();
 
-            Assert.AreEqual(stored.Count,fakeUsers.Count);
+            Assert.AreEqual(stored.Count, fakeUsers.Count);
         }
 
     }
