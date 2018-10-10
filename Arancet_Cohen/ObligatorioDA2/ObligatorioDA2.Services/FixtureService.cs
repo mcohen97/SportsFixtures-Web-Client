@@ -31,6 +31,26 @@ namespace ObligatorioDA2.Services
             fixtureAlgorithm = algorithm ?? throw new ArgumentNullException();
         }
 
+        private void RollBack(ICollection<Match> added)
+        {
+            foreach (Match match in added)
+            {
+                matchService.DeleteMatch(match.Id);
+            }
+        }
+
+        public ICollection<Match> AddFixture(ICollection<string> teamsNames, string sportName)
+        {
+            ICollection<Team> teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
+            return AddFixture(teamsCollection);
+        }
+
+        public ICollection<Match> AddFixture(Sport sport)
+        {
+            ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
+            return AddFixture(teamsCollection);
+        }
+
         public ICollection<Match> AddFixture(ICollection<Team> teamsCollection)
         {
             ICollection<Match> added = new List<Match>();
@@ -49,19 +69,10 @@ namespace ObligatorioDA2.Services
                 RollBack(added);
                 throw new WrongFixtureException(e.Message);
             }
-            
+
             return added;
-            
-        }
 
-        private void RollBack(ICollection<Match> added)
-        {
-            foreach (Match match in added)
-            {
-                matchService.DeleteMatch(match.Id);
-            }
         }
-
         private ICollection<Match> AddMatches(ref ICollection<Match> added, ICollection<Match> generated)
         {
             foreach (Match match in generated)
@@ -70,18 +81,6 @@ namespace ObligatorioDA2.Services
                 added.Add(matchAdded);
             }
             return added;
-        }
-
-        public ICollection<Match> AddFixture(ICollection<string> teamsNames, string sportName)
-        {
-            ICollection<Team> teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
-            return AddFixture(teamsCollection);
-        }
-
-        public ICollection<Match> AddFixture(Sport sport)
-        {
-            ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
-            return AddFixture(teamsCollection);
         }
     }
 }
