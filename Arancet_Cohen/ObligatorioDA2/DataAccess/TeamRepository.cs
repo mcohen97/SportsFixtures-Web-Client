@@ -6,7 +6,7 @@ using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.BusinessLogic;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.Data.Entities;
-using ObligatorioDA2.Data.DomainMappers.Mappers;
+using ObligatorioDA2.Data.DomainMappers;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Data.Common;
 

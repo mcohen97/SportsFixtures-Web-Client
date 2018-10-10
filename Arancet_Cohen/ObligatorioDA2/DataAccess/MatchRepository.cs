@@ -2,7 +2,7 @@
 using ObligatorioDA2.Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using ObligatorioDA2.Data.DomainMappers.Mappers;
+using ObligatorioDA2.Data.DomainMappers;
 using ObligatorioDA2.Data.Entities;
 using System.Collections.Generic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;

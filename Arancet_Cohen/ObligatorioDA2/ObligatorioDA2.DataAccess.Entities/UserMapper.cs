@@ -5,7 +5,7 @@ using ObligatorioDA2.Data.Entities;
 using ObligatorioDA2.BusinessLogic;
 using System.Linq;
 
-namespace ObligatorioDA2.Data.DomainMappers.Mappers
+namespace ObligatorioDA2.Data.DomainMappers
 {
     public class UserMapper
     {
