@@ -346,6 +346,7 @@ namespace ObligatorioDA2.Data.Repositories
                 .First(t => t.TeamNumber == id);
             context.Teams.Remove(toDelete);
             DeleteMatches(toDelete);
+            DeleteUserTeams(toDelete);
             context.SaveChanges();
         }
 
@@ -362,6 +363,13 @@ namespace ObligatorioDA2.Data.Repositories
             }
             return fetched;
         }
+
+        private void DeleteUserTeams(TeamEntity toDelete)
+        {
+            IQueryable<UserTeam> userTeams = context.UserTeams.Where(t => t.Team.TeamNumber==toDelete.TeamNumber);
+            context.UserTeams.RemoveRange(userTeams);
+        }
+
 
         private Team TryGet(int id)
         {
