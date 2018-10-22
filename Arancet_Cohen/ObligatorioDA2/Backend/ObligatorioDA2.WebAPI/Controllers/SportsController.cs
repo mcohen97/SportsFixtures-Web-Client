@@ -223,6 +223,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
+        [HttpPost("fixtures")]
+        public IActionResult GetFixtureAlgorithms()
+        {
+            return Ok(new List<string>());
+        }
+
         [HttpPost("{sportName}/OneMatchFixture")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
