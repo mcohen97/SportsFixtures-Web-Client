@@ -6,6 +6,7 @@ using System.Linq;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.BusinessLogic.Exceptions;
+using System.Reflection;
 
 namespace ObligatorioDA2.Services
 {
@@ -81,6 +82,24 @@ namespace ObligatorioDA2.Services
                 added.Add(matchAdded);
             }
             return added;
+        }
+
+        public ICollection<Type> GetAlgorithms(string dllPath)
+        {
+            Assembly myAssembly = Assembly.LoadFile(dllPath);
+
+            ICollection<Type> algorithms = new List<Type>();
+            foreach (Type aType in myAssembly.GetTypes())
+            {
+                //inefficient, but the only way it worked.
+                ICollection<string> interfaces = aType.GetInterfaces().Select(i => i.ToString()).ToList();
+                bool isElegible = interfaces.Contains(typeof(IFixtureGenerator).ToString());
+
+                if (isElegible) {
+                    algorithms.Add(aType);
+                }
+            }
+            return algorithms;
         }
     }
 }
