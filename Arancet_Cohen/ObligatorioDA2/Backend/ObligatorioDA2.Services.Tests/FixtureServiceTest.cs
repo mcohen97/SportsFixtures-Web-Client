@@ -155,9 +155,10 @@ namespace ObligatorioDA2.Services.Tests
             ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
         }
 
-
-
-
-
+        [TestMethod]
+        public void GetAvailableStrategiesTest() {
+            ICollection<Type> algorithms = fixtureService.GetAlgorithms("ObligatorioDA2.Services");
+            Assert.AreEqual(0, algorithms.Count);
+        }
     }
 }
