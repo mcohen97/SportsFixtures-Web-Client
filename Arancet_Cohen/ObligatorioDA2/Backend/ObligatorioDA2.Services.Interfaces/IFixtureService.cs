@@ -11,5 +11,6 @@ namespace ObligatorioDA2.Services.Interfaces
         ICollection<Match> AddFixture(ICollection<Team> teamsCollection);
         ICollection<Match> AddFixture(ICollection<string> teamsNames, string sportName);
         ICollection<Match> AddFixture(Sport sport);
+        ICollection<Type> GetAlgorithms(string dllPath);
     }
 }
