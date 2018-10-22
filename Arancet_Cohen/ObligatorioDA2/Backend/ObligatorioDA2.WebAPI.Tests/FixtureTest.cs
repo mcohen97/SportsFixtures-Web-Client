@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Match = ObligatorioDA2.BusinessLogic.Match;
+using Microsoft.Extensions.Options;
+using System.IO;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -95,8 +97,11 @@ namespace ObligatorioDA2.WebAPI.Tests
             teamsRepo.Setup(t => t.GetAll()).Returns(teamsCollection);
 
             fixture = new FixtureService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
-            
-            controller = new SportsController(sportsRepo.Object, teamsRepo.Object, fixture);
+
+            Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
+            FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.BusinessLogic.dll");
+            mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
+            controller = new SportsController(sportsRepo.Object, teamsRepo.Object, fixture,mockSettings.Object);
         }
 
         [TestMethod]
@@ -116,7 +121,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
 
             //Assert
-            //Mock.Get(fixtureService).Verify(s => s.AddFixture(testSport), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);

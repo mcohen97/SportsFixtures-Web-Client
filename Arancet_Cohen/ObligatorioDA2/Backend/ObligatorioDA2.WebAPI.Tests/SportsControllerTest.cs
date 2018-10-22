@@ -9,6 +9,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
+using Microsoft.Extensions.Options;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -38,8 +39,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport("Basketball"), new Sport("Tennis") });
 
             IFixtureService dummyService = new Mock<IFixtureService>().Object;
+            Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
 
-            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService);
+            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService, mockSettings.Object);
         }
 
         [TestMethod]
