@@ -10,6 +10,7 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -20,13 +21,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ISportRepository sports;
         private ITeamRepository teams;
         private IFixtureService fixture;
+        private IOptions<FixtureStrategies> fixtureSettings;
 
 
-        public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, IFixtureService fixtureService)
+        public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, 
+            IFixtureService fixtureService, IOptions<FixtureStrategies> algorithmsSettings)
         {
             sports = sportRepo;
             fixture = fixtureService;
             teams = teamRepo;
+            fixtureSettings = algorithmsSettings;
         }
 
         [HttpPost]
@@ -90,6 +94,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             ICollection<Sport> allOfThem = sports.GetAll();
             IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name });
             return Ok(output);
+        }
+
+        [HttpPost("fixtures")]
+        public IActionResult GetFixtureAlgorithms()
+        {
+            string algorithmsPath = fixtureSettings.Value.DllPath;
+            ICollection<Type> algorithms = fixture.GetAlgorithms(algorithmsPath);
+            ICollection<string> toReturn = algorithms.Select(t => t.ToString()).ToList();
+            return Ok(toReturn);
         }
 
         [HttpGet("{name}", Name = "GetSportById")]
@@ -163,7 +176,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-
         private IActionResult ModifyOrAdd(string name, SportModelIn modelIn)
         {
             IActionResult result;
@@ -223,12 +235,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
         }
 
-        [HttpPost("fixtures")]
-        public IActionResult GetFixtureAlgorithms()
-        {
-            return Ok(new List<string>());
-        }
-
         [HttpPost("{sportName}/OneMatchFixture")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
@@ -241,7 +247,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 {
                     initialDate = new DateTime(input.Year, input.Month, input.Day);
                     fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
-                    result = CreateValid(input, sportName, fixture);
+                    result = CreateValid(input, sportName);
                 }
                 else
                 {
@@ -284,7 +290,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 {
                     initialDate = new DateTime(input.Year, input.Month, input.Day);
                     fixture.FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
-                    result = CreateValid(input, sportName, fixture);
+                    result = CreateValid(input, sportName);
                 }
                 else
                 {
@@ -300,11 +306,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult CreateValid(FixtureModelIn input, string sportName, IFixtureService fixture)
+        private IActionResult CreateValid(FixtureModelIn input, string sportName)
         {
             IActionResult result;
             try {
-                result = TryCreate(input, sportName,fixture);
+                result = TryCreate(input, sportName);
             }
             catch (WrongFixtureException e)
             {
@@ -324,7 +330,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult TryCreate(FixtureModelIn input, string sportName, IFixtureService fixture)
+        private IActionResult TryCreate(FixtureModelIn input, string sportName)
         {
             IActionResult result;
             Sport sport = sports.Get(sportName);
