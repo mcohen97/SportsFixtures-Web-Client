@@ -282,22 +282,35 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateHomeAwayFixtureBadModelTest()
         {
-            //Arrange
+            //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
             };
             controller.ModelState.AddModelError("", "Error");
 
-            //Act
+            //Act.
             IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
-            //Assert
+            //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
         }
 
+        [TestMethod]
+        public void GetAllFixtureAlgorithmsTest() {
+
+            //Act.
+            IActionResult result = controller.GetFixtureAlgorithms();
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<string> strategies = okResult.Value as ICollection<string>;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(strategies);
+        }
     }
 }
