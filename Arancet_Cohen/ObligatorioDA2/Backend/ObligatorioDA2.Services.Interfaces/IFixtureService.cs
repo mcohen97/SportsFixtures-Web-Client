@@ -7,7 +7,7 @@ namespace ObligatorioDA2.Services.Interfaces
 {
     public interface IFixtureService
     {
-        FixtureGenerator FixtureAlgorithm { get; set; }
+        IFixtureGenerator FixtureAlgorithm { get; set; }
         ICollection<Match> AddFixture(ICollection<Team> teamsCollection);
         ICollection<Match> AddFixture(ICollection<string> teamsNames, string sportName);
         ICollection<Match> AddFixture(Sport sport);

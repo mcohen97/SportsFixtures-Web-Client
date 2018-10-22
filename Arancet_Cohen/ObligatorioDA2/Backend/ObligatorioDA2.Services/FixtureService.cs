@@ -14,7 +14,7 @@ namespace ObligatorioDA2.Services
         private MatchService matchService;
         private ITeamRepository teamStorage;
         private ISportRepository sportsStorage;
-        private FixtureGenerator fixtureAlgorithm;
+        private IFixtureGenerator fixtureAlgorithm;
 
         public FixtureService(IMatchRepository matchStorage, ITeamRepository teamRepository, ISportRepository sportsRepository)
         {
@@ -24,9 +24,9 @@ namespace ObligatorioDA2.Services
             fixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
         }
 
-        public FixtureGenerator FixtureAlgorithm { get => fixtureAlgorithm; set => SetFixtureAlgorithm(value); }
+        public IFixtureGenerator FixtureAlgorithm { get => fixtureAlgorithm; set => SetFixtureAlgorithm(value); }
 
-        private void SetFixtureAlgorithm(FixtureGenerator algorithm)
+        private void SetFixtureAlgorithm(IFixtureGenerator algorithm)
         {
             fixtureAlgorithm = algorithm ?? throw new ArgumentNullException();
         }

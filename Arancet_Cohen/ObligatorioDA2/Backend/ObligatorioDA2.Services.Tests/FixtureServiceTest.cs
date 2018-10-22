@@ -11,14 +11,15 @@ using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using System.IO;
 
 namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
     public class FixtureServiceTest
     {
-        private FixtureGenerator oneMatchGenerator;
-        private FixtureGenerator twoMatchsGenerator;
+        private IFixtureGenerator oneMatchGenerator;
+        private IFixtureGenerator twoMatchsGenerator;
 
         private Sport sport;
         private Team teamA;

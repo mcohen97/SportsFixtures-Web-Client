@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ObligatorioDA2.BusinessLogic
 {
-    public class OneMatchFixture : FixtureGenerator
+    public class OneMatchFixture : IFixtureGenerator
     {
         private DateTime initialDate;
         private int roundLength;
@@ -18,11 +18,11 @@ namespace ObligatorioDA2.BusinessLogic
             this.daysBetweenRounds = daysBetweenRounds;
         }
 
-        public override DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
-        public override int RoundLength { get => roundLength; set => SetRoundLength(value); }
-        public override int DaysBetweenRounds { get => daysBetweenRounds; set => SetDaysBetweenRounds(value); }
+        public DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
+        public int RoundLength { get => roundLength; set => SetRoundLength(value); }
+        public int DaysBetweenRounds { get => daysBetweenRounds; set => SetDaysBetweenRounds(value); }
 
-        public override ICollection<Match> GenerateFixture(ICollection<Team> teams)
+        public ICollection<Match> GenerateFixture(ICollection<Team> teams)
         {
             if (teams.Count < 2)
                 throw new InvalidTeamCountException("Can not generate any fixture with less than 2 teams");

@@ -14,8 +14,8 @@ namespace BusinessLogicTest
     {
 
         private ICollection<Team> teams;
-        private FixtureGenerator oneMatchFixture;
-        private FixtureGenerator homeAwayFixture;
+        private IFixtureGenerator oneMatchFixture;
+        private IFixtureGenerator homeAwayFixture;
         private DateTime initialDate;
         private DateTime finalDate;
         private int roundLength;
