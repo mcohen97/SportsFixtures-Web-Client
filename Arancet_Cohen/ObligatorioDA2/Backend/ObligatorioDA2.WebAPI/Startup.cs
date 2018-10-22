@@ -53,6 +53,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ISportRepository, SportRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFixtureService, FixtureService>();
+            services.Configure<FixtureStrategies>(Configuration.GetSection("FixtureStrategies"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
