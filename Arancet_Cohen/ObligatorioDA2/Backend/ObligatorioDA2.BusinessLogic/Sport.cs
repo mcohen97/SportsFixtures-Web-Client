@@ -11,9 +11,10 @@ namespace ObligatorioDA2.BusinessLogic
     public class Sport
     {
         private string name;
-
+      
         public string Name { get { return name; } set { SetName(value); } }
 
+        public bool IsTwoTeams { get; private set; }
         private void SetName(string value)
         {
             if (value == null)
@@ -27,9 +28,10 @@ namespace ObligatorioDA2.BusinessLogic
             name = value;
         }
 
-        public Sport(string name)
+        public Sport(string aName, bool isTwoTeams)
         {
-            this.name = name;
+            name = aName;
+            IsTwoTeams = isTwoTeams;
         }
 
         public override bool Equals(object obj)
