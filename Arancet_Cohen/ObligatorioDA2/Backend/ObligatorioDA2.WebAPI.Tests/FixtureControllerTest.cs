@@ -6,13 +6,10 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Services.Interfaces;
-using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using Microsoft.Extensions.Options;
 using System.IO;
@@ -101,7 +98,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             fixture = new FixtureService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
 
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
-            FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.BusinessLogic.dll");
+            FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.dll");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
             controller = new FixturesController(fixture,mockSettings.Object,sportsRepo.Object);
         }
@@ -114,11 +111,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year
+                Year = DateTime.Now.Year,
+                FixtureName = "OneMatchFixture"
             };
 
             //Act
-            IActionResult result = controller.CreateOneMatchFixture(testSport.Name,input);
+            IActionResult result = controller.CreateFixture(testSport.Name,input);
             CreatedResult createdResult = result as CreatedResult;
             ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
 
@@ -137,14 +135,15 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year
+                Year = DateTime.Now.Year,
+                FixtureName = "OneMatchFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
             ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(oneMatchCollection);
 
 
             //Act
-            IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
+            IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
@@ -163,13 +162,14 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Day = 99,
                 Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year
+                Year = DateTime.Now.Year,
+                FixtureName = "OneMatchFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
             string errorMessagge = "Invalid date format";
 
             //Act
-            IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
+            IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
@@ -201,7 +201,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             controller.ModelState.AddModelError("", "Error");
 
             //Act
-            IActionResult result = controller.CreateOneMatchFixture(testSport.Name, input);
+            IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
@@ -219,11 +219,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year
+                Year = DateTime.Now.Year,
+                FixtureName = "HomeAwayFixture"
             };
 
             //Act
-            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
+            IActionResult result = controller.CreateFixture(testSport.Name, input);
             CreatedResult createdResult = result as CreatedResult;
             ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
 
@@ -242,14 +243,15 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year
+                Year = DateTime.Now.Year,
+                FixtureName = "HomeAwayFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
             ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(homeAwayMatchCollection);
 
 
             //Act
-            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
+            IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
@@ -268,13 +270,14 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Day = 99,
                 Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year
+                Year = DateTime.Now.Year,
+                FixtureName = "HomeAwayFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
 
 
             //Act
-            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
+            IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
@@ -282,7 +285,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
-            //Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
         }
 
         [TestMethod]
@@ -295,7 +297,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             controller.ModelState.AddModelError("", "Error");
 
             //Act.
-            IActionResult result = controller.CreateHomeAwayFixture(testSport.Name, input);
+            IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
