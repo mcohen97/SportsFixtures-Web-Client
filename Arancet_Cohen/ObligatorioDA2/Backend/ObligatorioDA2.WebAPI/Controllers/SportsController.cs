@@ -96,15 +96,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(output);
         }
 
-        [HttpPost("fixtures")]
-        public IActionResult GetFixtureAlgorithms()
-        {
-            string algorithmsPath = fixtureSettings.Value.DllPath;
-            ICollection<Type> algorithms = fixture.GetAlgorithms(algorithmsPath);
-            ICollection<string> toReturn = algorithms.Select(t => t.ToString()).ToList();
-            return Ok(toReturn);
-        }
-
         [HttpGet("{name}", Name = "GetSportById")]
         [Authorize]
         public IActionResult Get(string name)
@@ -233,123 +224,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Name = aTeam.Name,
                 Photo = aTeam.Photo
             };
-        }
-
-        [HttpPost("{sportName}/OneMatchFixture")]
-        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
-        {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                DateTime initialDate;
-                if (ValidDate(input))
-                {
-                    initialDate = new DateTime(input.Year, input.Month, input.Day);
-                    fixture.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
-                    result = CreateValid(input, sportName);
-                }
-                else
-                {
-                    ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
-                    result = BadRequest(error);
-                }
-                
-            }
-            else
-            {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private bool ValidDate(FixtureModelIn input)
-        {
-            bool result = true;
-            try
-            {
-                DateTime date = new DateTime(input.Year, input.Month, input.Day);
-                result = date != null;
-            }
-            catch (ArgumentOutOfRangeException exp)
-            {
-                result = false;
-            }
-            return result;
-        }
-
-        [HttpPost("{sportName}/HomeAwayFixture")]
-        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult CreateHomeAwayFixture(string sportName, FixtureModelIn input)
-        {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                DateTime initialDate;
-                if (ValidDate(input))
-                {
-                    initialDate = new DateTime(input.Year, input.Month, input.Day);
-                    fixture.FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
-                    result = CreateValid(input, sportName);
-                }
-                else
-                {
-                    ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
-                    result = BadRequest(error);
-                }
-
-            }
-            else
-            {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private IActionResult CreateValid(FixtureModelIn input, string sportName)
-        {
-            IActionResult result;
-            try {
-                result = TryCreate(input, sportName);
-            }
-            catch (WrongFixtureException e)
-            {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-            }
-            catch (TeamNotFoundException e)
-            {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
-            }
-
-            return result;
-        }
-
-        private IActionResult TryCreate(FixtureModelIn input, string sportName)
-        {
-            IActionResult result;
-            Sport sport = sports.Get(sportName);
-            ICollection<Match> added = fixture.AddFixture(sport);
-            ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
-            foreach (Match match in added)
-            {
-                addedModelOut.Add(new MatchModelOut()
-                {
-                    Id = match.Id,
-                    AwayTeamId = match.AwayTeam.Id,
-                    HomeTeamId = match.HomeTeam.Id,
-                    SportName = match.Sport.Name,
-                    Date = match.Date,
-                    CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()
-                });
-            }
-            result = Created("fixture-generator", addedModelOut);
-            return result;
         }
 
         private IActionResult NoDataAccess(DataInaccessibleException e)

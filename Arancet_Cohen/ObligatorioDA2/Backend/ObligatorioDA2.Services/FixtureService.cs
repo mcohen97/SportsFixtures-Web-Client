@@ -22,7 +22,7 @@ namespace ObligatorioDA2.Services
             matchService = new MatchService(matchStorage, teamRepository, sportsRepository);
             sportsStorage = sportsRepository;
             teamStorage = teamRepository;
-            fixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
+            //fixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
         }
 
         public IFixtureGenerator FixtureAlgorithm { get => fixtureAlgorithm; set => SetFixtureAlgorithm(value); }

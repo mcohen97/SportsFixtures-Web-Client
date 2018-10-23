@@ -121,6 +121,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureWithNamesTest()
         {
             AddTeamsToRepo();
+            fixtureService.FixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
             ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
             string sportName = sport.Name;
             ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
@@ -131,6 +132,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureOfSport()
         {
             AddTeamsToRepo();
+            fixtureService.FixtureAlgorithm= new OneMatchFixture(DateTime.Now, 2, 5);
             ICollection<Match> matchesAdded = fixtureService.AddFixture(sport);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
@@ -141,6 +143,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(WrongFixtureException))]
         public void AddFixtureTeamAlreadyHasMatchTest()
         {
+            fixtureService.FixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
             Match aMatch = new Match(teamA, teamB, initialDate, sport);
             matchStorage.Add(aMatch);
             fixtureService.AddFixture(teamsCollection);
@@ -158,7 +161,8 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetAvailableStrategiesTest() {
-            ICollection<Type> algorithms = fixtureService.GetAlgorithms("ObligatorioDA2.Services");
+            FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.Services.dll");
+            ICollection<Type> algorithms = fixtureService.GetAlgorithms(dllFile.FullName);
             Assert.AreEqual(0, algorithms.Count);
         }
     }
