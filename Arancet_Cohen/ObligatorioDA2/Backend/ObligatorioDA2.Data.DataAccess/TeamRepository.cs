@@ -377,6 +377,7 @@ namespace ObligatorioDA2.Data.Repositories
                 throw new TeamNotFoundException();
 
             TeamEntity entity = context.Teams
+                .Include(t=> t.Sport)
                 .FirstOrDefault(e => e.TeamNumber == id);
             Team converted = mapper.ToTeam(entity);
             return converted;
