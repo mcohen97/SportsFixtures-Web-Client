@@ -31,10 +31,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet]
         public IActionResult GetFixtureAlgorithms()
         {
-            string algorithmsPath =@fixtureConfig.Value.DllPath;
+            string algorithmsPath =fixtureConfig.Value.DllPath;
             ICollection<Type> algorithms = fixtureService.GetAlgorithms(algorithmsPath);
-            ICollection<string> toReturn = algorithms.Select(t => t.ToString()).ToList();
+            ICollection<string> toReturn = algorithms.Select(t => GetTypeString(t)).ToList();
             return Ok(toReturn);
+        }
+
+        private string GetTypeString(Type t)
+        {
+            string fullName = t.ToString();
+            string[] tokens = fullName.Split(".");
+            return tokens[tokens.Length - 1];
         }
 
         [HttpPost("{sportName}/HomeAwayFixture")]
