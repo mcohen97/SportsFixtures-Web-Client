@@ -67,7 +67,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryAddSport(SportModelIn modelIn)
         {
-            Sport toAdd = new Sport(modelIn.Name);
+            Sport toAdd = new Sport(modelIn.Name,modelIn.IsTwoTeams);
             sports.Add(toAdd);
             SportModelOut modelOut = new SportModelOut(){Name = toAdd.Name};
             IActionResult result = CreatedAtRoute("GetSportById",new {name = toAdd.Name },modelOut);
@@ -170,7 +170,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult ModifyOrAdd(string name, SportModelIn modelIn)
         {
             IActionResult result;
-            Sport toAdd = new Sport(modelIn.Name);
+            Sport toAdd = new Sport(modelIn.Name,modelIn.IsTwoTeams);
             try
             {
                 sports.Modify(toAdd);
