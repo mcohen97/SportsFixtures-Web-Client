@@ -14,14 +14,14 @@ namespace ObligatorioDA2.Data.DomainMappers
         public Team ToTeam(TeamEntity teamEntity)
         {
 
-            Team convertedTeam = new Team(teamEntity.TeamNumber, teamEntity.Name, teamEntity.Photo, new Sport(teamEntity.SportEntityName));
+            Team convertedTeam = new Team(teamEntity.TeamNumber, teamEntity.Name, teamEntity.Photo, new Sport(teamEntity.SportEntityName, teamEntity.Sport.IsTwoTeams));
             return convertedTeam;
         }
 
         public TeamEntity ToEntity(Team team)
         {
             SportEntity convertedSport = sportConverter.ToEntity(team.Sport);
-            TeamEntity convertedTeam = new TeamEntity(team.Id, team.Name, team.Photo);
+            TeamEntity convertedTeam = new TeamEntity(team.Id, team.Name, team.Photo, convertedSport.Name,convertedSport);
             convertedTeam.Sport = convertedSport;
             convertedTeam.SportEntityName = team.Sport.Name;
             return convertedTeam;

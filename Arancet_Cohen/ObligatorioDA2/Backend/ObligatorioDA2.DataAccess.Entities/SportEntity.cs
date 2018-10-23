@@ -11,5 +11,6 @@ namespace ObligatorioDA2.Data.Entities
         }
 
         public string Name { get; set; }
+        public bool IsTwoTeams { get; set; }
     }
 }

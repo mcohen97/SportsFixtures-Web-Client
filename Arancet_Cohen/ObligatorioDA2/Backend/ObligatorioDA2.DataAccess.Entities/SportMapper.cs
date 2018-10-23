@@ -21,7 +21,7 @@ namespace ObligatorioDA2.Data.DomainMappers
 
         public Sport ToSport(SportEntity entity)
         {
-            Sport conversion = new Sport(entity.Name);
+            Sport conversion = new Sport(entity.Name, entity.IsTwoTeams);
             return conversion;
         }
     }
