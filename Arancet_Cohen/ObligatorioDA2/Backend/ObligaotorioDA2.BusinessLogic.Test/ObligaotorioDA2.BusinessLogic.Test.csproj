@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.FixtureAlgorithms\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
   </ItemGroup>
 
