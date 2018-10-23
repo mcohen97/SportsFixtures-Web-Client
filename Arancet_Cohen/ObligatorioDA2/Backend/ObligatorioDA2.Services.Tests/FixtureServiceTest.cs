@@ -161,8 +161,8 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetAvailableStrategiesTest() {
-            FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.Services.dll");
-            ICollection<Type> algorithms = fixtureService.GetAlgorithms(dllFile.FullName);
+            string path = "C://Users//Marcel//Desktop//diseño2//Arancet_Cohen//ObligatorioDA2//Backend//ObligatorioDA2.BusinessLogic//bin//Debug//BusinessLogic.dll";
+            ICollection<Type> algorithms = fixtureService.GetAlgorithms(path);
             Assert.AreEqual(0, algorithms.Count);
         }
     }
