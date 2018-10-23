@@ -11,6 +11,8 @@ using System;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Net;
+using System.Reflection;
+using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -44,10 +46,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return tokens[tokens.Length - 1];
         }
 
-        [HttpPost("{sportName}/HomeAwayFixture")]
-        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult CreateHomeAwayFixture(string sportName, FixtureModelIn input)
-        {
+        [HttpPost("{sportName}")]
+        public IActionResult CreateFixture(string sportName, FixtureModelIn input) {
             IActionResult result;
             if (ModelState.IsValid)
             {
@@ -55,7 +55,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 if (ValidDate(input))
                 {
                     initialDate = new DateTime(input.Year, input.Month, input.Day);
-                    fixtureService.FixtureAlgorithm = new HomeAwayFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
+                    fixtureService.FixtureAlgorithm = BuildFixtureAlgorithm(new DateTime(input.Year, input.Month, input.Day),input.FixtureName);
                     result = CreateValid(input, sportName);
                 }
                 else
@@ -72,32 +72,29 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        [HttpPost("{sportName}/OneMatchFixture")]
-        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult CreateOneMatchFixture(string sportName, [FromBody] FixtureModelIn input)
+        private IFixtureGenerator BuildFixtureAlgorithm(DateTime date,string fixtureName)
         {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                DateTime initialDate;
-                if (ValidDate(input))
-                {
-                    initialDate = new DateTime(input.Year, input.Month, input.Day);
-                    fixtureService.FixtureAlgorithm = new OneMatchFixture(new DateTime(input.Year, input.Month, input.Day), 1, 7);
-                    result = CreateValid(input, sportName);
-                }
-                else
-                {
-                    ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
-                    result = BadRequest(error);
-                }
+            string algorithmsPath = fixtureConfig.Value.DllPath;
+            Type algortihmType = GetAlgorithmType(algorithmsPath,fixtureName);
+            object fromDll = Activator.CreateInstance(algortihmType, new object[] { date, 1,7});
+            IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
+            return algorithm;
+        }
 
+        private Type GetAlgorithmType(string algorithmsPath, string fixtureName)
+        {
+            Assembly fixtures = Assembly.LoadFile(algorithmsPath);
+            string[] pathTokens = algorithmsPath.Split("\\");
+            string[] assemblyNameTokens = pathTokens[pathTokens.Length - 1].Split(".");
+            assemblyNameTokens[assemblyNameTokens.Length - 1] = fixtureName;
+            string typeName = String.Join(".", assemblyNameTokens);
+            Type algorithmType = null;
+            foreach (Type t in fixtures.GetTypes()) {
+                if (t.ToString().Equals(typeName)) {
+                    algorithmType = t;
+                }
             }
-            else
-            {
-                result = BadRequest(ModelState);
-            }
-            return result;
+            return algorithmType;
         }
 
         private bool ValidDate(FixtureModelIn input)
@@ -115,7 +112,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-
         private IActionResult CreateValid(FixtureModelIn input, string sportName)
         {
             IActionResult result;
@@ -128,7 +124,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = BadRequest(error);
             }
-            catch (TeamNotFoundException e)
+            catch (EntityNotFoundException e)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = NotFound(error);

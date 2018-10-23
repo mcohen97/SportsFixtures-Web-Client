@@ -12,5 +12,7 @@ namespace ObligatorioDA2.WebAPI.Models
         public int Month { get; set; }
         [Required]
         public int Year { get; set; }
+        [Required]
+        public string FixtureName { get; set; }
     }
 }
