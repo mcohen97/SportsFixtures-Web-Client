@@ -6,6 +6,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
+using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 
 namespace BusinessLogicTest
 {
@@ -245,7 +246,5 @@ namespace BusinessLogicTest
                 teams.Remove(teams.Last());
             ICollection<Match> fixtureResult = oneMatchFixture.GenerateFixture(teams);
         }
-
-
     }
 }
