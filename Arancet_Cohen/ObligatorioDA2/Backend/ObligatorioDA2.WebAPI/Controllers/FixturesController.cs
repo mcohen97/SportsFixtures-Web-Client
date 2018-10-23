@@ -51,23 +51,26 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                DateTime initialDate;
-                if (ValidDate(input))
-                {
-                    initialDate = new DateTime(input.Year, input.Month, input.Day);
-                    fixtureService.FixtureAlgorithm = BuildFixtureAlgorithm(new DateTime(input.Year, input.Month, input.Day),input.FixtureName);
-                    result = CreateValid(input, sportName);
-                }
-                else
-                {
-                    ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
-                    result = BadRequest(error);
-                }
-
+                result = TryCreateFixture(sportName, input);
             }
             else
             {
                 result = BadRequest(ModelState);
+            }
+            return result;
+        }
+
+        private IActionResult TryCreateFixture(string sportName, FixtureModelIn input)
+        {
+            IActionResult result;
+            if (ValidDate(input))
+            {
+                result = CreateValid(input, sportName);
+            }
+            else
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
+                result = BadRequest(error);
             }
             return result;
         }
@@ -88,11 +91,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             string[] assemblyNameTokens = pathTokens[pathTokens.Length - 1].Split(".");
             assemblyNameTokens[assemblyNameTokens.Length - 1] = fixtureName;
             string typeName = String.Join(".", assemblyNameTokens);
-            Type algorithmType = null;
-            foreach (Type t in fixtures.GetTypes()) {
-                if (t.ToString().Equals(typeName)) {
-                    algorithmType = t;
-                }
+
+            Type algorithmType = fixtures.GetType(typeName);
+            if (algorithmType == null) {
+                throw new WrongFixtureException("Couldn't find fixture in assembly: "+ algorithmsPath);
             }
             return algorithmType;
         }
@@ -117,6 +119,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
+                fixtureService.FixtureAlgorithm = BuildFixtureAlgorithm(new DateTime(input.Year, input.Month, input.Day), input.FixtureName);
                 result = TryCreate(input, sportName);
             }
             catch (WrongFixtureException e)
