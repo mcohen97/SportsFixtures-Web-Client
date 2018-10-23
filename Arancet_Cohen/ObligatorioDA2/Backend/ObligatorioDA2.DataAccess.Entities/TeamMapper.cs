@@ -13,7 +13,6 @@ namespace ObligatorioDA2.Data.DomainMappers
         }
         public Team ToTeam(TeamEntity teamEntity)
         {
-
             Team convertedTeam = new Team(teamEntity.TeamNumber, teamEntity.Name, teamEntity.Photo, new Sport(teamEntity.SportEntityName, teamEntity.Sport.IsTwoTeams));
             return convertedTeam;
         }
