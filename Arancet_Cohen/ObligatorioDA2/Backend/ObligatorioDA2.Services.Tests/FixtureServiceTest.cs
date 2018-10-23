@@ -37,7 +37,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestInitialize]
         public void Initialize()
         {
-            sport = new Mock<Sport>("Soccer").Object;
+            sport = new Mock<Sport>("Soccer",true).Object;
             teamA = new Mock<Team>(1, "teamA", "photo", sport).Object;
             teamB = new Mock<Team>(2, "teamB", "photo", sport).Object;
             teamC = new Mock<Team>(3, "teamC", "photo", sport).Object;

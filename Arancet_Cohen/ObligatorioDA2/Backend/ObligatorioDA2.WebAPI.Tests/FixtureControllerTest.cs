@@ -40,7 +40,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         private void SetUpData()
         {
-            testSport = new Sport("Football");
+            testSport = new Sport("Football",true);
 
             Team teamA = new Team(1, "teamA", "photo", testSport);
             Team teamB = new Team(2, "teamB", "photo", testSport);

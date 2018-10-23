@@ -26,7 +26,7 @@ namespace BusinessLogicTest
         public void TestInitialize()
         {
             //Create mocks
-            sport = new Mock<Sport>("Soccer");
+            sport = new Mock<Sport>("Soccer",true);
             teamA = new Mock<Team>(1, "TeamA", "Photo/A", sport.Object);
             teamB = new Mock<Team>(2, "TeamB", "Photo/B", sport.Object);
             date = new DateTime(2019, 1, 25, 13, 30, 0);

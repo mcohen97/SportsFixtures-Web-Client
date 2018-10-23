@@ -33,7 +33,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         private Match BuildFakeMatch()
         {
-            Sport played = new Sport("Football");
+            Sport played = new Sport("Football",true);
             Team home = new Team("Patriots", "aPhoto", played);
             Team away = new Team("Falcons", "aPhoto", played);
             Match built = new Match(1,home, away, DateTime.Now, played);

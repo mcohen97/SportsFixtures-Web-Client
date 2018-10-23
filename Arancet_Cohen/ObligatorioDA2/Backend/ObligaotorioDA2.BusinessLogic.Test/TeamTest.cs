@@ -19,7 +19,7 @@ namespace BusinessLogicTest
             int id = 1;
             string name = "TheTeam";
             string photo = "myresource/theteam.png";
-            aSport = new Mock<Sport>("TheSport").Object;
+            aSport = new Mock<Sport>("TheSport",false).Object;
             testTeam = new Team(id, name, photo, aSport);
         }
 
@@ -68,7 +68,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void SetSportTest()
         {
-            Sport sport = new Mock<Sport>("TheNewSport").Object;
+            Sport sport = new Mock<Sport>("TheNewSport",false).Object;
             testTeam.Sport = sport;
             Assert.AreEqual(sport, testTeam.Sport);
         }
@@ -91,38 +91,38 @@ namespace BusinessLogicTest
         [TestMethod]
         public void EqualsTest()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
-            Team sameTeam = new Team(1, "TeamA", "", new Sport("aSport"));
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport",true));
+            Team sameTeam = new Team(1, "TeamA", "", new Sport("aSport",true));
             Assert.AreEqual(aTeam, sameTeam);
         }
 
         [TestMethod]
         public void NotEqualsTest()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
-            Team differentTeam = new Team(2, "TeamB", "", new Sport("aSport"));
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport",true));
+            Team differentTeam = new Team(2, "TeamB", "", new Sport("aSport",true));
             Assert.AreNotEqual(aTeam, differentTeam);
         }
 
         [TestMethod]
         public void NotEqualsDifferentSport()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
-            Team differentTeam = new Team(2, "TeamA", "", new Sport("anotherSport"));
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport",true));
+            Team differentTeam = new Team(2, "TeamA", "", new Sport("anotherSport",true));
             Assert.AreNotEqual(aTeam, differentTeam);
         }
 
         [TestMethod]
         public void NotEqualsDifferentTypeTest()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport",true));
             Assert.IsFalse(aTeam.Equals("this should be false"));
         }
 
         [TestMethod]
         public void GetHashCodeTest()
         {
-            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport"));
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport",true));
             int hashCode = 539060726 + EqualityComparer<string>.Default.GetHashCode("TeamA");
             Assert.AreEqual(hashCode, aTeam.GetHashCode());
         }
@@ -133,14 +133,14 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void EmptyNameConstructorTest()
         {
-            Team team = new Team(1, "", "photo", new Sport("aSport"));
+            Team team = new Team(1, "", "photo", new Sport("aSport",true));
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetEmptyNameTest()
         {
-            Team team = new Team(1, "name", "photo", new Sport("aSport"));
+            Team team = new Team(1, "name", "photo", new Sport("aSport",true));
             team.Name = "";
         }
 
@@ -148,7 +148,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullNameTest()
         {
-            Team team = new Team(1, "name", "photo", new Sport("aSport"));
+            Team team = new Team(1, "name", "photo", new Sport("aSport",true));
             team.Name = null;
         }
 
@@ -156,7 +156,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidTeamDataException))]
         public void SetNullPhotoTest()
         {
-            Team team = new Team(1, "name", "photo", new Sport("aSport"));
+            Team team = new Team(1, "name", "photo", new Sport("aSport",true));
             team.Photo = null;
         }
 

@@ -15,6 +15,7 @@ namespace DataRepositoriesTest
     {
         IUserRepository usersStorage;
         ITeamRepository teamsStorage;
+        ISportRepository sportsStorage;
         UserId userId;
         UserFactory factory;
         User user;
@@ -47,6 +48,7 @@ namespace DataRepositoriesTest
             context = new DatabaseConnection(options);
             usersStorage = new UserRepository(context);
             teamsStorage = new TeamRepository(context);
+            sportsStorage = new SportRepository(context);
             context.UserTeams.RemoveRange(context.UserTeams);
         }
 
@@ -203,7 +205,8 @@ namespace DataRepositoriesTest
             UserId userId1 = new UserId { Name = "name1", Surname = "surname1", UserName = "username", Password = "password1", Email = "mail1@domain.com" };
             User user = factory.CreateAdmin(userId1);
             usersStorage.Add(user);
-            Team fakeTeam = GetFakeTeam();
+            Sport toPlay = new Sport("Soccer", true);
+            Team fakeTeam = GetFakeTeam(toPlay);
             teamsStorage.Add(fakeTeam);
             user.AddFavourite(fakeTeam);
             usersStorage.Modify(user);
@@ -288,7 +291,8 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetUserFollowedTeamsTest()
         {
-            Team toFollow = GetFakeTeam();
+            Sport toPlay  = new Sport("Soccer", true);
+            Team toFollow = GetFakeTeam(toPlay);
             teamsStorage.Add(toFollow);
             user.AddFavourite(toFollow);
             usersStorage.Add(user);
@@ -297,9 +301,8 @@ namespace DataRepositoriesTest
             Assert.AreEqual(fromDB.GetFavouriteTeams().Count, 1);
         }
 
-        private Team GetFakeTeam()
+        private Team GetFakeTeam(Sport played)
         {
-            Sport played = new Sport("Soccer");
             Team fake = new Team(1, "RealMadrid", "aPath", played);
             return fake;
         }

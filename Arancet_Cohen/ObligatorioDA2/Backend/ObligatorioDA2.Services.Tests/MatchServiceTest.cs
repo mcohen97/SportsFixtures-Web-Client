@@ -34,7 +34,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestInitialize]
         public void SetUp()
         {
-            sport = new Sport("Soccer");
+            sport = new Sport("Soccer",true);
             teamA = new Team(1, "teamA", "photo", sport);
             teamB = new Team(2, "teamB", "photo", sport);
             teamC = new Team(3, "teamC", "photo", sport);

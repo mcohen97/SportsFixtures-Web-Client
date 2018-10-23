@@ -127,7 +127,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         [TestMethod]
         public void GetUserTeamsTest()
         {
-            toStore.AddFavourite(new Team(1, "Nacional", "aPath", new Sport("Soccer")));
+            toStore.AddFavourite(new Team(1, "Nacional", "aPath", new Sport("Soccer",true)));
             ICollection<UserTeam> relationships = toTest.GetUserTeams(toStore);
             Assert.AreEqual(relationships.Count, 1);
         }

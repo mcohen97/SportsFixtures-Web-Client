@@ -29,14 +29,14 @@ namespace BusinessLogicTest
             teams = new List<Team>();
             for (int i = 1; i <= 6; i++)
             {
-                Team newTeam = new Team(i, "Team " + i, "Photo/" + i, new Sport("aSport"));
+                Team newTeam = new Team(i, "Team " + i, "Photo/" + i, new Sport("aSport",true));
                 teams.Add(newTeam);
             }
             initialDate = new DateTime(2019, 1, 1);
             finalDate = new DateTime(2019, 4, 4);
             roundLength = 2;
             daysBetweenRounds = 5;
-            played = new Mock<Sport>("Soccer");
+            played = new Mock<Sport>("Soccer",true);
             oneMatchFixture = new OneMatchFixture(initialDate, roundLength, daysBetweenRounds);
             homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds);
 

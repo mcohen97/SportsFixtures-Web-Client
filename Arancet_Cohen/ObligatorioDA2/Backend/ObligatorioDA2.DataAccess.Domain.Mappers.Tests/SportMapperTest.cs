@@ -16,7 +16,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void SetUp()
         {
             testMapper = new SportMapper();
-            sport = new Mock<Sport>("Soccer");
+            sport = new Mock<Sport>("Soccer",true);
             entity = new SportEntity()
             {
                 Name = "Soccer",

@@ -18,20 +18,21 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void SetUp()
         {
             testMapper = new MatchMapper();
-            TeamEntity homeTest = new TeamEntity { TeamNumber = 3, SportEntityName = "Soccer", Name = "Nacional", Photo = "aPath" };
-            TeamEntity awayTest = new TeamEntity { TeamNumber = 4, SportEntityName = "Soccer", Name = "Torque", Photo = "aPath" };
+            SportEntity testSport = new SportEntity() { Name = "Soccer", IsTwoTeams = true };
+            TeamEntity homeTest = new TeamEntity { TeamNumber = 3, SportEntityName = "Soccer", Sport =testSport,Name = "Nacional", Photo = "aPath" };
+            TeamEntity awayTest = new TeamEntity { TeamNumber = 4, SportEntityName = "Soccer", Sport = testSport,Name = "Torque", Photo = "aPath" };
             entity = new MatchEntity()
             {
                 Id = 3,
                 HomeTeam = homeTest,
                 AwayTeam = awayTest,
                 Date = DateTime.Now,
-                SportEntity = new SportEntity() { Name = "Soccer" },
+                SportEntity = testSport,
                 Commentaries = new List<CommentEntity>()
             };
-            Team homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer"));
-            Team awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer"));
-            Sport sport = new Sport("Soccer");
+            Team homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer",true));
+            Team awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer",true));
+            Sport sport = new Sport("Soccer",true);
             match = new Mock<BusinessLogic.Match>(homeMock, awayMock, DateTime.Now, sport);
         }
 

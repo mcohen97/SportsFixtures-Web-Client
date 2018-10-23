@@ -26,7 +26,7 @@ namespace DataRepositoriesTest
         [TestInitialize]
         public void SetUp()
         {
-            sport = new Mock<Sport>("Soccer");
+            sport = new Mock<Sport>("Soccer",true);
             SetUpRepository();
             match = BuildFakeMatch();
             context.Comments.RemoveRange(context.Comments);

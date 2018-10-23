@@ -48,7 +48,7 @@ namespace ObligatorioDA2.Services.Tests
 
         private Team GetFakeTeam()
         {
-            Sport played = new Sport("Basketball");
+            Sport played = new Sport("Basketball",true);
             Team fake = new Team(1, "Lakers", "aPhoto", played);
             return fake;
         }
