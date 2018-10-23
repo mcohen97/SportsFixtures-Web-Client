@@ -2,7 +2,7 @@ using ObligatorioDA2.BusinessLogic.Exceptions;
 using System;
 using System.Collections.Generic;
 
-namespace ObligatorioDA2.BusinessLogic
+namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
 {
     public class OneMatchFixture : IFixtureGenerator
     {
