@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligaotorioDA2.BusinessLogic.Test", "ObligaotorioDA2.BusinessLogic.Test\ObligaotorioDA2.BusinessLogic.Test.csproj", "{13D16ED5-9B07-4B2F-98B3-604667A59C00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic.Test", "ObligaotorioDA2.BusinessLogic.Test\ObligatorioDA2.BusinessLogic.Test.csproj", "{13D16ED5-9B07-4B2F-98B3-604667A59C00}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic", "ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj", "{4751425F-3D67-4ECC-98B6-28C53922B463}"
 EndProject
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.WebAPI", "Ob
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.WebAPI.Tests", "ObligatorioDA2.WebAPI.Tests\ObligatorioDA2.WebAPI.Tests.csproj", "{E2DB9E0C-F3C6-42E9-BC49-494F2009917D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms", "ObligatorioDA2.BusinessLogic.FixtureAlgorithms\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.csproj", "{E6DF4514-9B7B-4C3C-98BE-ADFD57F8D201}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms", "ObligatorioDA2.BusinessLogic.FixtureAlgorithms\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.csproj", "{E6DF4514-9B7B-4C3C-98BE-ADFD57F8D201}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
