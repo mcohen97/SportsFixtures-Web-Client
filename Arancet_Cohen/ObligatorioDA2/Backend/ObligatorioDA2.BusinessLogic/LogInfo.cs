@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatorioDA2.Services
+namespace ObligatorioDA2.BusinessLogic
 {
     public class LogInfo
     {
@@ -26,5 +26,17 @@ namespace ObligatorioDA2.Services
             LogType = type;
             Date = date;
         }
+
+       // override object.Equals
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            LogInfo log = (LogInfo)obj;
+            return id == log.id;
+        }
+
     }
 }

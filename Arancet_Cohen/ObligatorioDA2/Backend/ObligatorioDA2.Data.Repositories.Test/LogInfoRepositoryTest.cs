@@ -1,0 +1,253 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Data.DataAccess;
+using ObligatorioDA2.Data.DataAccess.Entities;
+using ObligatorioDA2.Data.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Text;
+
+namespace ObligatorioDA2.Data.Repositories.Test
+{
+    [TestClass]
+    public class LogInfoRepositoryTest
+    {
+        LogInfo log1;
+        LogInfo log2;
+        ILogInfoRepository repo;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            DatabaseConnection context = CreateContext();
+            CreateLogs();
+            ClearDataBase(context);
+        }
+
+        private void CreateLogs()
+        {
+            log1 = new LogInfo()
+            {
+                Id = 0,
+                Date = DateTime.Now,
+                LogType = LogType.FIXTURE,
+                Messagge = "HomeAway fixture generated",
+                Username = "SomeUser"
+            };
+            log2 = new LogInfo()
+            {
+                Id = 0,
+                Date = DateTime.Now,
+                LogType = LogType.LOGIN,
+                Messagge = "Logged using API",
+                Username = "SomeUser"
+            };
+        }
+
+        private DatabaseConnection CreateContext()
+        {
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                            .UseInMemoryDatabase(databaseName: "SportRepository")
+                            .Options;
+            DatabaseConnection context = new DatabaseConnection(options);
+            repo = new LogInfoRepository(context);
+            return context;
+        }
+
+        private void CreateDisconnectedDatabase()
+        {
+            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+                .UseInMemoryDatabase(databaseName: "UserRepositoryTest")
+                .Options;
+            Mock<DatabaseConnection> contextMock = new Mock<DatabaseConnection>(options);
+            Mock<DbException> toThrow = new Mock<DbException>();
+            contextMock.Setup(c => c.Sports).Throws(toThrow.Object);
+            repo = new LogInfoRepository(contextMock.Object);
+        }
+
+        private void ClearDataBase(DatabaseConnection context)
+        {
+            foreach (LogInfoEntity log in context.Logs)
+            {
+                context.Logs.Remove(log);
+            }
+            context.SaveChanges();
+        }
+
+        [TestMethod]
+        public void NoLogsTest()
+        {
+            bool noLogs = repo.IsEmpty();
+            Assert.IsTrue(noLogs);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void IsEmptyNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.IsEmpty();
+        }
+
+        [TestMethod]
+        public void AddLogTest()
+        {
+            repo.Add(log1);
+            Assert.AreEqual(1, repo.GetAll().Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(LogAlreadyExistsException))]
+        public void AddAlreadyExistentLogTest()
+        {
+            log1 = repo.Add(log1);
+            repo.Add(log1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void AddLogNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.Add(log1);
+        }
+
+        [TestMethod]
+        public void GetLogTest()
+        {
+            log1 = repo.Add(log1);
+            LogInfo logRetrieved = repo.Get(log1.Id);
+            Assert.AreEqual(log1, logRetrieved);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(LogNotFoundException))]
+        public void GetNotExistentTeamTest()
+        {
+            LogInfo logInDB = repo.Get(1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetSportNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.Get(1);
+        }
+
+        [TestMethod]
+        public void ExistsTeamTest()
+        {
+            repo.Add(log1);
+            bool result = repo.Exists(log1.Id);
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void DoesNotExistTest()
+        {
+
+            repo.Add(log1);
+            bool result = repo.Exists(log2.Id);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ExistsNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.Exists(log1.Id);
+        }
+
+        [TestMethod]
+        public void DeleteTest()
+        {
+            repo.Add(log1);
+            repo.Delete(log1.Name);
+            Assert.IsTrue(repo.IsEmpty());
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(LogNotFoundException))]
+        public void DeleteNotExistentTest()
+        {
+            repo.Add(log1);
+            repo.Delete(log2.Id);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void DeleteNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.Delete(log1.Id);
+        }
+
+        [TestMethod]
+        public void ModifySportTest()
+        {
+            repo.Add(log1);
+            log1.Messagge = "New log info";
+            CreateContext();
+            repo.Modify(log1);
+            LogInfo editedLog = repo.Get(log1.Id);
+            Assert.AreEqual(log1, editedLog);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(LogNotFoundException))]
+        public void ModifyNotExistentTest()
+        {
+            repo.Modify(log1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ModifyNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.Modify(log1);
+        }
+
+        [TestMethod]
+        public void ClearTest()
+        {
+            repo.Add(log1);
+            repo.Add(log2);
+            repo.Clear();
+            Assert.IsTrue(repo.IsEmpty());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void ClearNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.Clear();
+        }
+
+        [TestMethod]
+        public void GetAllTest()
+        {
+            repo.Add(log1);
+            repo.Add(log2);
+            ICollection<LogInfo> logs = repo.GetAll();
+            Assert.AreEqual(2, logs.Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
+        public void GetAllNoAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            repo.GetAll();
+        }
+    }
+}
+

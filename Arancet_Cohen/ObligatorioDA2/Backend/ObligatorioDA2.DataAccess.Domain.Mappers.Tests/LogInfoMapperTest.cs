@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.Data.DataAccess.Entities;
-using ObligatorioDA2.Services;
+using ObligatorioDA2.BusinessLogic;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,7 +22,7 @@ namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
             {
                 Id = 1,
                 Messagge = "User logged using API",
-                LogType = LogTypes.LOGIN,
+                LogType = LogType.LOGIN,
                 Username = "admin",
                 Date = DateTime.Now
             }; ;
@@ -30,7 +30,7 @@ namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
             {
                 Id = 1,
                 Messagge = "User logged using API",
-                LogType = LogTypes.LOGIN,
+                LogType = LogType.LOGIN,
                 Username = "admin",
                 Date = DateTime.Now
             };
