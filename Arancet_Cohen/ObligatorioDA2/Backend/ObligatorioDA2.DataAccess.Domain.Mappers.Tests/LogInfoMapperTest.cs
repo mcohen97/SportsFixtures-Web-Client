@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ObligatorioDA2.Data.DataAccess.Entities;
 using ObligatorioDA2.Services;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,44 @@ namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
         public void Initialize()
         {
             mapper = new LogInfoMapper();
+            entity = new LogInfoEntity()
+            {
+                Id = 1,
+                Messagge = "User logged using API",
+                LogType = LogTypes.LOGIN,
+                Username = "admin",
+                Date = DateTime.Now
+            }; ;
+            log = new LogInfo()
+            {
+                Id = 1,
+                Messagge = "User logged using API",
+                LogType = LogTypes.LOGIN,
+                Username = "admin",
+                Date = DateTime.Now
+            };
+        }
+
+        [TestMethod]
+        public void LogInfoToEntityTest()
+        {
+            LogInfoEntity converted = mapper.ToEntity(log);
+            Assert.AreEqual(log.Id, converted.Id);
+            Assert.AreEqual(log.Messagge, converted.Messagge);
+            Assert.AreEqual(log.LogType, converted.LogType);
+            Assert.AreEqual(log.Username, converted.Username);
+            Assert.AreEqual(log.Date, converted.Date);
+        }
+
+        [TestMethod]
+        public void EntityToLogInfoTest()
+        {
+            LogInfo converted = mapper.ToLogInfo(entity);
+            Assert.AreEqual(entity.Id, converted.Id);
+            Assert.AreEqual(entity.Messagge, converted.Messagge);
+            Assert.AreEqual(entity.LogType, converted.LogType);
+            Assert.AreEqual(entity.Username, converted.Username);
+            Assert.AreEqual(entity.Date, converted.Date);
         }
     }
 }
