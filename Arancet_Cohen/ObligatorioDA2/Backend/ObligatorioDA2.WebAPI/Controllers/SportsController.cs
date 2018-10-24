@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.Services.Interfaces;
-using ObligatorioDA2.Services.Exceptions;
 using System.Net;
 using Microsoft.Extensions.Options;
 
