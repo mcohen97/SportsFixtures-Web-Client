@@ -33,7 +33,7 @@ namespace ObligatorioDA2.Services.Tests
             Mock.Get(logRepo).Setup(l => l.GetAll()).Returns(new List<LogInfo>());
             Mock.Get(logRepo).Setup(l => l.Exists(aLog.Id)).Returns(false);
             Mock.Get(logRepo).Setup(l => l.Delete(aLog.Id)).Callback(DeleteALog);
-            Mock.Get(logRepo).Setup(l => l.Add(aLog)).Callback(AddALog).Returns(aLog);
+            Mock.Get(logRepo).Setup(l => l.Add(It.IsAny<LogInfo>())).Returns(aLog).Callback(AddALog);
             logger = new LoggerService(logRepo);
         }
 

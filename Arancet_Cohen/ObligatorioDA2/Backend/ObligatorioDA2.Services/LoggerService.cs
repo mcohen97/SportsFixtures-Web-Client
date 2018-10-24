@@ -17,27 +17,36 @@ namespace ObligatorioDA2.Services
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            logRepo.Delete(id);
         }
 
         public bool Exists(int id)
         {
-            throw new NotImplementedException();
+            return logRepo.Exists(id);
         }
 
         public ICollection<LogInfo> GetAllLogs()
         {
-            throw new NotImplementedException();
+            return logRepo.GetAll();
         }
 
         public LogInfo GetLog(int id)
         {
-            throw new NotImplementedException();
+            return logRepo.Get(id);
         }
 
         public int Log(string logType, string messagge, string username, DateTime date)
         {
-            throw new NotImplementedException();
+            LogInfo newLog = new LogInfo()
+            {
+                Id = 0,
+                LogType = logType,
+                Messagge = messagge,
+                Username = username,
+                Date = date
+            };
+            newLog = logRepo.Add(newLog);
+            return newLog.Id;
         }
     }
 }

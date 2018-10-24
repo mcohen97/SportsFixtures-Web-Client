@@ -84,7 +84,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] UserModelIn user)
-        {
+        {          
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
@@ -117,6 +117,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryAddUser(UserModelIn user)
         {
+
             User toAdd = BuildUser(user);
             service.AddUser(toAdd);
             UserModelOut modelOut = CreateModelOut(toAdd);

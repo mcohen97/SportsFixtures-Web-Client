@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ObligatorioDA2.Data.DataAccess;
@@ -9,19 +10,22 @@ using ObligatorioDA2.Data.DataAccess;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20181024135356_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20181024223326_LoggerFinal")]
+    partial class LoggerFinal
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.CommentEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("MakerUserName");
 
@@ -38,10 +42,30 @@ namespace DataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("ObligatorioDA2.Data.Entities.LogInfoEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("LogType");
+
+                    b.Property<string>("Messagge");
+
+                    b.Property<string>("Username");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Logs");
+                });
+
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("AwayTeamTeamNumber");
 
@@ -75,7 +99,8 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.TeamEntity", b =>
                 {
                     b.Property<int>("TeamNumber")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired();

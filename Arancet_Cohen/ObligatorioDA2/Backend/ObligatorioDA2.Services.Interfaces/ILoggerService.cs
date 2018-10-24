@@ -9,6 +9,8 @@ namespace ObligatorioDA2.Services.Interfaces
     {
         int Log(string logType, string messagge, string username, DateTime date);
         LogInfo GetLog(int id);
+        bool Exists(int id);
+        void Delete(int id);
         ICollection<LogInfo> GetAllLogs();
     }
 }

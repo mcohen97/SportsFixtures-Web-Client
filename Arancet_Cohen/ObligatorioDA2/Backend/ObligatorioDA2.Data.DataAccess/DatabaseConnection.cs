@@ -11,7 +11,6 @@ namespace ObligatorioDA2.Data.DataAccess
         public virtual DbSet<CommentEntity> Comments { get; set; }
         public virtual DbSet<SportEntity> Sports { get; set; }
         public virtual DbSet<LogInfoEntity> Logs { get; set; }
-
         public virtual DbSet<UserTeam> UserTeams { get; set; }
 
         public DatabaseConnection(DbContextOptions<DatabaseConnection> options) : base(options)
