@@ -4,7 +4,6 @@ using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.DataAccess;
-using ObligatorioDA2.Data.DataAccess.Entities;
 using ObligatorioDA2.Data.Entities;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using System;
@@ -66,7 +65,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
                 .Options;
             Mock<DatabaseConnection> contextMock = new Mock<DatabaseConnection>(options);
             Mock<DbException> toThrow = new Mock<DbException>();
-            contextMock.Setup(c => c.Sports).Throws(toThrow.Object);
+            contextMock.Setup(c => c.Logs).Throws(toThrow.Object);
             repo = new LogInfoRepository(contextMock.Object);
         }
 
@@ -143,7 +142,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
         [TestMethod]
         public void ExistsTeamTest()
         {
-            repo.Add(log1);
+            log1 = repo.Add(log1);
             bool result = repo.Exists(log1.Id);
             Assert.IsTrue(result);
         }
@@ -168,7 +167,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
         [TestMethod]
         public void DeleteTest()
         {
-            repo.Add(log1);
+            log1 = repo.Add(log1);
             repo.Delete(log1.Id);
             Assert.IsTrue(repo.IsEmpty());
         }
@@ -193,7 +192,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
         [TestMethod]
         public void ModifySportTest()
         {
-            repo.Add(log1);
+            log1 = repo.Add(log1);
             log1.Messagge = "New log info";
             CreateContext();
             repo.Modify(log1);

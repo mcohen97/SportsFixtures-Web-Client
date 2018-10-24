@@ -1,9 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObligatorioDA2.Data.DataAccess.Entities;
 using ObligatorioDA2.BusinessLogic;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ObligatorioDA2.Data.Entities;
+using ObligatorioDA2.Data.DomainMappers;
 
 namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
 {
