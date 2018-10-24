@@ -4,7 +4,8 @@ using System.Text;
 
 namespace ObligatorioDA2.Services.Interfaces
 {
-    interface ILoggerService
+    public interface ILoggerService
     {
+        
     }
 }

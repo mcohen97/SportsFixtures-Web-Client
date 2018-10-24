@@ -10,11 +10,13 @@ namespace ObligatorioDA2.Services
         private string messagge;
         private string logType;
         private DateTime date;
+        private string username;
 
-        public int Id { get; set; }
-        public string Messagge { get; set; }
-        public string LogType { get; set; }
-        public DateTime Date { get; set; }
+        public int Id { get => id; set => id = value; }
+        public string Messagge { get => messagge; set => messagge = value; }
+        public string LogType { get => logType; set => logType = value; }
+        public DateTime Date { get => date; set => date = value; }
+        public string Username { get => username; set => username = value; }
 
         public LogInfo() { }
 
