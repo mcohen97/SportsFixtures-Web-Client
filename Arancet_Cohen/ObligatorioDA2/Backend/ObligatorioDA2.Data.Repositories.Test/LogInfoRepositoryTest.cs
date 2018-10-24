@@ -5,6 +5,7 @@ using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Data.DataAccess.Entities;
+using ObligatorioDA2.Data.Entities;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -168,7 +169,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
         public void DeleteTest()
         {
             repo.Add(log1);
-            repo.Delete(log1.Name);
+            repo.Delete(log1.Id);
             Assert.IsTrue(repo.IsEmpty());
         }
 
