@@ -21,5 +21,26 @@ namespace ObligatorioDA2.BusinessLogic.Test
             testResult.Add(testTeam,1);
             Assert.IsTrue(testResult.GetPositions().Any());
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidResultDataException))]
+        public void AddInvalidPositionTest() {
+            testResult.Add(testTeam, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidResultDataException))]
+        public void AddRepeatedParticipantTest()
+        {
+            testResult.Add(testTeam, 1);
+            testResult.Add(testTeam, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidResultDataException))]
+        public void AddNullParticipantTest(){
+            testResult.Add(null, 1);
+        }
+
     }
 }
