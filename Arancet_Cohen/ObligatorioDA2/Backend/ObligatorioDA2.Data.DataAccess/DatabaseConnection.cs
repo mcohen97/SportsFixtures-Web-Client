@@ -10,8 +10,9 @@ namespace ObligatorioDA2.Data.DataAccess
         public virtual DbSet<MatchEntity> Matches { get; set; }
         public virtual DbSet<CommentEntity> Comments { get; set; }
         public virtual DbSet<SportEntity> Sports { get; set; }
-
         public virtual DbSet<UserTeam> UserTeams { get; set; }
+        public virtual DbSet<MatchTeam> MatchTeams { get; set; }
+
 
         public DatabaseConnection(DbContextOptions<DatabaseConnection> options) : base(options)
         {
@@ -26,7 +27,7 @@ namespace ObligatorioDA2.Data.DataAccess
             modelBuilder.Entity<TeamEntity>().HasKey(t => t.TeamNumber);
             modelBuilder.Entity<TeamEntity>().HasAlternateKey(t => new { t.SportEntityName, t.Name });
             modelBuilder.Entity<UserTeam>().HasKey(ut => new { ut.TeamEntityName, ut.TeamEntitySportEntityName, ut.UserEntityUserName });
-
+            modelBuilder.Entity<MatchTeam>().HasKey(mt => new { mt.MatchId, mt.TeamNumber });
 
 
             modelBuilder.Entity<TeamEntity>().Property(u => u.TeamNumber).ValueGeneratedOnAdd();
