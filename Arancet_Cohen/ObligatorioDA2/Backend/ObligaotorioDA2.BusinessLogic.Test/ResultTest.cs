@@ -1,10 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ObligatorioDA2.BusinessLogic.Test
 {
-    class ResultTest
+    [TestClass]
+    public class ResultTest
     {
+        private Result testResult;
+        private Team testTeam;
+
+        [TestInitialize]
+        public void StartUp() {
+            testResult = new Result();
+            Sport sportDummy = new Sport("aSport", true);
+            testTeam = new Team("aTeam", "aPhoto", sportDummy);
+        }
+
+        [TestMethod]
+        public void AddResultTest() {
+            testResult.Add(testTeam,1);
+        }
     }
 }
