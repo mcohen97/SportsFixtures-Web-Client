@@ -15,6 +15,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             SportEntity converted = new SportEntity()
             {
                 Name = aSport.Name,
+                IsTwoTeams =aSport.IsTwoTeams
             };
             return converted;
         }
