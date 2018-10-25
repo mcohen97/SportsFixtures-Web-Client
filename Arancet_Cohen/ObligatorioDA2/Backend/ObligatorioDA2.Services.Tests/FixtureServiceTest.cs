@@ -88,7 +88,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureOneMatchTest()
         {
             fixtureService.FixtureAlgorithm = oneMatchGenerator;
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            ICollection<Encounter> matchesAdded = fixtureService.AddFixture(teamsCollection);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
 
@@ -96,7 +96,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureTwoMatchesTest()
         {
             fixtureService.FixtureAlgorithm = twoMatchsGenerator;
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            ICollection<Encounter> matchesAdded = fixtureService.AddFixture(teamsCollection);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
 
@@ -105,7 +105,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             teamsCollection.Remove(teamD);
             fixtureService.FixtureAlgorithm = oneMatchGenerator;
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            ICollection<Encounter> matchesAdded = fixtureService.AddFixture(teamsCollection);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
 
@@ -114,7 +114,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             teamsCollection.Remove(teamD);
             fixtureService.FixtureAlgorithm = twoMatchsGenerator;
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsCollection);
+            ICollection<Encounter> matchesAdded = fixtureService.AddFixture(teamsCollection);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
 
@@ -125,7 +125,7 @@ namespace ObligatorioDA2.Services.Tests
             fixtureService.FixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
             ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
             string sportName = sport.Name;
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
+            ICollection<Encounter> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
 
@@ -134,7 +134,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             AddTeamsToRepo();
             fixtureService.FixtureAlgorithm= new OneMatchFixture(DateTime.Now, 2, 5);
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(sport);
+            ICollection<Encounter> matchesAdded = fixtureService.AddFixture(sport);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.Id)));
         }
 
@@ -157,7 +157,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
             string sportName = sport.Name;
-            ICollection<Match> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
+            ICollection<Encounter> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
         }
 
         [TestMethod]

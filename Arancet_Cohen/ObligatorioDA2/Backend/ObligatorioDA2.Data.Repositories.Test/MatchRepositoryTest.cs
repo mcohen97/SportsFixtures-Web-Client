@@ -115,7 +115,7 @@ namespace DataRepositoriesTest
         public void GetMatchTeamsTest()
         {
             matchesStorage.Add(match);
-            Match retrieved = matchesStorage.Get(match.Id);
+            Encounter retrieved = matchesStorage.Get(match.Id);
             Assert.AreEqual(retrieved.GetParticipants().Count, match.GetParticipants().Count);
         }
 
@@ -125,7 +125,7 @@ namespace DataRepositoriesTest
             Mock<Commentary> dummy = BuildFakeCommentary();
             match.AddCommentary(dummy.Object);
             matchesStorage.Add(match);
-            Match retrieved = matchesStorage.Get(match.Id);
+            Encounter retrieved = matchesStorage.Get(match.Id);
             Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
         }
 
@@ -134,7 +134,7 @@ namespace DataRepositoriesTest
         public void GetMatchNotFoundTest()
         {
             matchesStorage.Add(match);
-            Match retrieved = matchesStorage.Get(4);
+            Encounter retrieved = matchesStorage.Get(4);
         }
 
 
@@ -217,7 +217,7 @@ namespace DataRepositoriesTest
         public void GetAllTest()
         {
             matchesStorage.Add(match);
-            ICollection<Match> all = matchesStorage.GetAll();
+            ICollection<Encounter> all = matchesStorage.GetAll();
             Assert.AreEqual(all.Count, 1);
         }
 
@@ -236,7 +236,7 @@ namespace DataRepositoriesTest
             Mock<Match> modified = BuildModifiedFakeMatch();
             SetUpRepository();
             matchesStorage.Modify(modified.Object);
-            Match retrieved = matchesStorage.Get(3);
+            Encounter retrieved = matchesStorage.Get(3);
             Assert.AreEqual(retrieved.GetParticipants().Count, modified.Object.GetParticipants().Count);
             Assert.AreEqual(retrieved.Date, modified.Object.Date);
         }

@@ -6,13 +6,11 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.BusinessLogic;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 using System;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Net;
 using System.Reflection;
-using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -144,9 +142,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             IActionResult result;
             Sport sport = sports.Get(sportName);
-            ICollection<Match> added = fixtureService.AddFixture(sport);
+            ICollection<Encounter> added = fixtureService.AddFixture(sport);
             ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
-            foreach (Match match in added)
+            foreach (Encounter match in added)
             {
                 addedModelOut.Add(new MatchModelOut()
                 {

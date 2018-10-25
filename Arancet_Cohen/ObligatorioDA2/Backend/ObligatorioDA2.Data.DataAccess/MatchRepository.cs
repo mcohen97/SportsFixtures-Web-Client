@@ -27,7 +27,7 @@ namespace ObligatorioDA2.Data.Repositories
         }
 
 
-        public Match Add(Match aMatch)
+        public Encounter Add(Encounter aMatch)
         {
             Match added;
             try
@@ -41,7 +41,7 @@ namespace ObligatorioDA2.Data.Repositories
             return added;
         }
 
-        private Match TryAdd(Match aMatch)
+        private Match TryAdd(Encounter aMatch)
         {
             Match added;
             if (!Exists(aMatch.Id))
@@ -55,7 +55,7 @@ namespace ObligatorioDA2.Data.Repositories
             return added;
         }
 
-        private Match AddNew(Match aMatch)
+        private Match AddNew(Encounter aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
@@ -144,9 +144,9 @@ namespace ObligatorioDA2.Data.Repositories
             context.SaveChanges();
         }
 
-        public Match Get(int anId)
+        public Encounter Get(int anId)
         {
-            Match toReturn;
+            Encounter toReturn;
             try
             {
                 toReturn = TryGet(anId);
@@ -158,9 +158,9 @@ namespace ObligatorioDA2.Data.Repositories
             return toReturn;
         }
 
-        private Match TryGet(int anId)
+        private Encounter TryGet(int anId)
         {
-            Match toReturn;
+            Encounter toReturn;
             if (AnyWithId(anId))
             {
                 toReturn = GetExistentMatch(anId);
@@ -172,7 +172,7 @@ namespace ObligatorioDA2.Data.Repositories
             return toReturn;
         }
 
-        private Match GetExistentMatch(int anId)
+        private Encounter GetExistentMatch(int anId)
         {
             MatchEntity entity = context.Matches
                 .Include(m => m.SportEntity)
@@ -183,14 +183,14 @@ namespace ObligatorioDA2.Data.Repositories
                                                                    .ThenInclude(t => t.Sport)                                                                             
                                                                    .Where(mt => mt.MatchId == anId)
                                                                    .ToList();
-            Match conversion = matchConverter.ToMatch(entity,match_teams);
+            Encounter conversion = matchConverter.ToMatch(entity,match_teams);
             context.Entry(entity).State = EntityState.Detached;
             return conversion;
         }
 
-        public ICollection<Match> GetAll()
+        public ICollection<Encounter> GetAll()
         {
-            ICollection<Match> allOfThem;
+            ICollection<Encounter> allOfThem;
             try
             {
                 allOfThem = TryGetAll();
@@ -202,9 +202,9 @@ namespace ObligatorioDA2.Data.Repositories
             return allOfThem;
         }
 
-        private ICollection<Match> TryGetAll()
+        private ICollection<Encounter> TryGetAll()
         {
-            ICollection<Match> allOfThem = new List<Match>();
+            ICollection<Encounter> allOfThem = new List<Encounter>();
             IQueryable<MatchEntity> entities = context.Matches
                                             .Include(m => m.SportEntity)
                                             .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
@@ -213,7 +213,7 @@ namespace ObligatorioDA2.Data.Repositories
                 IQueryable<MatchTeam> matchPlayers = context.MatchTeams
                     .Include(mt => mt.Team)
                     .Where(mt => mt.MatchId == match.Id);
-                Match built = matchConverter.ToMatch(match, matchPlayers.ToList());
+                Encounter built = matchConverter.ToMatch(match, matchPlayers.ToList());
                 allOfThem.Add(built);
             }
             return allOfThem;
@@ -238,7 +238,7 @@ namespace ObligatorioDA2.Data.Repositories
             return !context.Matches.Any();
         }
 
-        public void Modify(Match aMatch)
+        public void Modify(Encounter aMatch)
         {
             try
             {
@@ -250,7 +250,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
         }
 
-        private void TryModify(Match aMatch)
+        private void TryModify(Encounter aMatch)
         {
             if (Exists(aMatch.Id))
             {
@@ -262,7 +262,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
         }
 
-        public void ModifyExistent(Match aMatch)
+        public void ModifyExistent(Encounter aMatch)
         {
             MatchEntity converted = matchConverter.ToEntity(aMatch);
             if (context.Matches.Any(m => m.Id == aMatch.Id))

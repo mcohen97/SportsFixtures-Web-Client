@@ -19,7 +19,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             commentConverter = new CommentMapper();
             sportConverter = new SportMapper();
         }
-        public MatchEntity ToEntity(Match aMatch)
+        public MatchEntity ToEntity(Encounter aMatch)
         {
             SportEntity sportEntity = sportConverter.ToEntity(aMatch.Sport);
             MatchEntity conversion = new MatchEntity()
@@ -49,7 +49,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             return created;
         }
 
-        public ICollection<MatchTeam> ConvertParticipants(Match aMatch)
+        public ICollection<MatchTeam> ConvertParticipants(Encounter aMatch)
         {
             MatchEntity matchEntity = ToEntity(aMatch);
             ICollection<MatchTeam> conversions = new List<MatchTeam>();

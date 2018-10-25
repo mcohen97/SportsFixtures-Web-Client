@@ -9,6 +9,6 @@ namespace ObligatorioDA2.BusinessLogic
         int RoundLength { get; set; }
         int DaysBetweenRounds { get; set; }
 
-        ICollection<Match> GenerateFixture(ICollection<Team> teams);
+        ICollection<Encounter> GenerateFixture(ICollection<Team> teams);
     }
 }

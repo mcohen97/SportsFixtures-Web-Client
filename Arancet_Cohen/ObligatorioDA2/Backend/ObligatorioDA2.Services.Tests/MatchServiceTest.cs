@@ -96,8 +96,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
-            Match added = serviceToTest.AddMatch(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
-            Match sameMatch = new Match(added.Id, new List<Team>() { teamA, teamB }, matchAvsB.Date.AddDays(1), sport);
+            Encounter added = serviceToTest.AddMatch(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
+            Encounter sameMatch = new Match(added.Id, new List<Team>() { teamA, teamB }, matchAvsB.Date.AddDays(1), sport);
             serviceToTest.AddMatch(sameMatch);
         }
 
@@ -108,7 +108,7 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
-            Match stored = serviceToTest.AddMatch(3, teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
+            Encounter stored = serviceToTest.AddMatch(3, teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
             Assert.AreEqual(stored.Date, matchAvsB.Date);
         }
 
@@ -123,7 +123,7 @@ namespace ObligatorioDA2.Services.Tests
         public void GetExistentMatchTest()
         {
             serviceToTest.AddMatch(matchAvsB);
-            Match retrieved = serviceToTest.GetMatch(matchAvsB.Id);
+            Encounter retrieved = serviceToTest.GetMatch(matchAvsB.Id);
             Assert.AreEqual(retrieved.Id, matchAvsB.Id);
 
         }
@@ -137,7 +137,7 @@ namespace ObligatorioDA2.Services.Tests
 
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchBvsC);
-            ICollection<Match> matches = serviceToTest.GetAllMatches(sport.Name);
+            ICollection<Encounter> matches = serviceToTest.GetAllMatches(sport.Name);
             Assert.AreEqual(matches.Count, 2);
         }
 
@@ -158,7 +158,7 @@ namespace ObligatorioDA2.Services.Tests
             serviceToTest.AddMatch(matchAvsB);
             serviceToTest.AddMatch(matchAvsC);
             serviceToTest.AddMatch(matchBvsC);
-            ICollection<Match> matches = serviceToTest.GetAllMatches(teamA.Id);
+            ICollection<Encounter> matches = serviceToTest.GetAllMatches(teamA.Id);
             Assert.AreEqual(2, matches.Count);
         }
 
@@ -183,10 +183,10 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
             serviceToTest.AddMatch(matchAvsB);
-            Match modifiedAvsB = new Match(1, new List<Team>() { teamB, teamA }, matchAvsB.Date.AddDays(1), sport);
+            Encounter modifiedAvsB = new Match(1, new List<Team>() { teamB, teamA }, matchAvsB.Date.AddDays(1), sport);
             SetUpRepository();
             serviceToTest.ModifyMatch(modifiedAvsB);
-            Match modified = serviceToTest.GetMatch(matchAvsB.Id);
+            Encounter modified = serviceToTest.GetMatch(matchAvsB.Id);
 
             Assert.AreEqual(modifiedAvsB.GetParticipants().Count, modified.GetParticipants().Count);
             Assert.AreEqual(modifiedAvsB.Date, modified.Date);
@@ -207,9 +207,9 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             serviceToTest.AddMatch(matchAvsB);
             SetUpRepository();
-            Match modifiedAvsB = new Match(1, new List<Team>() { teamB, teamA }, matchAvsB.Date.AddDays(1), sport);
+            Encounter modifiedAvsB = new Match(1, new List<Team>() { teamB, teamA }, matchAvsB.Date.AddDays(1), sport);
             serviceToTest.ModifyMatch(modifiedAvsB.Id, new List<int>() { teamB.Id, teamA.Id }, modifiedAvsB.Date, sport.Name);
-            Match stored = serviceToTest.GetMatch(matchAvsB.Id);
+            Encounter stored = serviceToTest.GetMatch(matchAvsB.Id);
             Assert.AreEqual(modifiedAvsB.Date, stored.Date);
         }
 
@@ -282,7 +282,7 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             usersRepo.Add(commentarist);
-            Match added = matchesRepo.Add(matchAvsB);
+            Encounter added = matchesRepo.Add(matchAvsB);
             SetUpRepository();
             serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "a Comment");
         }
@@ -301,7 +301,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(UserNotFoundException))]
         public void CommentNoUserWithIdTest()
         {
-            Match added = matchesRepo.Add(matchAvsB);
+            Encounter added = matchesRepo.Add(matchAvsB);
             serviceToTest.CommentOnMatch(added.Id, "usernae", "a Comment");
         }
 
@@ -314,8 +314,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
-            Match added1 = matchesRepo.Add(matchAvsB);
-            Match added2 = matchesRepo.Add(matchAvsC);
+            Encounter added1 = matchesRepo.Add(matchAvsB);
+            Encounter added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
             serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
             serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "another Comment");
@@ -333,8 +333,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
-            Match added1 = matchesRepo.Add(matchAvsB);
-            Match added2 = matchesRepo.Add(matchAvsC);
+            Encounter added1 = matchesRepo.Add(matchAvsB);
+            Encounter added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
             serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
             serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "another Comment");
@@ -353,8 +353,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
-            Match added1 = matchesRepo.Add(matchAvsB);
-            Match added2 = matchesRepo.Add(matchAvsC);
+            Encounter added1 = matchesRepo.Add(matchAvsB);
+            Encounter added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
             Commentary comment = serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
             Commentary retrieved = serviceToTest.GetComment(comment.Id);

@@ -26,8 +26,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         private Mock<ITeamRepository> teamsRepo;
         private IFixtureService fixture;
         private ICollection<Team> teamsCollection;
-        private ICollection<Match> oneMatchCollection;
-        private ICollection<Match> homeAwayMatchCollection;
+        private ICollection<Encounter> oneMatchCollection;
+        private ICollection<Encounter> homeAwayMatchCollection;
         private Mock<IOptions<FixtureStrategies>> settings;
 
 
@@ -53,7 +53,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 teamC,
                 teamD
             };
-            oneMatchCollection = new List<Match>
+            oneMatchCollection = new List<Encounter>
             {
                 new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
                 new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
@@ -62,7 +62,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 new Match(5, List(teamA, teamD), DateTime.Now.AddDays(16), testSport),
                 new Match(6, List(teamC, teamB), DateTime.Now.AddDays(16), testSport)
             };
-            homeAwayMatchCollection = new List<Match>
+            homeAwayMatchCollection = new List<Encounter>
             {
                 new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
                 new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
@@ -92,7 +92,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             matchesRepo = new Mock<IMatchRepository>();
             matchesRepo.Setup(m => m.Add(It.IsAny<Match>())).Returns((Match mat) => { return mat; });
             matchesRepo.Setup(m => m.Exists(It.IsAny<int>())).Returns(false);
-            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Match>());
+            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Encounter>());
 
             teamsRepo = new Mock<ITeamRepository>();
             teamsRepo.Setup(t => t.GetTeams(It.IsAny<string>())).Returns(teamsCollection);
@@ -183,7 +183,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(error.ErrorMessage, errorMessagge);
         }
 
-        private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Match> matches)
+        private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Encounter> matches)
         {
             ICollection<string> errorMessagges = new List<string>();
             foreach (Match aMatch in matches)

@@ -32,32 +32,32 @@ namespace ObligatorioDA2.Services
             fixtureAlgorithm = algorithm ?? throw new ArgumentNullException();
         }
 
-        private void RollBack(ICollection<Match> added)
+        private void RollBack(ICollection<Encounter> added)
         {
-            foreach (Match match in added)
+            foreach (Encounter match in added)
             {
                 matchService.DeleteMatch(match.Id);
             }
         }
 
-        public ICollection<Match> AddFixture(ICollection<string> teamsNames, string sportName)
+        public ICollection<Encounter> AddFixture(ICollection<string> teamsNames, string sportName)
         {
             ICollection<Team> teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<Match> AddFixture(Sport sport)
+        public ICollection<Encounter> AddFixture(Sport sport)
         {
             ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<Match> AddFixture(ICollection<Team> teamsCollection)
+        public ICollection<Encounter> AddFixture(ICollection<Team> teamsCollection)
         {
-            ICollection<Match> added = new List<Match>();
+            ICollection<Encounter> added = new List<Encounter>();
             try
             {
-                ICollection<Match> generatedMatches = fixtureAlgorithm.GenerateFixture(teamsCollection);
+                ICollection<Encounter> generatedMatches = fixtureAlgorithm.GenerateFixture(teamsCollection);
                 AddMatches(ref added, generatedMatches);
             }
             catch (TeamAlreadyHasMatchException e)
@@ -74,11 +74,11 @@ namespace ObligatorioDA2.Services
             return added;
 
         }
-        private ICollection<Match> AddMatches(ref ICollection<Match> added, ICollection<Match> generated)
+        private ICollection<Encounter> AddMatches(ref ICollection<Encounter> added, ICollection<Encounter> generated)
         {
-            foreach (Match match in generated)
+            foreach (Encounter match in generated)
             {
-                Match matchAdded = matchService.AddMatch(match);
+                Encounter matchAdded = matchService.AddMatch(match);
                 added.Add(matchAdded);
             }
             return added;

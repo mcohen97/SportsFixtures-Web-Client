@@ -44,7 +44,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetTest()
         {
             //Arrange.
-            matchService.Setup(s => s.GetAllMatches()).Returns(new List<Match>() { testMatch });
+            matchService.Setup(s => s.GetAllMatches()).Returns(new List<Encounter>() { testMatch });
 
             //Act.
             IActionResult result = controller.Get();
@@ -483,7 +483,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetSportMatchesTest() {
             //Arrange.
-            ICollection<Match> dummies = new List<Match>() { testMatch, testMatch, testMatch };
+            ICollection<Encounter> dummies = new List<Encounter>() { testMatch, testMatch, testMatch };
             matchService.Setup(ms => ms.GetAllMatches(It.IsAny<string>())).Returns(dummies);
 
             //Act.
@@ -523,7 +523,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetTeamMatchesTest() {
             //Arrange.
-            ICollection<Match> dummies = new List<Match>() { testMatch, testMatch, testMatch };
+            ICollection<Encounter> dummies = new List<Encounter>() { testMatch, testMatch, testMatch };
             matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Returns(dummies);
 
             //Act.
