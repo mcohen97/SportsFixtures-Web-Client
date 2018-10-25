@@ -7,37 +7,67 @@ namespace ObligatorioDA2.BusinessLogic
 {
     public class Match
     {
-        private Team homeTeam;
-        private Team awayTeam;
+        private ICollection<Team> participants;
         private DateTime date;
         private Sport sport;
         private ICollection<Commentary> commentaries;
         public int Id { get; private set; }
 
-        public Match(Team home, Team away, DateTime date, Sport aSport)
+        public Match(ICollection<Team> teams, DateTime date, Sport aSport)
         {
-            HomeTeam = home;
-            AwayTeam = away;
-            Date = date;
             Sport = aSport;
+            SetTeams(teams);
+            Date = date;
             commentaries = new List<Commentary>();
         }
 
-        public Match(int anId, Team home, Team away, DateTime date, Sport sport) : this(home, away, date, sport)
+        public void SetTeams(ICollection<Team> teams)
+        {
+            if (teams == null) {
+                throw new InvalidMatchDataException("A match can't be null");
+            }
+            if (teams.Count < 2) {
+                throw new InvalidMatchDataException("A match can't have less than 2 teams");
+            }
+            if (RepeatedMatches(teams)) {
+                throw new InvalidMatchDataException("A match can't have repeated teams");
+            }
+            if (Sport.IsTwoTeams && teams.Count > 2) {
+                throw new InvalidMatchDataException("The sport does not allow more than two teams");
+            }
+            if (!TeamsPlaySport(teams, Sport)) {
+                throw new InvalidMatchDataException("The teams must play the specified sport");
+            }
+            participants = teams;
+        }
+
+        private bool TeamsPlaySport(ICollection<Team> teams, Sport sport)
+        {
+            return !teams.Any(t => !t.Sport.Equals(sport));
+        }
+
+        private bool RepeatedMatches(ICollection<Team> teams)
+        {
+            return teams.Count != teams.Distinct().Count();
+        }
+
+        public Match(int anId, ICollection<Team> teams, DateTime date, Sport sport) : this(teams, date, sport)
         {
             Id = anId;
         }
 
-        public Match(int anId, Team home, Team away, DateTime date, Sport sport, ICollection<Commentary> comments) : this(anId, home, away, date, sport)
+        public Match(int anId, ICollection<Team> teams, DateTime date, Sport sport, ICollection<Commentary> comments) : this(anId, teams, date, sport)
         {
             commentaries = comments;
         }
 
-        public Team HomeTeam { get { return homeTeam; } set { SetHomeTeam(value); } }
-        public Team AwayTeam { get { return awayTeam; } set { SetAwayTeam(value); } }
         public DateTime Date { get { return date; } set { SetDate(value); } }
 
         public Sport Sport { get { return sport; } set { SetSport(value); } }
+
+        public ICollection<Team> GetParticipants() {
+            return participants;
+        }
 
         public bool HasCommentary(Commentary commentary)
         {
@@ -66,27 +96,6 @@ namespace ObligatorioDA2.BusinessLogic
             commentaries.Clear();
         }
 
-
-        private void SetHomeTeam(Team value)
-        {
-            if (value == null)
-                throw new InvalidMatchDataException("Home team can't be null");
-            if (value.Equals(awayTeam))
-                throw new InvalidMatchDataException("Home team can't be same as away team");
-
-            homeTeam = value;
-        }
-
-        private void SetAwayTeam(Team value)
-        {
-            if (value == null)
-                throw new InvalidMatchDataException("Away team can't be null");
-            if (value.Equals(homeTeam))
-                throw new InvalidMatchDataException("Away team can't be same as home team");
-
-            awayTeam = value;
-        }
-
         private void SetDate(DateTime value)
         {
             date = value;
@@ -101,7 +110,6 @@ namespace ObligatorioDA2.BusinessLogic
             }
             sport = value;
         }
-
 
         public Commentary GetCommentary(int id)
         {
