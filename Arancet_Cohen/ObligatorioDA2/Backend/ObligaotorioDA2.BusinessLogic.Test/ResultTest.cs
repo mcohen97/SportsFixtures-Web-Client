@@ -16,7 +16,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        public void AddResultTest() {
+        public void AddPositionTest() {
             testResult.Add(testTeam,1);
         }
     }
