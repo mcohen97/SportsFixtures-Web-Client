@@ -1,6 +1,7 @@
-﻿using System;
+﻿using ObligatorioDA2.BusinessLogic.Exceptions;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace ObligatorioDA2.BusinessLogic
 {
@@ -12,9 +13,22 @@ namespace ObligatorioDA2.BusinessLogic
             positions = new List<Tuple<Team, int>>();
         }
 
-        public void Add(Team testTeam, int position)
+        public void Add(Team participant, int position)
         {
-            positions.Add(new Tuple<Team, int>(testTeam, position));
+            if (participant == null) {
+                throw new InvalidResultDataException("participant can't be null");
+            }
+
+            if (position <= 0)
+            {
+                throw new InvalidResultDataException("position cant be less than 1");
+            }
+
+            if (positions.Any(p => p.Item1.Equals(participant)))
+            {
+                throw new InvalidResultDataException("a same team can't have two positions");
+            }
+            positions.Add(new Tuple<Team, int>(participant, position));
         }
 
         public ICollection<Tuple<Team, int>> GetPositions() {
