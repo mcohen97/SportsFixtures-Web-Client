@@ -8,7 +8,7 @@ using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 
-namespace BusinessLogicTest
+namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
     public class FixtureTest

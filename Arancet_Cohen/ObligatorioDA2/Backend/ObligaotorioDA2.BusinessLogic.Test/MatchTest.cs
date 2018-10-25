@@ -7,7 +7,7 @@ using ObligatorioDA2.BusinessLogic.Exceptions;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using System.Linq;
 
-namespace BusinessLogicTest
+namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
     public class MatchTest

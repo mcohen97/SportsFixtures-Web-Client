@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.BusinessLogic;
 using System.Collections.Generic;
 
-namespace BusinessLogicTest
+namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
     public class UserFactoryTest

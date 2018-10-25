@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 
-namespace BusinessLogicTest
+namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
     public class SportTest
