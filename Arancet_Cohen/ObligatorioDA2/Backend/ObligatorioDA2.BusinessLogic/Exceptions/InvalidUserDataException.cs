@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ObligatorioDA2.BusinessLogic.Exceptions
 {
-    public class InvalidUserDataException:Exception
+    public class InvalidUserDataException: InvalidDataException
     {
         public InvalidUserDataException(string message) : base(message) {
 
