@@ -6,6 +6,19 @@ namespace ObligatorioDA2.BusinessLogic
 {
     public class Result
     {
-        public ICollection<Tuple<Team,int>> Positions { get; set; }
+        private ICollection<Tuple<Team, int>> positions;
+
+        public Result() {
+            positions = new List<Tuple<Team, int>>();
+        }
+
+        public void Add(Team testTeam, int position)
+        {
+            positions.Add(new Tuple<Team, int>(testTeam, position));
+        }
+
+        public ICollection<Tuple<Team, int>> GetPositions() {
+            return positions;
+        }
     }
 }
