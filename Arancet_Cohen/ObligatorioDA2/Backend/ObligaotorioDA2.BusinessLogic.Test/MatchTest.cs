@@ -5,15 +5,17 @@ using System.Collections.Generic;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using Match = ObligatorioDA2.BusinessLogic.Match;
+using System.Linq;
 
 namespace BusinessLogicTest
 {
     [TestClass]
     public class MatchTest
     {
-        private Mock<Team> teamA;
-        private Mock<Team> teamB;
-        private Mock<Sport> sport;
+        private Team teamA;
+        private Team teamB;
+        private Team teamC;
+        private Sport sport;
         private DateTime date;
         private Match match;
         private Mock<Commentary> commentary1;
@@ -26,9 +28,10 @@ namespace BusinessLogicTest
         public void TestInitialize()
         {
             //Create mocks
-            sport = new Mock<Sport>("Soccer",true);
-            teamA = new Mock<Team>(1, "TeamA", "Photo/A", sport.Object);
-            teamB = new Mock<Team>(2, "TeamB", "Photo/B", sport.Object);
+            sport = new Sport("Soccer",true);
+            teamA = new Team(1, "TeamA", "Photo/A", sport);
+            teamB = new Team(2, "TeamB", "Photo/B", sport);
+            teamC = new Team(2, "TeamC", "Photo/C", sport);
             date = new DateTime(2019, 1, 25, 13, 30, 0);
             Mock<User> commentarist = CreateUser();
             commentary1 = new Mock<Commentary>(1, "Commentary 1", commentarist.Object);
@@ -36,15 +39,13 @@ namespace BusinessLogicTest
             commentary3 = new Mock<Commentary>(3, "Commentary 3", commentarist.Object);
 
             //Configure mocks
-            teamA.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
-            teamB.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
+            //teamA.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
+            //teamB.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
             commentary1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 1);
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
 
-
-
-            match = new Match(3, teamA.Object, teamB.Object, date, sport.Object);
+            match = new Match(3,new List<Team>() { teamA, teamB }, date, sport);
         }
 
         private Mock<User> CreateUser()
@@ -74,31 +75,9 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
-        public void GetHomeTeamTest()
+        public void GetTeamTest()
         {
-            Assert.AreEqual(teamA.Object.Id, match.HomeTeam.Id);
-        }
-
-        [TestMethod]
-        public void GetAwayTeamTest()
-        {
-            Assert.AreEqual(teamB.Object.Id, match.AwayTeam.Id);
-        }
-
-        [TestMethod]
-        public void SetHomeTeamTest()
-        {
-            Mock<Team> homeTeam = new Mock<Team>(3, "HomeTeam", "photo", sport.Object);
-            match.HomeTeam = homeTeam.Object;
-            Assert.AreEqual(homeTeam.Object.Id, match.HomeTeam.Id);
-        }
-
-        [TestMethod]
-        public void SetAwayTeamTest()
-        {
-            Mock<Team> awayTeam = new Mock<Team>(3, "AwayTeam", "photo", sport.Object);
-            match.AwayTeam = awayTeam.Object;
-            Assert.AreEqual(awayTeam.Object.Id, match.AwayTeam.Id);
+            Assert.IsTrue(match.GetParticipants().Any(t => t.Id == teamA.Id));
         }
 
         [TestMethod]
@@ -181,37 +160,46 @@ namespace BusinessLogicTest
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
-        public void SetNullHomeTeamTest()
+        public void SetNullTeamsTest()
         {
-            match.HomeTeam = null;
+            match = new Match(3, null, date, sport);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
-        public void SetNullAwayTeamTest()
+        public void RepeatedTeamsTest()
         {
-            match.AwayTeam = null;
+            match = new Match(3, new List<Team>() { teamA, teamA }, date, sport);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
-        public void HomeEqualsAwayTest()
+        public void DifferentSportTeamsTest()
         {
-            match.AwayTeam = teamA.Object;
+            sport = new Sport("Basketball", true);
+            teamB = new Team(2, "TeamB", "Photo/B", sport);
+            match = new Match(3, new List<Team>() { teamA, teamB }, date, sport);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void LessThanTwoTeamsTest() {
+            match = new Match(3, new List<Team>() {}, date, sport);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void TooManyTeamsAllowedBySport() {
+            sport = new Sport("Basketball", true);
+            match = new Match(3, new List<Team>() { teamA, teamB,  teamC}, date, sport);
+
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
         public void SetNullSportTest()
         {
-            match = new Match(3, teamA.Object, teamB.Object, date, null);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
-        public void AwayEqualsHomeTest()
-        {
-            match.HomeTeam = teamB.Object;
+            match = new Match(3,new List<Team>() { teamA, teamB }, date, null);
         }
 
         [TestMethod]
