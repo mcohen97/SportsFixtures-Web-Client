@@ -120,6 +120,12 @@ namespace BusinessLogicTest
         }
 
         [TestMethod]
+        public void NotEqualsNullTest() {
+            Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport", true));
+            Assert.IsFalse(aTeam.Equals(null));
+        }
+
+        [TestMethod]
         public void GetHashCodeTest()
         {
             Team aTeam = new Team(1, "TeamA", "somePath", new Sport("aSport",true));
