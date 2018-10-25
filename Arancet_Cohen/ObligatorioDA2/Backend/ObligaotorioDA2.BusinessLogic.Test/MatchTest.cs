@@ -39,8 +39,6 @@ namespace ObligatorioDA2.BusinessLogic.Test
             commentary3 = new Mock<Commentary>(3, "Commentary 3", commentarist.Object);
 
             //Configure mocks
-            //teamA.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 1);
-            //teamB.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Team)?.Id == 2);
             commentary1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 1);
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
@@ -208,6 +206,22 @@ namespace ObligatorioDA2.BusinessLogic.Test
         {
             match.AddCommentary(commentary1.Object);
             match.AddCommentary(commentary1.Object);
+        }
+
+        [TestMethod]
+        public void SetResultTest() {
+            Result fakeResult = GetFakeResult();
+            match.SetResult(fakeResult);
+            Assert.IsTrue(match.HasResult);
+            Assert.IsNotNull(match.Result);
+        }
+
+        private Result GetFakeResult()
+        {
+            Result toGenerate = new Result();
+            toGenerate.Add(teamA, 1);
+            toGenerate.Add(teamB, 2);
+            return toGenerate;
         }
     }
 }
