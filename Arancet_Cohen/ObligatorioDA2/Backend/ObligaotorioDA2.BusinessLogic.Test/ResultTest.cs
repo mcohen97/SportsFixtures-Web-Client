@@ -18,6 +18,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         [TestMethod]
         public void AddPositionTest() {
             testResult.Add(testTeam,1);
+            Assert.IsTrue(testResult.GetPositions().Any());
         }
     }
 }
