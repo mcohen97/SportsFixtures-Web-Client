@@ -151,8 +151,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 addedModelOut.Add(new MatchModelOut()
                 {
                     Id = match.Id,
-                    AwayTeamId = match.AwayTeam.Id,
-                    HomeTeamId = match.HomeTeam.Id,
+                    TeamsIds = match.GetParticipants().Select(p => p.Id).ToList(),
                     SportName = match.Sport.Name,
                     Date = match.Date,
                     CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()

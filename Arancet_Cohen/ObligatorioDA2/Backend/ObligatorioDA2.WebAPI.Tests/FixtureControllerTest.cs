@@ -55,30 +55,33 @@ namespace ObligatorioDA2.WebAPI.Tests
             };
             oneMatchCollection = new List<Match>
             {
-                new Match(1, teamA, teamB, DateTime.Now.AddDays(1), testSport),
-                new Match(2, teamC, teamD, DateTime.Now.AddDays(1), testSport),
-                new Match(3, teamA, teamC, DateTime.Now.AddDays(8), testSport),
-                new Match(4, teamD, teamB, DateTime.Now.AddDays(8), testSport),
-                new Match(5, teamA, teamD, DateTime.Now.AddDays(16), testSport),
-                new Match(6, teamC, teamB, DateTime.Now.AddDays(16), testSport)
+                new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
+                new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
+                new Match(3, List(teamA, teamC), DateTime.Now.AddDays(8), testSport),
+                new Match(4, List(teamD, teamB), DateTime.Now.AddDays(8), testSport),
+                new Match(5, List(teamA, teamD), DateTime.Now.AddDays(16), testSport),
+                new Match(6, List(teamC, teamB), DateTime.Now.AddDays(16), testSport)
             };
             homeAwayMatchCollection = new List<Match>
             {
-                new Match(1, teamA, teamB, DateTime.Now.AddDays(1), testSport),
-                new Match(2, teamC, teamD, DateTime.Now.AddDays(1), testSport),
-                new Match(3, teamA, teamC, DateTime.Now.AddDays(8), testSport),
-                new Match(4, teamD, teamB, DateTime.Now.AddDays(8), testSport),
-                new Match(5, teamA, teamD, DateTime.Now.AddDays(16), testSport),
-                new Match(6, teamC, teamB, DateTime.Now.AddDays(16), testSport),
-                new Match(7, teamB, teamA, DateTime.Now.AddDays(24), testSport),
-                new Match(8, teamD, teamC, DateTime.Now.AddDays(24), testSport),
-                new Match(9, teamC, teamA, DateTime.Now.AddDays(32), testSport),
-                new Match(10, teamB, teamD, DateTime.Now.AddDays(32), testSport),
-                new Match(11, teamD, teamA, DateTime.Now.AddDays(40), testSport),
-                new Match(12, teamB, teamC, DateTime.Now.AddDays(40), testSport)
+                new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
+                new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
+                new Match(3, List(teamA, teamC), DateTime.Now.AddDays(8), testSport),
+                new Match(4, List(teamD, teamB), DateTime.Now.AddDays(8), testSport),
+                new Match(5, List(teamA, teamD), DateTime.Now.AddDays(16), testSport),
+                new Match(6, List(teamC, teamB), DateTime.Now.AddDays(16), testSport),
+                new Match(7, List(teamB, teamA), DateTime.Now.AddDays(24), testSport),
+                new Match(8, List(teamD, teamC), DateTime.Now.AddDays(24), testSport),
+                new Match(9, List(teamC, teamA), DateTime.Now.AddDays(32), testSport),
+                new Match(10, List(teamB, teamD), DateTime.Now.AddDays(32), testSport),
+                new Match(11, List(teamD, teamA), DateTime.Now.AddDays(40), testSport),
+                new Match(12, List(teamB, teamC), DateTime.Now.AddDays(40), testSport)
             };
         }
 
+        private ICollection<Team> List(Team home, Team away) {
+            return new List<Team>() { home, away };
+        }
         private void SetUpController()
         {
             sportsRepo = new Mock<ISportRepository>();
@@ -185,8 +188,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             ICollection<string> errorMessagges = new List<string>();
             foreach (Match aMatch in matches)
             {
-                errorMessagges.Add(aMatch.HomeTeam.Name + " already has a match on date " + new DateTime(aMatch.Date.Year,aMatch.Date.Month,aMatch.Date.Day));
-                errorMessagges.Add(aMatch.AwayTeam.Name + " already has a match on date " + new DateTime(aMatch.Date.Year, aMatch.Date.Month, aMatch.Date.Day));
+                foreach (Team team in aMatch.GetParticipants()) {
+                    errorMessagges.Add(team.Name + " already has a match on date " + new DateTime(aMatch.Date.Year, aMatch.Date.Month, aMatch.Date.Day));
+                }
             }
             return errorMessagges;
         }

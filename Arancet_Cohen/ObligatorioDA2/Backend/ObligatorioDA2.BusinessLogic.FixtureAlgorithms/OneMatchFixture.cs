@@ -1,6 +1,7 @@
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
 {
@@ -30,7 +31,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             ICollection<Match> generatedFixture = new List<Match>();
 
             if (teams.Count % 2 != 0)
-                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", new Sport("Free match",true)));
+                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", teams.First().Sport));
 
             int teamsCount = teams.Count;
             int matchesCount = teamsCount * (teamsCount - 1) / 2; //Combinations(teams, 2);
@@ -68,8 +69,10 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             while (matches.MoveNext())
             {
                 Match actual = matches.Current;
-                if (actual.HomeTeam.Id == -1 || actual.AwayTeam.Id == -1)
+                if (actual.GetParticipants().Any(t => t.Id == -1))
+                {
                     matchesToRemove.Add(actual);
+                }
             }
 
             foreach (Match actual in matchesToRemove)
@@ -129,7 +132,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             for (int i = 0; i < actualRound.GetLength(1); i++)
             {
                 Sport sport = actualRound[0, i].Sport;
-                Match newMatch = new Match(actualRound[0, i], actualRound[1, i], roundDate, sport);
+                Match newMatch = new Match(new List<Team>() { actualRound[0, i], actualRound[1, i] }, roundDate, sport);
                 fixture.Add(newMatch);
             }
         }

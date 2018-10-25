@@ -9,9 +9,9 @@ namespace ObligatorioDA2.Services.Interfaces
     {
         Match AddMatch(Match aMatch);
 
-        Match AddMatch(int homeTeamId, int awayTeamId, string sportName, DateTime date);
+        Match AddMatch(ICollection<int> teamsIds, string sportName, DateTime date);
 
-        Match AddMatch(int assignedId, int homeTeamId, int awayTeamId, string sportName, DateTime date);
+        Match AddMatch(int assignedId, ICollection<int> teamsIds, string sportName, DateTime date);
 
         ICollection<Match> GetAllMatches();
 
@@ -21,7 +21,7 @@ namespace ObligatorioDA2.Services.Interfaces
 
         void ModifyMatch(Match aMatch);
 
-        void ModifyMatch(int idMatch, int idHome, int idAway, DateTime date, string sportName);
+        void ModifyMatch(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName);
 
         ICollection<Match> GetAllMatches(string sportName);
 

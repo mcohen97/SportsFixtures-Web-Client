@@ -53,7 +53,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Match added = matchService.AddMatch(input.HomeTeamId, input.AwayTeamId, input.SportName, input.Date);
+                Match added = matchService.AddMatch(input.TeamIds, input.SportName, input.Date);
                 MatchModelOut output = BuildModelOut(added);
                 result = CreatedAtRoute("GetMatchById",new {matchId = added.Id }, output);
             }
@@ -114,8 +114,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                matchService.ModifyMatch(id, aMatch.HomeTeamId,
-                     aMatch.AwayTeamId, aMatch.Date, aMatch.SportName);
+                matchService.ModifyMatch(id, aMatch.TeamIds, aMatch.Date, aMatch.SportName);
                 MatchModelOut output = BuildModelout(id, aMatch);
                 result = Ok(output);
             }
@@ -130,7 +129,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             catch (EntityNotFoundException e)
             {
-                Match added = matchService.AddMatch(id, aMatch.HomeTeamId, aMatch.AwayTeamId, aMatch.SportName, aMatch.Date);
+                Match added = matchService.AddMatch(id, aMatch.TeamIds, aMatch.SportName, aMatch.Date);
                 MatchModelOut output = BuildModelOut(added);
                 result = CreatedAtRoute("GetMatchById", new { matchId = added.Id }, output);
             }
@@ -139,12 +138,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private MatchModelOut BuildModelout(int id,MatchModelIn aMatch)
         {
+
             MatchModelOut output = new MatchModelOut()
             {
                 Id = id,
                 SportName = aMatch.SportName,
-                HomeTeamId = aMatch.HomeTeamId,
-                AwayTeamId = aMatch.AwayTeamId,
+                TeamsIds = aMatch.TeamIds,
                 Date = aMatch.Date
             };
             return output;
@@ -260,12 +259,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
         private MatchModelOut BuildModelOut(Match aMatch)
         {
+            ICollection<int> teamIds = aMatch.GetParticipants().Select(p => p.Id).ToList();
             return new MatchModelOut()
             {
                 Id = aMatch.Id,
                 SportName = aMatch.Sport.Name,
-                AwayTeamId = aMatch.AwayTeam.Id,
-                HomeTeamId = aMatch.HomeTeam.Id,
+                TeamsIds = teamIds,
                 Date= aMatch.Date,
                 CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
             };

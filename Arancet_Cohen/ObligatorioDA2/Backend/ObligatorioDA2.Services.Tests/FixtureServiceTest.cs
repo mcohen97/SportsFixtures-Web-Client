@@ -33,11 +33,12 @@ namespace ObligatorioDA2.Services.Tests
         private ITeamRepository teamStorage;
         private ISportRepository sportStorage;
         private FixtureService fixtureService;
+        private DatabaseConnection context;
 
         [TestInitialize]
         public void Initialize()
         {
-            sport = new Mock<Sport>("Soccer",true).Object;
+            sport = new Sport("Soccer",true);
             teamA = new Mock<Team>(1, "teamA", "photo", sport).Object;
             teamB = new Mock<Team>(2, "teamB", "photo", sport).Object;
             teamC = new Mock<Team>(3, "teamC", "photo", sport).Object;
@@ -53,8 +54,7 @@ namespace ObligatorioDA2.Services.Tests
             oneMatchGenerator = new OneMatchFixture(initialDate, 2, 5);
             twoMatchsGenerator = new HomeAwayFixture(initialDate, 2, 5);
             SetUpRepository();
-            matchStorage.Clear();
-            teamStorage.Clear();
+            context.Database.EnsureDeleted();
             fixtureService = new FixtureService(matchStorage, teamStorage, sportStorage);
         }
 
@@ -63,7 +63,7 @@ namespace ObligatorioDA2.Services.Tests
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                 .UseInMemoryDatabase(databaseName: "FixtureService")
                 .Options;
-            DatabaseConnection context = new DatabaseConnection(options);
+            context = new DatabaseConnection(options);
             matchStorage = new MatchRepository(context);
             teamStorage = new TeamRepository(context);
             sportStorage = new SportRepository(context);
@@ -145,7 +145,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureTeamAlreadyHasMatchTest()
         {
             fixtureService.FixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
-            Match aMatch = new Match(teamA, teamB, initialDate, sport);
+            Match aMatch = new Match(new List<Team>() { teamA, teamB }, initialDate, sport);
             matchStorage.Add(aMatch);
             fixtureService.AddFixture(teamsCollection);
             Assert.IsTrue(matchStorage.IsEmpty());

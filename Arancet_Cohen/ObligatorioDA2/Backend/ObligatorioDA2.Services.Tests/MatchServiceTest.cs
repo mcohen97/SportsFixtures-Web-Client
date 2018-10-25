@@ -12,6 +12,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Exceptions;
+using System.Linq;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -30,6 +31,7 @@ namespace ObligatorioDA2.Services.Tests
         private Match matchAvsB;
         private Match matchAvsC;
         private Match matchBvsC;
+        private DatabaseConnection context;
 
         [TestInitialize]
         public void SetUp()
@@ -38,14 +40,11 @@ namespace ObligatorioDA2.Services.Tests
             teamA = new Team(1, "teamA", "photo", sport);
             teamB = new Team(2, "teamB", "photo", sport);
             teamC = new Team(3, "teamC", "photo", sport);
-            matchAvsB = new Match(1, teamA, teamB, DateTime.Now.AddDays(1), sport);
-            matchAvsC = new Match(2, teamA, teamC, DateTime.Now.AddDays(2), sport);
-            matchBvsC = new Match(3, teamB, teamC, DateTime.Now.AddDays(3), sport);
+            matchAvsB = new Match(1, new List<Team>() { teamA, teamB }, DateTime.Now.AddDays(1), sport);
+            matchAvsC = new Match(2, new List<Team>() { teamA, teamC }, DateTime.Now.AddDays(2), sport);
+            matchBvsC = new Match(3, new List<Team>() { teamB, teamC }, DateTime.Now.AddDays(3), sport);
             SetUpRepository();
-            matchesRepo.Clear();
-            sportsRepo.Clear();
-            teamsRepo.Clear();
-            usersRepo.Clear();
+            context.Database.EnsureDeleted();
         }
 
         private void SetUpRepository()
@@ -54,13 +53,12 @@ namespace ObligatorioDA2.Services.Tests
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
                .UseInMemoryDatabase(databaseName: "MatchService")
                .Options;
-            DatabaseConnection context = new DatabaseConnection(options);
+            context = new DatabaseConnection(options);
             matchesRepo = new MatchRepository(context);
             sportsRepo = new SportRepository(context);
             teamsRepo = new TeamRepository(context);
             usersRepo = new UserRepository(context);
             serviceToTest = new MatchService(matchesRepo, teamsRepo, sportsRepo, usersRepo);
-            context.Comments.RemoveRange(context.Comments);
         }
 
         [TestMethod]
@@ -75,7 +73,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddAlreadyExistentTest()
         {
             serviceToTest.AddMatch(matchAvsB);
-            Match sameMatch = new Mock<Match>(1, teamA, teamB, matchAvsB.Date.AddDays(1), sport).Object;
+            Match sameMatch = new Mock<Match>(1, new List<Team>() { teamA, teamB }, matchAvsB.Date.AddDays(1), sport).Object;
             serviceToTest.AddMatch(sameMatch);
         }
 
@@ -85,7 +83,8 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            serviceToTest.AddMatch(matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id, matchAvsB.Sport.Name, matchAvsB.Date);
+            ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
+            serviceToTest.AddMatch(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
             Assert.AreEqual(serviceToTest.GetAllMatches().Count, 1);
         }
 
@@ -96,8 +95,9 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            Match added = serviceToTest.AddMatch(matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id, matchAvsB.Sport.Name, matchAvsB.Date);
-            Match sameMatch = new Mock<Match>(added.Id, teamA, teamB, matchAvsB.Date.AddDays(1), sport).Object;
+            ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
+            Match added = serviceToTest.AddMatch(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
+            Match sameMatch = new Match(added.Id, new List<Team>() { teamA, teamB }, matchAvsB.Date.AddDays(1), sport);
             serviceToTest.AddMatch(sameMatch);
         }
 
@@ -107,7 +107,8 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            Match stored = serviceToTest.AddMatch(3, matchAvsB.HomeTeam.Id, matchAvsB.AwayTeam.Id, matchAvsB.Sport.Name, matchAvsB.Date);
+            ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
+            Match stored = serviceToTest.AddMatch(3, teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
             Assert.AreEqual(stored.Date, matchAvsB.Date);
         }
 
@@ -182,13 +183,12 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
             serviceToTest.AddMatch(matchAvsB);
-            Match modifiedAvsB = new Match(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport);
+            Match modifiedAvsB = new Match(1, new List<Team>() { teamB, teamA }, matchAvsB.Date.AddDays(1), sport);
             SetUpRepository();
             serviceToTest.ModifyMatch(modifiedAvsB);
             Match modified = serviceToTest.GetMatch(matchAvsB.Id);
 
-            Assert.AreEqual(modifiedAvsB.HomeTeam.Name, modified.HomeTeam.Name);
-            Assert.AreEqual(modifiedAvsB.AwayTeam.Name, modified.AwayTeam.Name);
+            Assert.AreEqual(modifiedAvsB.GetParticipants().Count, modified.GetParticipants().Count);
             Assert.AreEqual(modifiedAvsB.Date, modified.Date);
         }
 
@@ -207,8 +207,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             serviceToTest.AddMatch(matchAvsB);
             SetUpRepository();
-            Match modifiedAvsB = new Match(1, teamB, teamA, matchAvsB.Date.AddDays(1), sport);
-            serviceToTest.ModifyMatch(modifiedAvsB.Id, teamB.Id, teamA.Id, modifiedAvsB.Date, sport.Name);
+            Match modifiedAvsB = new Match(1, new List<Team>() { teamB, teamA }, matchAvsB.Date.AddDays(1), sport);
+            serviceToTest.ModifyMatch(modifiedAvsB.Id, new List<int>() { teamB.Id, teamA.Id }, modifiedAvsB.Date, sport.Name);
             Match stored = serviceToTest.GetMatch(matchAvsB.Id);
             Assert.AreEqual(modifiedAvsB.Date, stored.Date);
         }
@@ -221,7 +221,7 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
-            serviceToTest.ModifyMatch(5, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
+            serviceToTest.ModifyMatch(5,new List<int>() { teamC.Id, teamA.Id }, matchAvsB.Date, sport.Name);
         }
 
         [TestMethod]
@@ -229,7 +229,7 @@ namespace ObligatorioDA2.Services.Tests
         public void ModifyNoTeamWithIdTest()
         {
             serviceToTest.AddMatch(matchAvsB);
-            serviceToTest.ModifyMatch(matchAvsB.Id, teamC.Id, teamA.Id, matchAvsB.Date, sport.Name);
+            serviceToTest.ModifyMatch(matchAvsB.Id,new List<int>() { teamC.Id, teamA.Id }, matchAvsB.Date, sport.Name);
         }
 
         [TestMethod]

@@ -16,12 +16,14 @@ namespace ObligatorioDA2.Data.Repositories
     {
         private DatabaseConnection context;
         private MatchMapper matchConverter;
+        private TeamMapper teamConverter;
         private CommentMapper commentConverter;
         public MatchRepository(DatabaseConnection aContext)
         {
             context = aContext;
             matchConverter = new MatchMapper();
             commentConverter = new CommentMapper();
+            teamConverter = new TeamMapper();
         }
 
 
@@ -57,6 +59,10 @@ namespace ObligatorioDA2.Data.Repositories
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
+            Match added = new Match(toAdd.Id, aMatch.GetParticipants(), aMatch.Date, aMatch.Sport);
+
+            ICollection<MatchTeam> playingTeams = matchConverter.ConvertParticipants(added);
+            context.MatchTeams.AddRange(playingTeams);
 
             //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
             if (aMatch.Id > 0 && context.Database.IsSqlServer())
@@ -67,7 +73,7 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 context.SaveChanges();
             }
-            return matchConverter.ToMatch(toAdd);
+            return added;
         }
 
         private void SaveWithIdentityInsert()
@@ -169,13 +175,15 @@ namespace ObligatorioDA2.Data.Repositories
         private Match GetExistentMatch(int anId)
         {
             MatchEntity entity = context.Matches
-                .Include(m => m.HomeTeam)
-                .Include(m => m.AwayTeam)
                 .Include(m => m.SportEntity)
                 .Include(m => m.Commentaries).ThenInclude(c => c.Maker)
                 .First(me => me.Id == anId);
 
-            Match conversion = matchConverter.ToMatch(entity);
+            ICollection<MatchTeam> match_teams = context.MatchTeams.Include(mt=> mt.Team)
+                                                                   .ThenInclude(t => t.Sport)                                                                             
+                                                                   .Where(mt => mt.MatchId == anId)
+                                                                   .ToList();
+            Match conversion = matchConverter.ToMatch(entity,match_teams);
             context.Entry(entity).State = EntityState.Detached;
             return conversion;
         }
@@ -196,15 +204,19 @@ namespace ObligatorioDA2.Data.Repositories
 
         private ICollection<Match> TryGetAll()
         {
+            ICollection<Match> allOfThem = new List<Match>();
             IQueryable<MatchEntity> entities = context.Matches
-                                            .Include(m => m.HomeTeam)
-                                            .Include(m => m.AwayTeam)
                                             .Include(m => m.SportEntity)
                                             .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
 
-            ICollection<Match> translation = entities.Select(m => matchConverter.ToMatch(m)).ToList();
-
-            return translation;
+            foreach (MatchEntity match in entities) {
+                IQueryable<MatchTeam> matchPlayers = context.MatchTeams
+                    .Include(mt => mt.Team)
+                    .Where(mt => mt.MatchId == match.Id);
+                Match built = matchConverter.ToMatch(match, matchPlayers.ToList());
+                allOfThem.Add(built);
+            }
+            return allOfThem;
         }
 
         public bool IsEmpty()

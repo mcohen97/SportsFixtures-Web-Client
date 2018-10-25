@@ -32,24 +32,32 @@ namespace ObligatorioDA2.Services
 
         public Match AddMatch(Match aMatch)
         {
-
-            if (DateOccupied(aMatch.Id, aMatch.HomeTeam, aMatch.Date))
-                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
-            if (DateOccupied(aMatch.Id, aMatch.AwayTeam, aMatch.Date))
-                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
-
+            ValidateDate(aMatch);
             return matchesStorage.Add(aMatch);
+        }
+        public void ModifyMatch(Match aMatch)
+        {
+            ValidateDate(aMatch);
+            matchesStorage.Modify(aMatch);
+        }
+
+        private void ValidateDate(Match aMatch) {
+            if (aMatch.GetParticipants().Any(t => DateOccupied(aMatch.Id, t, aMatch.Date)))
+            {
+                Team occupied = aMatch.GetParticipants().First(t => DateOccupied(aMatch.Id, t, aMatch.Date));
+                throw new TeamAlreadyHasMatchException(occupied.Name + " already has a match on date " + aMatch.Date);
+            }
         }
 
         private bool DateOccupied(int matchId, Team team, DateTime date)
         {
             if (matchId > 0)
             {
-                return matchesStorage.GetAll().Any(m => (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
+                return matchesStorage.GetAll().Any(m => (m.GetParticipants().Any(t => t.Equals(team))) && SameDates(m.Date, date));
             }
             else
             {
-                return matchesStorage.GetAll().Any(m => (m.Id != matchId) && (m.HomeTeam.Equals(team) || m.AwayTeam.Equals(team)) && SameDates(m.Date, date));
+                return matchesStorage.GetAll().Any(m => (m.Id != matchId) && (m.GetParticipants().Any(t => t.Equals(team))) && SameDates(m.Date, date));
             }
         }
 
@@ -76,16 +84,6 @@ namespace ObligatorioDA2.Services
             matchesStorage.Delete(anId);
         }
 
-        public void ModifyMatch(Match aMatch)
-        {
-            if (DateOccupied(aMatch.Id, aMatch.HomeTeam, aMatch.Date))
-                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
-            if (DateOccupied(aMatch.Id, aMatch.AwayTeam, aMatch.Date))
-                throw new TeamAlreadyHasMatchException(aMatch.HomeTeam.Name + " already has a match on date " + aMatch.Date);
-
-            matchesStorage.Modify(aMatch);
-        }
-
         public ICollection<Match> GetAllMatches(string sportName)
         {
             if (!sportsStorage.Exists(sportName))
@@ -101,7 +99,7 @@ namespace ObligatorioDA2.Services
             {
                 throw new TeamNotFoundException();
             }
-            return matchesStorage.GetAll().Where(m => m.HomeTeam.Id.Equals(idTeam) || m.AwayTeam.Id.Equals(idTeam)).ToList();
+            return matchesStorage.GetAll().Where(m => m.GetParticipants().Any(t => t.Id == idTeam)).ToList();
         }
 
         public bool Exists(int id)
@@ -109,27 +107,35 @@ namespace ObligatorioDA2.Services
             return matchesStorage.Exists(id);
         }
 
-        public Match AddMatch(int homeTeamId, int awayTeamId, string sportName, DateTime date)
+        public Match AddMatch(ICollection<int> teamsIds, string sportName, DateTime date)
         {
-            return AddMatch(0, homeTeamId, awayTeamId, sportName, date);
+            return AddMatch(0, teamsIds, sportName, date);
         }
 
-        public Match AddMatch(int idMatch, int homeTeamId, int awayTeamId, string sportName, DateTime date)
+        public Match AddMatch(int idMatch, ICollection<int> teamsIds, string sportName, DateTime date)
         {
-            Team home = teamsStorage.Get(homeTeamId);
-            Team away = teamsStorage.Get(awayTeamId);
+            ICollection<Team> playingTeams = getTeams(teamsIds);
             Sport played = sportsStorage.Get(sportName);
-            Match toAdd = new Match(idMatch, home, away, date, played);
+            Match toAdd = new Match(idMatch, playingTeams, date, played);
             return AddMatch(toAdd);
         }
 
-        public void ModifyMatch(int idMatch, int idHome, int idAway, DateTime date, string sportName)
+        public void ModifyMatch(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName)
         {
-            Team home = teamsStorage.Get(idHome);
-            Team away = teamsStorage.Get(idAway);
+            ICollection<Team> playingTeams = getTeams(teamsIds);
             Sport played = sportsStorage.Get(sportName);
-            Match toModify = new Match(idMatch, home, away, date, played);
+            Match toModify = new Match(idMatch, playingTeams, date, played);
             ModifyMatch(toModify);
+        }
+
+        private ICollection<Team> getTeams(ICollection<int> teamsIds) {
+            ICollection<Team> playingTeams = new List<Team>();
+            foreach (int teamId in teamsIds)
+            {
+                Team fetched = teamsStorage.Get(teamId);
+                playingTeams.Add(fetched);
+            }
+            return playingTeams;
         }
 
 

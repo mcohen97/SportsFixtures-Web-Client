@@ -170,7 +170,7 @@ namespace DataRepositoriesTest
             Sport played = new Sport("Soccer",true);
             Team team1 = new Team(1, "DreamTeam", "MyResources/DreamTeam.png", played);
             Team team2 = new Team(2, "DreamTeam2", "MyResources/DreamTeam2.png", played);
-            Match match = new Match(1, team1, team2, DateTime.Now, played);
+            Match match = new Match(1, new List<Team>() { team1, team2 }, DateTime.Now, played);
             teamsStorage.Add(team1);
             teamsStorage.Add(team2);
             matchesStorage.Add(match);

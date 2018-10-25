@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using Match = ObligatorioDA2.BusinessLogic.Match;
-
+using System.Linq;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -36,7 +36,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Sport played = new Sport("Football",true);
             Team home = new Team("Patriots", "aPhoto", played);
             Team away = new Team("Falcons", "aPhoto", played);
-            Match built = new Match(1,home, away, DateTime.Now, played);
+            Match built = new Match(1,new List<Team>() { home, away }, DateTime.Now, played);
             return built;
         }
 
@@ -61,7 +61,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void CreateValidMatchTest() {
-            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testMatch);
             MatchModelIn input = BuildMatchModelIn(testMatch);
 
@@ -69,7 +69,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             MatchModelOut created = createdResult.Value as MatchModelOut;
 
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
@@ -84,8 +84,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             MatchModelIn built = new MatchModelIn()
             {
                 SportName = aMatch.Sport.Name,
-                AwayTeamId = aMatch.AwayTeam.Id,
-                HomeTeamId = aMatch.HomeTeam.Id,
+                TeamIds = aMatch.GetParticipants().Select(p => p.Id).ToList(),
                 Date = aMatch.Date
             };
             return built;
@@ -110,7 +109,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateMatchSameDayForTeamTest() {
             //Arrange.
             Exception toThrow = new TeamAlreadyHasMatchException();
-            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Throws(toThrow);
             MatchModelIn input = BuildMatchModelIn(testMatch);
 
@@ -175,10 +174,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             MatchModelOut modified = okResult.Value as MatchModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<DateTime>(), It.IsAny<string>()), Times.Once);
 
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Never);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
@@ -190,9 +189,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void PutAdd() {
             //Arrange.
-            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<DateTime>(),It.IsAny<string>())).Throws(new MatchNotFoundException());
-            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testMatch);
 
             MatchModelIn input = BuildMatchModelIn(testMatch);
@@ -203,10 +202,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             MatchModelOut modified = createdResult.Value as MatchModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<DateTime>(), It.IsAny<string>()), Times.Once);
 
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
 
             Assert.IsNotNull(result);
@@ -229,10 +228,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
-            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<DateTime>(), It.IsAny<string>()), Times.Never);
 
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Never);
 
             Assert.IsNotNull(result);
@@ -244,7 +243,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutDateOccupiedTest() {
             //Arrange.
             Exception toThrow = new TeamAlreadyHasMatchException();
-            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<DateTime>(), It.IsAny<string>())).Throws(toThrow);
             MatchModelIn input = BuildMatchModelIn(testMatch);
 
@@ -254,10 +253,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<DateTime>(), It.IsAny<string>()), Times.Once);
 
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Never);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);

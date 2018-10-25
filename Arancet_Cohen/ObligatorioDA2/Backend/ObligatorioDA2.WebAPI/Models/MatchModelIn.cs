@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ObligatorioDA2.WebAPI.Models
@@ -8,9 +9,7 @@ namespace ObligatorioDA2.WebAPI.Models
         [Required(AllowEmptyStrings = false)]
         public string SportName { get; set; }
         [Required(AllowEmptyStrings = false)]
-        public int HomeTeamId { get; set; }
-        [Required(AllowEmptyStrings = false)]
-        public int AwayTeamId { get; set; }
+        public ICollection<int> TeamIds { get; set; }
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
     }

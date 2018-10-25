@@ -17,21 +17,23 @@ namespace DataRepositoriesTest
     [TestClass]
     public class MatchRepositoryTest
     {
-        IMatchRepository matchesStorage;
-        ISportRepository sportsStorage;
-        Mock<Match> match;
-        Mock<Sport> sport;
+        private IMatchRepository matchesStorage;
+        private ISportRepository sportsStorage;
+        private Match match;
+        private Sport sport;
         DatabaseConnection context;
 
         [TestInitialize]
         public void SetUp()
         {
-            sport = new Mock<Sport>("Soccer",true);
+            sport = new Sport("Soccer",true);
             SetUpRepository();
             match = BuildFakeMatch();
-            context.Comments.RemoveRange(context.Comments);
-            matchesStorage.Clear();
-            sportsStorage.Clear();
+            context.Database.EnsureDeleted();
+            //context.MatchTeams.RemoveRange(context.MatchTeams);
+            //context.Comments.RemoveRange(context.Comments);
+            //matchesStorage.Clear();
+            //sportsStorage.Clear();
         }
 
         private void SetUpRepository()
@@ -47,7 +49,7 @@ namespace DataRepositoriesTest
         private void CreateDisconnectedDatabase()
         {
             DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                .UseInMemoryDatabase(databaseName: "MatchRepositoryTest")
+                .UseInMemoryDatabase(databaseName: "MatchDisconnectedTest")
                 .Options;
             Mock<DatabaseConnection> contextMock = new Mock<DatabaseConnection>(options);
             Mock<DbException> toThrow = new Mock<DbException>();
@@ -56,17 +58,24 @@ namespace DataRepositoriesTest
             matchesStorage = new MatchRepository(contextMock.Object);
         }
 
-        private Mock<Match> BuildFakeMatch()
+        private Match BuildFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport.Object);
-            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now, sport.Object);
+            Team home = new Team(3, "Manchester United", "aPath", sport);
+            Team away = new Team(5, "Real Madrid", "aPath", sport);
+            Match match = new Match(3, new List<Team>() { home, away }, DateTime.Now, sport);
             return match;
         }
 
         [TestMethod]
         public void EmptyTest()
         {
+            Assert.IsTrue(matchesStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        public void ClearTest() {
+            matchesStorage.Add(match);
+            matchesStorage.Clear();
             Assert.IsTrue(matchesStorage.IsEmpty());
         }
 
@@ -81,7 +90,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void AddMatchNotemptyTest()
         {
-            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match);
             Assert.IsFalse(matchesStorage.IsEmpty());
         }
 
@@ -89,9 +98,9 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(MatchAlreadyExistsException))]
         public void AddRepeatedMatchTest()
         {
-            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match);
             SetUpRepository();
-            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match);
         }
 
         [TestMethod]
@@ -99,32 +108,24 @@ namespace DataRepositoriesTest
         public void AddMatchNoAccessTest()
         {
             CreateDisconnectedDatabase();
-            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match);
         }
 
         [TestMethod]
-        public void GetMatchHomeTeamTest()
+        public void GetMatchTeamsTest()
         {
-            matchesStorage.Add(match.Object);
-            Match retrieved = matchesStorage.Get(match.Object.Id);
-            Assert.AreEqual(retrieved.HomeTeam, match.Object.HomeTeam);
-        }
-
-        [TestMethod]
-        public void GetMatchAwayTeamTest()
-        {
-            matchesStorage.Add(match.Object);
-            Match retrieved = matchesStorage.Get(match.Object.Id);
-            Assert.AreEqual(retrieved.AwayTeam, match.Object.AwayTeam);
+            matchesStorage.Add(match);
+            Match retrieved = matchesStorage.Get(match.Id);
+            Assert.AreEqual(retrieved.GetParticipants().Count, match.GetParticipants().Count);
         }
 
         [TestMethod]
         public void GetMatchCommentsTest()
         {
             Mock<Commentary> dummy = BuildFakeCommentary();
-            match.Object.AddCommentary(dummy.Object);
-            matchesStorage.Add(match.Object);
-            Match retrieved = matchesStorage.Get(match.Object.Id);
+            match.AddCommentary(dummy.Object);
+            matchesStorage.Add(match);
+            Match retrieved = matchesStorage.Get(match.Id);
             Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
         }
 
@@ -132,7 +133,7 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(MatchNotFoundException))]
         public void GetMatchNotFoundTest()
         {
-            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match);
             Match retrieved = matchesStorage.Get(4);
         }
 
@@ -149,9 +150,9 @@ namespace DataRepositoriesTest
         public void GetCommentsTest()
         {
             Mock<Commentary> dummy = BuildFakeCommentary();
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport.Object);
-            Match match = new Match(3, home.Object, away.Object, DateTime.Now, sport.Object);
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
+            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport);
+            Match match = new Match(3, new List<Team>() { home.Object, away.Object }, DateTime.Now, sport);
 
             matchesStorage.Add(match);
             matchesStorage.CommentOnMatch(3, dummy.Object);
@@ -172,9 +173,9 @@ namespace DataRepositoriesTest
         public void GetCommentTest()
         {
             Mock<Commentary> dummy = BuildFakeCommentary();
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport.Object);
-            Match match = new Match(3, home.Object, away.Object, DateTime.Now, sport.Object);
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
+            Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport);
+            Match match = new Match(3, new List<Team>() { home.Object, away.Object }, DateTime.Now, sport);
 
             matchesStorage.Add(match);
             Commentary added = matchesStorage.CommentOnMatch(3, dummy.Object);
@@ -215,7 +216,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetAllTest()
         {
-            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match);
             ICollection<Match> all = matchesStorage.GetAll();
             Assert.AreEqual(all.Count, 1);
         }
@@ -231,13 +232,12 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void ModifyTest()
         {
-            matchesStorage.Add(match.Object);
+            matchesStorage.Add(match);
             Mock<Match> modified = BuildModifiedFakeMatch();
             SetUpRepository();
             matchesStorage.Modify(modified.Object);
             Match retrieved = matchesStorage.Get(3);
-            Assert.AreEqual(retrieved.AwayTeam, modified.Object.AwayTeam);
-            Assert.AreEqual(retrieved.HomeTeam, modified.Object.HomeTeam);
+            Assert.AreEqual(retrieved.GetParticipants().Count, modified.Object.GetParticipants().Count);
             Assert.AreEqual(retrieved.Date, modified.Object.Date);
         }
 
@@ -245,9 +245,9 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(MatchNotFoundException))]
         public void ModifyUnexistentItemTest()
         {
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport.Object);
-            Mock<Match> match = new Mock<Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
+            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport);
+            Mock<Match> match = new Mock<Match>(7,new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
             matchesStorage.Modify(match.Object);
         }
 
@@ -256,26 +256,26 @@ namespace DataRepositoriesTest
         public void ModifyNoAccessTest()
         {
             CreateDisconnectedDatabase();
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport.Object);
-            Mock<Match> match = new Mock<Match>(7, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
+            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport);
+            Mock<Match> match = new Mock<Match>(7, new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
             matchesStorage.Modify(match.Object);
         }
 
 
         private Mock<Match> BuildModifiedFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport.Object);
-            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport.Object);
-            Mock<Match> match = new Mock<Match>(3, home.Object, away.Object, DateTime.Now.AddYears(2), sport.Object);
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
+            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport);
+            Mock<Match> match = new Mock<Match>(3,new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
             return match;
         }
 
         [TestMethod]
         public void ExistsTest()
         {
-            matchesStorage.Add(match.Object);
-            bool exists = matchesStorage.Exists(match.Object.Id);
+            matchesStorage.Add(match);
+            bool exists = matchesStorage.Exists(match.Id);
             Assert.IsTrue(exists);
         }
 
@@ -297,9 +297,9 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void DeleteTest()
         {
-            matchesStorage.Add(match.Object);
-            matchesStorage.Delete(match.Object.Id);
-            bool exists = matchesStorage.Exists(match.Object.Id);
+            matchesStorage.Add(match);
+            matchesStorage.Delete(match.Id);
+            bool exists = matchesStorage.Exists(match.Id);
             Assert.IsFalse(exists);
         }
 
@@ -307,7 +307,7 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(MatchNotFoundException))]
         public void DeleteUnexistentTest()
         {
-            matchesStorage.Delete(match.Object.Id);
+            matchesStorage.Delete(match.Id);
         }
 
         [TestMethod]

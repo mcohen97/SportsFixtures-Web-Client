@@ -1,6 +1,7 @@
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
 {
@@ -28,7 +29,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             ICollection<Match> generatedFixture = new List<Match>();
 
             if (teams.Count % 2 != 0)
-                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", new Sport("Free Match",true)));
+                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", teams.First().Sport));
 
             int teamsCount = teams.Count;
             int matchesCount = teamsCount * (teamsCount - 1) / 2; //Combinations(teams, 2);
@@ -74,7 +75,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
                 matches.MoveNext();
                 Match current = matches.Current;
                 DateTime nextDate = NextDate(current.Date, actualRoundLength);
-                Match newMatch = new Match(current.AwayTeam, current.HomeTeam, nextDate, current.Sport);
+                Match newMatch = new Match(current.GetParticipants(), nextDate, current.Sport);
 
                 if (actualRoundLength == roundLength)
                     actualRoundLength = 0;
@@ -90,8 +91,10 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             while (matches.MoveNext())
             {
                 Match actual = matches.Current;
-                if (actual.HomeTeam.Id == -1 || actual.AwayTeam.Id == -1)
+                if (actual.GetParticipants().Any(t => t.Id == -1))
+                {
                     matchesToRemove.Add(actual);
+                }
             }
 
             foreach (Match actual in matchesToRemove)
@@ -151,8 +154,8 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             for (int i = 0; i < actualRound.GetLength(1); i++)
             {
                 Sport sport = actualRound[0, i].Sport;
-                Match firstMatch = new Match(actualRound[0, i], actualRound[1, i], firstDate, sport);
-                Match secondMatch = new Match(actualRound[1, i], actualRound[0, i], secondDate, sport);
+                Match firstMatch = new Match(new List<Team>() { actualRound[0, i], actualRound[1, i] }, firstDate, sport);
+                Match secondMatch = new Match(new List<Team>() { actualRound[1, i], actualRound[0, i] }, secondDate, sport);
 
                 fixture.Add(firstMatch);
                 fixture.Add(secondMatch);

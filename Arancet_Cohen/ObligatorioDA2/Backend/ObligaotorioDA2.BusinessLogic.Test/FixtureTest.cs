@@ -21,22 +21,22 @@ namespace BusinessLogicTest
         private DateTime finalDate;
         private int roundLength;
         private int daysBetweenRounds;
-        private Mock<Sport> played;
+        private Sport played;
 
         [TestInitialize]
         public void TestInitialize()
         {
+            played = new Sport("Soccer", true);
             teams = new List<Team>();
             for (int i = 1; i <= 6; i++)
             {
-                Team newTeam = new Team(i, "Team " + i, "Photo/" + i, new Sport("aSport",true));
+                Team newTeam = new Team(i, "Team " + i, "Photo/" + i, played);
                 teams.Add(newTeam);
             }
             initialDate = new DateTime(2019, 1, 1);
             finalDate = new DateTime(2019, 4, 4);
             roundLength = 2;
             daysBetweenRounds = 5;
-            played = new Mock<Sport>("Soccer",true);
             oneMatchFixture = new OneMatchFixture(initialDate, roundLength, daysBetweenRounds);
             homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds);
 
@@ -202,7 +202,7 @@ namespace BusinessLogicTest
                 for (int j = i; j < teamsArray.Length; j++)
                 {
                     if (i != j)
-                        matchesGenerated.Add(new Match(teamsArray[i], teamsArray[j], new DateTime(), played.Object));
+                        matchesGenerated.Add(new Match(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
                 }
             }
             return matchesGenerated;
@@ -216,17 +216,21 @@ namespace BusinessLogicTest
                 for (int j = 0; j < teamsArray.Length; j++)
                 {
                     if (i != j)
-                        matchesGenerated.Add(new Match(teamsArray[i], teamsArray[j], new DateTime(), played.Object));
+                        matchesGenerated.Add(new Match(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
                 }
             }
             return matchesGenerated;
         }
         private bool CheckMatchInFixture(ICollection<Match> fixture, Match match)
         {
-            return fixture.Any(m =>
-                (m.HomeTeam.Equals(match.HomeTeam) || m.HomeTeam.Equals(match.AwayTeam)) &&
-                (m.AwayTeam.Equals(match.AwayTeam) || m.AwayTeam.Equals(match.HomeTeam))
-            );
+            return fixture.Any(m => SameTeams(m, match));
+        }
+
+        private bool SameTeams(Match fixtureMatch, Match match)
+        {
+            ICollection<Team> teams1 = fixtureMatch.GetParticipants();
+            ICollection<Team> teams2 = fixtureMatch.GetParticipants();
+            return new HashSet<Team>(teams1).SetEquals(teams2);
         }
 
         [TestMethod]
