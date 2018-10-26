@@ -7,6 +7,7 @@ using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using System.Reflection;
+using System.IO;
 
 namespace ObligatorioDA2.Services
 {
@@ -16,13 +17,14 @@ namespace ObligatorioDA2.Services
         private ITeamRepository teamStorage;
         private ISportRepository sportsStorage;
         private IFixtureGenerator fixtureAlgorithm;
+        private const string DLL_EXTENSION = "*.dll";
+
 
         public FixtureService(IMatchRepository matchStorage, ITeamRepository teamRepository, ISportRepository sportsRepository)
         {
             matchService = new MatchService(matchStorage, teamRepository, sportsRepository);
             sportsStorage = sportsRepository;
             teamStorage = teamRepository;
-            //fixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
         }
 
         public IFixtureGenerator FixtureAlgorithm { get => fixtureAlgorithm; set => SetFixtureAlgorithm(value); }
@@ -86,20 +88,25 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Type> GetAlgorithms(string dllPath)
         {
-            Assembly myAssembly = Assembly.LoadFile(dllPath);
-
-            ICollection<Type> algorithms = new List<Type>();
-            foreach (Type aType in myAssembly.GetTypes())
+            string[] files = Directory.GetFiles(dllPath, DLL_EXTENSION);
+            IEnumerable<Type> interestingTypes = new List<Type>();
+            foreach (var file in files)
             {
-                //inefficient, but the only way it worked.
-                ICollection<string> interfaces = aType.GetInterfaces().Select(i => i.ToString()).ToList();
-                bool isElegible = interfaces.Contains(typeof(IFixtureGenerator).ToString());
-
-                if (isElegible) {
-                    algorithms.Add(aType);
+                Type[] types;
+                try
+                {
+                    types = Assembly.LoadFrom(file).GetTypes();
                 }
+                catch
+                {
+                    continue;  // Can't load as .NET assembly, so ignore
+                }
+
+                interestingTypes =
+                    types.Where(t => t.IsClass &&
+                                     t.GetInterfaces().Contains(typeof(IFixtureGenerator)));
             }
-            return algorithms;
+            return interestingTypes.ToList();
         }
     }
 }
