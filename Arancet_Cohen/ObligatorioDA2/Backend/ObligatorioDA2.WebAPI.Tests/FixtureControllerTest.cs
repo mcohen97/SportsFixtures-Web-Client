@@ -24,6 +24,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         private Mock<ISportRepository> sportsRepo;
         private Mock<IMatchRepository> matchesRepo;
         private Mock<ITeamRepository> teamsRepo;
+        private Mock<ILoggerService> logger;
         private IFixtureService fixture;
         private ICollection<Team> teamsCollection;
         private ICollection<Match> oneMatchCollection;
@@ -97,6 +98,9 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             fixture = new FixtureService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
 
+            logger = new Mock<ILoggerService>();
+            logger.Setup(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>())).Returns(1);
+
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
             FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.dll");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
@@ -125,6 +129,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(modelOut.Count, oneMatchCollection.Count);
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
         }
 
         [TestMethod]
@@ -152,6 +157,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
         }
 
         [TestMethod]
@@ -178,6 +184,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.AreEqual(error.ErrorMessage, errorMessagge);
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
         }
 
         private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Match> matches)
@@ -209,6 +217,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
         }
 
         [TestMethod]
@@ -233,6 +243,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(modelOut.Count, homeAwayMatchCollection.Count);
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
         }
 
         [TestMethod]
@@ -260,6 +272,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
         }
 
         [TestMethod]
@@ -285,6 +299,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
         }
 
         [TestMethod]
@@ -305,6 +321,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
         }
 
         [TestMethod]
@@ -319,6 +337,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(strategies);
+            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
+
         }
     }
 }
