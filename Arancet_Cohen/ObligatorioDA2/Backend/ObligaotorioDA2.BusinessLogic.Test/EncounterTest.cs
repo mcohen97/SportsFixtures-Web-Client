@@ -17,7 +17,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         private Team teamC;
         private Sport sport;
         private DateTime date;
-        private Match match;
+        private Encounter match;
         private Mock<Commentary> commentary1;
         private Mock<Commentary> commentary2;
         private Mock<Commentary> commentary3;
@@ -257,6 +257,16 @@ namespace ObligatorioDA2.BusinessLogic.Test
             Result fakeResult = GetFakeResult();
             fakeResult.Add(teamC, 1);
             match.SetResult(fakeResult);
+        }
+
+        [TestMethod]
+        public void TiedMatchTest()
+        {
+            Result draw = new Result();
+            draw.Add(teamA, 1);
+            draw.Add(teamB, 1);
+            match.SetResult(draw);
+            Assert.AreEqual(match.Result.GetPositions().Count, 2);
         }
 
         private Result GetFakeResult()
