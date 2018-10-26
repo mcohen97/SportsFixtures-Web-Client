@@ -139,6 +139,7 @@ namespace ObligatorioDA2.BusinessLogic
             if (!ConsecutivePositions(aResult)) {
                 throw new InvalidMatchDataException("The result can't have gap positions");
             }
+            SpecificResultValidation(aResult);
             result = aResult;
         }
 
@@ -161,5 +162,6 @@ namespace ObligatorioDA2.BusinessLogic
             }
             return !positions.Any(p => !p);
         }
+        protected virtual void SpecificResultValidation(Result aResult) { }
     }
 }
