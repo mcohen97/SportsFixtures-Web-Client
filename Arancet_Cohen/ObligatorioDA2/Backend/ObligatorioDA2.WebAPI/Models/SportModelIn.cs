@@ -6,5 +6,7 @@ namespace ObligatorioDA2.WebAPI.Models
     {
         [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
+        [Required]
+        public bool IsTwoTeams { get; set; }
     }
 }

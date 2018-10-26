@@ -1,6 +1,7 @@
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
 {
@@ -22,15 +23,15 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
         public int RoundLength { get => roundLength; set => SetRoundLength(value); }
         public int DaysBetweenRounds { get => daysBetweenRounds; set => SetDaysBetweenRounds(value); }
 
-        public ICollection<Match> GenerateFixture(ICollection<Team> teams)
+        public ICollection<Encounter> GenerateFixture(ICollection<Team> teams)
         {
             if (teams.Count < 2)
                 throw new InvalidTeamCountException("Can not generate any fixture with less than 2 teams");
 
-            ICollection<Match> generatedFixture = new List<Match>();
+            ICollection<Encounter> generatedFixture = new List<Encounter>();
 
             if (teams.Count % 2 != 0)
-                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", new Sport("Free match")));
+                teams.Add(new Team(-1, "Free Match", "Photos/freeMatch.png", teams.First().Sport));
 
             int teamsCount = teams.Count;
             int matchesCount = teamsCount * (teamsCount - 1) / 2; //Combinations(teams, 2);
@@ -61,15 +62,17 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             return generatedFixture;
         }
 
-        private void RemoveFreeMatches(ICollection<Match> generatedFixture)
+        private void RemoveFreeMatches(ICollection<Encounter> generatedFixture)
         {
-            IEnumerator<Match> matches = generatedFixture.GetEnumerator();
-            ICollection<Match> matchesToRemove = new List<Match>();
+            IEnumerator<Encounter> matches = generatedFixture.GetEnumerator();
+            ICollection<Encounter> matchesToRemove = new List<Encounter>();
             while (matches.MoveNext())
             {
-                Match actual = matches.Current;
-                if (actual.HomeTeam.Id == -1 || actual.AwayTeam.Id == -1)
+                Encounter actual = matches.Current;
+                if (actual.GetParticipants().Any(t => t.Id == -1))
+                {
                     matchesToRemove.Add(actual);
+                }
             }
 
             foreach (Match actual in matchesToRemove)
@@ -124,12 +127,12 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             return newRound;
         }
 
-        private void AddMatches(ICollection<Match> fixture, Team[,] actualRound, DateTime roundDate)
+        private void AddMatches(ICollection<Encounter> fixture, Team[,] actualRound, DateTime roundDate)
         {
             for (int i = 0; i < actualRound.GetLength(1); i++)
             {
                 Sport sport = actualRound[0, i].Sport;
-                Match newMatch = new Match(actualRound[0, i], actualRound[1, i], roundDate, sport);
+                Match newMatch = new Match(new List<Team>() { actualRound[0, i], actualRound[1, i] }, roundDate, sport);
                 fixture.Add(newMatch);
             }
         }

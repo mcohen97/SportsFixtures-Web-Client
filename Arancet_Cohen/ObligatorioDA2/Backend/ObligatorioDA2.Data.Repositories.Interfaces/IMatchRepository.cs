@@ -5,7 +5,7 @@ using ObligatorioDA2.BusinessLogic;
 
 namespace ObligatorioDA2.Data.Repositories.Interfaces
 {
-    public interface IMatchRepository : IRepository<Match, int>
+    public interface IMatchRepository : IRepository<Encounter, int>
     {
 
         Commentary CommentOnMatch(int idMatch, Commentary aComment);

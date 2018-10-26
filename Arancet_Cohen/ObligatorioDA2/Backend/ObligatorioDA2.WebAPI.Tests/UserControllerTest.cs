@@ -603,7 +603,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetFollowedTeamsTest() {
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
-            Team aTeam = new Team("aTeam", "aPhoto", new Sport("aSport"));
+            Team aTeam = new Team("aTeam", "aPhoto", new Sport("aSport",true));
             ICollection<Team> list2return = new List<Team>() { aTeam, aTeam, aTeam };
             service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Returns(list2return);
 

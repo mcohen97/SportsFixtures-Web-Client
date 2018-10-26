@@ -16,9 +16,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class TeamsController : ControllerBase
     {
         private ITeamRepository teams;
-        public TeamsController(ITeamRepository aRepo)
+        private ISportRepository sports;
+        public TeamsController(ITeamRepository teamsRepo, ISportRepository sportsRepo)
         {
-            teams = aRepo;
+            teams = teamsRepo;
+            sports = sportsRepo;
         }
 
         [HttpGet]
@@ -111,7 +113,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryAddTeam(team);
             }
-            catch (TeamAlreadyExistsException e)
+            catch (EntityAlreadyExistsException e)
             {
                 ErrorModelOut error = CreateErrorModel(e);
                 result = BadRequest(error);
@@ -124,7 +126,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryAddTeam(TeamModelIn team)
         {
-            Team toAdd = new Team(team.Name, team.Photo, new Sport(team.SportName));
+            Sport played = sports.Get(team.SportName);
+            Team toAdd = new Team(team.Name, team.Photo, played);
             Team added = teams.Add(toAdd);
             TeamModelOut modelOut = BuildTeamModelOut(added);
             return CreatedAtRoute("GetTeamById",new {id =added.Id } ,modelOut);
@@ -152,12 +155,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Team toModify = new Team(teamId, value.Name, value.Photo, new Sport(value.SportName));
+                Sport played = sports.Get(value.SportName);
+                Team toModify = new Team(teamId, value.Name, value.Photo, played);
                 teams.Modify(toModify);
                 TeamModelOut output = BuildTeamModelOut(toModify);
                 result = Ok(output);
             }
-            catch (TeamNotFoundException)
+            catch (EntityNotFoundException)
             {
                 result = PostId(teamId, value);
             }
@@ -169,7 +173,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult PostId(int teamId, TeamModelIn team)
         {
-            Team toAdd = new Team(teamId,team.Name, team.Photo,new Sport(team.SportName));
+            Team toAdd = new Team(teamId,team.Name, team.Photo,new Sport(team.SportName,true));
             teams.Add(toAdd);
             TeamModelOut addedTeam = BuildTeamModelOut(toAdd);
             return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);

@@ -15,13 +15,14 @@ namespace ObligatorioDA2.Data.DomainMappers
             SportEntity converted = new SportEntity()
             {
                 Name = aSport.Name,
+                IsTwoTeams =aSport.IsTwoTeams
             };
             return converted;
         }
 
         public Sport ToSport(SportEntity entity)
         {
-            Sport conversion = new Sport(entity.Name);
+            Sport conversion = new Sport(entity.Name, entity.IsTwoTeams);
             return conversion;
         }
     }

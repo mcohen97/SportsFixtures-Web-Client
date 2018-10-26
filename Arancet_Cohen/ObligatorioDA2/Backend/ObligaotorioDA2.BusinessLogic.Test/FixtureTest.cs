@@ -8,7 +8,7 @@ using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 
-namespace BusinessLogicTest
+namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
     public class FixtureTest
@@ -21,22 +21,22 @@ namespace BusinessLogicTest
         private DateTime finalDate;
         private int roundLength;
         private int daysBetweenRounds;
-        private Mock<Sport> played;
+        private Sport played;
 
         [TestInitialize]
         public void TestInitialize()
         {
+            played = new Sport("Soccer", true);
             teams = new List<Team>();
             for (int i = 1; i <= 6; i++)
             {
-                Team newTeam = new Team(i, "Team " + i, "Photo/" + i, new Sport("aSport"));
+                Team newTeam = new Team(i, "Team " + i, "Photo/" + i, played);
                 teams.Add(newTeam);
             }
             initialDate = new DateTime(2019, 1, 1);
             finalDate = new DateTime(2019, 4, 4);
             roundLength = 2;
             daysBetweenRounds = 5;
-            played = new Mock<Sport>("Soccer");
             oneMatchFixture = new OneMatchFixture(initialDate, roundLength, daysBetweenRounds);
             homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds);
 
@@ -106,7 +106,7 @@ namespace BusinessLogicTest
         public void GenerateOneMatchFixture6TeamsTest()
         {
 
-            ICollection<Match> fixtureResult = oneMatchFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = oneMatchFixture.GenerateFixture(teams);
             ICollection<Team> copy = new List<Team>(teams);
             bool everyMatch = true;
             foreach (Match actualMatch in GenereteMatches(copy))
@@ -122,7 +122,7 @@ namespace BusinessLogicTest
         {
             teams.Remove(teams.Last());
             ICollection<Team> copy = new List<Team>(teams);
-            ICollection<Match> fixtureResult = oneMatchFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = oneMatchFixture.GenerateFixture(teams);
             bool everyMatch = true;
             foreach (Match actualMatch in GenereteMatches(copy))
             {
@@ -135,7 +135,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void GenerateHomeAwayMatchFixture6TeamsTest()
         {
-            ICollection<Match> fixtureResult = homeAwayFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = homeAwayFixture.GenerateFixture(teams);
             ICollection<Team> copy = new List<Team>(teams);
             bool everyMatch = true;
             foreach (Match actualMatch in GenereteMatchesHomeAway(copy))
@@ -151,7 +151,7 @@ namespace BusinessLogicTest
         {
             teams.Remove(teams.Last());
             ICollection<Team> copy = new List<Team>(teams);
-            ICollection<Match> fixtureResult = homeAwayFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = homeAwayFixture.GenerateFixture(teams);
             bool everyMatch = true;
             foreach (Match actualMatch in GenereteMatchesHomeAway(copy))
             {
@@ -167,9 +167,9 @@ namespace BusinessLogicTest
             while (teams.Count > 2)
                 teams.Remove(teams.Last());
             ICollection<Team> copy = new List<Team>(teams);
-            ICollection<Match> fixtureResult = oneMatchFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = oneMatchFixture.GenerateFixture(teams);
             bool everyMatch = true;
-            foreach (Match actualMatch in GenereteMatches(copy))
+            foreach (Encounter actualMatch in GenereteMatches(copy))
             {
                 everyMatch = everyMatch && CheckMatchInFixture(fixtureResult, actualMatch);
             }
@@ -182,7 +182,7 @@ namespace BusinessLogicTest
         {
             while (teams.Count > 2)
                 teams.Remove(teams.Last());
-            ICollection<Match> fixtureResult = homeAwayFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = homeAwayFixture.GenerateFixture(teams);
             ICollection<Team> copy = new List<Team>(teams);
             bool everyMatch = true;
             foreach (Match actualMatch in GenereteMatchesHomeAway(copy))
@@ -193,16 +193,16 @@ namespace BusinessLogicTest
             Assert.IsTrue(everyMatch);
         }
 
-        private ICollection<Match> GenereteMatches(ICollection<Team> teams)
+        private ICollection<Encounter> GenereteMatches(ICollection<Team> teams)
         {
-            ICollection<Match> matchesGenerated = new List<Match>();
+            ICollection<Encounter> matchesGenerated = new List<Encounter>();
             Team[] teamsArray = teams.ToArray();
             for (int i = 0; i < teamsArray.Length; i++)
             {
                 for (int j = i; j < teamsArray.Length; j++)
                 {
                     if (i != j)
-                        matchesGenerated.Add(new Match(teamsArray[i], teamsArray[j], new DateTime(), played.Object));
+                        matchesGenerated.Add(new Match(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
                 }
             }
             return matchesGenerated;
@@ -216,17 +216,21 @@ namespace BusinessLogicTest
                 for (int j = 0; j < teamsArray.Length; j++)
                 {
                     if (i != j)
-                        matchesGenerated.Add(new Match(teamsArray[i], teamsArray[j], new DateTime(), played.Object));
+                        matchesGenerated.Add(new Match(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
                 }
             }
             return matchesGenerated;
         }
-        private bool CheckMatchInFixture(ICollection<Match> fixture, Match match)
+        private bool CheckMatchInFixture(ICollection<Encounter> fixture, Encounter match)
         {
-            return fixture.Any(m =>
-                (m.HomeTeam.Equals(match.HomeTeam) || m.HomeTeam.Equals(match.AwayTeam)) &&
-                (m.AwayTeam.Equals(match.AwayTeam) || m.AwayTeam.Equals(match.HomeTeam))
-            );
+            return fixture.Any(m => SameTeams(m, match));
+        }
+
+        private bool SameTeams(Encounter fixtureMatch, Encounter match)
+        {
+            ICollection<Team> teams1 = fixtureMatch.GetParticipants();
+            ICollection<Team> teams2 = fixtureMatch.GetParticipants();
+            return new HashSet<Team>(teams1).SetEquals(teams2);
         }
 
         [TestMethod]
@@ -235,7 +239,7 @@ namespace BusinessLogicTest
         {
             while (teams.Count > 1)
                 teams.Remove(teams.Last());
-            ICollection<Match> fixtureResult = homeAwayFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = homeAwayFixture.GenerateFixture(teams);
         }
 
         [TestMethod]
@@ -244,7 +248,7 @@ namespace BusinessLogicTest
         {
             while (teams.Count > 1)
                 teams.Remove(teams.Last());
-            ICollection<Match> fixtureResult = oneMatchFixture.GenerateFixture(teams);
+            ICollection<Encounter> fixtureResult = oneMatchFixture.GenerateFixture(teams);
         }
     }
 }

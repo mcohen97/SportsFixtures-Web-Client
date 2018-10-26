@@ -7,6 +7,7 @@ using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using System.Reflection;
+using System.IO;
 
 namespace ObligatorioDA2.Services
 {
@@ -16,13 +17,14 @@ namespace ObligatorioDA2.Services
         private ITeamRepository teamStorage;
         private ISportRepository sportsStorage;
         private IFixtureGenerator fixtureAlgorithm;
+        private const string DLL_EXTENSION = "*.dll";
+
 
         public FixtureService(IMatchRepository matchStorage, ITeamRepository teamRepository, ISportRepository sportsRepository)
         {
             matchService = new MatchService(matchStorage, teamRepository, sportsRepository);
             sportsStorage = sportsRepository;
             teamStorage = teamRepository;
-            //fixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
         }
 
         public IFixtureGenerator FixtureAlgorithm { get => fixtureAlgorithm; set => SetFixtureAlgorithm(value); }
@@ -32,32 +34,32 @@ namespace ObligatorioDA2.Services
             fixtureAlgorithm = algorithm ?? throw new ArgumentNullException();
         }
 
-        private void RollBack(ICollection<Match> added)
+        private void RollBack(ICollection<Encounter> added)
         {
-            foreach (Match match in added)
+            foreach (Encounter match in added)
             {
                 matchService.DeleteMatch(match.Id);
             }
         }
 
-        public ICollection<Match> AddFixture(ICollection<string> teamsNames, string sportName)
+        public ICollection<Encounter> AddFixture(ICollection<string> teamsNames, string sportName)
         {
             ICollection<Team> teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<Match> AddFixture(Sport sport)
+        public ICollection<Encounter> AddFixture(Sport sport)
         {
             ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<Match> AddFixture(ICollection<Team> teamsCollection)
+        public ICollection<Encounter> AddFixture(ICollection<Team> teamsCollection)
         {
-            ICollection<Match> added = new List<Match>();
+            ICollection<Encounter> added = new List<Encounter>();
             try
             {
-                ICollection<Match> generatedMatches = fixtureAlgorithm.GenerateFixture(teamsCollection);
+                ICollection<Encounter> generatedMatches = fixtureAlgorithm.GenerateFixture(teamsCollection);
                 AddMatches(ref added, generatedMatches);
             }
             catch (TeamAlreadyHasMatchException e)
@@ -74,11 +76,11 @@ namespace ObligatorioDA2.Services
             return added;
 
         }
-        private ICollection<Match> AddMatches(ref ICollection<Match> added, ICollection<Match> generated)
+        private ICollection<Encounter> AddMatches(ref ICollection<Encounter> added, ICollection<Encounter> generated)
         {
-            foreach (Match match in generated)
+            foreach (Encounter match in generated)
             {
-                Match matchAdded = matchService.AddMatch(match);
+                Encounter matchAdded = matchService.AddMatch(match);
                 added.Add(matchAdded);
             }
             return added;
@@ -86,20 +88,25 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Type> GetAlgorithms(string dllPath)
         {
-            Assembly myAssembly = Assembly.LoadFile(dllPath);
-
-            ICollection<Type> algorithms = new List<Type>();
-            foreach (Type aType in myAssembly.GetTypes())
+            string[] files = Directory.GetFiles(dllPath, DLL_EXTENSION);
+            IEnumerable<Type> interestingTypes = new List<Type>();
+            foreach (var file in files)
             {
-                //inefficient, but the only way it worked.
-                ICollection<string> interfaces = aType.GetInterfaces().Select(i => i.ToString()).ToList();
-                bool isElegible = interfaces.Contains(typeof(IFixtureGenerator).ToString());
-
-                if (isElegible) {
-                    algorithms.Add(aType);
+                Type[] types;
+                try
+                {
+                    types = Assembly.LoadFrom(file).GetTypes();
                 }
+                catch
+                {
+                    continue;  // Can't load as .NET assembly, so ignore
+                }
+
+                interestingTypes =
+                    types.Where(t => t.IsClass &&
+                                     t.GetInterfaces().Contains(typeof(IFixtureGenerator)));
             }
-            return algorithms;
+            return interestingTypes.ToList();
         }
     }
 }

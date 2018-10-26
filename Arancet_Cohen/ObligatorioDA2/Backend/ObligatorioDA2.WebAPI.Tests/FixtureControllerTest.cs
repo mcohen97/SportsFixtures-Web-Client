@@ -26,8 +26,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         private Mock<ITeamRepository> teamsRepo;
         private IFixtureService fixture;
         private ICollection<Team> teamsCollection;
-        private ICollection<Match> oneMatchCollection;
-        private ICollection<Match> homeAwayMatchCollection;
+        private ICollection<Encounter> oneMatchCollection;
+        private ICollection<Encounter> homeAwayMatchCollection;
         private Mock<IOptions<FixtureStrategies>> settings;
 
 
@@ -40,7 +40,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         private void SetUpData()
         {
-            testSport = new Sport("Football");
+            testSport = new Sport("Football",true);
 
             Team teamA = new Team(1, "teamA", "photo", testSport);
             Team teamB = new Team(2, "teamB", "photo", testSport);
@@ -53,32 +53,35 @@ namespace ObligatorioDA2.WebAPI.Tests
                 teamC,
                 teamD
             };
-            oneMatchCollection = new List<Match>
+            oneMatchCollection = new List<Encounter>
             {
-                new Match(1, teamA, teamB, DateTime.Now.AddDays(1), testSport),
-                new Match(2, teamC, teamD, DateTime.Now.AddDays(1), testSport),
-                new Match(3, teamA, teamC, DateTime.Now.AddDays(8), testSport),
-                new Match(4, teamD, teamB, DateTime.Now.AddDays(8), testSport),
-                new Match(5, teamA, teamD, DateTime.Now.AddDays(16), testSport),
-                new Match(6, teamC, teamB, DateTime.Now.AddDays(16), testSport)
+                new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
+                new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
+                new Match(3, List(teamA, teamC), DateTime.Now.AddDays(8), testSport),
+                new Match(4, List(teamD, teamB), DateTime.Now.AddDays(8), testSport),
+                new Match(5, List(teamA, teamD), DateTime.Now.AddDays(16), testSport),
+                new Match(6, List(teamC, teamB), DateTime.Now.AddDays(16), testSport)
             };
-            homeAwayMatchCollection = new List<Match>
+            homeAwayMatchCollection = new List<Encounter>
             {
-                new Match(1, teamA, teamB, DateTime.Now.AddDays(1), testSport),
-                new Match(2, teamC, teamD, DateTime.Now.AddDays(1), testSport),
-                new Match(3, teamA, teamC, DateTime.Now.AddDays(8), testSport),
-                new Match(4, teamD, teamB, DateTime.Now.AddDays(8), testSport),
-                new Match(5, teamA, teamD, DateTime.Now.AddDays(16), testSport),
-                new Match(6, teamC, teamB, DateTime.Now.AddDays(16), testSport),
-                new Match(7, teamB, teamA, DateTime.Now.AddDays(24), testSport),
-                new Match(8, teamD, teamC, DateTime.Now.AddDays(24), testSport),
-                new Match(9, teamC, teamA, DateTime.Now.AddDays(32), testSport),
-                new Match(10, teamB, teamD, DateTime.Now.AddDays(32), testSport),
-                new Match(11, teamD, teamA, DateTime.Now.AddDays(40), testSport),
-                new Match(12, teamB, teamC, DateTime.Now.AddDays(40), testSport)
+                new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
+                new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
+                new Match(3, List(teamA, teamC), DateTime.Now.AddDays(8), testSport),
+                new Match(4, List(teamD, teamB), DateTime.Now.AddDays(8), testSport),
+                new Match(5, List(teamA, teamD), DateTime.Now.AddDays(16), testSport),
+                new Match(6, List(teamC, teamB), DateTime.Now.AddDays(16), testSport),
+                new Match(7, List(teamB, teamA), DateTime.Now.AddDays(24), testSport),
+                new Match(8, List(teamD, teamC), DateTime.Now.AddDays(24), testSport),
+                new Match(9, List(teamC, teamA), DateTime.Now.AddDays(32), testSport),
+                new Match(10, List(teamB, teamD), DateTime.Now.AddDays(32), testSport),
+                new Match(11, List(teamD, teamA), DateTime.Now.AddDays(40), testSport),
+                new Match(12, List(teamB, teamC), DateTime.Now.AddDays(40), testSport)
             };
         }
 
+        private ICollection<Team> List(Team home, Team away) {
+            return new List<Team>() { home, away };
+        }
         private void SetUpController()
         {
             sportsRepo = new Mock<ISportRepository>();
@@ -89,7 +92,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             matchesRepo = new Mock<IMatchRepository>();
             matchesRepo.Setup(m => m.Add(It.IsAny<Match>())).Returns((Match mat) => { return mat; });
             matchesRepo.Setup(m => m.Exists(It.IsAny<int>())).Returns(false);
-            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Match>());
+            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Encounter>());
 
             teamsRepo = new Mock<ITeamRepository>();
             teamsRepo.Setup(t => t.GetTeams(It.IsAny<string>())).Returns(teamsCollection);
@@ -98,7 +101,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             fixture = new FixtureService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
 
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
-            FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.dll");
+            FileInfo dllFile = new FileInfo(@".\");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
             controller = new FixturesController(fixture,mockSettings.Object,sportsRepo.Object);
         }
@@ -106,21 +109,21 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateFixtureTest()
         {
-            //Arrange
+            //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
                 Year = DateTime.Now.Year,
-                FixtureName = "OneMatchFixture"
+                FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
             };
 
-            //Act
+            //Act.
             IActionResult result = controller.CreateFixture(testSport.Name,input);
             CreatedResult createdResult = result as CreatedResult;
             ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
 
-            //Assert
+            //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -136,7 +139,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
                 Year = DateTime.Now.Year,
-                FixtureName = "OneMatchFixture"
+                FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
             ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(oneMatchCollection);
@@ -157,7 +160,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateOneMatchFixtureWrongDateFixtureTest()
         {
-            //Arrange
+            //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
                 Day = 99,
@@ -168,25 +171,26 @@ namespace ObligatorioDA2.WebAPI.Tests
             matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
             string errorMessagge = "Invalid date format";
 
-            //Act
+            //Act.
             IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
-            //Assert
+            //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.AreEqual(error.ErrorMessage, errorMessagge);
         }
 
-        private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Match> matches)
+        private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Encounter> matches)
         {
             ICollection<string> errorMessagges = new List<string>();
             foreach (Match aMatch in matches)
             {
-                errorMessagges.Add(aMatch.HomeTeam.Name + " already has a match on date " + new DateTime(aMatch.Date.Year,aMatch.Date.Month,aMatch.Date.Day));
-                errorMessagges.Add(aMatch.AwayTeam.Name + " already has a match on date " + new DateTime(aMatch.Date.Year, aMatch.Date.Month, aMatch.Date.Day));
+                foreach (Team team in aMatch.GetParticipants()) {
+                    errorMessagges.Add(team.Name + " already has a match on date " + new DateTime(aMatch.Date.Year, aMatch.Date.Month, aMatch.Date.Day));
+                }
             }
             return errorMessagges;
         }
@@ -194,18 +198,18 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateFixtureBadModelTest()
         {
-            //Arrange
+            //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
             };
             controller.ModelState.AddModelError("", "Error");
 
-            //Act
+            //Act.
             IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
-            //Assert
+            //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
@@ -214,21 +218,21 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateHomeAwayFixtureTest()
         {
-            //Arrange
+            //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
                 Year = DateTime.Now.Year,
-                FixtureName = "HomeAwayFixture"
+                FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture"
             };
 
-            //Act
+            //Act.
             IActionResult result = controller.CreateFixture(testSport.Name, input);
             CreatedResult createdResult = result as CreatedResult;
             ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
 
-            //Assert
+            //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -238,24 +242,24 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateHomeAwayFixtureWrongFixtureTest()
         {
-            //Arrange
+            //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
                 Day = DateTime.Now.Day,
                 Month = DateTime.Now.Month,
                 Year = DateTime.Now.Year,
-                FixtureName = "HomeAwayFixture"
+                FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
             ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(homeAwayMatchCollection);
 
 
-            //Act
+            //Act.
             IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
-            //Assert
+            //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
@@ -265,7 +269,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateHomeAwayFixtureWrongDateFixtureTest()
         {
-            //Arrange
+            //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
                 Day = 99,
@@ -276,12 +280,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
 
 
-            //Act
+            //Act.
             IActionResult result = controller.CreateFixture(testSport.Name, input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
-            //Assert
+            //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);

@@ -92,10 +92,11 @@ namespace ObligatorioDA2.Data.Repositories
 
         private ICollection<TeamEntity> GetFollowedTeams(string aUserName)
         {
-            return context.UserTeams
+            ICollection<UserTeam> result= context.UserTeams
                      .Where(ut => ut.UserEntityUserName.Equals(aUserName))
-                     .Select(ut => ut.Team)
+                     .Include(ut => ut.Team).ThenInclude(t => t.Sport)
                      .ToList();
+            return result.Select(ut => ut.Team).ToList();
         }
 
         public void Delete(string username)

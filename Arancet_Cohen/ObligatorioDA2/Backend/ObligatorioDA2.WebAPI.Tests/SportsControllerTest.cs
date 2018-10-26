@@ -31,12 +31,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             teamsRepo = new Mock<ITeamRepository>();
             Mock<IMatchRepository> matchesRepo = new Mock<IMatchRepository>();
 
-            Sport testSport1 = new Sport("Tennis");
-            Sport testSport2 = new Sport("Basketball");
+            Sport testSport1 = new Sport("Tennis",true);
+            Sport testSport2 = new Sport("Basketball",true);
 
             sportsRepo.Setup(r => r.Get("Tennis")).Returns(testSport1);
             sportsRepo.Setup(r => r.Get(It.Is<String>(x => (x != "Tennis") && (x !="Basketball")))).Throws(new SportNotFoundException());
-            sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport("Basketball"), new Sport("Tennis") });
+            sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport("Basketball",true), new Sport("Tennis",true) });
 
             IFixtureService dummyService = new Mock<IFixtureService>().Object;
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
@@ -312,9 +312,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetSportTeamsTest() {
             //Arrange.
-            Team dummyTeam = new Team("Dummy", "Dummy", new Sport("Dummy"));
+            Team dummyTeam = new Team("Dummy", "Dummy", new Sport("Dummy",true));
             ICollection<Team> cannedResponse = new List<Team>() { dummyTeam, dummyTeam, dummyTeam };
-            sportsRepo.Setup(r => r.Get(It.IsAny<string>())).Returns(new Sport("Dummy"));
+            sportsRepo.Setup(r => r.Get(It.IsAny<string>())).Returns(new Sport("Dummy",true));
             teamsRepo.Setup(r => r.GetTeams(It.IsAny<string>())).Returns(cannedResponse);
 
             //Act.

@@ -20,12 +20,7 @@ namespace DataRepositoriesTest
         private ISportRepository sportStorage;
         private Mock<Sport> sportA;
         private Mock<Sport> sportB;
-        private ICollection<Team> mockTeamsA;
-        private ICollection<Team> mockTeamsB;
-        private Mock<Team> team1;
-        private Mock<Team> team2;
-        private Mock<Team> team3;
-        private Mock<Team> team4;
+ 
 
         [TestInitialize]
         public void TestInitialize()
@@ -37,8 +32,8 @@ namespace DataRepositoriesTest
 
         private void CreateSports()
         {
-            sportA = new Mock<Sport>("SportA");
-            sportB = new Mock<Sport>("SportB");
+            sportA = new Mock<Sport>("SportA",true);
+            sportB = new Mock<Sport>("SportB",false);
         }
 
         private DatabaseConnection CreateContext()

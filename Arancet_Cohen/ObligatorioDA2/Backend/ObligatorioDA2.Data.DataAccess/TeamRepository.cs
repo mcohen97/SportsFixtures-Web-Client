@@ -115,11 +115,11 @@ namespace ObligatorioDA2.Data.Repositories
 
         private void DeleteMatches(TeamEntity toDelete)
         {
-            IQueryable<MatchEntity> teamMatches = context.Matches
-                .Include(m => m.Commentaries)
-                .Where(m => m.AwayTeam.Equals(toDelete) || m.HomeTeam.Equals(toDelete));
-            context.Matches.RemoveRange(teamMatches);
-            foreach (MatchEntity match in teamMatches)
+            IQueryable<MatchTeam> matchTeams = context.MatchTeams.Where(mt=> mt.TeamNumber == toDelete.TeamNumber);
+            context.MatchTeams.RemoveRange(matchTeams);
+            IQueryable<MatchEntity> matches = matchTeams.Select(mt => mt.Match);
+            context.Matches.RemoveRange(matches);
+            foreach (MatchEntity match in matches)
             {
                 context.Comments.RemoveRange(match.Commentaries);
             }
@@ -255,7 +255,7 @@ namespace ObligatorioDA2.Data.Repositories
 
         private ICollection<Team> TryGetAll()
         {
-            IQueryable<TeamEntity> teams = context.Teams;
+            IQueryable<TeamEntity> teams = context.Teams.Include(t=>t.Sport);
             ICollection<Team> result = teams.Select(t => mapper.ToTeam(t)).ToList();
             return result;
         }
@@ -377,6 +377,7 @@ namespace ObligatorioDA2.Data.Repositories
                 throw new TeamNotFoundException();
 
             TeamEntity entity = context.Teams
+                .Include(t=> t.Sport)
                 .FirstOrDefault(e => e.TeamNumber == id);
             Team converted = mapper.ToTeam(entity);
             return converted;

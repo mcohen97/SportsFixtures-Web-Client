@@ -6,13 +6,13 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.BusinessLogic;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 using System;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Net;
 using System.Reflection;
-using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
+using System.IO;
+using System.Text;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -23,6 +23,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IFixtureService fixtureService;
         private IOptions<FixtureStrategies> fixtureConfig;
         private ISportRepository sports;
+        private const string DLL_EXTENSION = "*.dll";
 
         public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo) {
             fixtureService = service;
@@ -33,9 +34,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet]
         public IActionResult GetFixtureAlgorithms()
         {
-            string algorithmsPath =fixtureConfig.Value.DllPath;
+            string algorithmsPath = fixtureConfig.Value.DllPath;        
             ICollection<Type> algorithms = fixtureService.GetAlgorithms(algorithmsPath);
-            ICollection<string> toReturn = algorithms.Select(t => GetTypeString(t)).ToList();
+            ICollection<string> toReturn = algorithms.Select(t => t.ToString()).ToList();
             return Ok(toReturn);
         }
 
@@ -73,30 +74,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = BadRequest(error);
             }
             return result;
-        }
-
-        private IFixtureGenerator BuildFixtureAlgorithm(DateTime date,string fixtureName)
-        {
-            string algorithmsPath = fixtureConfig.Value.DllPath;
-            Type algortihmType = GetAlgorithmType(algorithmsPath,fixtureName);
-            object fromDll = Activator.CreateInstance(algortihmType, new object[] { date, 1,7});
-            IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
-            return algorithm;
-        }
-
-        private Type GetAlgorithmType(string algorithmsPath, string fixtureName)
-        {
-            Assembly fixtures = Assembly.LoadFile(algorithmsPath);
-            string[] pathTokens = algorithmsPath.Split("\\");
-            string[] assemblyNameTokens = pathTokens[pathTokens.Length - 1].Split(".");
-            assemblyNameTokens[assemblyNameTokens.Length - 1] = fixtureName;
-            string typeName = String.Join(".", assemblyNameTokens);
-
-            Type algorithmType = fixtures.GetType(typeName);
-            if (algorithmType == null) {
-                throw new WrongFixtureException("Couldn't find fixture in assembly: "+ algorithmsPath);
-            }
-            return algorithmType;
         }
 
         private bool ValidDate(FixtureModelIn input)
@@ -139,20 +116,47 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
             return result;
         }
+        private IFixtureGenerator BuildFixtureAlgorithm(DateTime date, string fixtureName)
+        {
+            string algorithmsPath = fixtureConfig.Value.DllPath;
+            Type algortihmType = GetAlgorithmType(algorithmsPath, fixtureName);
+            object fromDll = Activator.CreateInstance(algortihmType, new object[] { date, 1, 7 });
+            IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
+            return algorithm;
+        }
+
+        private Type GetAlgorithmType(string algorithmsPath, string fixtureName)
+        {
+            bool found = false;
+            string[] files = Directory.GetFiles(algorithmsPath, DLL_EXTENSION);
+            Type first2comply = null;
+
+            for (int i=0; i< files.Length && !found; i++) {
+                Assembly actual =Assembly.LoadFrom(files[i]);
+                first2comply = actual.GetType(fixtureName);
+                if (first2comply != null) {
+                    found = true;
+                }
+            }
+
+            if (first2comply == null) {
+                throw new WrongFixtureException("Fixture not found");
+            }
+            return first2comply;
+        }
 
         private IActionResult TryCreate(FixtureModelIn input, string sportName)
         {
             IActionResult result;
             Sport sport = sports.Get(sportName);
-            ICollection<Match> added = fixtureService.AddFixture(sport);
+            ICollection<Encounter> added = fixtureService.AddFixture(sport);
             ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
-            foreach (Match match in added)
+            foreach (Encounter match in added)
             {
                 addedModelOut.Add(new MatchModelOut()
                 {
                     Id = match.Id,
-                    AwayTeamId = match.AwayTeam.Id,
-                    HomeTeamId = match.HomeTeam.Id,
+                    TeamsIds = match.GetParticipants().Select(p => p.Id).ToList(),
                     SportName = match.Sport.Name,
                     Date = match.Date,
                     CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()

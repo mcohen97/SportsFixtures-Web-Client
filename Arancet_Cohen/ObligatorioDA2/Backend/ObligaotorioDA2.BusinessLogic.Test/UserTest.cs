@@ -1,12 +1,11 @@
 ﻿using System;
-using BusinessLogicTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using Moq;
 using System.Reflection;
 
-namespace BusinessLogicTest
+namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
     public class UserTest
@@ -205,7 +204,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void AddFavouriteTeamTest()
         {
-            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport",true));
             toTest.AddFavourite(aTeam);
             Assert.AreEqual(toTest.GetFavouriteTeams().Count, 1);
         }
@@ -214,7 +213,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void AddAlreadyFollowingTeamTest()
         {
-            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport",true));
             toTest.AddFavourite(aTeam);
             toTest.AddFavourite(aTeam);
         }
@@ -222,7 +221,7 @@ namespace BusinessLogicTest
         [TestMethod]
         public void HasTeamTest()
         {
-            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport",true));
             toTest.AddFavourite(aTeam);
             Assert.IsTrue(toTest.HasFavouriteTeam(aTeam));
         }
@@ -230,14 +229,14 @@ namespace BusinessLogicTest
         [TestMethod]
         public void DoesNotHaveTeamTest()
         {
-            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport",true));
             Assert.IsFalse(toTest.HasFavouriteTeam(aTeam));
         }
 
         [TestMethod]
         public void RemoveTeamTest()
         {
-            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport",true));
             toTest.AddFavourite(aTeam);
             toTest.RemoveFavouriteTeam(aTeam);
             Assert.IsFalse(toTest.HasFavouriteTeam(aTeam));
@@ -247,7 +246,7 @@ namespace BusinessLogicTest
         [ExpectedException(typeof(InvalidUserDataException))]
         public void RemoveNotExistentTest()
         {
-            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport"));
+            Team aTeam = new Team(1, "partisanos fc", "aPath", new Sport("aSport",true));
             toTest.RemoveFavouriteTeam(aTeam);
         }
     }

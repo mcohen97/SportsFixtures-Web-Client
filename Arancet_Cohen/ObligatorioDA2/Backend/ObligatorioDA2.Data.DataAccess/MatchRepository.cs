@@ -16,16 +16,18 @@ namespace ObligatorioDA2.Data.Repositories
     {
         private DatabaseConnection context;
         private MatchMapper matchConverter;
+        private TeamMapper teamConverter;
         private CommentMapper commentConverter;
         public MatchRepository(DatabaseConnection aContext)
         {
             context = aContext;
             matchConverter = new MatchMapper();
             commentConverter = new CommentMapper();
+            teamConverter = new TeamMapper();
         }
 
 
-        public Match Add(Match aMatch)
+        public Encounter Add(Encounter aMatch)
         {
             Match added;
             try
@@ -39,7 +41,7 @@ namespace ObligatorioDA2.Data.Repositories
             return added;
         }
 
-        private Match TryAdd(Match aMatch)
+        private Match TryAdd(Encounter aMatch)
         {
             Match added;
             if (!Exists(aMatch.Id))
@@ -53,10 +55,14 @@ namespace ObligatorioDA2.Data.Repositories
             return added;
         }
 
-        private Match AddNew(Match aMatch)
+        private Match AddNew(Encounter aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
+            Match added = new Match(toAdd.Id, aMatch.GetParticipants(), aMatch.Date, aMatch.Sport);
+
+            ICollection<MatchTeam> playingTeams = matchConverter.ConvertParticipants(added);
+            context.MatchTeams.AddRange(playingTeams);
 
             //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
             if (aMatch.Id > 0 && context.Database.IsSqlServer())
@@ -67,7 +73,7 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 context.SaveChanges();
             }
-            return matchConverter.ToMatch(toAdd);
+            return added;
         }
 
         private void SaveWithIdentityInsert()
@@ -138,9 +144,9 @@ namespace ObligatorioDA2.Data.Repositories
             context.SaveChanges();
         }
 
-        public Match Get(int anId)
+        public Encounter Get(int anId)
         {
-            Match toReturn;
+            Encounter toReturn;
             try
             {
                 toReturn = TryGet(anId);
@@ -152,9 +158,9 @@ namespace ObligatorioDA2.Data.Repositories
             return toReturn;
         }
 
-        private Match TryGet(int anId)
+        private Encounter TryGet(int anId)
         {
-            Match toReturn;
+            Encounter toReturn;
             if (AnyWithId(anId))
             {
                 toReturn = GetExistentMatch(anId);
@@ -166,23 +172,25 @@ namespace ObligatorioDA2.Data.Repositories
             return toReturn;
         }
 
-        private Match GetExistentMatch(int anId)
+        private Encounter GetExistentMatch(int anId)
         {
             MatchEntity entity = context.Matches
-                .Include(m => m.HomeTeam)
-                .Include(m => m.AwayTeam)
                 .Include(m => m.SportEntity)
                 .Include(m => m.Commentaries).ThenInclude(c => c.Maker)
                 .First(me => me.Id == anId);
 
-            Match conversion = matchConverter.ToMatch(entity);
+            ICollection<MatchTeam> match_teams = context.MatchTeams.Include(mt=> mt.Team)
+                                                                   .ThenInclude(t => t.Sport)                                                                             
+                                                                   .Where(mt => mt.MatchId == anId)
+                                                                   .ToList();
+            Encounter conversion = matchConverter.ToMatch(entity,match_teams);
             context.Entry(entity).State = EntityState.Detached;
             return conversion;
         }
 
-        public ICollection<Match> GetAll()
+        public ICollection<Encounter> GetAll()
         {
-            ICollection<Match> allOfThem;
+            ICollection<Encounter> allOfThem;
             try
             {
                 allOfThem = TryGetAll();
@@ -194,17 +202,21 @@ namespace ObligatorioDA2.Data.Repositories
             return allOfThem;
         }
 
-        private ICollection<Match> TryGetAll()
+        private ICollection<Encounter> TryGetAll()
         {
+            ICollection<Encounter> allOfThem = new List<Encounter>();
             IQueryable<MatchEntity> entities = context.Matches
-                                            .Include(m => m.HomeTeam)
-                                            .Include(m => m.AwayTeam)
                                             .Include(m => m.SportEntity)
                                             .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
 
-            ICollection<Match> translation = entities.Select(m => matchConverter.ToMatch(m)).ToList();
-
-            return translation;
+            foreach (MatchEntity match in entities) {
+                IQueryable<MatchTeam> matchPlayers = context.MatchTeams
+                    .Include(mt => mt.Team)
+                    .Where(mt => mt.MatchId == match.Id);
+                Encounter built = matchConverter.ToMatch(match, matchPlayers.ToList());
+                allOfThem.Add(built);
+            }
+            return allOfThem;
         }
 
         public bool IsEmpty()
@@ -226,7 +238,7 @@ namespace ObligatorioDA2.Data.Repositories
             return !context.Matches.Any();
         }
 
-        public void Modify(Match aMatch)
+        public void Modify(Encounter aMatch)
         {
             try
             {
@@ -238,7 +250,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
         }
 
-        private void TryModify(Match aMatch)
+        private void TryModify(Encounter aMatch)
         {
             if (Exists(aMatch.Id))
             {
@@ -250,7 +262,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
         }
 
-        public void ModifyExistent(Match aMatch)
+        public void ModifyExistent(Encounter aMatch)
         {
             MatchEntity converted = matchConverter.ToEntity(aMatch);
             if (context.Matches.Any(m => m.Id == aMatch.Id))

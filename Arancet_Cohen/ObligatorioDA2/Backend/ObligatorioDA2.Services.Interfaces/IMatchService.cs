@@ -7,25 +7,25 @@ namespace ObligatorioDA2.Services.Interfaces
 {
     public interface IMatchService
     {
-        Match AddMatch(Match aMatch);
+        Encounter AddMatch(Encounter aMatch);
 
-        Match AddMatch(int homeTeamId, int awayTeamId, string sportName, DateTime date);
+        Encounter AddMatch(ICollection<int> teamsIds, string sportName, DateTime date);
 
-        Match AddMatch(int assignedId, int homeTeamId, int awayTeamId, string sportName, DateTime date);
+        Encounter AddMatch(int assignedId, ICollection<int> teamsIds, string sportName, DateTime date);
 
-        ICollection<Match> GetAllMatches();
+        ICollection<Encounter> GetAllMatches();
 
-        Match GetMatch(int anId);
+        Encounter GetMatch(int anId);
 
         void DeleteMatch(int anId);
 
-        void ModifyMatch(Match aMatch);
+        void ModifyMatch(Encounter aMatch);
 
-        void ModifyMatch(int idMatch, int idHome, int idAway, DateTime date, string sportName);
+        void ModifyMatch(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName);
 
-        ICollection<Match> GetAllMatches(string sportName);
+        ICollection<Encounter> GetAllMatches(string sportName);
 
-        ICollection<Match> GetAllMatches(int teamId);
+        ICollection<Encounter> GetAllMatches(int teamId);
 
         bool Exists(int id);
 
