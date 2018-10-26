@@ -212,8 +212,30 @@ namespace ObligatorioDA2.BusinessLogic.Test
         public void SetResultTest() {
             Result fakeResult = GetFakeResult();
             match.SetResult(fakeResult);
-            Assert.IsTrue(match.HasResult);
+            Assert.IsTrue(match.HasResult());
             Assert.IsNotNull(match.Result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void SetNullResultTest() {
+            match.SetResult(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void TeamInResultNotInMatchTest() {
+            Result fakeResult = GetFakeResult();
+            match = new Match(3, new List<Team>() { teamA, teamC }, date, sport);
+            match.SetResult(fakeResult);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void PositionsTeamsCountMismatchTest() {
+            Result fakeResult = GetFakeResult();
+            fakeResult.Add(teamC, 5);
+            match.SetResult(fakeResult);
         }
 
         private Result GetFakeResult()
