@@ -136,6 +136,9 @@ namespace ObligatorioDA2.BusinessLogic
                 throw new InvalidMatchDataException("The result must contain all the encounter," +
                     " teams and only them");
             }
+            if (!ConsecutivePositions(aResult)) {
+                throw new InvalidMatchDataException("The result can't have gap positions");
+            }
             result = aResult;
         }
 
@@ -146,6 +149,17 @@ namespace ObligatorioDA2.BusinessLogic
             bool sameTeams = teamsInPositions.Count== participants.Count 
                 && !teamsInPositions.Except(participants).Any();
             return sameTeams;
+        }
+
+        private bool ConsecutivePositions(Result aResult)
+        {
+            int lowestPosition = aResult.GetPositions()
+                .Select(p => p.Item2).Max();
+            bool[] positions = new bool[lowestPosition];
+            foreach (Tuple<Team,int> standing in aResult.GetPositions()) {
+                positions[standing.Item2-1] = true;
+            }
+            return !positions.Any(p => !p);
         }
     }
 }
