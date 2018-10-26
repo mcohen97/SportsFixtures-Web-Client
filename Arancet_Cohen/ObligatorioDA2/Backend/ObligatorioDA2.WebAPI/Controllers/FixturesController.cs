@@ -23,11 +23,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IFixtureService fixtureService;
         private IOptions<FixtureStrategies> fixtureConfig;
         private ISportRepository sports;
+        private ILoggerService logger;
 
-        public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo) {
+        public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo, ILoggerService loggerService) {
             fixtureService = service;
             fixtureConfig = config;
             sports = sportsRepo;
+            logger = loggerService;
         }
 
         [HttpGet]
