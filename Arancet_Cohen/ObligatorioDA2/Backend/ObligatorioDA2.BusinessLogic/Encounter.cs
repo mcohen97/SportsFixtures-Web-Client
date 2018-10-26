@@ -129,7 +129,23 @@ namespace ObligatorioDA2.BusinessLogic
         }
         public void SetResult(Result aResult)
         {
+            if (aResult == null) {
+                throw new InvalidMatchDataException("Result can't be null");
+            }
+            if (!ResultContainsTheTeams(aResult)) {
+                throw new InvalidMatchDataException("The result must contain all the encounter," +
+                    " teams and only them");
+            }
             result = aResult;
+        }
+
+        private bool ResultContainsTheTeams(Result aResult)
+        {
+            ICollection<Team> teamsInPositions = aResult.GetPositions()
+                .Select(p => p.Item1).ToList();
+            bool sameTeams = teamsInPositions.Count== participants.Count 
+                && !teamsInPositions.Except(participants).Any();
+            return sameTeams;
         }
     }
 }
