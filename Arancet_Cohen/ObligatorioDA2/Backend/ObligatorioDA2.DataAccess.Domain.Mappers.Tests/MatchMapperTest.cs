@@ -5,6 +5,7 @@ using ObligatorioDA2.Data.Entities;
 using System;
 using System.Collections.Generic;
 using Match = ObligatorioDA2.BusinessLogic.Match;
+using System.Linq;
 
 namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
@@ -14,7 +15,10 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         private MatchMapper testMapper;
         private MatchEntity entity;
         private ICollection<MatchTeam> playingTeams;
-        private Mock<BusinessLogic.Match> match;
+        private Match match;
+        Team homeMock;
+        Team awayMock;
+
         [TestInitialize]
         public void SetUp()
         {
@@ -27,6 +31,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 Id = 3,
                 Date = DateTime.Now,
                 SportEntity = testSport,
+                HasResult = false,
                 Commentaries = new List<CommentEntity>()
             };
             MatchTeam homeRel = new MatchTeam() { Team = homeTest, TeamNumber = 3, Match = entity, MatchId = 3 };
@@ -35,20 +40,20 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
             Team homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer",true));
             Team awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer",true));
             Sport sport = new Sport("Soccer",true);
-            match = new Mock<Match>(new List<Team>() { homeMock, awayMock }, DateTime.Now, sport);
+            match = new Match(new List<Team>() { homeMock, awayMock }, DateTime.Now, sport);
         }
 
         [TestMethod]
         public void GetMatchTeamsTest()
         {
-            ICollection<MatchTeam> teams = testMapper.ConvertParticipants(match.Object);
-            Assert.AreEqual(teams.Count, match.Object.GetParticipants().Count);
+            ICollection<MatchTeam> teams = testMapper.ConvertParticipants(match);
+            Assert.AreEqual(teams.Count, match.GetParticipants().Count);
         }
 
         [TestMethod]
         public void MatchToEntityDateTest()
         {
-            MatchEntity converted = testMapper.ToEntity(match.Object);
+            MatchEntity converted = testMapper.ToEntity(match);
             Assert.AreEqual(converted.Date.ToString(), entity.Date.ToString());
         }
 
@@ -64,23 +69,56 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 Email = "anEmail@aDomain.com"
             };
             Mock<User> user = new Mock<User>(identity, false);
-            match.Object.AddCommentary(new Commentary("test comment", user.Object));
-            MatchEntity converted = testMapper.ToEntity(match.Object);
+            match.AddCommentary(new Commentary("test comment", user.Object));
+            MatchEntity converted = testMapper.ToEntity(match);
             Assert.AreEqual(converted.Commentaries.Count, 1);
+        }
+
+        [TestMethod]
+        public void MatchToEntityNoResultTest() {
+            MatchEntity converted = testMapper.ToEntity(match);
+            Assert.IsFalse(converted.HasResult);
+        }
+
+        [TestMethod]
+        public void MatchToEntityWithResultTest()
+        {
+            Result matchResult = GetFakeResult();
+            match.SetResult(matchResult);
+            MatchEntity converted = testMapper.ToEntity(match);
+            Assert.IsTrue(converted.HasResult);
+        }
+
+        [TestMethod]
+        public void MatchToEntityResultsTest()
+        {
+            Result matchResult = GetFakeResult();
+            match.SetResult(matchResult);
+            ICollection<MatchTeam> teams = testMapper.ConvertParticipants(match);
+            Assert.IsTrue(teams.Any(t => t.Position == 1));
+            Assert.IsTrue(teams.Any(t => t.Position == 2));
+        }
+
+        private Result GetFakeResult()
+        {
+            Result toGenerate = new Result();
+            toGenerate.Add(homeMock, 1);
+            toGenerate.Add(awayMock, 2);
+            return toGenerate;
         }
 
         [TestMethod]
         public void EntityToMatchTeamsTest()
         {
             Match conversion = testMapper.ToMatch(entity,playingTeams);
-            Assert.AreEqual(match.Object.GetParticipants().Count, playingTeams.Count);
+            Assert.AreEqual(match.GetParticipants().Count, playingTeams.Count);
         }
 
         [TestMethod]
         public void EntityToMatchDateTest()
         {
             Match conversion = testMapper.ToMatch(entity,playingTeams);
-            Assert.AreEqual(match.Object.Date.ToString(), conversion.Date.ToString());
+            Assert.AreEqual(match.Date.ToString(), conversion.Date.ToString());
         }
 
         [TestMethod]
@@ -101,6 +139,23 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
             });
             Match conversion = testMapper.ToMatch(entity,playingTeams);
             Assert.AreEqual(conversion.GetAllCommentaries().Count, 1);
+        }
+
+        [TestMethod]
+        public void EntityToMatchNoResultTest() {
+            Match conversion = testMapper.ToMatch(entity, playingTeams);
+            Assert.IsFalse(conversion.HasResult());
+        }
+
+        [TestMethod]
+        public void EntityToMatchWithResultTest() {
+            entity.HasResult = true;
+            int position = 1;
+            foreach (MatchTeam team in playingTeams) {
+                team.Position = position;
+                position++;
+            }
+            Match conversion = testMapper.ToMatch(entity, playingTeams);
         }
     }
 }
