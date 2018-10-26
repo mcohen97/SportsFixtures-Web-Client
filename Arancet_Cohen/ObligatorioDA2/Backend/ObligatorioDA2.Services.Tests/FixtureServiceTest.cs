@@ -162,7 +162,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetAvailableStrategiesTest() {
-            string path = "C://Users//Marcel//Desktop//diseño2//Arancet_Cohen//ObligatorioDA2//Backend//ObligatorioDA2.BusinessLogic//bin//Debug//BusinessLogic.dll";
+            string path = "C://Users//Marcel//Desktop//diseño2//Arancet_Cohen//ObligatorioDA2//Backend//ObligatorioDA2.BusinessLogic//bin//Debug//";
             ICollection<Type> algorithms = fixtureService.GetAlgorithms(path);
             Assert.AreEqual(0, algorithms.Count);
         }
