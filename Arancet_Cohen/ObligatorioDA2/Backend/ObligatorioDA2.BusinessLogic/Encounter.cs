@@ -13,6 +13,8 @@ namespace ObligatorioDA2.BusinessLogic
         private DateTime date;
         private ICollection<Team> participants;
         private ICollection<Commentary> commentaries;
+        private Result result;
+        public Result Result { get { return result; } set { SetResult(value); } }
 
         public Encounter(ICollection<Team> teams, DateTime date, Sport aSport)
         {
@@ -119,6 +121,15 @@ namespace ObligatorioDA2.BusinessLogic
         public Commentary GetCommentary(int id)
         {
             return commentaries.First(c => c.Id == id);
+        }
+
+        public bool HasResult()
+        {
+            return Result != null;
+        }
+        public void SetResult(Result aResult)
+        {
+            result = aResult;
         }
     }
 }
