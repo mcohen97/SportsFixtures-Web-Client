@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ObligatorioDA2.BusinessLogic.Exceptions;
-using System.Linq;
 
 namespace ObligatorioDA2.BusinessLogic
 {
@@ -14,6 +12,5 @@ namespace ObligatorioDA2.BusinessLogic
 
         public Match(int anId, ICollection<Team> teams, DateTime date, Sport sport,
          ICollection<Commentary> comments) : base(anId, teams, date, sport,comments) { }
-
     }
 }
