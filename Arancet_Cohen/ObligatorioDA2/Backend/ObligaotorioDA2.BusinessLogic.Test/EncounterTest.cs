@@ -248,6 +248,17 @@ namespace ObligatorioDA2.BusinessLogic.Test
             match.SetResult(draw);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void SharedPositionsInCompetitionTest()
+        {
+            sport = new Sport("Archery", false);
+            match = new Competition(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
+            Result fakeResult = GetFakeResult();
+            fakeResult.Add(teamC, 1);
+            match.SetResult(fakeResult);
+        }
+
         private Result GetFakeResult()
         {
             Result toGenerate = new Result();
