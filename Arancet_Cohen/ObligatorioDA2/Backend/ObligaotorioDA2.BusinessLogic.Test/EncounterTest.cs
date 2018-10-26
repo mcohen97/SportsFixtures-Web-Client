@@ -10,7 +10,7 @@ using System.Linq;
 namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
-    public class MatchTest
+    public class EncounterTest
     {
         private Team teamA;
         private Team teamB;
