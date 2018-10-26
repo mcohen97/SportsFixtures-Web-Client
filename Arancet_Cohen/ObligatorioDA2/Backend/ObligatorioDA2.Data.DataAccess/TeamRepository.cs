@@ -260,7 +260,7 @@ namespace ObligatorioDA2.Data.Repositories
 
         private ICollection<Team> TryGetAll()
         {
-            IQueryable<TeamEntity> teams = context.Teams;
+            IQueryable<TeamEntity> teams = context.Teams.Include(t=>t.Sport);
             ICollection<Team> result = teams.Select(t => mapper.ToTeam(t)).ToList();
             return result;
         }
