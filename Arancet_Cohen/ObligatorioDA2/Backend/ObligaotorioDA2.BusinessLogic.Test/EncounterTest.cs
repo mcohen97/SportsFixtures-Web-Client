@@ -238,6 +238,16 @@ namespace ObligatorioDA2.BusinessLogic.Test
             match.SetResult(fakeResult);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void NonConsecutivePositionsTest()
+        {
+            Result draw = new Result();
+            draw.Add(teamA, 1);
+            draw.Add(teamB, 4);
+            match.SetResult(draw);
+        }
+
         private Result GetFakeResult()
         {
             Result toGenerate = new Result();
