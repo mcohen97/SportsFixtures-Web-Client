@@ -41,7 +41,7 @@ namespace ObligatorioDA2.Services
             {
                 Id = 0,
                 LogType = logType,
-                Messagge = messagge,
+                Message = messagge,
                 Username = username,
                 Date = date
             };

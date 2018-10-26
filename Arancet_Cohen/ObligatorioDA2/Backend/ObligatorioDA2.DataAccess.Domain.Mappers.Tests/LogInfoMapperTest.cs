@@ -30,7 +30,7 @@ namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
             log = new LogInfo()
             {
                 Id = 1,
-                Messagge = "User logged using API",
+                Message = "User logged using API",
                 LogType = LogType.LOGIN,
                 Username = "admin",
                 Date = DateTime.Now
@@ -42,7 +42,7 @@ namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
         {
             LogInfoEntity converted = mapper.ToEntity(log);
             Assert.AreEqual(log.Id, converted.Id);
-            Assert.AreEqual(log.Messagge, converted.Messagge);
+            Assert.AreEqual(log.Message, converted.Messagge);
             Assert.AreEqual(log.LogType, converted.LogType);
             Assert.AreEqual(log.Username, converted.Username);
             Assert.AreEqual(log.Date, converted.Date);
@@ -53,7 +53,7 @@ namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
         {
             LogInfo converted = mapper.ToLogInfo(entity);
             Assert.AreEqual(entity.Id, converted.Id);
-            Assert.AreEqual(entity.Messagge, converted.Messagge);
+            Assert.AreEqual(entity.Messagge, converted.Message);
             Assert.AreEqual(entity.LogType, converted.LogType);
             Assert.AreEqual(entity.Username, converted.Username);
             Assert.AreEqual(entity.Date, converted.Date);

@@ -35,7 +35,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
                 Id = 0,
                 Date = DateTime.Now,
                 LogType = LogType.FIXTURE,
-                Messagge = "HomeAway fixture generated",
+                Message = "HomeAway fixture generated",
                 Username = "SomeUser"
             };
             log2 = new LogInfo()
@@ -43,7 +43,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
                 Id = 0,
                 Date = DateTime.Now,
                 LogType = LogType.LOGIN,
-                Messagge = "Logged using API",
+                Message = "Logged using API",
                 Username = "SomeUser"
             };
         }
@@ -193,7 +193,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
         public void ModifySportTest()
         {
             log1 = repo.Add(log1);
-            log1.Messagge = "New log info";
+            log1.Message = "New log info";
             CreateContext();
             repo.Modify(log1);
             LogInfo editedLog = repo.Get(log1.Id);

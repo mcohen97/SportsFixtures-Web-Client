@@ -11,7 +11,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             return new LogInfoEntity()
             {
                 Id = log.Id,
-                Messagge = log.Messagge,
+                Messagge = log.Message,
                 Date = log.Date,
                 LogType = log.LogType,
                 Username = log.Username
@@ -23,7 +23,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             return new LogInfo()
             {
                 Id = entity.Id,
-                Messagge = entity.Messagge,
+                Message = entity.Messagge,
                 Date = entity.Date,
                 LogType = entity.LogType,
                 Username = entity.Username

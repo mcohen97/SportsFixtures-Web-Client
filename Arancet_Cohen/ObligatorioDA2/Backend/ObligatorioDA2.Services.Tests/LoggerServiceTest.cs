@@ -25,7 +25,7 @@ namespace ObligatorioDA2.Services.Tests
                 Id = 1,
                 Date = DateTime.Now,
                 LogType = LogType.LOGIN,
-                Messagge = "Logged using API",
+                Message = "Logged using API",
                 Username = "SomeUsername"
             };
             logRepo = new Mock<ILogInfoRepository>().Object;
@@ -56,7 +56,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void AddLogTest()
         {
-            aLog.Id = logger.Log(aLog.LogType, aLog.Messagge, aLog.Username, aLog.Date);
+            aLog.Id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
             Assert.IsTrue(logger.Exists(aLog.Id));
         }
 
@@ -69,10 +69,10 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetLogTest()
         {
-            int id = logger.Log(aLog.LogType, aLog.Messagge, aLog.Username, aLog.Date);
+            int id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
             LogInfo logRetrieved = logger.GetLog(id);
             Assert.AreEqual(aLog.LogType, logRetrieved.LogType);
-            Assert.AreEqual(aLog.Messagge, logRetrieved.Messagge);
+            Assert.AreEqual(aLog.Message, logRetrieved.Message);
             Assert.AreEqual(aLog.Date, logRetrieved.Date);
             Assert.AreEqual(aLog.Username, logRetrieved.Username);
         }
@@ -80,7 +80,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetAllTest()
         {
-            logger.Log(aLog.LogType, aLog.Messagge, aLog.Username, aLog.Date);
+            logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
             ICollection<LogInfo> logs = logger.GetAllLogs();
             Assert.AreEqual(1, logs.Count);
         }
@@ -88,7 +88,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void DeleteLogTest()
         {
-            int id = logger.Log(aLog.LogType, aLog.Messagge, aLog.Username, aLog.Date);
+            int id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
             logger.Delete(id);
             Assert.IsFalse(logger.Exists(id));
         }
@@ -97,7 +97,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(LogNotFoundException))]
         public void GetDeletedTest()
         {
-            int id = logger.Log(aLog.LogType, aLog.Messagge, aLog.Username, aLog.Date);
+            int id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
             logger.Delete(id);
             logger.GetLog(id);
         }

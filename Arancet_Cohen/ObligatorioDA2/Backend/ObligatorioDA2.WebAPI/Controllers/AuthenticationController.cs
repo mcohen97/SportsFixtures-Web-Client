@@ -18,11 +18,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private ILoginService logger;
+        private ILoginService loginService;
+        private ILoggerService logger;
 
-        public AuthenticationController(ILoginService aService)
+        public AuthenticationController(ILoginService aService, ILoggerService aLogger)
         {
-            logger = aService;
+            loginService = aService;
+            logger = aLogger;
         }
 
         [HttpPost]
@@ -44,23 +46,27 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                User logged = logger.Login(user.Username, user.Password);
+                User logged = loginService.Login(user.Username, user.Password);
                 string tokenString = GenerateJSONWebToken(logged);
                 result = Ok(new { Token = tokenString });
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_OK, user.Username, DateTime.Now);
             }
             catch (UserNotFoundException e1)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e1.Message };
                 result = BadRequest(error);
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, user.Username, DateTime.Now);
             }
             catch (WrongPasswordException e2)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e2.Message };
                 result = BadRequest(error);
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_WRONG_PASSWORD, user.Username, DateTime.Now);
             }
             catch (DataInaccessibleException e) {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = StatusCode((int)HttpStatusCode.InternalServerError, error);
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_DATAINACCESSIBLE, user.Username, DateTime.Now);
             }
             return result;
         }

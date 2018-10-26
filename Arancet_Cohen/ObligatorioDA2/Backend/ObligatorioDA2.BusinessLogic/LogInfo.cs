@@ -7,22 +7,22 @@ namespace ObligatorioDA2.BusinessLogic
     public class LogInfo
     {
         private int id;
-        private string messagge;
+        private string message;
         private string logType;
         private DateTime date;
         private string username;
 
         public int Id { get => id; set => id = value; }
-        public string Messagge { get => messagge; set => messagge = value; }
+        public string Message { get => message; set => message = value; }
         public string LogType { get => logType; set => logType = value; }
         public DateTime Date { get => date; set => date = value; }
         public string Username { get => username; set => username = value; }
 
         public LogInfo() { }
 
-        public LogInfo(string messagge, string type, DateTime date)
+        public LogInfo(string message, string type, DateTime date)
         {
-            Messagge = messagge;
+            Message = message;
             LogType = type;
             Date = date;
         }
