@@ -13,6 +13,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Net;
 using System.Reflection;
 using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
+using System.Security.Claims;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -51,28 +52,39 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost("{sportName}")]
         public IActionResult CreateFixture(string sportName, FixtureModelIn input) {
             IActionResult result;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            string username = "";
+            if (identity != null)
+            {
+                IEnumerable<Claim> claims = identity.Claims;
+                // or
+                username = identity.FindFirst(AuthenticationConstants.USERNAME_CLAIM).Value;
+            }
+
             if (ModelState.IsValid)
             {
-                result = TryCreateFixture(sportName, input);
+                result = TryCreateFixture(sportName, input, username);
             }
             else
             {
                 result = BadRequest(ModelState);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_BAD_MODEL_IN, username, DateTime.Now);
             }
             return result;
         }
 
-        private IActionResult TryCreateFixture(string sportName, FixtureModelIn input)
+        private IActionResult TryCreateFixture(string sportName, FixtureModelIn input, string username)
         {
             IActionResult result;
             if (ValidDate(input))
             {
-                result = CreateValid(input, sportName);
+                result = CreateValid(input, sportName, username);
             }
             else
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = "Invalid date format" };
                 result = BadRequest(error);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_BAD_MODEL_IN, username, DateTime.Now);
             }
             return result;
         }
@@ -116,27 +128,31 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult CreateValid(FixtureModelIn input, string sportName)
+        private IActionResult CreateValid(FixtureModelIn input, string sportName, string username)
         {
             IActionResult result;
             try
             {
                 fixtureService.FixtureAlgorithm = BuildFixtureAlgorithm(new DateTime(input.Year, input.Month, input.Day), input.FixtureName);
                 result = TryCreate(input, sportName);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_OK, username, DateTime.Now);
             }
             catch (WrongFixtureException e)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = BadRequest(error);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG + " " + e.Message, username, DateTime.Now);
             }
             catch (EntityNotFoundException e)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
                 result = NotFound(error);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_SPORT_NOT_FOUND, username, DateTime.Now);
             }
             catch (DataInaccessibleException e)
             {
                 result = NoDataAccess(e);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_DATAINACCESSIBLE, username, DateTime.Now);
             }
 
             return result;

@@ -37,6 +37,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             else {
                 result = BadRequest(ModelState);
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_BAD_MODEL_IN, user.Username, DateTime.Now);
             }
             return result;
         }

@@ -104,7 +104,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
             FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.dll");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
-            controller = new FixturesController(fixture,mockSettings.Object,sportsRepo.Object);
+            controller = new FixturesController(fixture,mockSettings.Object,sportsRepo.Object, logger.Object);
         }
 
         [TestMethod]
@@ -337,7 +337,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(strategies);
-            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
 
         }
     }
