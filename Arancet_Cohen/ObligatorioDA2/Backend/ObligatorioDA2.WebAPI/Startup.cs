@@ -47,6 +47,8 @@ namespace ObligatorioDA2.WebAPI
             services.AddDbContext<DatabaseConnection>(options => options.UseSqlServer(Configuration.GetConnectionString("ObligatorioDA2")));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITeamRepository ,TeamRepository>();
+            services.AddScoped<ILogInfoRepository, LogInfoRepository>();
+            services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMatchRepository, MatchRepository>();
