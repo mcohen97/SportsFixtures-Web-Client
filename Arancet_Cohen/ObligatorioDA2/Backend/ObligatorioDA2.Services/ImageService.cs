@@ -13,5 +13,10 @@ namespace ObligatorioDA2.Services
         {
             imagesPath = aPath;
         }
+
+        public void SaveImage(string imageName, string image)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
