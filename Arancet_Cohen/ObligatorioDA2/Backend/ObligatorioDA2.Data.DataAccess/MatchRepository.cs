@@ -194,6 +194,7 @@ namespace ObligatorioDA2.Data.Repositories
                                                                    .Where(mt => mt.MatchId == anId)
                                                                    .ToList();
             Encounter conversion = matchConverter.ToMatch(entity,match_teams);
+
             context.Entry(entity).State = EntityState.Detached;
             foreach (MatchTeam mt in match_teams) {
                 context.Entry(mt).State = EntityState.Detached;
@@ -220,18 +221,19 @@ namespace ObligatorioDA2.Data.Repositories
             ICollection<Encounter> allOfThem = new List<Encounter>();
             IQueryable<MatchEntity> entities = context.Matches
                                             .Include(m => m.SportEntity)
-                                            .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
+                                            .Include(m => m.Commentaries).ThenInclude(c => c.Maker).AsNoTracking();
 
             foreach (MatchEntity match in entities) {
                 IQueryable<MatchTeam> matchPlayers = context.MatchTeams
-                    .Include(mt => mt.Team)
-                    .Where(mt => mt.MatchId == match.Id);
+                    .Include(mt => mt.Team).ThenInclude(t=>t.Sport)
+                    .Include(mt => mt.Match).ThenInclude(m=> m.SportEntity)
+                    .Where(mt => mt.MatchId == match.Id).AsNoTracking();
                 Encounter built = matchConverter.ToMatch(match, matchPlayers.ToList());
 
-                context.Entry(match).State = EntityState.Detached;
+                /*context.Entry(match).State = EntityState.Detached;
                 foreach (MatchTeam mt in matchPlayers) {
                     context.Entry(mt).State = EntityState.Detached;
-                }
+                }*/
 
                 allOfThem.Add(built);
             }
