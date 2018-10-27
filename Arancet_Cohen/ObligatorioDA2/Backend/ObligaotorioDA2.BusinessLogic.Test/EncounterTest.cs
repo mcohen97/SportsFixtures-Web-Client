@@ -27,7 +27,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         [TestInitialize]
         public void TestInitialize()
         {
-            //Create mocks
+            //Create mocks.
             sport = new Sport("Soccer",true);
             teamA = new Team(1, "TeamA", "Photo/A", sport);
             teamB = new Team(2, "TeamB", "Photo/B", sport);
@@ -38,7 +38,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
             commentary2 = new Mock<Commentary>(2, "Commentary 2", commentarist.Object);
             commentary3 = new Mock<Commentary>(3, "Commentary 3", commentarist.Object);
 
-            //Configure mocks
+            //Configure mocks.
             commentary1.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 1);
             commentary2.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 2);
             commentary3.Setup(t => t.Equals(It.IsAny<object>())).Returns<object>(t => (t as Commentary)?.Id == 3);
@@ -154,7 +154,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
             Assert.AreEqual(commentary.Text, commentary1.Object.Text);
         }
 
-        //Exceptions
+        //Exceptions.
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
