@@ -19,9 +19,15 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void TestSaveImage() {
             string img = "asdasdasdadad";
-            service.SaveImage("testImage", img);
-            string imagePath= directoryPath +"/"+ "testImage";
+            service.SaveImage("testImage", Base64Encode(img));
+            string imagePath= directoryPath +"/"+ "testImage.jpg";
             Assert.IsTrue(File.Exists(imagePath));
+        }
+
+        private string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
         }
     }
 }
