@@ -370,7 +370,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void SetResultTest() {
             Result result = GetFakeResult();
-            serviceToTest.SetResult(matchAvsB, result);
+            serviceToTest.SetResult(matchAvsB.Id, result);
             Encounter retrieved = serviceToTest.GetMatch(matchAvsB.Id);
             Result retrievedResult = retrieved.Result;
             Assert.AreEqual(result.GetPositions().Count, retrievedResult.GetPositions().Count);
