@@ -37,7 +37,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void TestReadImage() {
             SaveTestImage();
-            byte[] bytes= service.ReadImage("testImage");
+            byte[] bytes= service.ReadImage(testImagePath);
             string actual = Convert.ToBase64String(bytes);
             string expected = Base64Encode(testImage);
         }
