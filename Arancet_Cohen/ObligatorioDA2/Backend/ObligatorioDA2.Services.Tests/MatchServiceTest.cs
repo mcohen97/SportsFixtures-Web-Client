@@ -370,6 +370,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void SetResultTest() {
             Result result = GetFakeResult();
+            matchesRepo.Add(matchAvsB);
             serviceToTest.SetResult(matchAvsB.Id, result);
             Encounter retrieved = serviceToTest.GetMatch(matchAvsB.Id);
             Result retrievedResult = retrieved.Result;
@@ -378,11 +379,9 @@ namespace ObligatorioDA2.Services.Tests
 
         private Result GetFakeResult()
         {
-            Team homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer", true));
-            Team awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer", true));
             Result toGenerate = new Result();
-            toGenerate.Add(homeMock, 1);
-            toGenerate.Add(awayMock, 2);
+            toGenerate.Add(teamA, 1);
+            toGenerate.Add(teamB, 2);
             return toGenerate;
         }
     }

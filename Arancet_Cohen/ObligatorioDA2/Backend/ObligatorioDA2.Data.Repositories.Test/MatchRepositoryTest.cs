@@ -19,6 +19,8 @@ namespace DataRepositoriesTest
     {
         private IMatchRepository matchesStorage;
         private ISportRepository sportsStorage;
+        private ITeamRepository teamsStorage;
+        private IUserRepository usersRepo;
         private Match match;
         private Sport sport;
         DatabaseConnection context;
@@ -30,10 +32,6 @@ namespace DataRepositoriesTest
             SetUpRepository();
             match = BuildFakeMatch();
             context.Database.EnsureDeleted();
-            //context.MatchTeams.RemoveRange(context.MatchTeams);
-            //context.Comments.RemoveRange(context.Comments);
-            //matchesStorage.Clear();
-            //sportsStorage.Clear();
         }
 
         private void SetUpRepository()
@@ -44,6 +42,9 @@ namespace DataRepositoriesTest
             context = new DatabaseConnection(options);
             matchesStorage = new MatchRepository(context);
             sportsStorage = new SportRepository(context);
+            teamsStorage = new TeamRepository(context);
+            usersRepo = new UserRepository(context);
+
         }
 
         private void CreateDisconnectedDatabase()
@@ -60,9 +61,8 @@ namespace DataRepositoriesTest
 
         private Match BuildFakeMatch()
         {
-            Team home = new Team(3, "Manchester United", "aPath", sport);
-            Team away = new Team(5, "Real Madrid", "aPath", sport);
-            Match match = new Match(3, new List<Team>() { home, away }, DateTime.Now, sport);
+            ICollection<Team> fakeTeams = GetFakeTeams();
+            Match match = new Match(3, fakeTeams, DateTime.Now, sport);
             return match;
         }
 
@@ -122,8 +122,9 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetMatchCommentsTest()
         {
-            Mock<Commentary> dummy = BuildFakeCommentary();
-            match.AddCommentary(dummy.Object);
+            Commentary dummy = BuildFakeCommentary();
+            usersRepo.Add(dummy.Maker);
+            match.AddCommentary(dummy);
             matchesStorage.Add(match);
             Encounter retrieved = matchesStorage.Get(match.Id);
             Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
@@ -149,13 +150,13 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetCommentsTest()
         {
-            Mock<Commentary> dummy = BuildFakeCommentary();
+            Commentary dummy = BuildFakeCommentary();
             Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
             Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport);
             Match match = new Match(3, new List<Team>() { home.Object, away.Object }, DateTime.Now, sport);
 
             matchesStorage.Add(match);
-            matchesStorage.CommentOnMatch(3, dummy.Object);
+            matchesStorage.CommentOnMatch(3, dummy);
 
             ICollection<Commentary> allComments = matchesStorage.GetComments();
             Assert.AreEqual(1, allComments.Count);
@@ -172,15 +173,15 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetCommentTest()
         {
-            Mock<Commentary> dummy = BuildFakeCommentary();
+            Commentary dummy = BuildFakeCommentary();
             Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
             Mock<Team> away = new Mock<Team>(5, "Real Madrid", "aPath", sport);
             Match match = new Match(3, new List<Team>() { home.Object, away.Object }, DateTime.Now, sport);
 
             matchesStorage.Add(match);
-            Commentary added = matchesStorage.CommentOnMatch(3, dummy.Object);
+            Commentary added = matchesStorage.CommentOnMatch(3, dummy);
             Commentary retrieved = matchesStorage.GetComment(added.Id);
-            Assert.AreEqual(dummy.Object.Text, retrieved.Text);
+            Assert.AreEqual(dummy.Text, retrieved.Text);
         }
 
         [TestMethod]
@@ -198,7 +199,7 @@ namespace DataRepositoriesTest
             matchesStorage.GetComment(3);
         }
 
-        private Mock<Commentary> BuildFakeCommentary()
+        private Commentary BuildFakeCommentary()
         {
             UserId identity = new UserId()
             {
@@ -208,8 +209,8 @@ namespace DataRepositoriesTest
                 Password = "aPassword",
                 Email = "anEmail@aDomain.com"
             };
-            Mock<User> somebody = new Mock<User>(identity, false);
-            Mock<Commentary> comment = new Mock<Commentary>("Some comment", somebody.Object);
+            User somebody = new User(identity, false);
+            Commentary comment = new Commentary("Some comment", somebody);
             return comment;
         }
 
@@ -242,6 +243,28 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
+        public void ModifyAddTeamTest()
+        {
+            ICollection<Team> modifiedTeams = GetFakeTeams();
+            foreach (Team t in modifiedTeams) {
+                teamsStorage.Add(t);
+            }
+            Team thirdTeam = new Team(6, "Internazionale de Milano", "aPath", sport);
+            teamsStorage.Add(thirdTeam);
+            matchesStorage.Add(match);
+            SetUpRepository();
+            //to make things simpler, we pretend soccer can be played by more than two teams
+            sport = new Sport("Soccer", false);
+            sportsStorage.Modify(sport);
+            modifiedTeams.Add(thirdTeam);
+            Encounter modified = new Match(3, modifiedTeams, DateTime.Now.AddYears(2), sport);
+            matchesStorage.Modify(modified);
+            Encounter retrieved = matchesStorage.Get(3);
+            Assert.AreEqual(retrieved.GetParticipants().Count, modified.GetParticipants().Count);
+            Assert.AreEqual(retrieved.Date, modified.Date);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(MatchNotFoundException))]
         public void ModifyUnexistentItemTest()
         {
@@ -262,14 +285,21 @@ namespace DataRepositoriesTest
             matchesStorage.Modify(match.Object);
         }
 
+        private ICollection<Team> GetFakeTeams() {
+            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
+            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport);
+            ICollection<Team> fakeTeams = new List<Team>() { home.Object, away.Object };
+            return fakeTeams;
+        }
 
         private Mock<Match> BuildModifiedFakeMatch()
         {
-            Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
-            Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport);
-            Mock<Match> match = new Mock<Match>(3,new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
+            ICollection<Team> teams = GetFakeTeams();
+            Mock<Match> match = new Mock<Match>(3,teams, DateTime.Now.AddYears(2), sport);
             return match;
         }
+
+
 
         [TestMethod]
         public void ExistsTest()
