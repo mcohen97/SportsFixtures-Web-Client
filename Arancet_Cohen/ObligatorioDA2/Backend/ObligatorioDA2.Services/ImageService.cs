@@ -16,16 +16,22 @@ namespace ObligatorioDA2.Services
             Directory.CreateDirectory(imagesPath);
         }
 
-        public byte[] ReadImage(string v)
+        public byte[] ReadImage(string path)
         {
-            throw new NotImplementedException();
+            byte[] bytes = new byte[0];
+            using (Stream source = File.OpenRead(path))
+            {
+                bytes = new byte[source.Length];
+                source.Read(bytes, 0, bytes.Length);
+            }
+            return bytes;
         }
 
         public void SaveImage(string imageName, string image)
         {
             string path = imagesPath+"/"+imageName + ".jpg";
             byte[] imageBytes = Convert.FromBase64String(image);
-            using (FileStream fs = System.IO.File.Create(path))
+            using (FileStream fs = File.Create(path))
             {
                 fs.Write(imageBytes, 0, imageBytes.Length);
             }
