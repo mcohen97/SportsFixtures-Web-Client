@@ -11,10 +11,12 @@ namespace ObligatorioDA2.Services
     public class LoginService : ILoginService
     {
         private IUserRepository users;
+        private ILoggerService logger;
 
-        public LoginService(IUserRepository aRepo)
+        public LoginService(IUserRepository aRepo, ILoggerService logService)
         {
             users = aRepo;
+            logger = logService;
         }
 
         public User Login(string aUsername, string aPassword)
