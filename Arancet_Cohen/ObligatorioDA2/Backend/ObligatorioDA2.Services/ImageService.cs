@@ -5,7 +5,13 @@ using System.Text;
 
 namespace ObligatorioDA2.Services
 {
-    public class ImageService: IImageService
+    public class ImageService : IImageService
     {
+        private string imagesPath;
+
+        public ImageService(string aPath)
+        {
+            imagesPath = aPath;
+        }
     }
 }
