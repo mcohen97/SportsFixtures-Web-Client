@@ -159,5 +159,12 @@ namespace ObligatorioDA2.Services
         {
             return matchesStorage.GetComment(id);
         }
+
+        public void SetResult(int id, Result result)
+        {
+            Encounter retrieved = matchesStorage.Get(id);
+            retrieved.SetResult(result);
+            matchesStorage.Modify(retrieved);
+        }
     }
 }

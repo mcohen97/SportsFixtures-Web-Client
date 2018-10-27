@@ -181,8 +181,6 @@ namespace ObligatorioDA2.Data.Repositories
             return empty;
         }
 
-
-
         public bool Exists(string username)
         {
             bool doesExist;

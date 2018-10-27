@@ -115,7 +115,9 @@ namespace ObligatorioDA2.Data.Repositories
 
         private void DeleteMatches(TeamEntity toDelete)
         {
-            IQueryable<MatchTeam> matchTeams = context.MatchTeams.Where(mt=> mt.TeamNumber == toDelete.TeamNumber);
+            IQueryable<MatchTeam> matchTeams = context.MatchTeams
+                .Include(mt=> mt.Match).ThenInclude(m=>m.Commentaries)
+                .Where(mt=> mt.TeamNumber == toDelete.TeamNumber);
             context.MatchTeams.RemoveRange(matchTeams);
             IQueryable<MatchEntity> matches = matchTeams.Select(mt => mt.Match);
             context.Matches.RemoveRange(matches);
