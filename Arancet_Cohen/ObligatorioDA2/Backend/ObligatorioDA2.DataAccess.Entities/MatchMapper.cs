@@ -27,8 +27,8 @@ namespace ObligatorioDA2.Data.DomainMappers
                 Id = aMatch.Id,
                 Date = aMatch.Date,
                 Commentaries = TransformCommentaries(aMatch.GetAllCommentaries()),
-                SportEntity = sportEntity
-
+                SportEntity = sportEntity,
+                HasResult = aMatch.HasResult()
             };
             return conversion;
         }
@@ -39,14 +39,28 @@ namespace ObligatorioDA2.Data.DomainMappers
             return commentaries.Select(c => commentConverter.ToEntity(c)).ToList();
         }
 
-        public Match ToMatch(MatchEntity aMatch, ICollection<MatchTeam> teamEntities)
+        public Match ToMatch(MatchEntity aMatch, ICollection<MatchTeam> playingTeams)
         {
             ICollection<Commentary> comments = aMatch.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
-            ICollection<Team> teams = teamEntities.Select(tm => teamConverter.ToTeam(tm.Team)).ToList();
+            ICollection<Team> teams = playingTeams.Select(tm => teamConverter.ToTeam(tm.Team)).ToList();
             DateTime date = aMatch.Date;
             Sport sport = sportConverter.ToSport(aMatch.SportEntity);
             Match created = new Match(aMatch.Id,teams,date, sport, comments);
+            if (aMatch.HasResult) {
+                Result matchResult = ToResults(playingTeams);
+                created.SetResult(matchResult);
+            }
             return created;
+        }
+
+        private Result ToResults(ICollection<MatchTeam> playingTeams)
+        {
+            Result matchResult = new Result();
+            foreach (MatchTeam mt in playingTeams) {
+                Team converted = teamConverter.ToTeam(mt.Team);
+                matchResult.Add(converted, mt.Position);
+            }
+            return matchResult;
         }
 
         public ICollection<MatchTeam> ConvertParticipants(Encounter aMatch)
@@ -64,7 +78,17 @@ namespace ObligatorioDA2.Data.DomainMappers
                 };
                 conversions.Add(participantConversion);
             }
+            if (aMatch.HasResult()) {
+                ResultsToEntity(conversions, aMatch.Result);
+            }
             return conversions;
+        }
+
+        private void ResultsToEntity(ICollection<MatchTeam> conversions, Result result)
+        {
+            foreach (Tuple<Team, int> standing in result.GetPositions()) {
+                conversions.First(mt => mt.TeamNumber == standing.Item1.Id).Position = standing.Item2;
+            }
         }
     }
 }

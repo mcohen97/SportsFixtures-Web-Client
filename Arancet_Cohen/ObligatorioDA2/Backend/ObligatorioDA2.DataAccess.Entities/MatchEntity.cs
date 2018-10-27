@@ -10,5 +10,6 @@ namespace ObligatorioDA2.Data.Entities
         public DateTime Date { get; set; }
         public ICollection<CommentEntity> Commentaries { get; set; }
         public SportEntity SportEntity { get; set; }
+        public bool HasResult { get; set; }
     }
 }

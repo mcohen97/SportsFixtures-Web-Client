@@ -266,7 +266,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(TeamAlreadyHasMatchException))]
-        public void HomeTeamWithTwoMatchesSameDateTest()
+        public void TeamWithTwoMatchesSameDateTest()
         {
             matchAvsC.Date = matchAvsB.Date;
             serviceToTest.AddMatch(matchAvsC);
@@ -367,5 +367,22 @@ namespace ObligatorioDA2.Services.Tests
             Commentary retrieved = serviceToTest.GetComment(3);
         }
 
+        [TestMethod]
+        public void SetResultTest() {
+            Result result = GetFakeResult();
+            matchesRepo.Add(matchAvsB);
+            serviceToTest.SetResult(matchAvsB.Id, result);
+            Encounter retrieved = serviceToTest.GetMatch(matchAvsB.Id);
+            Result retrievedResult = retrieved.Result;
+            Assert.AreEqual(result.GetPositions().Count, retrievedResult.GetPositions().Count);
+        }
+
+        private Result GetFakeResult()
+        {
+            Result toGenerate = new Result();
+            toGenerate.Add(teamA, 1);
+            toGenerate.Add(teamB, 2);
+            return toGenerate;
+        }
     }
 }

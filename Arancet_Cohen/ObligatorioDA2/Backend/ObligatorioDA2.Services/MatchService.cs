@@ -138,7 +138,6 @@ namespace ObligatorioDA2.Services
             return playingTeams;
         }
 
-
         public Commentary CommentOnMatch(int matchId, string userName, string text)
         {
             User commentarist = usersStorage.Get(userName);
@@ -159,6 +158,13 @@ namespace ObligatorioDA2.Services
         public Commentary GetComment(int id)
         {
             return matchesStorage.GetComment(id);
+        }
+
+        public void SetResult(int id, Result result)
+        {
+            Encounter retrieved = matchesStorage.Get(id);
+            retrieved.SetResult(result);
+            matchesStorage.Modify(retrieved);
         }
     }
 }

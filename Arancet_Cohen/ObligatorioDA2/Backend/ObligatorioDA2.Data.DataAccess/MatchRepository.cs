@@ -59,8 +59,8 @@ namespace ObligatorioDA2.Data.Repositories
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
+            AddComments(toAdd,aMatch.GetAllCommentaries());
             Match added = new Match(toAdd.Id, aMatch.GetParticipants(), aMatch.Date, aMatch.Sport);
-
             ICollection<MatchTeam> playingTeams = matchConverter.ConvertParticipants(added);
             context.MatchTeams.AddRange(playingTeams);
 
@@ -73,7 +73,17 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 context.SaveChanges();
             }
+            context.Entry(toAdd).State = EntityState.Detached;
             return added;
+        }
+
+        private void AddComments(MatchEntity entity, ICollection<Commentary> commentaries)
+        {
+            IEnumerable<CommentEntity> commentEntities = commentaries.Select(c => commentConverter.ToEntity(c));
+            foreach (CommentEntity ce in commentEntities) {
+                entity.Commentaries.Add(ce);
+                context.Entry(ce.Maker).State = EntityState.Unchanged;
+            }
         }
 
         private void SaveWithIdentityInsert()
@@ -184,7 +194,11 @@ namespace ObligatorioDA2.Data.Repositories
                                                                    .Where(mt => mt.MatchId == anId)
                                                                    .ToList();
             Encounter conversion = matchConverter.ToMatch(entity,match_teams);
+
             context.Entry(entity).State = EntityState.Detached;
+            foreach (MatchTeam mt in match_teams) {
+                context.Entry(mt).State = EntityState.Detached;
+            }
             return conversion;
         }
 
@@ -207,13 +221,20 @@ namespace ObligatorioDA2.Data.Repositories
             ICollection<Encounter> allOfThem = new List<Encounter>();
             IQueryable<MatchEntity> entities = context.Matches
                                             .Include(m => m.SportEntity)
-                                            .Include(m => m.Commentaries).ThenInclude(c => c.Maker);
+                                            .Include(m => m.Commentaries).ThenInclude(c => c.Maker).AsNoTracking();
 
             foreach (MatchEntity match in entities) {
                 IQueryable<MatchTeam> matchPlayers = context.MatchTeams
-                    .Include(mt => mt.Team)
-                    .Where(mt => mt.MatchId == match.Id);
+                    .Include(mt => mt.Team).ThenInclude(t=>t.Sport)
+                    .Include(mt => mt.Match).ThenInclude(m=> m.SportEntity)
+                    .Where(mt => mt.MatchId == match.Id).AsNoTracking();
                 Encounter built = matchConverter.ToMatch(match, matchPlayers.ToList());
+
+                /*context.Entry(match).State = EntityState.Detached;
+                foreach (MatchTeam mt in matchPlayers) {
+                    context.Entry(mt).State = EntityState.Detached;
+                }*/
+
                 allOfThem.Add(built);
             }
             return allOfThem;
@@ -270,9 +291,36 @@ namespace ObligatorioDA2.Data.Repositories
                 MatchEntity old = context.Matches.First(m => m.Id == aMatch.Id);
                 context.Entry(old).State = EntityState.Detached;
             }
-
             context.Entry(converted).State = EntityState.Modified;
+            ICollection<MatchTeam> playingTeams = matchConverter.ConvertParticipants(aMatch);
+            RemoveMissingParticipants(aMatch);
+            AddNewParticipants(playingTeams);
             context.SaveChanges();
+            context.Entry(converted).State = EntityState.Detached;
+        }
+
+        private void RemoveMissingParticipants(Encounter aMatch)
+        {
+            ICollection<Team> participants = aMatch.GetParticipants();
+            IQueryable<MatchTeam> missing = context.MatchTeams
+                .Where(mt =>mt.MatchId== aMatch.Id && !participants.Any(p => p.Id == mt.TeamNumber));
+            context.MatchTeams.RemoveRange(missing);
+        }
+
+        private void AddNewParticipants(ICollection<MatchTeam> playingTeams)
+        {
+            foreach (MatchTeam p in playingTeams) {
+                bool alreadyPlays = context.MatchTeams
+                .Any(mt => mt.MatchId == p.MatchId && mt.TeamNumber == p.TeamNumber);
+                context.Entry(p).State = EntityState.Detached;
+                if (!alreadyPlays)
+                {
+                    context.Entry(p).State = EntityState.Added;
+                }
+                else {
+                    context.Entry(p).State = EntityState.Modified;
+                }
+            }
         }
 
         private bool AnyWithId(int anId)
