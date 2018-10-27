@@ -65,7 +65,7 @@ namespace ObligatorioDA2.BusinessLogic
             {
                 throw new InvalidMatchDataException("A match can't have repeated teams");
             }
-            if (Sport.IsTwoTeams && teams.Count > 2)
+            if (!ValidTeamsForSport(teams))
             {
                 throw new InvalidMatchDataException("The sport does not allow more than two teams");
             }
@@ -76,11 +76,6 @@ namespace ObligatorioDA2.BusinessLogic
             participants = teams;
         }
 
-        public ICollection<Team> GetParticipants()
-        {
-            return participants;
-        }
-
         private bool TeamsPlaySport(ICollection<Team> teams, Sport sport)
         {
             return !teams.Any(t => !t.Sport.Equals(sport));
@@ -89,6 +84,13 @@ namespace ObligatorioDA2.BusinessLogic
         private bool RepeatedMatches(ICollection<Team> teams)
         {
             return teams.Count != teams.Distinct().Count();
+        }
+
+        protected abstract bool ValidTeamsForSport(ICollection<Team> teams);
+
+        public ICollection<Team> GetParticipants()
+        {
+            return participants;
         }
 
         public bool HasCommentary(Commentary commentary)
