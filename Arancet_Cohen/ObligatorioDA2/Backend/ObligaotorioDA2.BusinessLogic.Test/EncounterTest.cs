@@ -22,8 +22,6 @@ namespace ObligatorioDA2.BusinessLogic.Test
         private Mock<Commentary> commentary2;
         private Mock<Commentary> commentary3;
 
-
-
         [TestInitialize]
         public void TestInitialize()
         {
@@ -190,7 +188,21 @@ namespace ObligatorioDA2.BusinessLogic.Test
         public void TooManyTeamsAllowedBySport() {
             sport = new Sport("Basketball", true);
             match = new Match(3, new List<Team>() { teamA, teamB,  teamC}, date, sport);
+        }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void CompetitionWithTwoTeamSportTest() {
+            sport = new Sport("Basketball", true);
+            match = new Competition(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
+        public void CompetitionWithMoreThanTwoTeamSportTest()
+        {
+            sport = new Sport("Golf", false);
+            match = new Match(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
         }
 
         [TestMethod]
