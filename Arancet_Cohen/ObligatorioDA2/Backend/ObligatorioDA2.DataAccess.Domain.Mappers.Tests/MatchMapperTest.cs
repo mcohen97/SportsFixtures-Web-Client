@@ -156,6 +156,9 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 position++;
             }
             Match conversion = testMapper.ToMatch(entity, playingTeams);
+            ICollection<Tuple<Team,int>> translated = conversion.Result.GetPositions();
+            Assert.IsTrue(translated.Any(t=>t.Item2 == 1));
+            Assert.IsTrue(translated.Any(t => t.Item2 == 2));
         }
     }
 }
