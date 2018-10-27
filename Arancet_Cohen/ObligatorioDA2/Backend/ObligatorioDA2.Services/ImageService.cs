@@ -16,6 +16,11 @@ namespace ObligatorioDA2.Services
             Directory.CreateDirectory(imagesPath);
         }
 
+        public byte[] ReadImage(string v)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SaveImage(string imageName, string image)
         {
             string path = imagesPath+"/"+imageName + ".jpg";
