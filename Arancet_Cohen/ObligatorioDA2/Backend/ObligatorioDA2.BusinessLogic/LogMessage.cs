@@ -16,5 +16,6 @@ namespace ObligatorioDA2.BusinessLogic
         public static readonly string FIXTURE_SPORT_NOT_FOUND = "Fixture failed. Sport not found.";
         public static readonly string FIXTURE_DATAINACCESSIBLE = "Fixture failed. Data inaccessible.";
         public static readonly string FIXTURE_OK = "Fixture generated.";
+        public static readonly string UNIDENTIFIED = "Unidentified user";
     }
 }

@@ -104,7 +104,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
             FileInfo dllFile = new FileInfo(@".\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.dll");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
-            controller = new FixturesController(fixture,mockSettings.Object,sportsRepo.Object, logger.Object);
+            controller = new FixturesController(fixture, mockSettings.Object,  sportsRepo.Object, logger.Object);
         }
 
         [TestMethod]

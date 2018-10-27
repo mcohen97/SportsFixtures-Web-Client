@@ -50,16 +50,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("{sportName}")]
-        public IActionResult CreateFixture(string sportName, FixtureModelIn input) {
+        public IActionResult CreateFixture(string sportName, FixtureModelIn input)
+        {
             IActionResult result;
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            string username = "";
-            if (identity != null)
-            {
-                IEnumerable<Claim> claims = identity.Claims;
-                // or
-                username = identity.FindFirst(AuthenticationConstants.USERNAME_CLAIM).Value;
-            }
+            string username = GetUserPerformingAction();
 
             if (ModelState.IsValid)
             {
@@ -71,6 +65,22 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_BAD_MODEL_IN, username, DateTime.Now);
             }
             return result;
+        }
+
+        private string GetUserPerformingAction()
+        {
+            string username = "";
+            if (HttpContext != null && HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                IEnumerable<Claim> claims = identity.Claims;
+                username = identity.FindFirst(AuthenticationConstants.USERNAME_CLAIM).Value;
+            }
+            else
+            {
+                username = LogMessage.UNIDENTIFIED;
+            }
+
+            return username;
         }
 
         private IActionResult TryCreateFixture(string sportName, FixtureModelIn input, string username)
