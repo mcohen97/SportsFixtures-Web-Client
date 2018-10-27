@@ -37,8 +37,8 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
             MatchTeam homeRel = new MatchTeam() { Team = homeTest, TeamNumber = 3, Match = entity, MatchId = 3 };
             MatchTeam awayRel = new MatchTeam() { Team = awayTest, TeamNumber = 4, Match = entity, MatchId = 3 };
             playingTeams = new List<MatchTeam>() { homeRel, awayRel };
-            Team homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer",true));
-            Team awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer",true));
+            homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer",true));
+            awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer",true));
             Sport sport = new Sport("Soccer",true);
             match = new Match(new List<Team>() { homeMock, awayMock }, DateTime.Now, sport);
         }
