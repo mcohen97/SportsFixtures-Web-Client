@@ -367,5 +367,23 @@ namespace ObligatorioDA2.Services.Tests
             Commentary retrieved = serviceToTest.GetComment(3);
         }
 
+        [TestMethod]
+        public void SetResultTest() {
+            Result result = GetFakeResult();
+            serviceToTest.SetResult(matchAvsB, result);
+            Encounter retrieved = serviceToTest.GetMatch(matchAvsB.Id);
+            Result retrievedResult = retrieved.Result;
+            Assert.AreEqual(result.GetPositions().Count, retrievedResult.GetPositions().Count);
+        }
+
+        private Result GetFakeResult()
+        {
+            Team homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer", true));
+            Team awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer", true));
+            Result toGenerate = new Result();
+            toGenerate.Add(homeMock, 1);
+            toGenerate.Add(awayMock, 2);
+            return toGenerate;
+        }
     }
 }
