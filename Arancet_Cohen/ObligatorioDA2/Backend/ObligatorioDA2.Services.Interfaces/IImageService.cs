@@ -7,6 +7,6 @@ namespace ObligatorioDA2.Services.Interfaces
     public interface IImageService
     {
         void SaveImage(string imageName,string image);
-        byte[] ReadImage(string v);
+        byte[] ReadImage(string imagePath);
     }
 }

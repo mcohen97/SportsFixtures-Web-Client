@@ -354,7 +354,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id= stored.Id,
                 Name= stored.Name,
                 SportName = stored.Sport.Name,
-                Photo= stored.Photo
+                Photo= new byte[0]
             };
             return built;
         }

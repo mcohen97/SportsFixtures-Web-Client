@@ -17,7 +17,7 @@ namespace ObligatorioDA2.BusinessLogic
         public Team(string name, string photo, Sport aSport)
         {
             Name = name;
-            Photo = photo;
+            PhotoPath = photo;
             Sport = aSport;
         }
         public Team(int id, string name, string photo, Sport aSport) : this(name, photo, aSport)
@@ -27,7 +27,7 @@ namespace ObligatorioDA2.BusinessLogic
 
         public string Name { get { return name; } set { SetName(value); } }
 
-        public string Photo { get { return photo; } set { SetPhoto(value); } }
+        public string PhotoPath { get { return photo; } set { SetPhoto(value); } }
 
         public int Id { get { return id; } set { SetId(value); } }
 

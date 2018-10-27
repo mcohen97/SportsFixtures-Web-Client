@@ -18,6 +18,19 @@ namespace ObligatorioDA2.Services
 
         public byte[] ReadImage(string path)
         {
+            byte[] data;
+            try
+            {
+                data = TryRead(path);
+            }
+            catch (DirectoryNotFoundException) {
+                data = new byte[0];
+            }
+            return data;
+        }
+
+        private byte[] TryRead(string path)
+        {
             byte[] bytes = new byte[0];
             using (Stream source = File.OpenRead(path))
             {
