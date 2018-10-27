@@ -73,7 +73,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddAlreadyExistentTest()
         {
             serviceToTest.AddMatch(matchAvsB);
-            Match sameMatch = new Mock<Match>(1, new List<Team>() { teamA, teamB }, matchAvsB.Date.AddDays(1), sport).Object;
+            Match sameMatch = new Match(1, new List<Team>() { teamA, teamB }, matchAvsB.Date.AddDays(1), sport);
             serviceToTest.AddMatch(sameMatch);
         }
 
