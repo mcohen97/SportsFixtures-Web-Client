@@ -5,11 +5,11 @@ namespace ObligatorioDA2.BusinessLogic.Test
     [TestClass]
     public class EncounterFactoryTest
     {
-        private MatchFactory testFactory;
+        private EncounterFactory testFactory;
 
         [TestInitialize]
         public void SetUp() {
-            testFactory = new MatchFactory();
+            testFactory = new EncounterFactory();
         }
 
 
