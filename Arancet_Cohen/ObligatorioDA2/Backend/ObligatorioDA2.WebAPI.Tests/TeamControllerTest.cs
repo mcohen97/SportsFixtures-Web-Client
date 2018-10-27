@@ -9,6 +9,7 @@ using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Data.Repositories;
 using System;
 using System.Collections.Generic;
+using ObligatorioDA2.Services;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -27,7 +28,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             teamsRepo = new Mock<ITeamRepository>();
             sportsRepo = new Mock<ISportRepository>();
             sportsRepo.Setup(r => r.Get("Soccer")).Returns(testSport);
-            controller = new TeamsController(teamsRepo.Object,sportsRepo.Object);
+            controller = new TeamsController(teamsRepo.Object,sportsRepo.Object, new ImageService("TestDirectory"));
         }
 
         [TestMethod]
@@ -219,7 +220,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             return new TeamModelIn()
             {
                 Name = team.Name,
-                Photo = team.Photo,
+                Photo = team.PhotoPath,
                 SportName = team.Sport.Name
             };
         }

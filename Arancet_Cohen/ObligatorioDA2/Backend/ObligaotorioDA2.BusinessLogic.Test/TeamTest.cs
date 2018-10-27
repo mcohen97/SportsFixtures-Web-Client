@@ -77,15 +77,15 @@ namespace ObligatorioDA2.BusinessLogic.Test
         public void GetPhotoTest()
         {
             string photo = "myresource/theteam.png";
-            Assert.AreEqual(photo, testTeam.Photo);
+            Assert.AreEqual(photo, testTeam.PhotoPath);
         }
 
         [TestMethod]
         public void SetPhotoTest()
         {
             string newPhoto = "myresource/thenewteam.png";
-            testTeam.Photo = newPhoto;
-            Assert.AreEqual(newPhoto, testTeam.Photo);
+            testTeam.PhotoPath = newPhoto;
+            Assert.AreEqual(newPhoto, testTeam.PhotoPath);
         }
 
         [TestMethod]
@@ -163,7 +163,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         public void SetNullPhotoTest()
         {
             Team team = new Team(1, "name", "photo", new Sport("aSport",true));
-            team.Photo = null;
+            team.PhotoPath = null;
         }
 
         [TestMethod]

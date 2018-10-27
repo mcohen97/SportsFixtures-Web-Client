@@ -21,7 +21,7 @@ namespace ObligatorioDA2.Data.DomainMappers
         public TeamEntity ToEntity(Team team)
         {
             SportEntity convertedSport = sportConverter.ToEntity(team.Sport);
-            TeamEntity convertedTeam = new TeamEntity(team.Id, team.Name, team.Photo, convertedSport.Name,convertedSport);
+            TeamEntity convertedTeam = new TeamEntity(team.Id, team.Name, team.PhotoPath, convertedSport.Name,convertedSport);
             convertedTeam.Sport = convertedSport;
             convertedTeam.SportEntityName = team.Sport.Name;
             return convertedTeam;
