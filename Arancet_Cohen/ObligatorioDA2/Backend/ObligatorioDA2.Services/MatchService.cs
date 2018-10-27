@@ -138,7 +138,6 @@ namespace ObligatorioDA2.Services
             return playingTeams;
         }
 
-
         public Commentary CommentOnMatch(int matchId, string userName, string text)
         {
             User commentarist = usersStorage.Get(userName);
