@@ -266,7 +266,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(TeamAlreadyHasMatchException))]
-        public void HomeTeamWithTwoMatchesSameDateTest()
+        public void TeamWithTwoMatchesSameDateTest()
         {
             matchAvsC.Date = matchAvsB.Date;
             serviceToTest.AddMatch(matchAvsC);
