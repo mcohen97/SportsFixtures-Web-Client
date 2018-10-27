@@ -27,8 +27,8 @@ namespace ObligatorioDA2.Data.DomainMappers
                 Id = aMatch.Id,
                 Date = aMatch.Date,
                 Commentaries = TransformCommentaries(aMatch.GetAllCommentaries()),
-                SportEntity = sportEntity
-
+                SportEntity = sportEntity,
+                HasResult = aMatch.HasResult()
             };
             return conversion;
         }
@@ -64,7 +64,17 @@ namespace ObligatorioDA2.Data.DomainMappers
                 };
                 conversions.Add(participantConversion);
             }
+            if (aMatch.HasResult()) {
+                AddResults(conversions, aMatch.Result);
+            }
             return conversions;
+        }
+
+        private void AddResults(ICollection<MatchTeam> conversions, Result result)
+        {
+            foreach (Tuple<Team, int> standing in result.GetPositions()) {
+                conversions.First(mt => mt.TeamNumber == standing.Item1.Id).Position = standing.Item2;
+            }
         }
     }
 }
