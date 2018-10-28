@@ -144,6 +144,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id = id,
                 SportName = aMatch.SportName,
                 TeamsIds = aMatch.TeamIds,
+                HasResult = false,
                 Date = aMatch.Date
             };
             return output;
@@ -257,18 +258,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             return result;
         }
-        private MatchModelOut BuildModelOut(Encounter aMatch)
-        {
-            ICollection<int> teamIds = aMatch.GetParticipants().Select(p => p.Id).ToList();
-            return new MatchModelOut()
-            {
-                Id = aMatch.Id,
-                SportName = aMatch.Sport.Name,
-                TeamsIds = teamIds,
-                Date= aMatch.Date,
-                CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
-            };
-        }
+
 
         [HttpGet("{matchId}/comments", Name = "GetCommentMatchComments")]
         public IActionResult GetMatchComments(int matchId) {
@@ -326,7 +316,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         public IActionResult SetResult(int id, ResultModel resultModel)
         {
-            throw new NotImplementedException();
+            matchService.SetResult(id, resultModel.Team_Position);
+            Encounter matchWithResult = matchService.GetMatch(id);
+            MatchModelOut result = BuildModelOut(matchWithResult);
+            return Ok(result);
+        }
+
+        private MatchModelOut BuildModelOut(Encounter aMatch)
+        {
+            ICollection<int> teamIds = aMatch.GetParticipants().Select(p => p.Id).ToList();
+            return new MatchModelOut()
+            {
+                Id = aMatch.Id,
+                SportName = aMatch.Sport.Name,
+                TeamsIds = teamIds,
+                Date = aMatch.Date,
+                HasResult = aMatch.HasResult(),
+                CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
+            };
         }
     }
 }
