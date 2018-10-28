@@ -21,10 +21,12 @@ namespace ObligatorioDA2.BusinessLogic.Test
         private Mock<Commentary> commentary1;
         private Mock<Commentary> commentary2;
         private Mock<Commentary> commentary3;
+        private EncounterFactory factory;
 
         [TestInitialize]
         public void TestInitialize()
         {
+            factory = new EncounterFactory();
             //Create mocks.
             sport = new Sport("Soccer",true);
             teamA = new Team(1, "TeamA", "Photo/A", sport);

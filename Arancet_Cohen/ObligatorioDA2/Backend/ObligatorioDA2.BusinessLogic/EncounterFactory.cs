@@ -6,7 +6,7 @@ namespace ObligatorioDA2.BusinessLogic
 {
     public class EncounterFactory
     {
-        public Encounter CreateEncounter(List<Team> list, DateTime date, Sport sport)
+        public Encounter CreateEncounter(ICollection<Team> list, DateTime date, Sport sport)
         {
             Encounter built;
             if (sport.IsTwoTeams)
@@ -19,7 +19,7 @@ namespace ObligatorioDA2.BusinessLogic
             return built;
         }
 
-        public Encounter CreateEncounter(int id,List<Team> list, DateTime date, Sport sport)
+        public Encounter CreateEncounter(int id,ICollection<Team> list, DateTime date, Sport sport)
         {
             Encounter built;
             if (sport.IsTwoTeams)
@@ -33,7 +33,7 @@ namespace ObligatorioDA2.BusinessLogic
             return built;
         }
 
-        public Encounter CreateEncounter(int id, List<Team> list, DateTime date, Sport sport, List<Commentary> comments)
+        public Encounter CreateEncounter(int id, ICollection<Team> list, DateTime date, Sport sport, ICollection<Commentary> comments)
         {
             Encounter built;
             if (sport.IsTwoTeams)

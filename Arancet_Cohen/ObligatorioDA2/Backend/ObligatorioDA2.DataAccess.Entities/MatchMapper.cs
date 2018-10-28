@@ -12,12 +12,14 @@ namespace ObligatorioDA2.Data.DomainMappers
         private TeamMapper teamConverter;
         private CommentMapper commentConverter;
         private SportMapper sportConverter;
+        private EncounterFactory factory;
 
         public MatchMapper()
         {
             teamConverter = new TeamMapper();
             commentConverter = new CommentMapper();
             sportConverter = new SportMapper();
+            factory = new EncounterFactory();
         }
         public MatchEntity ToEntity(Encounter aMatch)
         {
@@ -39,13 +41,13 @@ namespace ObligatorioDA2.Data.DomainMappers
             return commentaries.Select(c => commentConverter.ToEntity(c)).ToList();
         }
 
-        public Match ToMatch(MatchEntity aMatch, ICollection<MatchTeam> playingTeams)
+        public Encounter ToEncounter(MatchEntity aMatch, ICollection<MatchTeam> playingTeams)
         {
             ICollection<Commentary> comments = aMatch.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
             ICollection<Team> teams = playingTeams.Select(tm => teamConverter.ToTeam(tm.Team)).ToList();
             DateTime date = aMatch.Date;
             Sport sport = sportConverter.ToSport(aMatch.SportEntity);
-            Match created = new Match(aMatch.Id,teams,date, sport, comments);
+            Encounter created = factory.CreateEncounter(aMatch.Id,teams,date, sport, comments);
             if (aMatch.HasResult) {
                 Result matchResult = ToResults(playingTeams);
                 created.SetResult(matchResult);

@@ -5,7 +5,6 @@ namespace ObligatorioDA2.BusinessLogic
 {
     public class Match:Encounter
     {
-
         public Match(ICollection<Team> teams, DateTime date, Sport aSport) : base(teams, date, aSport) { }
 
         public Match(int anId, ICollection<Team> teams, DateTime date, Sport sport) : base(anId, teams, date, sport) { }

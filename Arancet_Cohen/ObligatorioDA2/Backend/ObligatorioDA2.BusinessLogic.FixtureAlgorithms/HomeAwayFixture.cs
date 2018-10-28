@@ -10,12 +10,14 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
         private DateTime initialDate;
         private int roundLength;
         private int daysBetweenRounds;
+        private EncounterFactory factory;
 
         public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
         {
             this.initialDate = initialDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
+            this.factory = new EncounterFactory();
         }
         public DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
         public int RoundLength { get => roundLength; set => SetRoundLength(value); }
@@ -75,7 +77,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
                 matches.MoveNext();
                 Encounter current = matches.Current;
                 DateTime nextDate = NextDate(current.Date, actualRoundLength);
-                Match newMatch = new Match(current.GetParticipants(), nextDate, current.Sport);
+                Encounter newMatch = factory.CreateEncounter(current.GetParticipants(), nextDate, current.Sport);
 
                 if (actualRoundLength == roundLength)
                     actualRoundLength = 0;
@@ -154,8 +156,8 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             for (int i = 0; i < actualRound.GetLength(1); i++)
             {
                 Sport sport = actualRound[0, i].Sport;
-                Encounter firstMatch = new Match(new List<Team>() { actualRound[0, i], actualRound[1, i] }, firstDate, sport);
-                Encounter secondMatch = new Match(new List<Team>() { actualRound[1, i], actualRound[0, i] }, secondDate, sport);
+                Encounter firstMatch = factory.CreateEncounter(new List<Team>() { actualRound[0, i], actualRound[1, i] }, firstDate, sport);
+                Encounter secondMatch = factory.CreateEncounter(new List<Team>() { actualRound[1, i], actualRound[0, i] }, secondDate, sport);
 
                 fixture.Add(firstMatch);
                 fixture.Add(secondMatch);

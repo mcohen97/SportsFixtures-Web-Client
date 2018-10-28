@@ -16,9 +16,11 @@ namespace ObligatorioDA2.Services
         private ITeamRepository teamsStorage;
         private ISportRepository sportsStorage;
         private IUserRepository usersStorage;
+        private EncounterFactory factory;
 
         public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository)
         {
+            factory = new EncounterFactory();
             matchesStorage = matchsRepository;
             teamsStorage = teamsRepository;
             sportsStorage = sportsRepository;
@@ -116,7 +118,7 @@ namespace ObligatorioDA2.Services
         {
             ICollection<Team> playingTeams = GetTeams(teamsIds);
             Sport played = sportsStorage.Get(sportName);
-            Match toAdd = new Match(idMatch, playingTeams, date, played);
+            Encounter toAdd = factory.CreateEncounter(idMatch, playingTeams, date, played);
             return AddMatch(toAdd);
         }
 
@@ -124,7 +126,7 @@ namespace ObligatorioDA2.Services
         {
             ICollection<Team> playingTeams = GetTeams(teamsIds);
             Sport played = sportsStorage.Get(sportName);
-            Match toModify = new Match(idMatch, playingTeams, date, played);
+            Encounter toModify =factory.CreateEncounter(idMatch, playingTeams, date, played);
             ModifyMatch(toModify);
         }
 
