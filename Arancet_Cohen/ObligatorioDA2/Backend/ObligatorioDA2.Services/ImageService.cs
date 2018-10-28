@@ -23,7 +23,7 @@ namespace ObligatorioDA2.Services
             {
                 data = TryRead(path);
             }
-            catch (DirectoryNotFoundException) {
+            catch (IOException) {
                 data = new byte[0];
             }
             return data;
@@ -40,14 +40,15 @@ namespace ObligatorioDA2.Services
             return bytes;
         }
 
-        public void SaveImage(string imageName, string image)
+        public string SaveImage(string imageName, string image)
         {
-            string path = imagesPath+"/"+imageName + ".jpg";
+            string path = imagesPath+"/"+imageName;
             byte[] imageBytes = Convert.FromBase64String(image);
             using (FileStream fs = File.Create(path))
             {
                 fs.Write(imageBytes, 0, imageBytes.Length);
             }
+            return path;
         }
     }
 }

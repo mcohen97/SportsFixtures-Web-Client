@@ -21,6 +21,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ITeamRepository teams;
         private ISportRepository sports;
         private IImageService images;
+        private const string IMG_EXTENSION = ".jpg";
+
         public TeamsController(ITeamRepository teamsRepo, ISportRepository sportsRepo, IImageService imageManager)
         {
             teams = teamsRepo;
@@ -117,7 +119,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 string imgData = Base64Encode(team.Photo);
-                team.Photo = team.Name + "_" + team.SportName;
+                team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
                 result = TryAddTeam(team);
                 images.SaveImage(team.Photo, imgData);
             }
