@@ -8,7 +8,15 @@ namespace ObligatorioDA2.BusinessLogic
     {
         public Encounter CreateEncounter(List<Team> list, DateTime date, Sport sport)
         {
-            throw new NotImplementedException();
+            Encounter built;
+            if (sport.IsTwoTeams)
+            {
+                built = new Match(list, date, sport);
+            }
+            else {
+                built = new Competition(list, date, sport);
+            }
+            return built;
         }
     }
 }
