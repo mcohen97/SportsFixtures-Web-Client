@@ -162,11 +162,23 @@ namespace ObligatorioDA2.Services
             return matchesStorage.GetComment(id);
         }
 
-        public void SetResult(int id, Result result)
+        public void SetResult(int id, ICollection<Tuple<int,int>> teamsPositions)
         {
+            Result result = LoadResult(teamsPositions);
             Encounter retrieved = matchesStorage.Get(id);
             retrieved.SetResult(result);
             matchesStorage.Modify(retrieved);
+        }
+
+        private Result LoadResult(ICollection<Tuple<int, int>> teamsPositions)
+        {
+            Result loaded = new Result();
+            Team current;
+            foreach (Tuple<int, int> standing in teamsPositions) {
+                current = teamsStorage.Get(standing.Item1);
+                loaded.Add(current, standing.Item2);
+            }
+            return loaded;
         }
     }
 }
