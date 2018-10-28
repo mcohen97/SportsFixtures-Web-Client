@@ -57,10 +57,17 @@ namespace ObligatorioDA2.BusinessLogic.Test
 
         [TestMethod]
         public void BuildCompetition3ArgumentsTest() {
-            sport = new Sport("Archery", false);
+            ChangeSport();
             Encounter testMatch = testFactory.CreateEncounter(new List<Team>() { teamA, teamB }, date, sport);
             Competition downcast = testMatch as Competition;
             Assert.IsNotNull(downcast);
+        }
+
+        private void ChangeSport() {
+            sport = new Sport("Archery", false);
+            teamA = new Team(1, "TeamA", "Photo/A", sport);
+            teamB = new Team(2, "TeamB", "Photo/B", sport);
+            teamC = new Team(2, "TeamC", "Photo/C", sport);
         }
 
     }
