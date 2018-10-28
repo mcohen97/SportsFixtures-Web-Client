@@ -586,7 +586,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void SetResultTest() {
             //Arrange.
             matchService.Setup(ms => ms.SetResult(It.IsAny<int>(), It.IsAny<Result>()));
-            ResultModelIn resultModel = GetFakeResult();
+            ResultModel resultModel = GetFakeResult();
 
             //Act.
             IActionResult result = controller.SetResult(1, resultModel);
@@ -599,6 +599,15 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(matchWithResult);
         }
 
+        private ResultModel GetFakeResult()
+        {
+            ICollection<Tuple<int,int>> standings= new List<Tuple<int, int>>() {new Tuple<int, int>(3,1),
+                                                                                new Tuple<int, int>(4,2),
+                                                                                new Tuple<int, int>(1,3)
+                                                                                };
+            ResultModel fake = new ResultModel() {Team_Position=standings };
+            return fake;
+        }
     }
    
 }

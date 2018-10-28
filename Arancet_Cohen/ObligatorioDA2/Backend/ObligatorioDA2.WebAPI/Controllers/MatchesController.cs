@@ -323,5 +323,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
             return Ok(output);
         }
+
+        public IActionResult SetResult(int id, ResultModel resultModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
