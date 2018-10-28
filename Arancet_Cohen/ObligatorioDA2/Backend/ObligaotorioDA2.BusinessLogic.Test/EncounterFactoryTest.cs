@@ -15,9 +15,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         private Sport sport;
         private DateTime date;
         private Encounter match;
-        private Commentary commentary1;
-        private Commentary commentary2;
-        private Commentary commentary3;
+        private List<Commentary> comments; 
 
         [TestInitialize]
         public void SetUp() {
@@ -29,9 +27,10 @@ namespace ObligatorioDA2.BusinessLogic.Test
             teamC = new Team(2, "TeamC", "Photo/C", sport);
             date = new DateTime(2019, 1, 25, 13, 30, 0);
             User commentarist = CreateUser();
-            commentary1 = new Commentary(1, "Commentary 1", commentarist);
-            commentary2 = new Commentary(2, "Commentary 2", commentarist);
-            commentary3 = new Commentary(3, "Commentary 3", commentarist);
+            Commentary commentary1 = new Commentary(1, "Commentary 1", commentarist);
+            Commentary commentary2 = new Commentary(2, "Commentary 2", commentarist);
+            Commentary commentary3 = new Commentary(3, "Commentary 3", commentarist);
+            comments = new List<Commentary>() { commentary1, commentary2, commentary3 };
         }
 
         private User CreateUser()
@@ -79,6 +78,24 @@ namespace ObligatorioDA2.BusinessLogic.Test
             Competition downcast = testMatch as Competition;
             Assert.IsNotNull(downcast);
         }
+
+        [TestMethod]
+        public void BuildMatch5ArgumentsTest()
+        {
+            Encounter testMatch = testFactory.CreateEncounter(3, new List<Team>() { teamA, teamB }, date, sport, comments);
+            Match downcast = testMatch as Match;
+            Assert.IsNotNull(downcast);
+        }
+
+        [TestMethod]
+        public void BuildCompetition5ArgumentsTest()
+        {
+            ChangeSport();
+            Encounter testMatch = testFactory.CreateEncounter(3, new List<Team>() { teamA, teamB }, date, sport, comments);
+            Competition downcast = testMatch as Competition;
+            Assert.IsNotNull(downcast);
+        }
+
 
         private void ChangeSport() {
             sport = new Sport("Archery", false);
