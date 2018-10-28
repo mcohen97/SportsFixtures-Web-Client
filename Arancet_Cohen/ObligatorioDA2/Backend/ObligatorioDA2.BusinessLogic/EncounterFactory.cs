@@ -33,9 +33,18 @@ namespace ObligatorioDA2.BusinessLogic
             return built;
         }
 
-        public Encounter CreateEncounter(int v, List<Team> list, DateTime date, Sport sport, List<Commentary> comments)
+        public Encounter CreateEncounter(int id, List<Team> list, DateTime date, Sport sport, List<Commentary> comments)
         {
-            throw new NotImplementedException();
+            Encounter built;
+            if (sport.IsTwoTeams)
+            {
+                built = new Match(id, list, date, sport,comments);
+            }
+            else
+            {
+                built = new Competition(id, list, date, sport,comments);
+            }
+            return built;
         }
     }
 }
