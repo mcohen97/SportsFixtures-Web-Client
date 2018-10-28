@@ -1,0 +1,47 @@
+.main-toolbar{
+    position: fixed;
+    width: 100%;
+    height: 10%;
+    top: 0;
+    left:0;
+    z-index: 100;
+}
+.frontpage-container {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    display:block;
+    top: 10%;
+    left: 0;
+    border: 3px solid rgb(22, 145, 63);
+  }
+  
+  .frontpage-sidenav-content {
+    display: flex;
+    height: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: center;
+  }
+  
+  .frontpage-sidenav {
+    padding: 10px;
+    height: 100%;
+    width: 15%;
+    display: block;
+    position: relative;
+  }
+
+  .button-sidenav{
+    width: 100%;
+    display: block;
+    clear: both;
+    margin: 10px 0px 10px 0px;
+  }
+  
+  .title-sidenav{
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    height: 40px;
+  }
