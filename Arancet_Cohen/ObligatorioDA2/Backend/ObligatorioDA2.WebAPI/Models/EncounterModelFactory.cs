@@ -20,7 +20,7 @@ namespace ObligatorioDA2.WebAPI.Models
             return conversion;
         }
 
-        private MatchModelOut CreateCompetitionModelOut(Encounter encounter)
+        private MatchModelOut CreateMatchModelOut(Encounter encounter)
         {
             MatchModelOut converted = new MatchModelOut()
             {
@@ -41,7 +41,7 @@ namespace ObligatorioDA2.WebAPI.Models
             return converted;
         }
 
-        private CompetitionModelOut CreateMatchModelOut(Encounter encounter)
+        private CompetitionModelOut CreateCompetitionModelOut(Encounter encounter)
         {
             CompetitionModelOut converted = new CompetitionModelOut()
             {
@@ -49,11 +49,13 @@ namespace ObligatorioDA2.WebAPI.Models
                 TeamsIds = encounter.GetParticipants().Select(p => p.Id).ToList(),
                 Date = encounter.Date,
                 SportName = encounter.Sport.Name,
-                CommentsIds = encounter.GetAllCommentaries().Select(c => c.Id).ToList(),
-                Team_Position = encounter.Result.GetPositions()
-                                .Select(p => new Tuple<int,int>(p.Item1.Id,p.Item2))
-                                .ToList()
+                CommentsIds = encounter.GetAllCommentaries().Select(c => c.Id).ToList()
             };
+            if (encounter.HasResult()) {
+                converted.Team_Position = encounter.Result.GetPositions()
+                                .Select(p => new Tuple<int, int>(p.Item1.Id, p.Item2))
+                                .ToList();
+            }
             return converted;
         }
 
