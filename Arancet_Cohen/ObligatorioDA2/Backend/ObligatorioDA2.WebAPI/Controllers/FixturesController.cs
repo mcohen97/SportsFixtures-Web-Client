@@ -179,10 +179,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             Sport sport = sports.Get(sportName);
             ICollection<Encounter> added = fixtureService.AddFixture(sport);
-            ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
+            ICollection<EncounterModelOut> addedModelOut = new List<EncounterModelOut>();
             foreach (Encounter match in added)
             {
-                addedModelOut.Add(new MatchModelOut()
+                addedModelOut.Add(new EncounterModelOut()
                 {
                     Id = match.Id,
                     TeamsIds = match.GetParticipants().Select(p => p.Id).ToList(),

@@ -49,7 +49,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.Get();
             OkObjectResult okResult = result as OkObjectResult;
-            ICollection<MatchModelOut> matches = okResult.Value as ICollection<MatchModelOut>;
+            ICollection<EncounterModelOut> matches = okResult.Value as ICollection<EncounterModelOut>;
 
             //Assert.
             matchService.Verify(s => s.GetAllMatches(), Times.Once);
@@ -67,7 +67,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             IActionResult result = controller.Post(input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
-            MatchModelOut created = createdResult.Value as MatchModelOut;
+            EncounterModelOut created = createdResult.Value as EncounterModelOut;
 
             matchService.Verify(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
@@ -134,7 +134,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result =controller.Get(1);
             OkObjectResult foundResult = result as OkObjectResult;
-            MatchModelOut match = foundResult.Value as MatchModelOut;
+            EncounterModelOut match = foundResult.Value as EncounterModelOut;
 
             //Assert.
             Assert.IsNotNull(result);
@@ -171,7 +171,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.Put(1, input);
             OkObjectResult okResult = result as OkObjectResult;
-            MatchModelOut modified = okResult.Value as MatchModelOut;
+            EncounterModelOut modified = okResult.Value as EncounterModelOut;
 
             //Assert.
             matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
@@ -199,7 +199,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.Put(1, input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
-            MatchModelOut modified = createdResult.Value as MatchModelOut;
+            EncounterModelOut modified = createdResult.Value as EncounterModelOut;
 
             //Assert.
             matchService.Verify(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
@@ -489,7 +489,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.GetBySport("Soccer");
             OkObjectResult okResult = result as OkObjectResult;
-            ICollection<MatchModelOut> matches = okResult.Value as ICollection<MatchModelOut>;
+            ICollection<EncounterModelOut> matches = okResult.Value as ICollection<EncounterModelOut>;
 
             //Assert.
             matchService.Verify(ms => ms.GetAllMatches(It.IsAny<string>()), Times.Once);
@@ -529,7 +529,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.GetByTeam(5);
             OkObjectResult okResult = result as OkObjectResult;
-            ICollection<MatchModelOut> matches = okResult.Value as ICollection<MatchModelOut>;
+            ICollection<EncounterModelOut> matches = okResult.Value as ICollection<EncounterModelOut>;
 
             //Assert.
             matchService.Verify(ms => ms.GetAllMatches(It.IsAny<int>()), Times.Once);
@@ -592,7 +592,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.SetResult(1, resultModel);
             OkObjectResult okResult = result as OkObjectResult;
-            MatchModelOut matchWithResult= okResult.Value as MatchModelOut;
+            EncounterModelOut matchWithResult= okResult.Value as EncounterModelOut;
 
             //Assert.
             matchService.VerifyAll();

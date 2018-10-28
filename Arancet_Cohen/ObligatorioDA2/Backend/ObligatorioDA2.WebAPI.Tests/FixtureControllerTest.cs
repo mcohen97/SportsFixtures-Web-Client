@@ -125,7 +125,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.CreateFixture(testSport.Name,input);
             CreatedResult createdResult = result as CreatedResult;
-            ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
+            ICollection<EncounterModelOut> modelOut = createdResult.Value as ICollection<EncounterModelOut>;
 
             //Assert.
             Assert.IsNotNull(result);
@@ -240,7 +240,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Act.
             IActionResult result = controller.CreateFixture(testSport.Name, input);
             CreatedResult createdResult = result as CreatedResult;
-            ICollection<MatchModelOut> modelOut = createdResult.Value as ICollection<MatchModelOut>;
+            ICollection<EncounterModelOut> modelOut = createdResult.Value as ICollection<EncounterModelOut>;
 
             //Assert.
             Assert.IsNotNull(result);
