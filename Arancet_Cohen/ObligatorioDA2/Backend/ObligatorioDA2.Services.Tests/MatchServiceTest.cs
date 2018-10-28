@@ -369,20 +369,19 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void SetResultTest() {
-            Result result = GetFakeResult();
+            ICollection<Tuple<int, int>> result = GetFakeResult();
             matchesRepo.Add(matchAvsB);
-            serviceToTest.SetResult(matchAvsB.Id, result);
+            serviceToTest.SetResult(matchAvsB.Id,result);
             Encounter retrieved = serviceToTest.GetMatch(matchAvsB.Id);
             Result retrievedResult = retrieved.Result;
-            Assert.AreEqual(result.GetPositions().Count, retrievedResult.GetPositions().Count);
+            Assert.AreEqual(result.Count, retrievedResult.GetPositions().Count);
         }
 
-        private Result GetFakeResult()
+        private ICollection<Tuple<int,int>> GetFakeResult()
         {
-            Result toGenerate = new Result();
-            toGenerate.Add(teamA, 1);
-            toGenerate.Add(teamB, 2);
-            return toGenerate;
+            ICollection<Tuple<int, int>> standings = new List<Tuple<int, int>>() {new Tuple<int, int>(teamA.Id,1),
+                                                                                new Tuple<int, int>(teamB.Id,2) };
+            return standings;
         }
     }
 }

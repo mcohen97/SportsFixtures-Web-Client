@@ -585,7 +585,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void SetResultTest() {
             //Arrange.
-            matchService.Setup(ms => ms.SetResult(It.IsAny<int>(), It.IsAny<Result>()));
+            matchService.Setup(ms => ms.SetResult(It.IsAny<int>(), It.IsAny<ICollection<Tuple<int,int>>>()));
+            matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Returns(testMatch);
             ResultModel resultModel = GetFakeResult();
 
             //Act.
@@ -594,9 +595,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             MatchModelOut matchWithResult= okResult.Value as MatchModelOut;
 
             //Assert.
+            matchService.VerifyAll();
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(matchWithResult);
+            Assert.AreEqual(matchWithResult.Id, testMatch.Id);
+            Assert.IsTrue(matchWithResult.HasResult);
         }
 
         private ResultModel GetFakeResult()
