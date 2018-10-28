@@ -314,10 +314,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(output);
         }
 
-        public IActionResult SetResult(int id, ResultModel resultModel)
+        [HttpPost("{matchId}/result")]
+        public IActionResult SetResult(int matchId, ResultModel resultModel)
         {
-            matchService.SetResult(id, resultModel.Team_Position);
-            Encounter matchWithResult = matchService.GetMatch(id);
+            matchService.SetResult(matchId, resultModel.Team_Position);
+            Encounter matchWithResult = matchService.GetMatch(matchId);
             MatchModelOut result = BuildModelOut(matchWithResult);
             return Ok(result);
         }

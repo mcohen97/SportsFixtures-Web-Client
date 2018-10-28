@@ -600,7 +600,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(matchWithResult);
             Assert.AreEqual(matchWithResult.Id, testMatch.Id);
-            Assert.IsTrue(matchWithResult.HasResult);
         }
 
         private ResultModel GetFakeResult()
