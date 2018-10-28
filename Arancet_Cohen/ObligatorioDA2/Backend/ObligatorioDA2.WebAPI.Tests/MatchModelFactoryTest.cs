@@ -13,17 +13,26 @@ namespace ObligatorioDA2.WebAPI.Tests
         private Encounter testCompetition;
         private EncounterModelFactory factory;
 
-        [TestMethod]
-        public void StartUp() {
+        [TestInitialize]
+        public void SetUp() {
             Sport sport = new Sport("Soccer", true);
             Team teamA = new Team(1, "teamA", "photo", sport);
             Team teamB = new Team(2, "teamB", "photo", sport);
             Team teamC = new Team(3, "teamC", "photo", sport);
             testMatch = new Match(1, new List<Team>() { teamA, teamB }, DateTime.Now.AddDays(1), sport);
+            ChangeSport(ref sport,ref teamA,ref teamB,ref teamC);
+            testCompetition = new Competition(2, new List<Team>() { teamA, teamB, teamC }, DateTime.Now.AddDays(2), sport);
             SetResult(testMatch);
             SetResult(testCompetition);
-            testCompetition = new Match(2, new List<Team>() { teamA,teamB ,teamC }, DateTime.Now.AddDays(2), sport);
             factory = new EncounterModelFactory();
+        }
+
+        private void ChangeSport(ref Sport sport, ref Team teamA, ref Team teamB, ref Team teamC)
+        {
+            sport = new Sport("Golf", false);
+            teamA = new Team(1, "teamA", "photo", sport);
+            teamB = new Team(2, "teamB", "photo", sport);
+            teamC = new Team(3, "teamC", "photo", sport);
         }
 
         private void SetResult(Encounter testMatch)
@@ -49,7 +58,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void MatchModelOutTest()
         {
-            EncounterModelOut modelOut = factory.CreateModelOut(testCompetition);
+            EncounterModelOut modelOut = factory.CreateModelOut(testMatch);
             MatchModelOut match = modelOut as MatchModelOut;
             Assert.IsNotNull(match);
             Assert.IsFalse(match.HasResult);
