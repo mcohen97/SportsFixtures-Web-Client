@@ -63,6 +63,23 @@ namespace ObligatorioDA2.BusinessLogic.Test
             Assert.IsNotNull(downcast);
         }
 
+        [TestMethod]
+        public void BuildMatch4ArgumentsTest()
+        {
+            Encounter testMatch = testFactory.CreateEncounter(3,new List<Team>() { teamA, teamB }, date, sport);
+            Match downcast = testMatch as Match;
+            Assert.IsNotNull(downcast);
+        }
+
+        [TestMethod]
+        public void BuildCompetition4ArgumentsTest()
+        {
+            ChangeSport();
+            Encounter testMatch = testFactory.CreateEncounter(3,new List<Team>() { teamA, teamB }, date, sport);
+            Competition downcast = testMatch as Competition;
+            Assert.IsNotNull(downcast);
+        }
+
         private void ChangeSport() {
             sport = new Sport("Archery", false);
             teamA = new Team(1, "TeamA", "Photo/A", sport);
