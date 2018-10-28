@@ -582,6 +582,23 @@ namespace ObligatorioDA2.WebAPI.Tests
             return controllerContextMock.Object;
         }
 
+        [TestMethod]
+        public void SetResultTest() {
+            //Arrange.
+            matchService.Setup(ms => ms.SetResult(It.IsAny<int>(), It.IsAny<Result>()));
+            ResultModelIn resultModel = GetFakeResult();
+
+            //Act.
+            IActionResult result = controller.SetResult(1, resultModel);
+            OkObjectResult okResult = result as OkObjectResult;
+            MatchModelOut matchWithResult= okResult.Value as MatchModelOut;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(matchWithResult);
+        }
+
     }
    
 }
