@@ -27,12 +27,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ISportRepository sports;
         private const string DLL_EXTENSION = "*.dll";
         private ILoggerService logger;
+        private EncounterModelFactory factory;
 
         public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo, ILoggerService loggerService) {
             fixtureService = service;
             fixtureConfig = config;
             sports = sportsRepo;
             logger = loggerService;
+            factory = new EncounterModelFactory();
         }
 
         [HttpGet]
@@ -182,14 +184,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             ICollection<EncounterModelOut> addedModelOut = new List<EncounterModelOut>();
             foreach (Encounter match in added)
             {
-                addedModelOut.Add(new EncounterModelOut()
-                {
-                    Id = match.Id,
-                    TeamsIds = match.GetParticipants().Select(p => p.Id).ToList(),
-                    SportName = match.Sport.Name,
-                    Date = match.Date,
-                    CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()
-                });
+                addedModelOut.Add(factory.CreateModelOut(match));
             }
             result = Created("fixture-generator", addedModelOut);
             return result;
