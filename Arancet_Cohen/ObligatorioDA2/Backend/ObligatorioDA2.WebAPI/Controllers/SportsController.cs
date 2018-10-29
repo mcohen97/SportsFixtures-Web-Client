@@ -221,7 +221,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id = aTeam.Id,
                 SportName = aTeam.Sport.Name,
                 Name = aTeam.Name,
-                Photo = aTeam.Photo
+                Photo = new byte[0]
             };
         }
 

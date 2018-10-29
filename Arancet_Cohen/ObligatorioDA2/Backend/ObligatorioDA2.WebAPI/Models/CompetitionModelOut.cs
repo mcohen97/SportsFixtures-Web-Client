@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace ObligatorioDA2.WebAPI.Models
 {
-    public class MatchModelOut:EncounterModelOut
+    public class CompetitionModelOut:EncounterModelOut
     {
-        public bool HasWinner { get; set; }
-        public int WinnerId { get; set; }
+        public ICollection<Tuple<int, int>> Team_Position { get; set; }
     }
 }

@@ -22,6 +22,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         private int roundLength;
         private int daysBetweenRounds;
         private Sport played;
+        private EncounterFactory factory;
 
         [TestInitialize]
         public void TestInitialize()
@@ -39,7 +40,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
             daysBetweenRounds = 5;
             oneMatchFixture = new OneMatchFixture(initialDate, roundLength, daysBetweenRounds);
             homeAwayFixture = new HomeAwayFixture(initialDate, roundLength, daysBetweenRounds);
-
+            factory = new EncounterFactory();
         }
 
         [TestMethod]
@@ -202,21 +203,21 @@ namespace ObligatorioDA2.BusinessLogic.Test
                 for (int j = i; j < teamsArray.Length; j++)
                 {
                     if (i != j)
-                        matchesGenerated.Add(new Match(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
+                        matchesGenerated.Add(factory.CreateEncounter(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
                 }
             }
             return matchesGenerated;
         }
-        private ICollection<Match> GenereteMatchesHomeAway(ICollection<Team> teams)
+        private ICollection<Encounter> GenereteMatchesHomeAway(ICollection<Team> teams)
         {
-            ICollection<Match> matchesGenerated = new List<Match>();
+            ICollection<Encounter> matchesGenerated = new List<Encounter>();
             Team[] teamsArray = teams.ToArray();
             for (int i = 0; i < teamsArray.Length; i++)
             {
                 for (int j = 0; j < teamsArray.Length; j++)
                 {
                     if (i != j)
-                        matchesGenerated.Add(new Match(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
+                        matchesGenerated.Add(factory.CreateEncounter(new List<Team>() { teamsArray[i], teamsArray[j] }, new DateTime(), played));
                 }
             }
             return matchesGenerated;

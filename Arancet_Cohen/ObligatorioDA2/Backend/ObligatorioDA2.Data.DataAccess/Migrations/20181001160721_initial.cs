@@ -4,26 +4,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataAccess.Migrations
 {
-    public partial class LoggerFinal : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Logs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Messagge = table.Column<string>(nullable: true),
-                    LogType = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Username = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Logs", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Sports",
                 columns: table => new
@@ -55,7 +39,7 @@ namespace DataAccess.Migrations
                 name: "Teams",
                 columns: table => new
                 {
-                    TeamNumber = table.Column<int>(nullable: false)
+                    Identity = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: false),
                     Photo = table.Column<string>(nullable: true),
@@ -63,7 +47,7 @@ namespace DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.TeamNumber);
+                    table.PrimaryKey("PK_Teams", x => x.Identity);
                     table.UniqueConstraint("AK_Teams_SportEntityName_Name", x => new { x.SportEntityName, x.Name });
                     table.ForeignKey(
                         name: "FK_Teams_Sports_SportEntityName",
@@ -79,8 +63,8 @@ namespace DataAccess.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    HomeTeamTeamNumber = table.Column<int>(nullable: true),
-                    AwayTeamTeamNumber = table.Column<int>(nullable: true),
+                    HomeTeamIdentity = table.Column<int>(nullable: true),
+                    AwayTeamIdentity = table.Column<int>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
                     SportEntityName = table.Column<string>(nullable: true)
                 },
@@ -88,16 +72,16 @@ namespace DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matches_Teams_AwayTeamTeamNumber",
-                        column: x => x.AwayTeamTeamNumber,
+                        name: "FK_Matches_Teams_AwayTeamIdentity",
+                        column: x => x.AwayTeamIdentity,
                         principalTable: "Teams",
-                        principalColumn: "TeamNumber",
+                        principalColumn: "Identity",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Matches_Teams_HomeTeamTeamNumber",
-                        column: x => x.HomeTeamTeamNumber,
+                        name: "FK_Matches_Teams_HomeTeamIdentity",
+                        column: x => x.HomeTeamIdentity,
                         principalTable: "Teams",
-                        principalColumn: "TeamNumber",
+                        principalColumn: "Identity",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Matches_Sports_SportEntityName",
@@ -112,7 +96,7 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     UserEntityUserName = table.Column<string>(nullable: false),
-                    TeamNumber = table.Column<int>(nullable: true),
+                    TeamIdentity = table.Column<int>(nullable: true),
                     TeamEntityName = table.Column<string>(nullable: false),
                     TeamEntitySportEntityName = table.Column<string>(nullable: false)
                 },
@@ -120,10 +104,10 @@ namespace DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_UserTeams", x => new { x.TeamEntityName, x.TeamEntitySportEntityName, x.UserEntityUserName });
                     table.ForeignKey(
-                        name: "FK_UserTeams_Teams_TeamNumber",
-                        column: x => x.TeamNumber,
+                        name: "FK_UserTeams_Teams_TeamIdentity",
+                        column: x => x.TeamIdentity,
                         principalTable: "Teams",
-                        principalColumn: "TeamNumber",
+                        principalColumn: "Identity",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserTeams_Users_UserEntityUserName",
@@ -171,14 +155,14 @@ namespace DataAccess.Migrations
                 column: "MatchEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_AwayTeamTeamNumber",
+                name: "IX_Matches_AwayTeamIdentity",
                 table: "Matches",
-                column: "AwayTeamTeamNumber");
+                column: "AwayTeamIdentity");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_HomeTeamTeamNumber",
+                name: "IX_Matches_HomeTeamIdentity",
                 table: "Matches",
-                column: "HomeTeamTeamNumber");
+                column: "HomeTeamIdentity");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Matches_SportEntityName",
@@ -186,9 +170,9 @@ namespace DataAccess.Migrations
                 column: "SportEntityName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTeams_TeamNumber",
+                name: "IX_UserTeams_TeamIdentity",
                 table: "UserTeams",
-                column: "TeamNumber");
+                column: "TeamIdentity");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserTeams_UserEntityUserName",
@@ -200,9 +184,6 @@ namespace DataAccess.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Comments");
-
-            migrationBuilder.DropTable(
-                name: "Logs");
 
             migrationBuilder.DropTable(
                 name: "UserTeams");

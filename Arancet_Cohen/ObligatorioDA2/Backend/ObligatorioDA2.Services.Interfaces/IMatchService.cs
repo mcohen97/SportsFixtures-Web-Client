@@ -34,6 +34,6 @@ namespace ObligatorioDA2.Services.Interfaces
         ICollection<Commentary> GetMatchCommentaries(int matchId);
         ICollection<Commentary> GetAllCommentaries();
         Commentary GetComment(int id);
-        void SetResult(int id, Result result);
+        void SetResult(int id, ICollection<Tuple<int, int>> teamsPositions);
     }
 }

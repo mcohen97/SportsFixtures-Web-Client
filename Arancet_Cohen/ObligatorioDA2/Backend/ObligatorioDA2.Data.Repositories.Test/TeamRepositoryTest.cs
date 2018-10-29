@@ -217,11 +217,11 @@ namespace DataRepositoriesTest
         {
             Mock<Team> team = new Mock<Team>(1, "DreamTeam", "MyResources/DreamTeam.png", new Sport("Soccer",true));
             teamsStorage.Add(team.Object);
-            team.Object.Photo = "NewDreamTeam.png";
+            team.Object.PhotoPath = "NewDreamTeam.png";
             SetUpRepository();
             teamsStorage.Modify(team.Object);
             Team editedTeam = teamsStorage.Get("Soccer", team.Object.Name);
-            Assert.AreEqual(team.Object.Photo, editedTeam.Photo);
+            Assert.AreEqual(team.Object.PhotoPath, editedTeam.PhotoPath);
         }
 
         [TestMethod]

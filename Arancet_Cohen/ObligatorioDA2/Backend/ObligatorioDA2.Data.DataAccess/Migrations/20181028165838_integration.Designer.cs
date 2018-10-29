@@ -10,8 +10,8 @@ using ObligatorioDA2.Data.DataAccess;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20181024223326_LoggerFinal")]
-    partial class LoggerFinal
+    [Migration("20181028165838_integration")]
+    partial class integration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -67,29 +67,40 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AwayTeamTeamNumber");
-
                     b.Property<DateTime>("Date");
 
-                    b.Property<int?>("HomeTeamTeamNumber");
+                    b.Property<bool>("HasResult");
 
                     b.Property<string>("SportEntityName");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AwayTeamTeamNumber");
-
-                    b.HasIndex("HomeTeamTeamNumber");
 
                     b.HasIndex("SportEntityName");
 
                     b.ToTable("Matches");
                 });
 
+            modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchTeam", b =>
+                {
+                    b.Property<int>("MatchId");
+
+                    b.Property<int>("TeamNumber");
+
+                    b.Property<int>("Position");
+
+                    b.HasKey("MatchId", "TeamNumber");
+
+                    b.HasIndex("TeamNumber");
+
+                    b.ToTable("MatchTeams");
+                });
+
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.SportEntity", b =>
                 {
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("IsTwoTeams");
 
                     b.HasKey("Name");
 
@@ -169,17 +180,22 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchEntity", b =>
                 {
-                    b.HasOne("ObligatorioDA2.Data.Entities.TeamEntity", "AwayTeam")
-                        .WithMany()
-                        .HasForeignKey("AwayTeamTeamNumber");
-
-                    b.HasOne("ObligatorioDA2.Data.Entities.TeamEntity", "HomeTeam")
-                        .WithMany()
-                        .HasForeignKey("HomeTeamTeamNumber");
-
                     b.HasOne("ObligatorioDA2.Data.Entities.SportEntity", "SportEntity")
                         .WithMany()
                         .HasForeignKey("SportEntityName");
+                });
+
+            modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchTeam", b =>
+                {
+                    b.HasOne("ObligatorioDA2.Data.Entities.MatchEntity", "Match")
+                        .WithMany()
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ObligatorioDA2.Data.Entities.TeamEntity", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamNumber")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.TeamEntity", b =>

@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic", "ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj", "{4751425F-3D67-4ECC-98B6-28C53922B463}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.DataAccess", "ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj", "{C93E3436-3769-4C69-80EF-0A8B986DE710}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Interfaces", "ObligatorioDA2.Data.Repositories.Interfaces\ObligatorioDA2.Data.Repositories.Interfaces.csproj", "{282C9F52-1ECC-4454-9D2A-3B62225522CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Test", "ObligatorioDA2.Data.Repositories.Test\ObligatorioDA2.Data.Repositories.Test.csproj", "{36C514E0-705D-46CC-998F-C430C9DD8309}"
@@ -29,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.WebAPI.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms", "ObligatorioDA2.BusinessLogic.FixtureAlgorithms\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.csproj", "{E6DF4514-9B7B-4C3C-98BE-ADFD57F8D201}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.DataAccess", "ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj", "{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,10 +43,6 @@ Global
 		{4751425F-3D67-4ECC-98B6-28C53922B463}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4751425F-3D67-4ECC-98B6-28C53922B463}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4751425F-3D67-4ECC-98B6-28C53922B463}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C93E3436-3769-4C69-80EF-0A8B986DE710}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C93E3436-3769-4C69-80EF-0A8B986DE710}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C93E3436-3769-4C69-80EF-0A8B986DE710}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C93E3436-3769-4C69-80EF-0A8B986DE710}.Release|Any CPU.Build.0 = Release|Any CPU
 		{282C9F52-1ECC-4454-9D2A-3B62225522CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{282C9F52-1ECC-4454-9D2A-3B62225522CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{282C9F52-1ECC-4454-9D2A-3B62225522CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -87,6 +83,10 @@ Global
 		{E6DF4514-9B7B-4C3C-98BE-ADFD57F8D201}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6DF4514-9B7B-4C3C-98BE-ADFD57F8D201}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6DF4514-9B7B-4C3C-98BE-ADFD57F8D201}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
