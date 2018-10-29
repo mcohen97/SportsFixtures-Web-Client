@@ -26,7 +26,15 @@ namespace ObligatorioDA2.Services
             Sport asked = sportsStorage.Get(sportName);
             ICollection<Team> sportTeams = teamsStorage.GetTeams(sportName);
             ICollection<Encounter> teamsEncounters = matchesService.GetAllMatches(sportName);
-            ICollection<Tuple<Team, int>> positions = CalculateCompetitionsTable(sportTeams, teamsEncounters);          
+            ICollection<Tuple<Team, int>> positions;
+            if (asked.IsTwoTeams)
+            {
+                positions = CalculateMatchesTable(sportTeams, teamsEncounters);
+            }
+            else
+            {
+                positions = CalculateCompetitionsTable(sportTeams, teamsEncounters);
+            }
             return positions;
         }
 
@@ -44,7 +52,36 @@ namespace ObligatorioDA2.Services
                     table[positions[2].Item1] += 1;
                 }
             }
-            return table.Keys.Select(t => new Tuple<Team, int>(t, table[t])).ToList();
+            List<Tuple<Team, int>> assorted = table.Keys.Select(t => new Tuple<Team, int>(t, table[t])).ToList();
+            assorted.Sort((x, y) => y.Item2.CompareTo(x.Item2));
+            return assorted;
+        }
+
+        private ICollection<Tuple<Team, int>> CalculateMatchesTable(ICollection<Team> sportTeams, ICollection<Encounter> teamsEncounters)
+        {
+            Dictionary<Team, int> table = sportTeams.ToDictionary(item => item, item => 0);
+            foreach (Encounter game in teamsEncounters)
+            {
+                List<Tuple<Team, int>> positions = game.Result.GetPositions().ToList();
+                positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+
+                if (positions[0].Item2 < positions[1].Item2)
+                {
+                    table[positions[0].Item1] += 3;
+                }
+                else if (positions[0].Item2 > positions[1].Item2)
+                {
+                    table[positions[1].Item1] += 3;
+                }
+                else
+                {
+                    table[positions[0].Item1] += 1;
+                    table[positions[1].Item1] += 1;
+                }
+            }
+            List<Tuple<Team, int>> assorted = table.Keys.Select(t => new Tuple<Team, int>(t, table[t])).ToList();
+            assorted.Sort((x, y) => y.Item2.CompareTo(x.Item2));
+            return assorted;
         }
 
     }
