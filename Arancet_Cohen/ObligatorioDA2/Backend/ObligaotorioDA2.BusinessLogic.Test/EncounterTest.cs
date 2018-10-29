@@ -231,14 +231,21 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
-        public void SetResultTeamsWithNoPositionTest() {
+        public void SetResultSortedPositionsTest() {
             sport = new Sport("Golf", false);
             teamA = new Team(1, "TeamA", "Photo/A", sport);
             teamB = new Team(2, "TeamB", "Photo/B", sport);
-            teamC = new Team(2, "TeamC", "Photo/C", sport);
+            teamC = new Team(3, "TeamC", "Photo/C", sport);
             Competition competition = new Competition(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
-            competition.Result = GetFakeResult();
+            Result assorted = new Result();
+            assorted.Add(teamA, 2);
+            assorted.Add(teamB, 3);
+            assorted.Add(teamC, 1);
+            competition.Result = assorted;
+            List<Tuple<Team, int>> positions = competition.Result.GetPositions().ToList();
+            Assert.AreEqual(positions[0].Item2, 1);
+            Assert.AreEqual(positions[1].Item2, 2);
+            Assert.AreEqual(positions[2].Item2, 3);
         }
 
         [TestMethod]
