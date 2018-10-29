@@ -21,10 +21,10 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestInitialize]
         public void SetUp() {
-            serviceToTest = new SportTableService(sportsStorage.Object,teamsStorage.Object,matchesService.Object);
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
             matchesService= new Mock<IMatchService>();
+            serviceToTest = new SportTableService(sportsStorage.Object, teamsStorage.Object, matchesService.Object);
             SetUpSports();
             SetUpTeams();
         }
@@ -43,8 +43,8 @@ namespace ObligatorioDA2.Services.Tests
         {
             Sport twoTeamSport = new Sport("Soccer", true);
             Team teamA = new Team(1,"teamA", "photoA", twoTeamSport);
-            Team teamB = new Team(2,"teamA", "photoA", twoTeamSport);
-            Team teamC = new Team(3,"teamA", "photoA", twoTeamSport);
+            Team teamB = new Team(2,"teamB", "photoB", twoTeamSport);
+            Team teamC = new Team(3,"teamC", "photoC", twoTeamSport);
             ICollection<Encounter> matches = CreateMatches(teamA, teamB, teamC,twoTeamSport);
             matchesService.Setup(r => r.GetAllMatches("Soccer")).Returns(matches);
 
@@ -85,9 +85,9 @@ namespace ObligatorioDA2.Services.Tests
         private ICollection<Encounter> CreateCompetitions(Team teamD, Team teamE, Team teamF, Sport played)
         {
             //Create competition.
-            Match competitiomDEF = new Match(new List<Team>() { teamD, teamE, teamF }, DateTime.Now, played);
-            Match competitionED = new Match(new List<Team>() { teamE, teamD }, DateTime.Now, played);
-            Match competitionEDF = new Match(new List<Team>() { teamE, teamD,teamF }, DateTime.Now, played);
+            Encounter competitiomDEF = new Competition(new List<Team>() { teamD, teamE, teamF }, DateTime.Now, played);
+            Encounter competitionED = new Competition(new List<Team>() { teamE, teamD }, DateTime.Now, played);
+            Encounter competitionEDF = new Competition(new List<Team>() { teamE, teamD,teamF }, DateTime.Now, played);
             //Create results.
             Result resultDEF = new Result();
             resultDEF.Add(teamD, 2);
@@ -111,16 +111,16 @@ namespace ObligatorioDA2.Services.Tests
         public void ArcheryTableTest() {
             List<Tuple<Team, int>> positions = serviceToTest.GetScoreTable("Archery").ToList();
             //ids.
-            Assert.AreEqual(positions[0].Item1.Id, 5);
-            Assert.AreEqual(positions[1].Item1.Id, 4);
+            Assert.AreEqual(positions[0].Item1.Id, 4);
+            Assert.AreEqual(positions[1].Item1.Id, 5);
             Assert.AreEqual(positions[2].Item1.Id, 6);
             //names.
             Assert.AreEqual(positions[0].Item1.Name, "athleteD");
             Assert.AreEqual(positions[1].Item1.Name, "athleteE");
             Assert.AreEqual(positions[2].Item1.Name, "athleteF");
             //points.
-            Assert.AreEqual(positions[0].Item2, 6);
-            Assert.AreEqual(positions[1].Item2, 5);
+            Assert.AreEqual(positions[0].Item2, 7);
+            Assert.AreEqual(positions[1].Item2, 6);
             Assert.AreEqual(positions[2].Item2, 4);
         }
     }
