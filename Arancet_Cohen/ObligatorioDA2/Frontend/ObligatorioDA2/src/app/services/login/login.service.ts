@@ -55,13 +55,15 @@ export class LoginService {
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');     
         const requestOptions = new RequestOptions({headers: myHeaders}); 
-           
-        this._httpService.post(this.WEB_API_URL,{Username: username, Password: password}, requestOptions) 
+        var postResult:Observable<string>;   
+        postResult = this._httpService.post(this.WEB_API_URL,{Username: username, Password: password}, requestOptions) 
         .pipe( 
             map((response : Response) => <string> response.json()),
             tap(data => console.log('Los datos que obtuvimos fueron: ' + JSON.stringify(data))),
         ); 
-
+        postResult.subscribe(
+            (token:string) =>result
+        )
         return result;
     }
     
