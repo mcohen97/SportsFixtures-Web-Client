@@ -65,18 +65,14 @@ namespace ObligatorioDA2.Services
                 List<Tuple<Team, int>> positions = game.Result.GetPositions().ToList();
                 positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
 
-                if (positions[0].Item2 < positions[1].Item2)
-                {
-                    table[positions[0].Item1] += 3;
-                }
-                else if (positions[0].Item2 > positions[1].Item2)
-                {
-                    table[positions[1].Item1] += 3;
-                }
-                else
+                if (positions[0].Item2 == positions[1].Item2)
                 {
                     table[positions[0].Item1] += 1;
                     table[positions[1].Item1] += 1;
+                }
+                else 
+                {
+                    table[positions[0].Item1] += 3;
                 }
             }
             List<Tuple<Team, int>> assorted = table.Keys.Select(t => new Tuple<Team, int>(t, table[t])).ToList();
