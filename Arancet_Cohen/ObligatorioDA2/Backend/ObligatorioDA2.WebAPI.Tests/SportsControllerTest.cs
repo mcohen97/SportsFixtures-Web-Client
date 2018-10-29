@@ -42,8 +42,9 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             IFixtureService dummyService = new Mock<IFixtureService>().Object;
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
+            tableGenerator = new Mock<ISportTableService>();
 
-            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService, mockSettings.Object);
+            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService, mockSettings.Object, tableGenerator.Object);
         }
 
         [TestMethod]
@@ -389,9 +390,28 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(positions);
-            Assert.AreEqual("teamA",conversion[0].TeamName);
+            Assert.AreEqual("TeamA",conversion[0].TeamName);
             Assert.AreEqual(15, conversion[0].Points);
             Assert.AreEqual(1, conversion[0].TeamId);
+        }
+
+        [TestMethod]
+        public void CalculateTableNotExistingSportTest() {
+            //Arrange.
+            Exception toThrow = new SportNotFoundException();
+            tableGenerator.Setup(tg => tg.GetScoreTable(It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controllerToTest.CalculateSportTable("Golf");
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            tableGenerator.VerifyAll();
+            Assert.IsNull(result);
+            Assert.IsNull(notFound);
+            Assert.IsNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
         private ICollection<Tuple<Team, int>> GetFakeTable() {
