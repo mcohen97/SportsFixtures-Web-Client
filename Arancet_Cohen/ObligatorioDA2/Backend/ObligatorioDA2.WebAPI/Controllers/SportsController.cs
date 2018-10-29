@@ -21,15 +21,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ITeamRepository teams;
         private IFixtureService fixture;
         private IOptions<FixtureStrategies> fixtureSettings;
-
+        private ISportTableService tableService;
 
         public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, 
-            IFixtureService fixtureService, IOptions<FixtureStrategies> algorithmsSettings)
+            IFixtureService fixtureService, IOptions<FixtureStrategies> algorithmsSettings,
+            ISportTableService tableGenerator)
         {
             sports = sportRepo;
             fixture = fixtureService;
             teams = teamRepo;
             fixtureSettings = algorithmsSettings;
+            tableService = tableGenerator;
         }
 
         [HttpPost]
@@ -214,6 +216,35 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
+        public IActionResult CalculateSportTable(string sportName)
+        {
+            IActionResult result;
+            try
+            {
+                result = TryCalculateTable(sportName);
+
+            }
+            catch (EntityNotFoundException e)
+            {
+                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+                result = NotFound(error);
+            }
+            return result;
+        }
+
+        private IActionResult TryCalculateTable(string sportName)
+        {
+            ICollection<Tuple<Team, int>> standings = tableService.GetScoreTable(sportName);
+            IEnumerable<StandingModelOut> output = standings.Select(s => CreateStanding(s));
+            return Ok(output);
+        }
+
+        private StandingModelOut CreateStanding(Tuple<Team, int> standing)
+        {
+            Team team = standing.Item1;
+            return new StandingModelOut() { TeamId = team.Id, TeamName = team.Name, Points = standing.Item2 };
+        }
+
         private TeamModelOut CreateModelOut(Team aTeam)
         {
             return new TeamModelOut()
@@ -230,11 +261,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
             IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
             return internalError;
-        }
-
-        public IActionResult CalculateSportTable(string v)
-        {
-            throw new NotImplementedException();
         }
     }
 }
