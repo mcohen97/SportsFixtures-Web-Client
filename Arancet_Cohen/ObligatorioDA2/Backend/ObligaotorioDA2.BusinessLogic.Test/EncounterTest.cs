@@ -232,6 +232,17 @@ namespace ObligatorioDA2.BusinessLogic.Test
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
+        public void SetResultTeamsWithNoPositionTest() {
+            sport = new Sport("Golf", false);
+            teamA = new Team(1, "TeamA", "Photo/A", sport);
+            teamB = new Team(2, "TeamB", "Photo/B", sport);
+            teamC = new Team(2, "TeamC", "Photo/C", sport);
+            Competition competition = new Competition(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
+            competition.Result = GetFakeResult();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidMatchDataException))]
         public void SetNullResultTest() {
             match.Result=null;
         }
