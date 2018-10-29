@@ -20,7 +20,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestInitialize]
         public void SetUp() {
-            serviceToTest = new SportTableService();
+            serviceToTest = new SportTableService(sportsStorage,teamsStorage,matchesService);
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
             matchesService= new Mock<IMatchService>();
