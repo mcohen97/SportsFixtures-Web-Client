@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
+import {LoginComponent} from './components/login/login.component'
+
 import {
   MatAutocompleteModule,
   MatBadgeModule,
@@ -39,15 +41,19 @@ import {
   MatTooltipModule,
   MatTreeModule,
 } from '@angular/material';
+import { LoginService } from './services/login/login.service';
+import { Http, HttpModule } from '@angular/http';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     MatAutocompleteModule,
+    HttpModule,
   MatBadgeModule,
   MatBottomSheetModule,
   MatButtonModule,
@@ -83,7 +89,7 @@ import {
   MatTooltipModule,
   MatTreeModule,
   ],
-  providers: [],
+  providers: [LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

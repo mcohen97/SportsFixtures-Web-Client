@@ -5,43 +5,47 @@
     top: 0;
     left:0;
     z-index: 100;
+    border-bottom: 1px solid rgb(20, 150, 60);
 }
+
 .frontpage-container {
     height: 100%;
     width: 100%;
     position: fixed;
     display:block;
+    padding: 0px 5px 0px 5px;
     top: 10%;
     left: 0;
-    border: 3px solid rgb(22, 145, 63);
-  }
-  
-  .frontpage-sidenav-content {
-    display: flex;
+}
+
+.frontpage-sidenav-content {
+    display: inline-block;
     height: 100%;
-    align-items: flex-start;
-    justify-content: flex-start;
+    width: 100%;
     text-align: center;
-  }
-  
-  .frontpage-sidenav {
+}
+
+.frontpage-sidenav {
     padding: 10px;
     height: 100%;
-    width: 15%;
-    display: block;
-    position: relative;
-  }
+    width: 180px;
+}
 
-  .button-sidenav{
+.button-sidenav{
     width: 100%;
     display: block;
     clear: both;
     margin: 10px 0px 10px 0px;
-  }
-  
-  .title-sidenav{
+}
+
+.title-sidenav{
     text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    height: 40px;
-  }
+    font-size: 20px;
+    padding:12px;
+    color: rgb(20, 150, 60);
+}
+
+.title-toolbar{
+    margin-left:10px;
+    margin-right: 10px;
+}

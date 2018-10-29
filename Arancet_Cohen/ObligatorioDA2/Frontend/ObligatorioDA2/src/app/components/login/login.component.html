@@ -1,0 +1,16 @@
+    <mat-card class = "login-card">
+        <form (submit) = "login($event)" class = "login-form">
+            <h1>Login</h1>
+            <mat-form-field>
+                <input matInput type = "text" placeholder="Username" id="username" class = "form-fieald">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type = "password" placeholder="Password" id="password" class = "form-fieald">
+            </mat-form-field>
+    
+            <button type="submit" mat-flat-button class = "form-submit">Log In</button>
+            {{stringToken}}
+        </form>
+
+    </mat-card>
+   

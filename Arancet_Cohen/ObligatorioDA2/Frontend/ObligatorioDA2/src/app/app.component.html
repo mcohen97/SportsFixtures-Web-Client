@@ -1,35 +1,36 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
 <mat-toolbar class="main-toolbar">
-    <button type="button" mat-button (click)="drawer.toggle()">
+    <button type="button" mat-icon-button (click)="drawer.toggle()">
         <i class="material-icons">
             menu
         </i>
     </button>
-    <span>Sportlendar</span>
+    <span class = "title-toolbar">{{title}}</span>
 </mat-toolbar>
 <mat-drawer-container class="frontpage-container" autosize>
+  <div class="frontpage-sidenav-content">
+      <login-component></login-component>
+  </div>
+
   <mat-drawer #drawer class="frontpage-sidenav" mode="side">
     <div class="title-sidenav">Menu</div>
-    <button type="button" class="button-sidenav" mat-button>
+    <button type="button" class="button-sidenav"  mat-flat-button>
       Sports
     </button>
-    <button type="button" class="button-sidenav" mat-button>
+    <button type="button" class="button-sidenav"  mat-flat-button>
       Teams
     </button>
-    <button type="button" class="button-sidenav" mat-button>
+    <button type="button" class="button-sidenav"  mat-flat-button>
       Encounters
     </button>
-    <button type="button" class="button-sidenav" mat-button>
+    <button type="button" class="button-sidenav"  mat-flat-button>
       Calendar
     </button>
-    <button type="button" class="button-sidenav" mat-button>
+    <button type="button" class="button-sidenav"  mat-flat-button>
       Login
     </button>
   </mat-drawer>
 
-  <div class="frontpage-sidenav-content">
-
-  </div>
-
+  
 </mat-drawer-container>
