@@ -408,9 +408,9 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             //Assert.
             tableGenerator.VerifyAll();
-            Assert.IsNull(result);
-            Assert.IsNull(notFound);
-            Assert.IsNull(error);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
