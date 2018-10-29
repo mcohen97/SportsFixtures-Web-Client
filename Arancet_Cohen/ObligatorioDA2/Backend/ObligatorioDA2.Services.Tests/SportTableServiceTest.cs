@@ -123,5 +123,22 @@ namespace ObligatorioDA2.Services.Tests
             Assert.AreEqual(positions[1].Item2, 6);
             Assert.AreEqual(positions[2].Item2, 4);
         }
+
+        [TestMethod]
+        public void SoccerTableTest() {
+            List<Tuple<Team, int>> positions = serviceToTest.GetScoreTable("Soccer").ToList();
+            //ids.
+            Assert.AreEqual(positions[0].Item1.Id, 3);
+            Assert.AreEqual(positions[1].Item1.Id, 1);
+            Assert.AreEqual(positions[2].Item1.Id, 2);
+            //names.
+            Assert.AreEqual(positions[0].Item1.Name, "athleteD");
+            Assert.AreEqual(positions[1].Item1.Name, "athleteE");
+            Assert.AreEqual(positions[2].Item1.Name, "athleteF");
+            //points.
+            Assert.AreEqual(positions[0].Item2, 4);
+            Assert.AreEqual(positions[1].Item2, 3);
+            Assert.AreEqual(positions[2].Item2, 1);
+        }
     }
 }
