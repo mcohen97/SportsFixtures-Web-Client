@@ -20,7 +20,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestInitialize]
         public void SetUp() {
-            serviceToTest = new SportTableService(sportsStorage,teamsStorage,matchesService);
+            serviceToTest = new SportTableService(sportsStorage.Object,teamsStorage.Object,matchesService.Object);
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
             matchesService= new Mock<IMatchService>();
@@ -48,9 +48,9 @@ namespace ObligatorioDA2.Services.Tests
             matchesService.Setup(r => r.GetAllMatches("Soccer")).Returns(matches);
 
             Sport multipleTeamSport = new Sport("Archery", false);
-            Team athleteD = new Team(4,"teamD", "photoD", multipleTeamSport);
-            Team athleteE = new Team(5,"teamE", "photoE", multipleTeamSport);
-            Team athleteF = new Team(6,"teamF", "photoF", multipleTeamSport);
+            Team athleteD = new Team(4,"athleteD", "photoD", multipleTeamSport);
+            Team athleteE = new Team(5,"athleteE", "photoE", multipleTeamSport);
+            Team athleteF = new Team(6,"athleteF", "photoF", multipleTeamSport);
             ICollection<Encounter> competitions = CreateCompetitions(athleteD, athleteE,athleteF,multipleTeamSport);
             matchesService.Setup(r => r.GetAllMatches("Archery")).Returns(competitions);
 
@@ -104,6 +104,23 @@ namespace ObligatorioDA2.Services.Tests
             competitionED.Result = resultED;
             competitionEDF.Result = resultEDF;
             return new List<Encounter>() { competitiomDEF, competitionED, competitionEDF };
+        }
+
+        [TestMethod]
+        public void ArcheryTableTest() {
+            List < Tuple<int, string, int> > positions = serviceToTest.GetScoreTable("Archery").ToList();
+            //ids.
+            Assert.AreEqual(positions[0].Item1, 5);
+            Assert.AreEqual(positions[1].Item1, 4);
+            Assert.AreEqual(positions[2].Item1, 6);
+            //names.
+            Assert.AreEqual(positions[0].Item2, "athleteD");
+            Assert.AreEqual(positions[1].Item2, "athleteE");
+            Assert.AreEqual(positions[2].Item2, "athleteF");
+            //points.
+            Assert.AreEqual(positions[0].Item3, 6);
+            Assert.AreEqual(positions[1].Item3, 5);
+            Assert.AreEqual(positions[2].Item3, 4);
         }
     }
 }
