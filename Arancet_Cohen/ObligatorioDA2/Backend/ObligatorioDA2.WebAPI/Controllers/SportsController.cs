@@ -231,5 +231,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
             return internalError;
         }
+
+        public IActionResult CalculateSportTable(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
