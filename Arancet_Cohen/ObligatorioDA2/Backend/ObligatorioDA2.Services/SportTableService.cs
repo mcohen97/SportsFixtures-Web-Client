@@ -1,4 +1,5 @@
-﻿using ObligatorioDA2.Data.Repositories.Interfaces;
+﻿using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,11 @@ namespace ObligatorioDA2.Services
             sportsStorage = sportsRepo;
             teamsStorage = teamsRepo;
             matchesService = service;
+        }
+
+        public ICollection<Tuple<Team, int>> GetScoreTable(string sportName)
+        {
+            throw new NotImplementedException();
         }
     }
 }
