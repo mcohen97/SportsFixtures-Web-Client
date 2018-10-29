@@ -216,6 +216,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
+        [HttpGet("{sportName}/table")]
         public IActionResult CalculateSportTable(string sportName)
         {
             IActionResult result;
