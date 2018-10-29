@@ -201,7 +201,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
 
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
-        public void CompetitionWithMoreThanTwoTeamSportTest()
+        public void MatchWithMoreThanTwoTeamSportTest()
         {
             sport = new Sport("Golf", false);
             match = new Match(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
@@ -223,9 +223,9 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        public void SetResultTest() {
+        public void SetMatchResultTest() {
             Result fakeResult = GetFakeResult();
-            match.SetResult(fakeResult);
+            match.Result=fakeResult;
             Assert.IsTrue(match.HasResult());
             Assert.IsNotNull(match.Result);
         }
@@ -233,7 +233,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         [TestMethod]
         [ExpectedException(typeof(InvalidMatchDataException))]
         public void SetNullResultTest() {
-            match.SetResult(null);
+            match.Result=null;
         }
 
         [TestMethod]
@@ -241,7 +241,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         public void TeamInResultNotInMatchTest() {
             Result fakeResult = GetFakeResult();
             match = new Match(3, new List<Team>() { teamA, teamC }, date, sport);
-            match.SetResult(fakeResult);
+            match.Result=fakeResult;
         }
 
         [TestMethod]
@@ -249,7 +249,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         public void PositionsTeamsCountMismatchTest() {
             Result fakeResult = GetFakeResult();
             fakeResult.Add(teamC, 5);
-            match.SetResult(fakeResult);
+            match.Result=fakeResult;
         }
 
         [TestMethod]
@@ -259,7 +259,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
             Result draw = new Result();
             draw.Add(teamA, 1);
             draw.Add(teamB, 4);
-            match.SetResult(draw);
+            match.Result=draw;
         }
 
         [TestMethod]
@@ -270,7 +270,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
             match = new Competition(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
             Result fakeResult = GetFakeResult();
             fakeResult.Add(teamC, 1);
-            match.SetResult(fakeResult);
+            match.Result=fakeResult;
         }
 
         [TestMethod]
@@ -279,7 +279,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
             Result draw = new Result();
             draw.Add(teamA, 1);
             draw.Add(teamB, 1);
-            match.SetResult(draw);
+            match.Result=draw;
             Assert.AreEqual(match.Result.GetPositions().Count, 2);
         }
 

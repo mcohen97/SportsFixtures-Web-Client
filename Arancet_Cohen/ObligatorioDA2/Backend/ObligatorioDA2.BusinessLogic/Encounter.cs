@@ -128,7 +128,7 @@ namespace ObligatorioDA2.BusinessLogic
         {
             return Result != null;
         }
-        public void SetResult(Result aResult)
+        private void SetResult(Result aResult)
         {
             if (aResult == null) {
                 throw new InvalidMatchDataException("Result can't be null");

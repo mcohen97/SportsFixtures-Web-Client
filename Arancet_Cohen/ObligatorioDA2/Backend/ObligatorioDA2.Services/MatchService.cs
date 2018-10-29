@@ -166,7 +166,7 @@ namespace ObligatorioDA2.Services
         {
             Result result = LoadResult(teamsPositions);
             Encounter retrieved = matchesStorage.Get(id);
-            retrieved.SetResult(result);
+            retrieved.Result=result;
             matchesStorage.Modify(retrieved);
         }
 
