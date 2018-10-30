@@ -25,10 +25,11 @@ namespace ObligatorioDA2.WebAPI.Models
             MatchModelOut converted = new MatchModelOut()
             {
                 Id = encounter.Id,
+                SportName = encounter.Sport.Name,
                 TeamsIds = encounter.GetParticipants().Select(p => p.Id).ToList(),
                 Date = encounter.Date,
-                SportName = encounter.Sport.Name,
                 CommentsIds = encounter.GetAllCommentaries().Select(c => c.Id).ToList(),
+                HasResult = encounter.HasResult()
             };
             if (encounter.HasResult()) {
                 List<Tuple<Team, int>> standings = encounter.Result.GetPositions().ToList();
@@ -49,7 +50,8 @@ namespace ObligatorioDA2.WebAPI.Models
                 TeamsIds = encounter.GetParticipants().Select(p => p.Id).ToList(),
                 Date = encounter.Date,
                 SportName = encounter.Sport.Name,
-                CommentsIds = encounter.GetAllCommentaries().Select(c => c.Id).ToList()
+                CommentsIds = encounter.GetAllCommentaries().Select(c => c.Id).ToList(),
+                HasResult = encounter.HasResult()
             };
             if (encounter.HasResult()) {
                 converted.Team_Position = encounter.Result.GetPositions()
