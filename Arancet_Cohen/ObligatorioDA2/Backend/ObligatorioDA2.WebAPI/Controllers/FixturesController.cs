@@ -12,9 +12,8 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Net;
 using System.Reflection;
 using System.IO;
-using System.Text;
-using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -38,6 +37,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult GetFixtureAlgorithms()
         {
             string algorithmsPath = fixtureConfig.Value.DllPath;        
@@ -54,6 +54,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("{sportName}")]
+        [Authorize]
         public IActionResult CreateFixture(string sportName, FixtureModelIn input)
         {
             IActionResult result;
