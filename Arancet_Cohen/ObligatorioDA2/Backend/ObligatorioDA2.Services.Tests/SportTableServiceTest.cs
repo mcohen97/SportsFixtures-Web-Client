@@ -88,6 +88,7 @@ namespace ObligatorioDA2.Services.Tests
             Encounter competitiomDEF = new Competition(new List<Team>() { teamD, teamE, teamF }, DateTime.Now, played);
             Encounter competitionED = new Competition(new List<Team>() { teamE, teamD }, DateTime.Now, played);
             Encounter competitionEDF = new Competition(new List<Team>() { teamE, teamD,teamF }, DateTime.Now, played);
+            Encounter noResultCompetition = new Competition(new List<Team>() { teamD, teamE, teamF }, DateTime.Now, played);
             //Create results.
             Result resultDEF = new Result();
             resultDEF.Add(teamD, 2);
@@ -104,7 +105,7 @@ namespace ObligatorioDA2.Services.Tests
             competitiomDEF.Result = resultDEF;
             competitionED.Result = resultED;
             competitionEDF.Result = resultEDF;
-            return new List<Encounter>() { competitiomDEF, competitionED, competitionEDF };
+            return new List<Encounter>() { competitiomDEF, competitionED, competitionEDF, noResultCompetition };
         }
 
         [TestMethod]
