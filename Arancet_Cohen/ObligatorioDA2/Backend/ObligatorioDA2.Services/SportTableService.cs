@@ -42,19 +42,26 @@ namespace ObligatorioDA2.Services
         {
             Dictionary<Team, int> table = sportTeams.ToDictionary(item => item, item => 0);
             foreach (Encounter game in teamsEncounters){
-                List<Tuple<Team, int>> positions = game.Result.GetPositions().ToList();
-                positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
-
-                table[positions[0].Item1] += 3;
-                table[positions[1].Item1] += 2;
-                if (positions.Count > 2)
-                {
-                    table[positions[2].Item1] += 1;
+                if (game.HasResult()) {
+                    AddCompetitionPoints(ref table,game);
                 }
             }
             List<Tuple<Team, int>> assorted = table.Keys.Select(t => new Tuple<Team, int>(t, table[t])).ToList();
             assorted.Sort((x, y) => y.Item2.CompareTo(x.Item2));
             return assorted;
+        }
+
+        private void AddCompetitionPoints(ref Dictionary<Team, int> table,Encounter game)
+        {
+            List<Tuple<Team, int>> positions = game.Result.GetPositions().ToList();
+            positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+
+            table[positions[0].Item1] += 3;
+            table[positions[1].Item1] += 2;
+            if (positions.Count > 2)
+            {
+                table[positions[2].Item1] += 1;
+            }
         }
 
         private ICollection<Tuple<Team, int>> CalculateMatchesTable(ICollection<Team> sportTeams, ICollection<Encounter> teamsEncounters)
@@ -62,17 +69,8 @@ namespace ObligatorioDA2.Services
             Dictionary<Team, int> table = sportTeams.ToDictionary(item => item, item => 0);
             foreach (Encounter game in teamsEncounters)
             {
-                List<Tuple<Team, int>> positions = game.Result.GetPositions().ToList();
-                positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
-
-                if (positions[0].Item2 == positions[1].Item2)
-                {
-                    table[positions[0].Item1] += 1;
-                    table[positions[1].Item1] += 1;
-                }
-                else 
-                {
-                    table[positions[0].Item1] += 3;
+                if (game.HasResult()) {
+                    AddMatchPoints(ref table,game);
                 }
             }
             List<Tuple<Team, int>> assorted = table.Keys.Select(t => new Tuple<Team, int>(t, table[t])).ToList();
@@ -80,5 +78,20 @@ namespace ObligatorioDA2.Services
             return assorted;
         }
 
+        private void AddMatchPoints(ref Dictionary<Team, int> table, Encounter game)
+        {
+            List<Tuple<Team, int>> positions = game.Result.GetPositions().ToList();
+            positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+
+            if (positions[0].Item2 == positions[1].Item2)
+            {
+                table[positions[0].Item1] += 1;
+                table[positions[1].Item1] += 1;
+            }
+            else
+            {
+                table[positions[0].Item1] += 3;
+            }
+        }
     }
 }
