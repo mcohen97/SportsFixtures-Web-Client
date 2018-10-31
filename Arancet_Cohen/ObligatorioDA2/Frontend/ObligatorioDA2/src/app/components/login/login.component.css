@@ -11,6 +11,10 @@
     margin: 10px auto 10px auto;
 }
 
+.login-card-title{
+    color: rgb(20, 140, 60);
+}
+
 .form-input{
     width: 100%;
 }
@@ -19,5 +23,6 @@
     margin-left: auto;
     margin-right: auto;
     margin-top: 10px;
+    margin-bottom: 10px;
 
 }
