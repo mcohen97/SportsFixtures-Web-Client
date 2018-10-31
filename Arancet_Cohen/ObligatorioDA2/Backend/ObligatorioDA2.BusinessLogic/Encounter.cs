@@ -128,7 +128,7 @@ namespace ObligatorioDA2.BusinessLogic
         {
             return Result != null;
         }
-        public void SetResult(Result aResult)
+        private void SetResult(Result aResult)
         {
             if (aResult == null) {
                 throw new InvalidMatchDataException("Result can't be null");
@@ -141,7 +141,9 @@ namespace ObligatorioDA2.BusinessLogic
                 throw new InvalidMatchDataException("The result can't have gap positions");
             }
             SpecificResultValidation(aResult);
-            result = aResult;
+
+            //result = aResult;
+            result =SortResult(aResult);
         }
 
         private bool ResultContainsTheTeams(Result aResult)
@@ -162,6 +164,16 @@ namespace ObligatorioDA2.BusinessLogic
                 positions[standing.Item2-1] = true;
             }
             return !positions.Any(p => !p);
+        }
+        private Result SortResult(Result aResult)
+        {
+            List<Tuple<Team,int>>positions =aResult.GetPositions().ToList();
+            positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+            Result sorted = new Result();
+            foreach (Tuple<Team, int> t in positions) {
+                sorted.Add(t.Item1, t.Item2);
+            }
+            return sorted;
         }
         protected virtual void SpecificResultValidation(Result aResult) { }
     }

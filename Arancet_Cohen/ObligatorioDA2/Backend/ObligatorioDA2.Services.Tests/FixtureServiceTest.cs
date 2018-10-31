@@ -11,7 +11,6 @@ using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using System.IO;
 using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 
 namespace ObligatorioDA2.Services.Tests

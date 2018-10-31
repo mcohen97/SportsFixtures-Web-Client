@@ -43,7 +43,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 res.Add(t, pos);
                 pos++;
             }
-            testMatch.SetResult(res);
+            testMatch.Result=res;
         }
 
         [TestMethod]

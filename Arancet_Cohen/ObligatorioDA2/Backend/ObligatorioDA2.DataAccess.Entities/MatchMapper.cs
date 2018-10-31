@@ -50,7 +50,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             Encounter created = factory.CreateEncounter(aMatch.Id,teams,date, sport, comments);
             if (aMatch.HasResult) {
                 Result matchResult = ToResults(playingTeams);
-                created.SetResult(matchResult);
+                created.Result=matchResult;
             }
             return created;
         }

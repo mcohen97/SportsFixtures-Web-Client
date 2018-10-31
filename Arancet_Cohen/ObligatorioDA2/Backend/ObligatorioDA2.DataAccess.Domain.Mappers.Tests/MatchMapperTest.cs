@@ -86,7 +86,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void MatchToEntityWithResultTest()
         {
             Result matchResult = GetFakeResult();
-            match.SetResult(matchResult);
+            match.Result=matchResult;
             MatchEntity converted = testMapper.ToEntity(match);
             Assert.IsTrue(converted.HasResult);
         }
@@ -95,7 +95,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void MatchToEntityResultsTest()
         {
             Result matchResult = GetFakeResult();
-            match.SetResult(matchResult);
+            match.Result=matchResult;
             ICollection<MatchTeam> teams = testMapper.ConvertParticipants(match);
             Assert.IsTrue(teams.Any(t => t.Position == 1));
             Assert.IsTrue(teams.Any(t => t.Position == 2));
