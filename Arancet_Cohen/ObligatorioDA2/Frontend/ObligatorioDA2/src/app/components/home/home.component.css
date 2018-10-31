@@ -52,3 +52,12 @@
     margin-left:10px;
     margin-right: 10px;
 }
+
+.logged-user{
+    color: rgb(20, 140, 60);
+    font-size: 16px;
+    margin-left:auto;
+    vertical-align: middle;
+    text-align: top;
+}
+

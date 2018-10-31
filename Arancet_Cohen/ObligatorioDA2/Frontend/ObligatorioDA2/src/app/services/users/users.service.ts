@@ -25,6 +25,18 @@ export class UsersService {
             catchError(this.handleError)
         ); 
     }
+
+    getAllUsers():Observable<Array<User>>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.get(this.WEB_API_URL, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
     
     private handleError(error: Response) { 
         console.error(error.status); 

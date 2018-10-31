@@ -31,9 +31,7 @@ export class LoginComponent {
         const username = target.querySelector('#username').value;
         const password = target.querySelector('#password').value;
         this.token = this.auth.authenticate(username, password);
-        this.token.pipe(
-            
-        ).subscribe(
+        this.token.subscribe(
             ((data:Token) => this.successfulLogin(data, username)),
             ((error:any) => this.handleError(error))
         )

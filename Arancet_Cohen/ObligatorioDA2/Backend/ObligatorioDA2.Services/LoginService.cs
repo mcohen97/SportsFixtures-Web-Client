@@ -22,7 +22,7 @@ namespace ObligatorioDA2.Services
             User fetched = users.Get(aUsername);
             if (!aPassword.Equals(fetched.Password))
             {
-                throw new WrongPasswordException();
+                throw new WrongPasswordException("Wrong password");
             }
             return fetched;
         }

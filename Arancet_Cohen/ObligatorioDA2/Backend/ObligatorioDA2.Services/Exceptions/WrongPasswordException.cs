@@ -8,5 +8,9 @@ namespace ObligatorioDA2.Services.Exceptions
     {
         public WrongPasswordException() {
         }
+
+        public WrongPasswordException(string message) : base(message)
+        {
+        }
     }
 }

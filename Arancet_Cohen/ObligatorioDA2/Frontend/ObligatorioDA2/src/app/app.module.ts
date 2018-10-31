@@ -49,6 +49,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { Globals } from './globals';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { UsersService } from './services/users/users.service';
+import { UsersComponent } from './components/users/users.component';
 
 @NgModule({
   declarations: [
@@ -56,13 +57,18 @@ import { UsersService } from './services/users/users.service';
     LoginComponent,
     HomeComponent,
     NotFoundComponent,
-    UserInfoComponent
+    UserInfoComponent,
+    UsersComponent
   ],
   imports: [
     RouterModule.forRoot([
       {
         path: 'login',
         component: LoginComponent
+      },
+      {
+        path:'users',
+        component:UsersComponent
       },
       {
         path: '**',
