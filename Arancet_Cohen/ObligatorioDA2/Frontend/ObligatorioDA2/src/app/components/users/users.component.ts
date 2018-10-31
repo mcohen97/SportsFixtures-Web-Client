@@ -22,8 +22,7 @@ export class UsersComponent implements OnInit {
   }
   
   ngOnInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+
   }
 
   private getUsers(){
@@ -35,7 +34,8 @@ export class UsersComponent implements OnInit {
 
   private successfulUsersGetter(users:Array<User>){
     this.dataSource = new MatTableDataSource(users);
-
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
   private handleError(error:{errorMessage:string}) {
     this.errorMessage = error.errorMessage;

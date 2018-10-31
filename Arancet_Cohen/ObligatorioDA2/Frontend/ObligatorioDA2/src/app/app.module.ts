@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import {LoginComponent} from './components/login/login.component';
 import {RouterModule} from '@angular/router';
 
+
 import {
   MatAutocompleteModule,
   MatBadgeModule,
@@ -103,6 +104,7 @@ import { UsersComponent } from './components/users/users.component';
     MatRippleModule,
     MatSelectModule,
     MatSidenavModule,
+    MatPaginatorModule,
     MatSliderModule,
     MatSlideToggleModule,
     MatSnackBarModule,
