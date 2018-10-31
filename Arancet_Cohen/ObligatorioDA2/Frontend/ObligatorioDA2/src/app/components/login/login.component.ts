@@ -44,7 +44,7 @@ export class LoginComponent {
     }
 
     private handleError(error:{errorMessage:string}) {
-        this.errorMessage = error.errorMessage;
+        this.errorMessage = "Wrong username or password";
         console.log(this.errorMessage);
         this.errorLogin = true;
     }

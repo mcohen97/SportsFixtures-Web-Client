@@ -37,6 +37,30 @@ export class UsersService {
             catchError(this.handleError)
         ); 
     }
+
+    modifyUser(user:User):Observable<Response>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.put(this.WEB_API_URL+user.username, user, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
+
+    deleteUser(username:string):Observable<Response>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.delete(this.WEB_API_URL+username, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
     
     private handleError(error: Response) { 
         console.error(error.status); 

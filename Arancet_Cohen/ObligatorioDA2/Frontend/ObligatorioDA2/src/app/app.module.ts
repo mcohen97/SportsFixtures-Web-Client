@@ -4,6 +4,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import {LoginComponent} from './components/login/login.component';
 import {RouterModule} from '@angular/router';
+import { ConfirmationDialog } from './components/confirmation-dialog/confirmation-dialog'
 
 
 import {
@@ -51,6 +52,9 @@ import { Globals } from './globals';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { UsersService } from './services/users/users.service';
 import { UsersComponent } from './components/users/users.component';
+import { UserEditDialog } from './components/users/user-edit-dialog';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { User } from './classes/user';
 
 @NgModule({
   declarations: [
@@ -59,7 +63,9 @@ import { UsersComponent } from './components/users/users.component';
     HomeComponent,
     NotFoundComponent,
     UserInfoComponent,
-    UsersComponent
+    UsersComponent,
+    UserEditDialog,
+    ConfirmationDialog
   ],
   imports: [
     RouterModule.forRoot([
@@ -115,12 +121,19 @@ import { UsersComponent } from './components/users/users.component';
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
     Globals,
     AuthService,
-    UsersService
+    UsersService,
   ],
-  bootstrap: [AppComponent]
+  entryComponents: [
+    UserEditDialog, 
+    ConfirmationDialog
+  ],
+  bootstrap: [AppComponent],
+  
 })
 export class AppModule { }

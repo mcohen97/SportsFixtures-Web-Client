@@ -7,8 +7,14 @@
 }
 
 .login-card{
-    width:50%;
+    width: 80%;
     margin: 10px auto 10px auto;
+}
+
+@media only screen and (min-width: 768px) {
+    .login-card{
+        width: 40%;
+    }
 }
 
 .login-card-title{

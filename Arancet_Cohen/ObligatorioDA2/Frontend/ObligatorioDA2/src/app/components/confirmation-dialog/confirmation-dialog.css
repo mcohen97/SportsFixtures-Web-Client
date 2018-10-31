@@ -1,0 +1,9 @@
+.dialog-input{
+    width: 100%;
+    clear:both;
+    display: block;
+}
+
+.dialog-title{
+    color: rgb(20, 140, 60);
+}

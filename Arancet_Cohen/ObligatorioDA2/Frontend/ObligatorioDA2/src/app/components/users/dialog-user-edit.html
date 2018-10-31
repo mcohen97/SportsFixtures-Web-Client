@@ -1,0 +1,16 @@
+<h1 class = "dialog-title" mat-dialog-title>User Edit: {{data.username}}</h1>
+<div mat-dialog-content>
+  <mat-form-field class = "dialog-input">
+    <input matInput  type = "text" placeholder="Name" [(ngModel)]="data.name">
+  </mat-form-field>
+  <mat-form-field class = "dialog-input">
+    <input matInput  type = "text" placeholder="Surname" [(ngModel)]="data.surname">
+  </mat-form-field>
+  <mat-form-field class = "dialog-input">
+    <input matInput  type = "text" placeholder="Email" [(ngModel)]="data.email">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Save</button>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+</div>
