@@ -55,7 +55,7 @@ namespace ObligatorioDA2.Services
             {
                 throw new ServiceException(e.Message, ErrorType.ENTITY_ALREADY_EXISTS);
             }
-            catch (EntityNotFoundException e)
+            catch (DataInaccessibleException e)
             {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
@@ -142,7 +142,7 @@ namespace ObligatorioDA2.Services
         {
             string newName = string.IsNullOrWhiteSpace(toModify.name) ? old.Name : toModify.name;
             string newSurname = string.IsNullOrWhiteSpace(toModify.surname) ? old.Surname : toModify.surname;
-            string newUsername = string.IsNullOrWhiteSpace(toModify.username) ? old.UserName : toModify.username;
+            string newUsername = old.UserName;
             string newPassword = string.IsNullOrWhiteSpace(toModify.password) ? old.Password : toModify.password;
             string newEmail = string.IsNullOrWhiteSpace(toModify.email) ? old.Email : toModify.email;
 
