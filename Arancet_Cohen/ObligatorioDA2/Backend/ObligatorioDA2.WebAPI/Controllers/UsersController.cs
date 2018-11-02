@@ -17,12 +17,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserService service;
+        private IUserService userService;
         private UserFactory factory;
+        private IImageService images;
 
 
-        public UsersController(IUserService aService) {
-            service = aService;
+        public UsersController(IUserService aService, IImageService imageService) {
+            userService = aService;
+            images = imageService;
             factory = new UserFactory();
         }
 
@@ -42,7 +44,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetAll()
         {
-            ICollection<User> users = service.GetAllUsers();
+            ICollection<User> users = userService.GetAllUsers();
             ICollection<UserModelOut> output = users.Select(u => CreateModelOut(u)).ToList();
             return Ok(output);
         }
@@ -70,13 +72,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
 
         private UserModelOut TryGetUser(string username) {
-            User queried = service.GetUser(username);
+            User queried = userService.GetUser(username);
             UserModelOut toReturn = new UserModelOut
             {
                 Name = queried.Name,
                 Surname = queried.Surname,
                 Username = queried.UserName,
-                Email = queried.Email
+                Email = queried.Email,
+                IsAdmin = queried.IsAdmin
             };
             return toReturn;
         }
@@ -119,7 +122,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
 
             User toAdd = BuildUser(user);
-            service.AddUser(toAdd);
+            userService.AddUser(toAdd);
             UserModelOut modelOut = CreateModelOut(toAdd);
             return CreatedAtRoute("GetUserById", new { username = toAdd.UserName }, modelOut);
         }
@@ -151,13 +154,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             User toModify = BuildUser(input);
             UserModelOut output = CreateModelOut(toModify);
             try
-            {
-                service.ModifyUser(toModify);
+            { 
+                userService.ModifyUser(toModify);
                 result = Ok(output);
             }
             catch (UserNotFoundException)
             {
-                service.AddUser(toModify);
+                userService.AddUser(toModify);
                 result = CreatedAtRoute("GetUserById", new { username = toModify.UserName }, output);
             }
             catch (DataInaccessibleException e) {
@@ -173,7 +176,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                service.DeleteUser(username);
+                userService.DeleteUser(username);
                 OkModelOut okMessage = new OkModelOut() { OkMessage = "The user has been deleted successfully" };
                 result = Ok(okMessage);
             }
@@ -202,14 +205,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return built;
         }
 
-        [HttpPost, Route("followed-teams")]
+        [HttpPost, Route("followed-teams/{teamId}")]
         [Authorize]
-        public IActionResult FollowTeam([FromBody] TeamModelIn aTeam)
+        public IActionResult FollowTeam(int teamId)
         {
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = FollowValidFormatTeam(aTeam);
+                result = FollowValidFormatTeam(teamId);
             }
             else
             {
@@ -218,12 +221,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult FollowValidFormatTeam(TeamModelIn aTeam)
+        private IActionResult FollowValidFormatTeam(int teamId)
         {
             IActionResult result;
             try
             {
-                result = TryFollowTeam(aTeam);
+                result = TryFollowTeam(teamId);
             }
             catch (EntityNotFoundException e1)
             {
@@ -238,13 +241,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult TryFollowTeam(TeamModelIn aTeam)
+        private IActionResult TryFollowTeam(int teamId)
         {
             IActionResult result;
             try
             {
                 string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-                service.FollowTeam(username, aTeam.Id);
+                userService.FollowTeam(username, teamId);
                 OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
                 result = Ok(okMessage);
             }
@@ -255,14 +258,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        [HttpDelete, Route("followed-teams")]
+        [HttpDelete, Route("followed-teams/{teamId}")]
         [Authorize]
-        public IActionResult UnFollowTeam(TeamModelIn aTeam)
+        public IActionResult UnFollowTeam(int teamId)
         {
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = UnFollowValidFormat(aTeam);
+                result = UnFollowValidFormat(teamId);
             }
             else
             {
@@ -271,12 +274,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult UnFollowValidFormat(TeamModelIn input)
+        private IActionResult UnFollowValidFormat(int teamId)
         {
             IActionResult result;
             try
             {
-                result = TryUnFollow(input);
+                result = TryUnFollow(teamId);
             }
             catch (EntityNotFoundException e)
             {
@@ -291,13 +294,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult TryUnFollow(TeamModelIn input)
+        private IActionResult TryUnFollow(int teamId)
         {
             IActionResult result;
             try
             {
                 string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-                service.UnFollowTeam(username, input.Id);
+                userService.UnFollowTeam(username, teamId);
                 OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
                 result = Ok(okMessage);
             }
@@ -330,7 +333,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetFollowedTeams(string username)
         {
-            ICollection<Team> followed = service.GetUserTeams(username);
+            ICollection<Team> followed = userService.GetUserTeams(username);
             ICollection<TeamModelOut> converted = followed.Select(t => CreateModelOut(t)).ToList();
             return Ok(converted);
         }
@@ -342,7 +345,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Username = added.UserName,
                 Name = added.Name,
                 Surname = added.Surname,
-                Email = added.Email
+                Email = added.Email,
+                IsAdmin = added.IsAdmin
             };
             return built;
         }
@@ -351,10 +355,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             TeamModelOut built = new TeamModelOut()
             {
-                Id= stored.Id,
-                Name= stored.Name,
+                Id = stored.Id,
+                Name = stored.Name,
                 SportName = stored.Sport.Name,
-                Photo= new byte[0]
+                Photo = images.ReadImage(stored.PhotoPath)
             };
             return built;
         }
