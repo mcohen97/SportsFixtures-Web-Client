@@ -37,7 +37,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult GetFixtureAlgorithms()
         {
             string algorithmsPath = fixtureConfig.Value.DllPath;        
@@ -54,7 +54,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("{sportName}")]
-        [Authorize]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult CreateFixture(string sportName, FixtureModelIn input)
         {
             IActionResult result;

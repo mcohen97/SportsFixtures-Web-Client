@@ -180,7 +180,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return built;
         }
 
-
         private UserDto BuildUser(UserModelIn modelIn)
         {
             UserDto built = new UserDto()
@@ -198,11 +197,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost, Route("followed-teams/{teamId}")]
         [Authorize]
         public IActionResult FollowTeam(int teamId)
-        {
-          return FollowValidFormatTeam(teamId);
-        }
-
-        private IActionResult FollowValidFormatTeam(int teamId)
         {
             IActionResult result;
             try

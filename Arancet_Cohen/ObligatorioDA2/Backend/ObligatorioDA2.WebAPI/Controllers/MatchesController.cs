@@ -98,6 +98,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(int id, MatchModelIn aMatch)
         {
             IActionResult result;
@@ -317,6 +318,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("{matchId}/result")]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult SetResult(int matchId, ResultModel resultModel)
         {
             ICollection<Tuple<int, int>> team_positions = resultModel.Team_Position
