@@ -319,7 +319,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost("{matchId}/result")]
         public IActionResult SetResult(int matchId, ResultModel resultModel)
         {
-            matchService.SetResult(matchId, resultModel.Team_Position);
+            ICollection<Tuple<int, int>> team_positions = resultModel.Team_Position
+                .Select(tp => new Tuple<int, int>(tp.TeamId, tp.Position)).ToList();
+            matchService.SetResult(matchId, team_positions);
             Encounter matchWithResult = matchService.GetMatch(matchId);
             EncounterModelOut result = factory.CreateModelOut(matchWithResult);
             return Ok(result);

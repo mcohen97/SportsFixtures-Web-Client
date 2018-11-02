@@ -7,6 +7,6 @@ namespace ObligatorioDA2.WebAPI.Models
 {
     public class CompetitionModelOut:EncounterModelOut
     {
-        public ICollection<Tuple<int, int>> Team_Position { get; set; }
+        public ICollection<StandingModelOut> Team_Position { get; set; }
     }
 }

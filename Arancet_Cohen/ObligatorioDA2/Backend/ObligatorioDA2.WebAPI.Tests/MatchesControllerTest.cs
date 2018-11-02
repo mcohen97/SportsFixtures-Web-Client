@@ -604,10 +604,10 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         private ResultModel GetFakeResult()
         {
-            ICollection<Tuple<int,int>> standings= new List<Tuple<int, int>>() {new Tuple<int, int>(3,1),
-                                                                                new Tuple<int, int>(4,2),
-                                                                                new Tuple<int, int>(1,3)
-                                                                                };
+            StandingModelIn pos1 = new StandingModelIn() { TeamId = 3, Position = 1 };
+            StandingModelIn pos2 = new StandingModelIn() { TeamId = 4, Position = 2 };
+            StandingModelIn pos3 = new StandingModelIn() { TeamId = 1, Position = 3 };
+            ICollection<StandingModelIn> standings= new List<StandingModelIn>() {pos1,pos2,pos3};
             ResultModel fake = new ResultModel() {Team_Position=standings };
             return fake;
         }

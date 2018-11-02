@@ -55,7 +55,8 @@ namespace ObligatorioDA2.WebAPI.Models
             };
             if (encounter.HasResult()) {
                 converted.Team_Position = encounter.Result.GetPositions()
-                                .Select(p => new Tuple<int, int>(p.Item1.Id, p.Item2))
+                                .Select(p => new StandingModelOut() { TeamName = p.Item1.Name, TeamId = p.Item1.Id,
+                                                                       Points= p.Item2 })
                                 .ToList();
             }
             return converted;
