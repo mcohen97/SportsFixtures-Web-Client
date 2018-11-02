@@ -117,49 +117,31 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
 
             UserDto toAdd = BuildUser(user);
-            userService.AddUser(toAdd);
-            UserModelOut modelOut = CreateModelOut(toAdd);
+            User added =userService.AddUser(toAdd);
+            UserModelOut modelOut = CreateModelOut(added);
             return CreatedAtRoute("GetUserById", new { username = toAdd.username }, modelOut);
-        }
-
-        private ErrorModelOut CreateErrorModel(Exception e)
-        {
-            return new ErrorModelOut() { ErrorMessage = e.Message };
         }
 
         [HttpPut("{username}")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult Put(string username, [FromBody] UserModelIn toModify)
+        public IActionResult Put(string username, [FromBody] UpdateUserModelIn input)
         {
             IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = ModifyValidUser(username, toModify);
-            }
-            else {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private IActionResult ModifyValidUser(string id, UserModelIn input)
-        {
-            IActionResult result;
-            UserDto toModify = BuildUser(input);
-            UserModelOut output = CreateModelOut(toModify);
+            UserDto toModify = BuildUser(username, input);
             try
-            { 
-                userService.ModifyUser(toModify);
-                result = Ok(output);
+            {
+                User modified =userService.ModifyUser(toModify);
+                result = Ok(CreateModelOut(modified));
             }
             catch (ServiceException e)
             {
                 if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
                 {
-                    userService.AddUser(toModify);
-                    result = CreatedAtRoute("GetUserById", new { username = toModify.username }, output);
+                    User added = userService.AddUser(toModify);
+                    result = CreatedAtRoute("GetUserById", new { username = toModify.username }, CreateModelOut(added));
                 }
-                else {
+                else
+                {
                     result = errors.GenerateError(e);
                 }
             }
@@ -184,6 +166,20 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
             return result;
         }
+        private UserDto BuildUser(string username,UpdateUserModelIn modelIn)
+        {
+            UserDto built = new UserDto()
+            {
+                name = modelIn.Name,
+                surname = modelIn.Surname,
+                username = username,
+                password = modelIn.Password,
+                email = modelIn.Email,
+                isAdmin = modelIn.IsAdmin
+            };
+            return built;
+        }
+
 
         private UserDto BuildUser(UserModelIn modelIn)
         {
@@ -285,28 +281,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(converted);
         }
 
-        private UserModelOut CreateModelOut(UserDto added)
+        private UserModelOut CreateModelOut(User user)
         {
             UserModelOut built = new UserModelOut()
             {
-                Username = added.username,
-                Name = added.name,
-                Surname = added.surname,
-                Email = added.email,
-                IsAdmin = added.isAdmin
-            };
-            return built;
-        }
-
-        private UserModelOut CreateModelOut(User added)
-        {
-            UserModelOut built = new UserModelOut()
-            {
-                Username = added.UserName,
-                Name = added.Name,
-                Surname = added.Surname,
-                Email = added.Email,
-                IsAdmin = added.IsAdmin
+                Username = user.UserName,
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email,
+                IsAdmin = user.IsAdmin
             };
             return built;
         }
