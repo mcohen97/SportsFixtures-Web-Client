@@ -24,10 +24,11 @@ namespace ObligatorioDA2.Services
             factory = new UserFactory();
         }
 
-        public void AddUser(UserDto userData)
+        public User AddUser(UserDto userData)
         {
             User toAdd= TryCreate(userData);
             TryAdd(toAdd);
+            return toAdd;
         }
 
         private User TryCreate(UserDto userData)
