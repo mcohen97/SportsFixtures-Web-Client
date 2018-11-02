@@ -81,8 +81,24 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void AddUserTest()
+        [ExpectedException(typeof(ServiceException))]
+        public void GetNoDataAccessTest() {
+            users.Setup(r => r.Get(It.IsAny<string>())).Throws(new DataInaccessibleException());
+            User retrieved = service.GetUser("username");
+        }
+
+
+        [TestMethod]
+        public void AddAdminTest()
         {
+            service.AddUser(dto);
+            users.Verify(r => r.Add(testUser), Times.Once);
+        }
+
+        [TestMethod]
+        public void AddFollowerTest()
+        {
+            dto.isAdmin = false;
             service.AddUser(dto);
             users.Verify(r => r.Add(testUser), Times.Once);
         }
@@ -92,6 +108,20 @@ namespace ObligatorioDA2.Services.Tests
         public void AddAlreadyExistentUserTest()
         {
             users.Setup(r => r.Add(testUser)).Throws(new UserAlreadyExistsException());
+            service.AddUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddUserNoDataAccessTest() {
+            users.Setup(r => r.Add(It.IsAny<User>())).Throws(new DataInaccessibleException());
+            service.AddUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddInvalidUserTest() {
+            dto.email = "asdads";
             service.AddUser(dto);
         }
 
@@ -108,6 +138,21 @@ namespace ObligatorioDA2.Services.Tests
             UserDto changeName = new UserDto() {username= testUser.UserName ,name = "a new name" };
             User modified = service.ModifyUser(changeName);
             Assert.AreEqual(changeName.name,modified.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void ModifyInvalidUserTest()
+        {
+            UserDto changeName = new UserDto() { username = testUser.UserName, name = "a new name", email = "asdads" };
+            service.ModifyUser(changeName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void ModifyNoDataAccessTest() {
+            users.Setup(r => r.Modify(It.IsAny<User>())).Throws(new DataInaccessibleException());
+            service.ModifyUser(dto);
         }
 
         [TestMethod]
@@ -130,6 +175,13 @@ namespace ObligatorioDA2.Services.Tests
         public void DeleteNotExistentUserTest()
         {
             users.Setup(r => r.Delete(testUser.UserName)).Throws(new UserNotFoundException());
+            service.DeleteUser(testUser.UserName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void DeleteNoDataAcessTest() {
+            users.Setup(r => r.Delete(It.IsAny<string>())).Throws(new DataInaccessibleException());
             service.DeleteUser(testUser.UserName);
         }
 
@@ -218,6 +270,14 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetUserTeamsNoDataAccessTest() {
+            users.Setup(r => r.Get(It.IsAny<string>())).Throws(new DataInaccessibleException());
+            service.GetUserTeams(testUser.UserName);
+        }
+
+
+        [TestMethod]
         public void UnfollowTeamTest()
         {
             Team fake = GetFakeTeam();
@@ -302,5 +362,11 @@ namespace ObligatorioDA2.Services.Tests
             Assert.AreEqual(stored.Count, fakeUsers.Count);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetAllUsersNoDataAccessTest() {
+            users.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
+            service.GetAllUsers();
+        }
     }
 }
