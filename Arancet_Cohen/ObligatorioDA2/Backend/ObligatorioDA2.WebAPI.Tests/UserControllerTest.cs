@@ -29,7 +29,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             service = new Mock<IUserService>();
             controller = new UsersController(service.Object, new ImageService("aPath"));
-            input = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Password = "password", Email = "JHetfield@gmail.com" };
+            input = new UserModelIn() { Name = "name", Surname = "surname", Username = "username", Password = "password", Email = "mail@gmail.com" };
         }
 
         [TestMethod]
@@ -100,6 +100,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateValidUserTest()
         {
+            //Arrange.
+            service.Setup(us => us.AddUser(It.IsAny<UserDto>())).Returns(GetFakeUser());
+
             //Act.
             IActionResult result = controller.Post(input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
@@ -189,17 +192,17 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutModifyTest()
         {
             //Arrange.
-            var modelIn = new UserModelIn()
+            var modelIn = new UpdateUserModelIn()
             {
                 Name = "name1",
                 Surname = "surname1",
-                Username = "username",
                 Password = "password1",
                 Email = "mail@domain.com"
             };
+            service.Setup(us => us.ModifyUser(It.IsAny<UserDto>())).Returns(GetFakeUser());
 
             //Act.
-            IActionResult result = controller.Put(modelIn.Username, modelIn);
+            IActionResult result = controller.Put("username", modelIn);
             OkObjectResult okResult = result as OkObjectResult;
             UserModelOut modified = okResult.Value as UserModelOut;
 
@@ -214,15 +217,15 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutCreateTest()
         {
             //Arrange.
-            var modelIn = new UserModelIn()
+            var modelIn = new UpdateUserModelIn()
             {
                 Name = "name1",
                 Surname = "surname1",
-                Username = "username",
                 Password = "password1",
                 Email = "mail@domain.com"
             };
             service.Setup(us => us.ModifyUser(It.IsAny<UserDto>())).Throws(new ServiceException("",ErrorType.ENTITY_NOT_FOUND));
+            service.Setup(us => us.AddUser(It.IsAny<UserDto>())).Returns(GetFakeUser());
 
             //Act.
             IActionResult result = controller.Put("username", modelIn);
@@ -234,22 +237,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(added);
             Assert.AreEqual("GetUserById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
-            Assert.AreEqual(modelIn.Username, added.Username);
-        }
-
-        [TestMethod]
-        public void PutBadFormatTest()
-        {
-            var model = new UserModelIn()
-            {
-                Surname = "surname1",
-                Password = "password1",
-                Email = "mail@domain.com"
-            };
-            controller.ModelState.AddModelError("", "Error");
-            IActionResult result = controller.Put("username", model);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequest);
+            Assert.AreEqual("username", added.Username);
         }
 
         [TestMethod]
@@ -257,11 +245,10 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
 
             //Arrange.
-            UserModelIn modelIn = new UserModelIn()
+            UpdateUserModelIn modelIn = new UpdateUserModelIn()
             {
                 Name = "name1",
                 Surname = "surname1",
-                Username = "username",
                 Password = "password1",
                 Email = "mail@domain.com"
             };
