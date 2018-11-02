@@ -2,9 +2,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using DataAccess;
-using Microsoft.EntityFrameworkCore;
-using ObligatorioDA2.Data.Entities;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
 using System;
@@ -12,10 +9,10 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -60,7 +57,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetNotExistentTest()
         {
             //Arrange.
-            Exception toThrow = new UserNotFoundException();
+            Exception internalEx = new UserNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             service.Setup(us => us.GetUser(It.IsAny<string>())).Throws(toThrow);
 
             //Act.
@@ -81,7 +79,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetNoDataAccessTest() {
             
              //Arrange.
-             Exception toThrow = new DataInaccessibleException();
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             service.Setup(us => us.GetUser(It.IsAny<string>())).Throws(toThrow);
 
 
@@ -107,7 +106,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             UserModelOut modelOut = createdResult.Value as UserModelOut;
 
             //Assert.
-            service.Verify(us => us.AddUser(It.IsAny<User>()), Times.Once);
+            service.Verify(us => us.AddUser(It.IsAny<UserDto>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -133,7 +132,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
-            service.Verify(us => us.AddUser(It.IsAny<User>()), Times.Never);
+            service.Verify(us => us.AddUser(It.IsAny<UserDto>()), Times.Never);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
@@ -143,8 +142,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateAlreadyExistentUserTest()
         {
             //Arrange.
-            Exception toThrow = new UserAlreadyExistsException();
-            service.Setup(us => us.AddUser(It.IsAny<User>())).Throws(toThrow);
+            Exception internalEx = new UserAlreadyExistsException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_ALREADY_EXISTS);
+            service.Setup(us => us.AddUser(It.IsAny<UserDto>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Post(input);
@@ -152,7 +152,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
-            service.Verify(us => us.AddUser(It.IsAny<User>()), Times.Once);
+            service.Verify(us => us.AddUser(It.IsAny<UserDto>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
@@ -165,8 +165,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             
              //Arrange.
-             Exception toThrow = new DataInaccessibleException();
-             service.Setup(us => us.AddUser(It.IsAny<User>())).Throws(toThrow);
+             Exception internalEx = new DataInaccessibleException();
+             Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
+             service.Setup(us => us.AddUser(It.IsAny<UserDto>())).Throws(toThrow);
 
 
             //Act.
@@ -203,7 +204,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             UserModelOut modified = okResult.Value as UserModelOut;
 
             //Assert.
-            service.Verify(us => us.ModifyUser(It.IsAny<User>()), Times.Once);
+            service.Verify(us => us.ModifyUser(It.IsAny<UserDto>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(modified);
@@ -221,7 +222,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Password = "password1",
                 Email = "mail@domain.com"
             };
-            service.Setup(us => us.ModifyUser(It.IsAny<User>())).Throws(new UserNotFoundException());
+            service.Setup(us => us.ModifyUser(It.IsAny<UserDto>())).Throws(new ServiceException("",ErrorType.ENTITY_NOT_FOUND));
 
             //Act.
             IActionResult result = controller.Put("username", modelIn);
@@ -264,8 +265,9 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Password = "password1",
                 Email = "mail@domain.com"
             };
-            Exception toThrow = new DataInaccessibleException();
-            service.Setup(us => us.ModifyUser(It.IsAny<User>())).Throws(toThrow);
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
+            service.Setup(us => us.ModifyUser(It.IsAny<UserDto>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Put("username", modelIn);
@@ -298,7 +300,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void DeleteNotExistentTest()
         {
             //Arrange.
-            Exception toThrow = new UserNotFoundException();
+            Exception internalEx = new UserNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             service.Setup(ms => ms.DeleteUser("notExistent")).Throws(toThrow);
 
             //Act.
@@ -316,9 +319,10 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void DeleteUserNoDataAccessTest()
-        { 
+        {
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             service.Setup(us => us.DeleteUser(It.IsAny<string>())).Throws(toThrow);
 
             //Act.
@@ -360,7 +364,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetAllUsersNoDataAccessTest()
         {
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             service.Setup(us => us.GetAllUsers()).Throws(toThrow);
 
             //Act.
@@ -427,7 +432,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
 
-            Exception toThrow = new TeamNotFoundException();
+            Exception internalEx = new TeamNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message,ErrorType.ENTITY_NOT_FOUND);
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
             //Act.
@@ -445,31 +451,13 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void FollowTeamInvalidFormatTest() {
-
-            //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
-            controller.ModelState.AddModelError("", "Error");
-
-            //Act.
-            IActionResult result =controller.FollowTeam(3);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
-
-            //Assert.
-            service.Verify(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400,badRequest.StatusCode);
-        }
-
-        [TestMethod]
         public void FollowTeamNoDataAccessTest()
         {
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
-            Exception toThrow = new DataInaccessibleException();
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
 
@@ -513,7 +501,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
             TeamModelIn input = GetTeamModelIn();
-            Exception toThrow = new TeamNotFoundException();
+            Exception internalEx = new TeamNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
             //Act.
@@ -554,33 +543,15 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void UnfollowInvalidTeamTest() {
-            //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
-            controller.ModelState.AddModelError("", "Error");
-            TeamModelIn input = new TeamModelIn() { };
-
-            //Act.
-            IActionResult result = controller.UnFollowTeam(3);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
-
-            //Assert.
-            service.Verify(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400, badRequest.StatusCode);
-        }
-
-        [TestMethod]
         public void UnfollowTeamNoDataAccessTest()
         {
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
-            Exception toThrow = new DataInaccessibleException();
-             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
-             TeamModelIn input = GetTeamModelIn();
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
+            service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
+            TeamModelIn input = GetTeamModelIn();
 
             //Act.
             IActionResult result = controller.UnFollowTeam(3);
@@ -620,19 +591,20 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetFollowedTeamsNotExistingUserTest() {
             //Arrange.
-            Exception toThrow = new UserNotFoundException();
+            Exception internalEx = new UserNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.GetFollowedTeams("username");
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            NotFoundObjectResult badRequest = result as NotFoundObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
             service.Verify(us => us.GetUserTeams("username"), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.AreEqual(404, badRequest.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
 
@@ -642,7 +614,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetFollowedTeamsNoDataAccessTest()
         {
              //Arrange.
-             Exception toThrow = new DataInaccessibleException();
+             Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Throws(toThrow);
 
             //Act.

@@ -9,6 +9,7 @@ using ObligatorioDA2.Services.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using ObligatorioDA2.BusinessLogic.Exceptions;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -19,6 +20,7 @@ namespace ObligatorioDA2.Services.Tests
         private Mock<ITeamRepository> teams;
         private IUserService service;
         private User testUser;
+        private UserDto dto;
         private Team toFollow;
 
         [TestInitialize]
@@ -30,6 +32,15 @@ namespace ObligatorioDA2.Services.Tests
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
+            dto = new UserDto()
+            {
+                name = testUser.Name,
+                surname = testUser.Surname,
+                username = testUser.UserName,
+                password = testUser.Password,
+                email = testUser.Email,
+                isAdmin = testUser.IsAdmin
+            };
             toFollow = GetFakeTeam();
         }
 
@@ -63,7 +74,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void GetNotExistsTest()
         {
             User retrieved = service.GetUser("JohnLennon");
@@ -72,31 +83,31 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void AddUserTest()
         {
-            service.AddUser(testUser);
+            service.AddUser(dto);
             users.Verify(r => r.Add(testUser), Times.Once);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserAlreadyExistsException))]
+        [ExpectedException(typeof(ServiceException))]
         public void AddAlreadyExistentUserTest()
         {
             users.Setup(r => r.Add(testUser)).Throws(new UserAlreadyExistsException());
-            service.AddUser(testUser);
+            service.AddUser(dto);
         }
 
         [TestMethod]
         public void ModifyUserTest()
         {
-            service.ModifyUser(testUser);
+            service.ModifyUser(dto);
             users.Verify(r => r.Modify(testUser), Times.Once);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void ModifyNotExistentTest()
         {
             users.Setup(r => r.Modify(testUser)).Throws(new UserNotFoundException());
-            service.ModifyUser(testUser);
+            service.ModifyUser(dto);
         }
 
         [TestMethod]
@@ -107,7 +118,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void DeleteNotExistentUserTest()
         {
             users.Setup(r => r.Delete(testUser.UserName)).Throws(new UserNotFoundException());
@@ -191,7 +202,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void GetNotExistentUserTeams()
         {
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
