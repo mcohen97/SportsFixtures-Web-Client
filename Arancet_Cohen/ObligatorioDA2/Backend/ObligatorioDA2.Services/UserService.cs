@@ -107,7 +107,7 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public void ModifyUser(UserDto toModify)
+        public User ModifyUser(UserDto toModify)
         {
             User old = GetUser(toModify.username);
             User updated = TryUpdate(old, toModify);
@@ -121,6 +121,7 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
+            return updated;
        }
 
         private User TryUpdate(User old, UserDto toModify)
