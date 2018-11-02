@@ -61,7 +61,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             EncounterModelOut modelOut = factory.CreateModelOut(testMatch);
             MatchModelOut match = modelOut as MatchModelOut;
             Assert.IsNotNull(match);
-            Assert.IsFalse(match.HasResult);
+            Assert.IsTrue(match.HasResult);
             Assert.IsTrue(match.HasWinner);
         }
     }

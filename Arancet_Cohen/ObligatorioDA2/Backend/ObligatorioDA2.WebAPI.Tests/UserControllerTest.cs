@@ -15,6 +15,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.Services;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -30,7 +31,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
 
             service = new Mock<IUserService>();
-            controller = new UsersController(service.Object);
+            controller = new UsersController(service.Object, new ImageService("aPath"));
             input = new UserModelIn() { Name = "James", Surname = "Hetfield", Username = "JHetfield63", Password = "password", Email = "JHetfield@gmail.com" };
         }
 
@@ -382,10 +383,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange.
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
-            TeamModelIn input = GetTeamModelIn();
 
             //Act.
-            IActionResult result = controller.FollowTeam(input);
+            IActionResult result = controller.FollowTeam(3);
             OkObjectResult okResult = result as OkObjectResult;
             OkModelOut okMessage = okResult.Value as OkModelOut;
 
@@ -405,10 +405,9 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             Exception toThrow = new TeamAlreadyFollowedException();
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
-            TeamModelIn input = GetTeamModelIn();
 
             //Act.
-            IActionResult result = controller.FollowTeam(input);
+            IActionResult result = controller.FollowTeam(3);
             BadRequestObjectResult notFound = result as BadRequestObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
@@ -430,10 +429,9 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             Exception toThrow = new TeamNotFoundException();
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
-            TeamModelIn input = GetTeamModelIn();
 
             //Act.
-            IActionResult result = controller.FollowTeam(input);
+            IActionResult result = controller.FollowTeam(3);
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
@@ -453,10 +451,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
             controller.ModelState.AddModelError("", "Error");
-            TeamModelIn input = new TeamModelIn() { };
 
             //Act.
-            IActionResult result =controller.FollowTeam(input);
+            IActionResult result =controller.FollowTeam(3);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
@@ -473,12 +470,11 @@ namespace ObligatorioDA2.WebAPI.Tests
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
             Exception toThrow = new DataInaccessibleException();
-            TeamModelIn input = GetTeamModelIn();
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
 
             //Act.
-            IActionResult result = controller.FollowTeam(input);
+            IActionResult result = controller.FollowTeam(3);
             ObjectResult noData = result as ObjectResult;
             ErrorModelOut error = noData.Value as ErrorModelOut;
 
@@ -499,7 +495,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             TeamModelIn input = GetTeamModelIn();
 
             //Act.
-            IActionResult result = controller.UnFollowTeam(input);
+            IActionResult result = controller.UnFollowTeam(3);
             OkObjectResult okResult = result as OkObjectResult;
             OkModelOut okModel = okResult.Value as OkModelOut;
 
@@ -521,7 +517,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
             //Act.
-            IActionResult result = controller.UnFollowTeam(input);
+            IActionResult result = controller.UnFollowTeam(3);
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
@@ -544,7 +540,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
             //Act.
-            IActionResult result = controller.UnFollowTeam(input);
+            IActionResult result = controller.UnFollowTeam(3);
             NotFoundObjectResult notFound = result as NotFoundObjectResult;
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
@@ -566,7 +562,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             TeamModelIn input = new TeamModelIn() { };
 
             //Act.
-            IActionResult result = controller.UnFollowTeam(input);
+            IActionResult result = controller.UnFollowTeam(3);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
             //Assert.
@@ -587,7 +583,7 @@ namespace ObligatorioDA2.WebAPI.Tests
              TeamModelIn input = GetTeamModelIn();
 
             //Act.
-            IActionResult result = controller.UnFollowTeam(input);
+            IActionResult result = controller.UnFollowTeam(3);
             ObjectResult notData = result as ObjectResult;
             ErrorModelOut error = notData.Value as ErrorModelOut;
 
