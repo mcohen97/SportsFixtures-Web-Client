@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace ObligatorioDA2.WebAPI.Models
 {
-    public class ResultModel
+    public class StandingModelIn
     {
-        public ICollection<StandingModelIn> Team_Position {get;set;}
+        public int TeamId { get; set; }
+        public int Position { get; set; }
     }
 }
