@@ -15,13 +15,13 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class AuthControllerTest
     {
         private AuthenticationController controllerToTest;
-        private Mock<ILoginService> loginService;
+        private Mock<IAuthenticationService> loginService;
         private Mock<ILoggerService> logger;
         private Mock<User> testUser;
 
         [TestInitialize]
         public void StartUp() {
-            loginService = new Mock<ILoginService>();
+            loginService = new Mock<IAuthenticationService>();
             logger = new Mock<ILoggerService>();
             UserId identity = new UserId() { Name= "aName", Surname="aUsername", UserName="aUsername",
                 Password= "aPassword", Email= "anEmail@aDomain.com" };

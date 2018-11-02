@@ -49,7 +49,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ITeamRepository ,TeamRepository>();
             services.AddScoped<ILogInfoRepository, LogInfoRepository>();
             services.AddScoped<ILoggerService, LoggerService>();
-            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMatchRepository, MatchRepository>();
             services.AddScoped<ISportRepository, SportRepository>();

@@ -13,14 +13,14 @@ namespace ObligatorioDA2.Services.Tests
     {
 
         private Mock<IUserRepository> repo;
-        private LoginService logger;
+        private AuthenticationService logger;
         private User user;
 
         [TestInitialize]
         public void SetUp()
         {
             repo = new Mock<IUserRepository>();
-            logger = new LoginService(repo.Object);
+            logger = new AuthenticationService(repo.Object);
             UserId id = new UserId
             {
                 Name = "aName",

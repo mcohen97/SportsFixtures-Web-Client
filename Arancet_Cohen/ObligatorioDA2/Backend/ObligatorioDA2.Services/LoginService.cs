@@ -8,11 +8,11 @@ using System.Text;
 
 namespace ObligatorioDA2.Services
 {
-    public class LoginService : ILoginService
+    public class AuthenticationService : IAuthenticationService
     {
         private IUserRepository users;
 
-        public LoginService(IUserRepository aRepo)
+        public AuthenticationService(IUserRepository aRepo)
         {
             users = aRepo;
         }
