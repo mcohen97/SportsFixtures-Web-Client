@@ -99,7 +99,15 @@ namespace ObligatorioDA2.Services.Tests
         public void ModifyUserTest()
         {
             service.ModifyUser(dto);
+            users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Once);
+        }
+
+        [TestMethod]
+        public void ModifyNullFieldsTest() {
+            UserDto changeName = new UserDto() {username= testUser.UserName ,name = "a new name" };
+            User modified = service.ModifyUser(changeName);
+            Assert.AreEqual(changeName.name,modified.Name);
         }
 
         [TestMethod]
