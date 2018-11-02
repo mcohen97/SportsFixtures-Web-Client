@@ -195,12 +195,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);
         }
 
-        private void DeleteImage(string path) {
-            if (System.IO.File.Exists(path))
-            {
-                System.IO.File.Delete(path);
-            }
-        }
 
         [HttpDelete("{sportName}/{teamName}")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
