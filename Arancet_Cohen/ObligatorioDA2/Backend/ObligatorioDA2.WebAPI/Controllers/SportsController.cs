@@ -175,7 +175,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 sports.Modify(toAdd);
-                UserModelOut modelOut = new UserModelOut()
+                SportModelOut modelOut = new SportModelOut()
                 {
                     Name = modelIn.Name
                 };
