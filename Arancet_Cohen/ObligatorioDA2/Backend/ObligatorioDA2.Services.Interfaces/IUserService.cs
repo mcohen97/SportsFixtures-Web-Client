@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.Services.Interfaces
 {
     public interface IUserService
     {
         User GetUser(string username);
-        void AddUser(User testUser);
-        void ModifyUser(User testUser);
+        User AddUser(UserDto testUser);
+        User ModifyUser(UserDto testUser);
         void DeleteUser(string userName);
         void FollowTeam(string username, Team toFollow);
         void FollowTeam(string userName, int idTeam);

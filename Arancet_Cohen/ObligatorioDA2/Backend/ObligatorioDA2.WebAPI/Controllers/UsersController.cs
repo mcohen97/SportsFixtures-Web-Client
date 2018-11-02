@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using System.Net;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -20,12 +21,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IUserService userService;
         private UserFactory factory;
         private IImageService images;
+        private ErrorActionResultFactory errors;
 
 
         public UsersController(IUserService aService, IImageService imageService) {
             userService = aService;
             images = imageService;
             factory = new UserFactory();
+            errors = new ErrorActionResultFactory(this);
         }
 
         [HttpGet]
@@ -36,8 +39,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try {
                 result = TryGetAll();
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -59,17 +62,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 UserModelOut toReturn = TryGetUser(username);
                 result = Ok(toReturn);
             }
-            catch (UserNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = new NotFoundObjectResult(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
             return result;
         }
-
 
         private UserModelOut TryGetUser(string username) {
             User queried = userService.GetUser(username);
@@ -107,64 +105,45 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryAddUser(user);
             }
-            catch (UserAlreadyExistsException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = BadRequest(error);
+                result = errors.GenerateError(e);
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
+
             return result;
         }
 
         private IActionResult TryAddUser(UserModelIn user)
         {
 
-            User toAdd = BuildUser(user);
-            userService.AddUser(toAdd);
-            UserModelOut modelOut = CreateModelOut(toAdd);
-            return CreatedAtRoute("GetUserById", new { username = toAdd.UserName }, modelOut);
+            UserDto toAdd = BuildUser(user);
+            User added =userService.AddUser(toAdd);
+            UserModelOut modelOut = CreateModelOut(added);
+            return CreatedAtRoute("GetUserById", new { username = toAdd.username }, modelOut);
         }
-
-        private ErrorModelOut CreateErrorModel(Exception e)
-        {
-            return new ErrorModelOut() { ErrorMessage = e.Message };
-        }
-
 
         [HttpPut("{username}")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult Put(string username, [FromBody] UserModelIn toModify)
+        public IActionResult Put(string username, [FromBody] UpdateUserModelIn input)
         {
             IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = ModifyValidUser(username, toModify);
-            }
-            else {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private IActionResult ModifyValidUser(string id, UserModelIn input)
-        {
-            IActionResult result;
-            User toModify = BuildUser(input);
-            UserModelOut output = CreateModelOut(toModify);
+            UserDto toModify = BuildUser(username, input);
             try
-            { 
-                userService.ModifyUser(toModify);
-                result = Ok(output);
-            }
-            catch (UserNotFoundException)
             {
-                userService.AddUser(toModify);
-                result = CreatedAtRoute("GetUserById", new { username = toModify.UserName }, output);
+                User modified =userService.ModifyUser(toModify);
+                result = Ok(CreateModelOut(modified));
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+            catch (ServiceException e)
+            {
+                if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
+                {
+                    User added = userService.AddUser(toModify);
+                    result = CreatedAtRoute("GetUserById", new { username = toModify.username }, CreateModelOut(added));
+                }
+                else
+                {
+                    result = errors.GenerateError(e);
+                }
             }
             return result;
         }
@@ -180,28 +159,39 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 OkModelOut okMessage = new OkModelOut() { OkMessage = "The user has been deleted successfully" };
                 result = Ok(okMessage);
             }
-            catch (UserNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = new NotFoundObjectResult(error);
+                result = errors.GenerateError(e);
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
+
             return result;
         }
-
-        private User BuildUser(UserModelIn modelIn)
+        private UserDto BuildUser(string username,UpdateUserModelIn modelIn)
         {
-            UserId identity = new UserId
+            UserDto built = new UserDto()
             {
-                Name = modelIn.Name,
-                Surname = modelIn.Surname,
-                UserName = modelIn.Username,
-                Password = modelIn.Password,
-                Email = modelIn.Email
+                name = modelIn.Name,
+                surname = modelIn.Surname,
+                username = username,
+                password = modelIn.Password,
+                email = modelIn.Email,
+                isAdmin = modelIn.IsAdmin
             };
-            User built = modelIn.IsAdmin ? factory.CreateAdmin(identity) : factory.CreateFollower(identity);
+            return built;
+        }
+
+
+        private UserDto BuildUser(UserModelIn modelIn)
+        {
+            UserDto built = new UserDto()
+            {
+                name = modelIn.Name,
+                surname = modelIn.Surname,
+                username = modelIn.Username,
+                password = modelIn.Password,
+                email = modelIn.Email,
+                isAdmin = modelIn.IsAdmin
+            };
             return built;
         }
 
@@ -209,16 +199,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult FollowTeam(int teamId)
         {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = FollowValidFormatTeam(teamId);
-            }
-            else
-            {
-                result = BadRequest(ModelState);
-            }
-            return result;
+          return FollowValidFormatTeam(teamId);
         }
 
         private IActionResult FollowValidFormatTeam(int teamId)
@@ -228,33 +209,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryFollowTeam(teamId);
             }
-            catch (EntityNotFoundException e1)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = CreateErrorModel(e1);
-                result = NotFound(error);
-            }
-            catch (TeamAlreadyFollowedException e2)
-            {
-                ErrorModelOut error = CreateErrorModel(e2);
-                result = BadRequest(error);
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryFollowTeam(int teamId)
         {
-            IActionResult result;
-            try
-            {
-                string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-                userService.FollowTeam(username, teamId);
-                OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
-                result = Ok(okMessage);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
-            }
+           IActionResult result;
+           string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+           userService.FollowTeam(username, teamId);
+           OkModelOut okMessage = new OkModelOut() { OkMessage = "You now follow the team" };
+           result = Ok(okMessage);
+
             return result;
         }
 
@@ -262,16 +231,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult UnFollowTeam(int teamId)
         {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = UnFollowValidFormat(teamId);
-            }
-            else
-            {
-                result = BadRequest(ModelState);
-            }
-            return result;
+            return UnFollowValidFormat(teamId);
         }
 
         private IActionResult UnFollowValidFormat(int teamId)
@@ -281,15 +241,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryUnFollow(teamId);
             }
-            catch (EntityNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = NotFound(error);
-            }
-            catch (TeamNotFollowedException e)
-            {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = NotFound(error);
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -297,17 +251,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryUnFollow(int teamId)
         {
             IActionResult result;
-            try
-            {
-                string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-                userService.UnFollowTeam(username, teamId);
-                OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
-                result = Ok(okMessage);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
-            }
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            userService.UnFollowTeam(username, teamId);
+            OkModelOut okMessage = new OkModelOut() { OkMessage = "Team unfollowed succesfully" };
+            result = Ok(okMessage);
             return result;
         }
 
@@ -320,13 +267,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGetFollowedTeams(username);
             }
-            catch (UserNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -338,15 +281,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(converted);
         }
 
-        private UserModelOut CreateModelOut(User added)
+        private UserModelOut CreateModelOut(User user)
         {
             UserModelOut built = new UserModelOut()
             {
-                Username = added.UserName,
-                Name = added.Name,
-                Surname = added.Surname,
-                Email = added.Email,
-                IsAdmin = added.IsAdmin
+                Username = user.UserName,
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email,
+                IsAdmin = user.IsAdmin
             };
             return built;
         }
@@ -362,13 +305,5 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
             return built;
         }
-
-        private IActionResult NoDataAccess(DataInaccessibleException e)
-        {
-            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
-            return internalError;
-        }
-
     }
 }
