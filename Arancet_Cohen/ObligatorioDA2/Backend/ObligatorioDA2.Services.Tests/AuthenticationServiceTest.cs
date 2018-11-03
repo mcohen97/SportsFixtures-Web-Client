@@ -92,6 +92,18 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        public void IsLoggedInTest() {
+            repo.Setup(r => r.Get("aUsername")).Returns(admin);
+            logger.SetSession("aUsername");
+            Assert.IsTrue(logger.IsLoggedIn());
+        }
+
+        [TestMethod]
+        public void IsNotLoggedInTest() {
+            Assert.IsFalse(logger.IsLoggedIn());
+        }
+
+        [TestMethod]
         public void HasAdminPermissionTest() {
             //Arrange.
             repo.Setup(r => r.Get(admin.UserName)).Returns(admin);
