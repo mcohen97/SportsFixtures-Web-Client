@@ -15,6 +15,7 @@ namespace ObligatorioDA2.Services.Tests
         private Mock<IUserRepository> repo;
         private AuthenticationService logger;
         private User admin;
+        private User follower;
 
         [TestInitialize]
         public void SetUp()
@@ -29,8 +30,8 @@ namespace ObligatorioDA2.Services.Tests
                 UserName = "aUsername",
                 Email = "anEmail@aDomain.com"
             };
-            followe
-            adminUser = new User(id, true);
+            follower = new User(id, false);
+            admin = new User(id, true);
         }
 
         [TestMethod]
@@ -101,8 +102,14 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void HasNoAdminPermissionsTest() {
-   
+        public void HasNoAdminPermissionsTest()
+        {
+            //Arrange.
+            repo.Setup(r => r.Get(admin.UserName)).Returns(follower);
+            //Act.
+            logger.SetSession(follower.UserName);
+            //Assert.
+            Assert.IsFalse(logger.HasAdminPermissions());
         }
     }
 }
