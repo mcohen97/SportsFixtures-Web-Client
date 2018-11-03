@@ -8,10 +8,10 @@ import { UsersComponent } from '../users/users.component';
     templateUrl: 'confirmation-dialog.html',
     styleUrls: ['confirmation-dialog.css']
   })
-  export class ConfirmationDialog {
+  export class ConfirmationDialogComponent {
   
     constructor(
-      public dialogRef: MatDialogRef<ConfirmationDialog>,
+      public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
       @Inject(MAT_DIALOG_DATA) public data:DialogInfo
       ) {}
   

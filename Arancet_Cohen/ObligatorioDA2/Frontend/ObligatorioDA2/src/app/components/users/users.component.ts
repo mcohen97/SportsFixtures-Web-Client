@@ -3,8 +3,10 @@ import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA
 import { User } from 'src/app/classes/user';
 import { Globals } from 'src/app/globals';
 import { UsersService } from 'src/app/services/users/users.service';
-import { UserEditDialog } from './user-edit-dialog';
-import { ConfirmationDialog, DialogInfo } from '../confirmation-dialog/confirmation-dialog';
+import { UserEditDialogComponent } from './user-edit-dialog';
+import { ConfirmationDialogComponent, DialogInfo } from '../confirmation-dialog/confirmation-dialog';
+import { UserAddDialogComponent } from './user-add-dialog/user-add-dialog.component';
+import { ErrorResponse } from 'src/app/classes/error';
 
 @Component({
   selector: 'users-list',
@@ -17,7 +19,6 @@ export class UsersComponent implements OnInit {
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
   errorMessage: string;
-  errorLoadingUsers: boolean;
   userEdited: User;
   rowEdited: User;
 
@@ -42,10 +43,8 @@ export class UsersComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  private handleError(error:{errorMessage:string}) {
-    this.errorMessage = error.errorMessage;
-    this.errorLoadingUsers = true;
-    console.log(this.errorMessage);
+  private handleError(error:ErrorResponse) {
+    this.errorMessage = error.errorMessage + " " + error.errorObject.errorMessage;
   }
   
   applyFilter(filterValue:string){
@@ -58,7 +57,7 @@ export class UsersComponent implements OnInit {
   openEditDialog(aUser:User):void{
     this.userEdited = User.getClone(aUser);
     this.rowEdited = aUser;
-    const dialogRef = this.dialog.open(UserEditDialog, {
+    const dialogRef = this.dialog.open(UserEditDialogComponent, {
       width:'500px',
       data: this.userEdited
     });
@@ -74,7 +73,7 @@ export class UsersComponent implements OnInit {
   openDeleteDialog(aUser:User):void{
     var confirmation:Boolean;
     confirmation = false;
-    const dialogRef = this.dialog.open(ConfirmationDialog, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width:'500px',
       data: {
         confirmation: confirmation,
@@ -94,6 +93,26 @@ export class UsersComponent implements OnInit {
       ((result:any) => {this.dataSource = new MatTableDataSource(this.dataSource.data.filter((u:User)=>u.username != aUser.username))}),
       ((error:any) => this.handleError(error))
     );
+  }
+
+  openAddDialog():void{
+    var user:User;
+    const dialogRef = this.dialog.open(UserAddDialogComponent, {
+      width:'500px',
+      data: {
+        data: user,
+      }
+    });
+    dialogRef.afterClosed().subscribe(
+      ((newUser:User) => {
+        this.performAdd(newUser);
+      })
+    )
+  }
+
+  performAdd(newUser:User):void{
+    this.dataSource.data.push(newUser);
+    this.dataSource._updateChangeSubscription();
   }
 }
 

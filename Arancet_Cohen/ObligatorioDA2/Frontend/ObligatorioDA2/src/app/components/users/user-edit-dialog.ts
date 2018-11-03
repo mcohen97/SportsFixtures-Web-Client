@@ -8,10 +8,10 @@ import { UsersComponent } from './users.component';
     templateUrl: 'dialog-user-edit.html',
     styleUrls: ['dialog-user-edit.css']
   })
-  export class UserEditDialog {
+  export class UserEditDialogComponent {
   
     constructor(
-      public dialogRef: MatDialogRef<UserEditDialog>,
+      public dialogRef: MatDialogRef<UserEditDialogComponent>,
       @Inject(MAT_DIALOG_DATA) public data: User) {}
   
     onNoClick(): void {

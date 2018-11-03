@@ -1,8 +1,13 @@
 <div class = "table-container">
+    <button mat-icon-button>
+        <mat-icon aria-label="Add user" (click)="openAddDialog()">add</mat-icon>
+    </button>
+    <div class = "error-message">
+      {{errorMessage}}
+    </div>
   <mat-form-field>
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
   </mat-form-field>
-
   <div class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource" matSort>
 

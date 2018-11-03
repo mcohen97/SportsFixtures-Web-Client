@@ -1,0 +1,35 @@
+<h1 class = "dialog-title" mat-dialog-title>Add new user</h1>
+<div mat-dialog-content>
+  <mat-form-field class = "dialog-input">
+    <input matInput [errorStateMatcher]="matcher" [formControl] = "usernameControl" type = "text" placeholder="Username" [(ngModel)]="data.username" (focus) = "removeError(usernameControl, 'errorMessage')">
+    <mat-error *ngIf="usernameControl.hasError('errorMessageInput')">{{userError.errorMessage}}</mat-error>
+    <mat-error *ngIf="usernameControl.hasError('usernameInput')">{{userError.Username.toString()}}</mat-error>
+    <mat-error *ngIf="usernameControl.hasError('required') && !usernameControl.hasError('usernameInput')">This field is required</mat-error>
+  </mat-form-field>
+  <mat-form-field class = "dialog-input">
+    <input matInput [errorStateMatcher]="matcher" [formControl] = "passwordControl" type = "text" placeholder="Password" [(ngModel)]="data.password" (focus) = "removeError(passwordControl, 'passwordInput')">
+    <mat-error *ngIf="passwordControl.hasError('passwordInput')">{{userError.Password.toString()}}</mat-error>
+    <mat-error *ngIf="passwordControl.hasError('required') && !passwordControl.hasError('passwordInput')">This field is required</mat-error>
+  </mat-form-field>
+  <mat-form-field class = "dialog-input">
+    <input matInput [errorStateMatcher]="matcher" [formControl] = "nameControl" type = "text" placeholder="Name" [(ngModel)]="data.name" (focus) = "removeError(nameControl, 'nameInput')">
+    <mat-error *ngIf="nameControl.hasError('nameInput')">{{userError.Name.toString()}}</mat-error>
+    <mat-error *ngIf="nameControl.hasError('required') && !nameControl.hasError('nameInput')">This field is required</mat-error>
+  </mat-form-field>
+  <mat-form-field class = "dialog-input">
+    <input matInput [errorStateMatcher]="matcher" [formControl] = "surnameControl" type = "text" placeholder="Surname" [(ngModel)]="data.surname" (focus) = "removeError(surnameControl, 'surnameInput')">
+    <mat-error *ngIf="surnameControl.hasError('surnameInput')">{{userError.Surname.toString()}}</mat-error>
+    <mat-error *ngIf="surnameControl.hasError('required') && !surnameControl.hasError('surnameInput')">This field is required</mat-error>
+  </mat-form-field>
+  <mat-form-field class = "dialog-input">
+    <input matInput [errorStateMatcher]="matcher" [formControl] = "emailControl" type = "text" placeholder="Email" [(ngModel)]="data.email" (focus) = "removeError(emailControl, 'emailInput')">
+    <mat-error *ngIf="emailControl.hasError('emailInput')">{{userError.Email.toString()}}</mat-error>
+    <mat-error *ngIf="emailControl.hasError('required') && !emailControl.hasError('emailInput')">This field is required</mat-error>
+    <mat-error *ngIf="emailControl.hasError('email') && !emailControl.hasError('emailInput') ">Not a valid email</mat-error>
+  </mat-form-field>  
+  <mat-checkbox class = "dialog-input" [(ngModel)]="data.isAdmin">Admin</mat-checkbox>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click) = "onSaveClick()" cdkFocusInitial>Save</button>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+</div>

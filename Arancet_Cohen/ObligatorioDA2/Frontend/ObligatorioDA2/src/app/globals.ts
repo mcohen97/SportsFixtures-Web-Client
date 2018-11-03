@@ -5,4 +5,6 @@ import { User } from './classes/user';
 export class Globals {
   token: string;
   loggedUser: User;  
+  WEB_API_URL : string = 'https://localhost:5001/api'; 
+
 }

@@ -4,7 +4,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import {LoginComponent} from './components/login/login.component';
 import {RouterModule} from '@angular/router';
-import { ConfirmationDialog } from './components/confirmation-dialog/confirmation-dialog'
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog'
 
 
 import {
@@ -43,6 +43,8 @@ import {
   MatToolbarModule,
   MatTooltipModule,
   MatTreeModule,
+  ErrorStateMatcher,
+  ShowOnDirtyErrorStateMatcher,
 } from '@angular/material';
 import { AuthService } from './services/auth/auth.service';
 import {HomeComponent}from'./components/home/home.component';
@@ -52,9 +54,10 @@ import { Globals } from './globals';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { UsersService } from './services/users/users.service';
 import { UsersComponent } from './components/users/users.component';
-import { UserEditDialog } from './components/users/user-edit-dialog';
+import { UserEditDialogComponent } from './components/users/user-edit-dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { User } from './classes/user';
+import { UserAddDialogComponent } from './components/users/user-add-dialog/user-add-dialog.component';
 
 @NgModule({
   declarations: [
@@ -64,8 +67,9 @@ import { User } from './classes/user';
     NotFoundComponent,
     UserInfoComponent,
     UsersComponent,
-    UserEditDialog,
-    ConfirmationDialog
+    UserEditDialogComponent,
+    ConfirmationDialogComponent,
+    UserAddDialogComponent
   ],
   imports: [
     RouterModule.forRoot([
@@ -128,10 +132,13 @@ import { User } from './classes/user';
     Globals,
     AuthService,
     UsersService,
+    {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
+
   ],
   entryComponents: [
-    UserEditDialog, 
-    ConfirmationDialog
+    UserEditDialogComponent, 
+    ConfirmationDialogComponent,
+    UserAddDialogComponent,
   ],
   bootstrap: [AppComponent],
   

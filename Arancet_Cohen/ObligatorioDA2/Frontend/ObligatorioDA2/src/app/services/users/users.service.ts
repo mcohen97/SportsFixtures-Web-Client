@@ -1,11 +1,10 @@
 import { Injectable } from "@angular/core";
-import { Token } from "../../classes/token";
 import { Http, Response, RequestOptions, Headers } from "@angular/http"; 
-import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from "rxjs";  
 import { map, tap, catchError } from 'rxjs/operators'; 
 import { Globals } from "src/app/globals";
 import { User } from "src/app/classes/user";
+import { ErrorResponse } from "src/app/classes/error";
 
 @Injectable()
 export class UsersService {
@@ -61,10 +60,26 @@ export class UsersService {
             catchError(this.handleError)
         ); 
     }
+
+    addUser(aUser:User):Observable<User>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.post(this.WEB_API_URL, aUser, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
     
-    private handleError(error: Response) { 
-        console.error(error.status); 
-        return throwError(error.json()|| 'Server error'); 
+    private handleError(errorResponse: Response) { 
+        console.error(errorResponse.status);
+        var error = new ErrorResponse();
+        error.errorMessage = errorResponse.statusText;
+        error.errorCode = errorResponse.status;
+        error.errorObject = errorResponse.json();
+        return throwError(error || 'Server error'); 
     } 
 
 }
