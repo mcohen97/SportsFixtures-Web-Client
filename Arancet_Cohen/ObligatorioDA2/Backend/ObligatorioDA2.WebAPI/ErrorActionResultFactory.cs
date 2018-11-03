@@ -30,6 +30,9 @@ namespace ObligatorioDA2.WebAPI
                 case ErrorType.DATA_INACCESSIBLE:
                     errorResponse  = sender.StatusCode((int)HttpStatusCode.InternalServerError, errorMessage);
                     break;
+                case ErrorType.NOT_AUTHENTICATED:
+                    errorResponse = sender.Unauthorized();
+                        break;
                 case ErrorType.NO_PERMISSION:
                     errorResponse = sender.Forbid();
                     break;
