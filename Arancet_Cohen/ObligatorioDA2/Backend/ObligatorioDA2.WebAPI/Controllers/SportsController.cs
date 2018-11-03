@@ -20,17 +20,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ISportRepository sports;
         private ITeamRepository teams;
         private IFixtureService fixture;
-        private IOptions<FixtureStrategies> fixtureSettings;
         private ISportTableService tableService;
 
         public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, 
-            IFixtureService fixtureService, IOptions<FixtureStrategies> algorithmsSettings,
-            ISportTableService tableGenerator)
+            IFixtureService fixtureService,ISportTableService tableGenerator)
         {
             sports = sportRepo;
             fixture = fixtureService;
             teams = teamRepo;
-            fixtureSettings = algorithmsSettings;
             tableService = tableGenerator;
         }
 
