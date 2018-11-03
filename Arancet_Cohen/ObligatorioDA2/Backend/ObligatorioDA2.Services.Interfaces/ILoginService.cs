@@ -8,5 +8,7 @@ namespace ObligatorioDA2.Services.Interfaces
     public interface IAuthenticationService
     {
         User Login(string username, string password);
+        void SetSession(string userName);
+        bool HasAdminPermissions()
     }
 }
