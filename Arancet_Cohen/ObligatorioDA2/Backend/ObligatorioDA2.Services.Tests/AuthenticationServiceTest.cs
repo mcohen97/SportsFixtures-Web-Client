@@ -14,7 +14,7 @@ namespace ObligatorioDA2.Services.Tests
 
         private Mock<IUserRepository> repo;
         private AuthenticationService logger;
-        private User user;
+        private User admin;
 
         [TestInitialize]
         public void SetUp()
@@ -29,15 +29,15 @@ namespace ObligatorioDA2.Services.Tests
                 UserName = "aUsername",
                 Email = "anEmail@aDomain.com"
             };
-
-            user = new User(id, true);
+            followe
+            adminUser = new User(id, true);
         }
 
         [TestMethod]
         public void LoginSuccesfullyTest()
         {
             //arrange
-            repo.Setup(r => r.Get("aUsername")).Returns(user);
+            repo.Setup(r => r.Get("aUsername")).Returns(admin);
 
             //act
             User logged = logger.Login("aUsername", "aPassword");
@@ -65,7 +65,7 @@ namespace ObligatorioDA2.Services.Tests
         public void WrongPasswordTest()
         {
             //arrange
-            repo.Setup(r => r.Get("aUsername")).Returns(user);
+            repo.Setup(r => r.Get("aUsername")).Returns(admin);
 
             //act
             User logged = logger.Login("aUsername", "otherPassword");
@@ -74,12 +74,11 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void SetConnectedUserTest() {
             //Arrange.
-            repo.Setup(r => r.Get(user.UserName)).Returns(user);
+            repo.Setup(r => r.Get(admin.UserName)).Returns(admin);
             //Act.
-            logger.SetSession(user.UserName);
+            logger.SetSession(admin.UserName);
             //Assert.
-            User connected = logger.GetCurrentUser();
-            Assert.AreEqual(connected.UserName, user.UserName);
+            repo.VerifyAll();
         }
 
         [TestMethod]
@@ -88,7 +87,22 @@ namespace ObligatorioDA2.Services.Tests
             //Arrange.
             repo.Setup(r => r.Get(It.IsAny<string>())).Throws(new UserNotFoundException());
             //Act.
-            logger.SetSession(user.UserName);
+            logger.SetSession(admin.UserName);
+        }
+
+        [TestMethod]
+        public void HasAdminPermissionTest() {
+            //Arrange.
+            repo.Setup(r => r.Get(admin.UserName)).Returns(admin);
+            //Act.
+            logger.SetSession(admin.UserName);
+            //Assert.
+            Assert.IsTrue(logger.HasAdminPermissions());   
+        }
+
+        [TestMethod]
+        public void HasNoAdminPermissionsTest() {
+   
         }
     }
 }
