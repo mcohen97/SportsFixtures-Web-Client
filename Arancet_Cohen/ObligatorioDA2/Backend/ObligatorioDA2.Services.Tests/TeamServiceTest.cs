@@ -181,7 +181,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NotAuthenticatedException))]
+        [ExpectedException(typeof(ServiceException))]
         public void DeleteNoDataAccessTest() {
             GrantAdminPermissions();
             teams.Setup(r => r.Delete(It.IsAny<int>())).Throws(new DataInaccessibleException());
@@ -196,7 +196,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NotAuthenticatedException))]
+        [ExpectedException(typeof(NoPermissionsException))]
         public void DeleteNoPermissionsTest() {
             GrantFollowerPermissions();
             testService.DeleteTeam(2);
