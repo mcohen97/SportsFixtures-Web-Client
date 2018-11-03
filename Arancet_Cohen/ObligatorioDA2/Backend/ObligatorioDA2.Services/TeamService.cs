@@ -116,6 +116,20 @@ namespace ObligatorioDA2.Services
             return toReturn;
         }
 
+        public void DeleteTeam(int id)
+        {
+            AuthenticateAdmin();
+            try {
+                teams.Delete(id);
+            }
+            catch (TeamNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+        }
+
         public ICollection<Team> GetAllTeams()
         {
             Authenticate();
@@ -148,5 +162,7 @@ namespace ObligatorioDA2.Services
                 throw new NotAuthenticatedException();
             }
         }
+
+   
     }
 }
