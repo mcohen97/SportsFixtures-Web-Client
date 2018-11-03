@@ -9,7 +9,7 @@ using ObligatorioDA2.Services.Exceptions;
 namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
-    public class LoginServiceTest
+    public class AuthenticationServiceTest
     {
 
         private Mock<IUserRepository> repo;
@@ -69,6 +69,26 @@ namespace ObligatorioDA2.Services.Tests
 
             //act
             User logged = logger.Login("aUsername", "otherPassword");
+        }
+
+        [TestMethod]
+        public void SetConnectedUserTest() {
+            //Arrange.
+            repo.Setup(r => r.Get(user.UserName)).Returns(user);
+            //Act.
+            logger.SetSession(user.UserName);
+            //Assert.
+            User connected = logger.GetCurrentUser();
+            Assert.AreEqual(connected.UserName, user.UserName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UserNotFoundException))]
+        public void SetUnexistentUserTest() {
+            //Arrange.
+            repo.Setup(r => r.Get(It.IsAny<string>())).Throws(new UserNotFoundException());
+            //Act.
+            logger.SetSession(user.UserName);
         }
     }
 }
