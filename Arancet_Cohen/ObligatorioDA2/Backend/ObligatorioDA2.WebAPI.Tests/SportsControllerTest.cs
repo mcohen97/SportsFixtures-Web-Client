@@ -41,10 +41,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() {new Sport("Basketball",true), new Sport("Tennis",true) });
 
             IFixtureService dummyService = new Mock<IFixtureService>().Object;
-            Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
+            //Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
             tableGenerator = new Mock<ISportTableService>();
 
-            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService, mockSettings.Object, tableGenerator.Object);
+            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService, tableGenerator.Object);
         }
 
         [TestMethod]
