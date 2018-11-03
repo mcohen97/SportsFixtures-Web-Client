@@ -9,6 +9,8 @@ namespace ObligatorioDA2.Services.Interfaces
     {
         User Login(string username, string password);
         void SetSession(string userName);
-        bool HasAdminPermissions()
+        bool HasAdminPermissions();
+
+        bool IsLoggedIn();
     }
 }

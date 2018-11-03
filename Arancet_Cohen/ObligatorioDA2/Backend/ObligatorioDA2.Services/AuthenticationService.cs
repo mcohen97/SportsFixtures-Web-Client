@@ -37,5 +37,10 @@ namespace ObligatorioDA2.Services
         {
             return (current != null) && current.IsAdmin;
         }
+
+        public bool IsLoggedIn()
+        {
+            return (current != null);
+        }
     }
 }
