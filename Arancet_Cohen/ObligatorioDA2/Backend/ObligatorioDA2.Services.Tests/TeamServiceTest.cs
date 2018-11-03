@@ -6,6 +6,7 @@ using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Collections.Generic;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -29,7 +30,7 @@ namespace ObligatorioDA2.Services.Tests
             testService = new TeamService(sports.Object, teams.Object, auth.Object);
             testSport = new Sport("football", true);
             testTeam = new Team(1,"Real Madrid", "photo", testSport);
-            testDto = new TeamDto() { name = testTeam.Name, photo = testTeam.PhotoPath, sportName = testSport.Name };
+            testDto = new TeamDto() {id=1, name = testTeam.Name, photo = testTeam.PhotoPath, sportName = testSport.Name };
         }
 
         [TestMethod]
@@ -52,14 +53,13 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void GetTeamNotLoggedTest() {
             teams.Setup(r => r.Get(1)).Returns(testTeam);
-            auth.Setup(r => r.IsLoggedIn()).Returns(false);
+            LogOut();
             testService.GetTeam(1);
         }
 
         [TestMethod]
         public void AddTeamTest() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(true);
-            auth.Setup(r => r.HasAdminPermissions()).Returns(true);
+            GrantAdminPermissions();
             sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
 
@@ -75,8 +75,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(ServiceException))]
         public void AddTeamInvalidDataTest()
         {
-            auth.Setup(r => r.IsLoggedIn()).Returns(true);
-            auth.Setup(r => r.HasAdminPermissions()).Returns(true);
+            GrantAdminPermissions();
             sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
 
@@ -87,8 +86,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void AddTeamNotExistentSportTest() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(true);
-            auth.Setup(r => r.HasAdminPermissions()).Returns(true);
+            GrantAdminPermissions();
             sports.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
             teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
 
@@ -98,9 +96,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void AddTeamNotLoggedException() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(false);
-            auth.Setup(r => r.HasAdminPermissions()).Returns(false);
-
+            LogOut();
             Team added = testService.AddTeam(testDto);
         }
 
@@ -108,10 +104,56 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(NoPermissionsException))]
         public void AddTeamNotAuthorizedException()
         {
+            GrantFollowerPermissions();
+            Team added = testService.AddTeam(testDto);
+        }
+
+        [TestMethod]
+        public void ModifyTeamTest() {
+            GrantAdminPermissions();
+            teams.Setup(r => r.Get(It.IsAny<int>())).Returns(testTeam);
+            testDto.name = "Manchester United";
+            Team modified = testService.Modify(testDto);
+            teams.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
+            Assert.AreEqual(testDto.name, modified.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void ModifyTeamNotFoundTest()
+        {
+            GrantAdminPermissions();
+            teams.Setup(r => r.Get(It.IsAny<int>())).Throws(new TeamNotFoundException());
+            sports.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
+            Team modified = testService.Modify(testDto);
+        }
+
+        [TestMethod]
+        public void GetAllTeamsTest() {
+            GrantFollowerPermissions();
+            teams.Setup(r => r.GetAll()).Returns(new List<Team>() { testTeam, testTeam, testTeam });
+            ICollection<Team> allTeams = testService.GetAllTeams();
+            teams.Verify(r => r.GetAll(), Times.Once);
+            Assert.AreEqual(3, allTeams.Count);
+        }
+
+        [TestMethod]
+        public void GetAllTeamsNotLoggedTest() {
+            LogOut();
+            testService.GetAllTeams();
+        }
+
+        private void GrantAdminPermissions() {
+            auth.Setup(r => r.IsLoggedIn()).Returns(true);
+            auth.Setup(r => r.HasAdminPermissions()).Returns(true);
+        }
+        private void GrantFollowerPermissions() {
             auth.Setup(r => r.IsLoggedIn()).Returns(true);
             auth.Setup(r => r.HasAdminPermissions()).Returns(false);
+        }
 
-            Team added = testService.AddTeam(testDto);
+        private void LogOut() {
+            auth.Setup(r => r.IsLoggedIn()).Returns(false);
         }
     }
 }
