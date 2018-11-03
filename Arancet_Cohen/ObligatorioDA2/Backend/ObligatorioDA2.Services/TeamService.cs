@@ -26,14 +26,7 @@ namespace ObligatorioDA2.Services
 
         public Team AddTeam(TeamDto team)
         {
-            if (!authentication.IsLoggedIn()) {
-                throw new NotAuthenticatedException();
-            }
-
-            if (!authentication.HasAdminPermissions()) {
-                throw new NoPermissionsException();
-            }
-
+            AuthenticateAdmin();
             return TryAddTeam(team);
         }
 
@@ -82,12 +75,7 @@ namespace ObligatorioDA2.Services
 
         public Team Modify(TeamDto testDto)
         {
-            if (!authentication.IsLoggedIn()) {
-                throw new NotAuthenticatedException();
-            }
-            if (!authentication.HasAdminPermissions()) {
-                throw new NoPermissionsException();
-            }
+            AuthenticateAdmin();
             Team old = TryGetTeam(testDto.id);
             Team updated = Update(old, testDto);
             teams.Modify(updated);
@@ -128,6 +116,37 @@ namespace ObligatorioDA2.Services
             return toReturn;
         }
 
-      
+        public ICollection<Team> GetAllTeams()
+        {
+            Authenticate();
+            ICollection<Team> allOfThem;
+            try
+            {
+                allOfThem = teams.GetAll();
+            }catch(DataInaccessibleException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+            return allOfThem;
+        }
+
+        private void AuthenticateAdmin() {
+            if (!authentication.IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
+
+            if (!authentication.HasAdminPermissions())
+            {
+                throw new NoPermissionsException();
+            }
+        }
+
+        private void Authenticate() {
+            if (!authentication.IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
+        }
     }
 }
