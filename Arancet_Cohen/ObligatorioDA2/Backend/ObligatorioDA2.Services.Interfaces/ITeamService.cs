@@ -12,5 +12,6 @@ namespace ObligatorioDA2.Services.Interfaces
         Team AddTeam(TeamDto testDto);
         Team Modify(TeamDto testDto);
         ICollection<Team> GetAllTeams();
+        void DeleteTeam(int id);
     }
 }
