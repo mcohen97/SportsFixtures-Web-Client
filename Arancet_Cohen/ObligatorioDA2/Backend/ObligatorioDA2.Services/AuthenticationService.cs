@@ -11,6 +11,7 @@ namespace ObligatorioDA2.Services
     public class AuthenticationService : IAuthenticationService
     {
         private IUserRepository users;
+        private User current;
 
         public AuthenticationService(IUserRepository aRepo)
         {
@@ -25,6 +26,16 @@ namespace ObligatorioDA2.Services
                 throw new WrongPasswordException();
             }
             return fetched;
+        }
+
+        public void SetSession(string userName)
+        {
+            current = users.Get(userName);
+        }
+
+        public bool HasAdminPermissions()
+        {
+            return (current != null) && current.IsAdmin;
         }
     }
 }
