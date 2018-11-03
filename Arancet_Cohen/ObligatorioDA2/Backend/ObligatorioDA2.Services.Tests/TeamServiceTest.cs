@@ -85,6 +85,16 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
+        public void AddTeamAlreadyExistentTest()
+        {
+            GrantAdminPermissions();
+            sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
+            teams.Setup(r => r.Add(testTeam)).Throws(new TeamAlreadyExistsException());
+            Team added = testService.AddTeam(testDto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
         public void AddTeamNotExistentSportTest() {
             GrantAdminPermissions();
             sports.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
@@ -138,9 +148,58 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+
         public void GetAllTeamsNotLoggedTest() {
             LogOut();
             testService.GetAllTeams();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+
+        public void GetAllTeamsNoDataAccessTest()
+        {
+            GrantFollowerPermissions();
+            teams.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
+            testService.GetAllTeams();
+        }
+
+        [TestMethod]
+        public void DeleteTest() {
+            GrantAdminPermissions();
+            testService.DeleteTeam(2);
+            teams.Verify(r => r.Delete(2), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void DeleteNotFoundException() {
+            GrantAdminPermissions();
+            teams.Setup(r => r.Delete(2)).Throws(new TeamNotFoundException());
+            testService.DeleteTeam(2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void DeleteNoDataAccessTest() {
+            GrantAdminPermissions();
+            teams.Setup(r => r.Delete(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            testService.DeleteTeam(2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void DeleteNotLoggedTest() {
+            LogOut();
+            testService.DeleteTeam(2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void DeleteNoPermissionsTest() {
+            GrantFollowerPermissions();
+            testService.DeleteTeam(2);
         }
 
         private void GrantAdminPermissions() {
