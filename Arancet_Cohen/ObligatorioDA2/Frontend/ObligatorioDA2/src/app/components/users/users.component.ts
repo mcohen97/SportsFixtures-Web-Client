@@ -32,19 +32,18 @@ export class UsersComponent implements OnInit {
 
   private getUsers(){
     this.usersService.getAllUsers().subscribe(
-      ((data:Array<User>) => this.successfulUsersGetter(data)),
+      ((data:Array<User>) => this.updateTableData(data)),
       ((error:any) => this.handleError(error))
     )
   }
 
-  private successfulUsersGetter(users:Array<User>){
+  private updateTableData(users:Array<User>){
     this.dataSource = new MatTableDataSource(users);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
   private handleError(error:ErrorResponse) {
-    this.errorMessage = error.errorMessage + " " + error.errorObject.errorMessage;
   }
   
   applyFilter(filterValue:string){
@@ -78,7 +77,7 @@ export class UsersComponent implements OnInit {
       data: {
         confirmation: confirmation,
         title: "Delete " + aUser.username,
-        message: "Confirm that you want to delete this user. This action can not be undone."
+        message: "This operation needs confirmation. It can not be undone."
       }
     });
     dialogRef.afterClosed().subscribe(
@@ -90,7 +89,7 @@ export class UsersComponent implements OnInit {
   }
   performDelete(aUser: User): void {
     this.usersService.deleteUser(aUser.username).subscribe(
-      ((result:any) => {this.dataSource = new MatTableDataSource(this.dataSource.data.filter((u:User)=>u.username != aUser.username))}),
+      ((result:any) => this.updateTableData(this.dataSource.data.filter((u:User)=>u.username != aUser.username))),
       ((error:any) => this.handleError(error))
     );
   }
@@ -105,7 +104,8 @@ export class UsersComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(
       ((newUser:User) => {
-        this.performAdd(newUser);
+        if(newUser != undefined)
+          this.performAdd(newUser);
       })
     )
   }
@@ -113,6 +113,8 @@ export class UsersComponent implements OnInit {
   performAdd(newUser:User):void{
     this.dataSource.data.push(newUser);
     this.dataSource._updateChangeSubscription();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 }
 
