@@ -10,6 +10,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -18,6 +19,7 @@ namespace ObligatorioDA2.WebAPI.Tests
     {
         private Mock<ISportRepository> sportsRepo;
         private Mock<ITeamRepository> teamsRepo;
+        private Mock<ISportTableService> tableGenerator;
         private SportsController controllerToTest;
 
         [TestInitialize]
@@ -40,8 +42,9 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             IFixtureService dummyService = new Mock<IFixtureService>().Object;
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
+            tableGenerator = new Mock<ISportTableService>();
 
-            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService, mockSettings.Object);
+            controllerToTest = new SportsController(sportsRepo.Object, teamsRepo.Object, dummyService, mockSettings.Object, tableGenerator.Object);
         }
 
         [TestMethod]
@@ -371,5 +374,57 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
+        [TestMethod]
+        public void CalculateMatchTableResult() {
+            //Arrange.
+            tableGenerator.Setup(tg => tg.GetScoreTable("Golf")).Returns(GetFakeTable());
+
+            //Act.
+            IActionResult result = controllerToTest.CalculateSportTable("Golf");
+            OkObjectResult okResult = result as OkObjectResult;
+            IEnumerable<StandingModelOut> positions = okResult.Value as IEnumerable<StandingModelOut>;
+            List<StandingModelOut> conversion = positions.ToList();
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.IsNotNull(positions);
+            Assert.AreEqual("TeamA",conversion[0].TeamName);
+            Assert.AreEqual(15, conversion[0].Points);
+            Assert.AreEqual(1, conversion[0].TeamId);
+        }
+
+        [TestMethod]
+        public void CalculateTableNotExistingSportTest() {
+            //Arrange.
+            Exception toThrow = new SportNotFoundException();
+            tableGenerator.Setup(tg => tg.GetScoreTable(It.IsAny<string>())).Throws(toThrow);
+
+            //Act.
+            IActionResult result = controllerToTest.CalculateSportTable("Golf");
+            NotFoundObjectResult notFound = result as NotFoundObjectResult;
+            ErrorModelOut error = notFound.Value as ErrorModelOut;
+
+            //Assert.
+            tableGenerator.VerifyAll();
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(notFound);
+            Assert.IsNotNull(error);
+            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
+        private ICollection<Tuple<Team, int>> GetFakeTable() {
+            Sport sport = new Sport("Golf", false);
+            Team teamA = new Team(1, "TeamA", "Photo/A", sport);
+            Team teamB = new Team(2, "TeamB", "Photo/B", sport);
+            Team teamC = new Team(3, "TeamC", "Photo/C", sport);
+            ICollection<Tuple<Team, int>> tuples = new List<Tuple<Team, int>>() {
+                new Tuple<Team, int>(teamA,15),
+                new Tuple<Team, int>(teamB,12),
+                new Tuple<Team, int>(teamC,3)
+            };
+            return tuples;
+        }
     }
 }

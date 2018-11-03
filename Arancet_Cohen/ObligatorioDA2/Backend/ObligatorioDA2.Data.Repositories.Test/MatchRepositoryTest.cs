@@ -234,12 +234,12 @@ namespace DataRepositoriesTest
         public void ModifyTest()
         {
             matchesStorage.Add(match);
-            Mock<Match> modified = BuildModifiedFakeMatch();
+            Match modified = BuildModifiedFakeMatch();
             SetUpRepository();
-            matchesStorage.Modify(modified.Object);
+            matchesStorage.Modify(modified);
             Encounter retrieved = matchesStorage.Get(3);
-            Assert.AreEqual(retrieved.GetParticipants().Count, modified.Object.GetParticipants().Count);
-            Assert.AreEqual(retrieved.Date, modified.Object.Date);
+            Assert.AreEqual(retrieved.GetParticipants().Count, modified.GetParticipants().Count);
+            Assert.AreEqual(retrieved.Date, modified.Date);
         }
 
         [TestMethod]
@@ -257,7 +257,7 @@ namespace DataRepositoriesTest
             sport = new Sport("Soccer", false);
             sportsStorage.Modify(sport);
             modifiedTeams.Add(thirdTeam);
-            Encounter modified = new Match(3, modifiedTeams, DateTime.Now.AddYears(2), sport);
+            Encounter modified = new Competition(3, modifiedTeams, DateTime.Now.AddYears(2), sport);
             matchesStorage.Modify(modified);
             Encounter retrieved = matchesStorage.Get(3);
             Assert.AreEqual(retrieved.GetParticipants().Count, modified.GetParticipants().Count);
@@ -270,8 +270,8 @@ namespace DataRepositoriesTest
         {
             Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
             Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport);
-            Mock<Match> match = new Mock<Match>(7,new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
-            matchesStorage.Modify(match.Object);
+            Match match = new Match(7,new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
+            matchesStorage.Modify(match);
         }
 
         [TestMethod]
@@ -281,8 +281,8 @@ namespace DataRepositoriesTest
             CreateDisconnectedDatabase();
             Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
             Mock<Team> away = new Mock<Team>(4, "Bayern Munich", "aPath", sport);
-            Mock<Match> match = new Mock<Match>(7, new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
-            matchesStorage.Modify(match.Object);
+            Match match = new Match(7, new List<Team>() { home.Object, away.Object }, DateTime.Now.AddYears(2), sport);
+            matchesStorage.Modify(match);
         }
 
         private ICollection<Team> GetFakeTeams() {
@@ -292,10 +292,10 @@ namespace DataRepositoriesTest
             return fakeTeams;
         }
 
-        private Mock<Match> BuildModifiedFakeMatch()
+        private Match BuildModifiedFakeMatch()
         {
             ICollection<Team> teams = GetFakeTeams();
-            Mock<Match> match = new Mock<Match>(3,teams, DateTime.Now.AddYears(2), sport);
+            Match match = new Match(3,teams, DateTime.Now.AddYears(2), sport);
             return match;
         }
 

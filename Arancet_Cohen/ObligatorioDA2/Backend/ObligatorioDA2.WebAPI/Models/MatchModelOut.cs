@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ObligatorioDA2.WebAPI.Models
 {
-    public class MatchModelOut
+    public class MatchModelOut:EncounterModelOut
     {
-        public int Id { get; set; }
-        public string SportName { get; set; }
-        public ICollection<int> TeamsIds { get; set; } 
-        public DateTime Date { get; set; }
-        public ICollection<int> CommentsIds { get; set; } 
-
+        public bool HasWinner { get; set; }
+        public int WinnerId { get; set; }
     }
 }

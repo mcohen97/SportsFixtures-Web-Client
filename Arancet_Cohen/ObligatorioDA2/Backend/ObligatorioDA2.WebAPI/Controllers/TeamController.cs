@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using System.Net;
+using System.Text;
+using System.IO;
+using ObligatorioDA2.Services.Interfaces;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -17,10 +20,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
     {
         private ITeamRepository teams;
         private ISportRepository sports;
-        public TeamsController(ITeamRepository teamsRepo, ISportRepository sportsRepo)
+        private IImageService images;
+        private const string IMG_EXTENSION = ".jpg";
+
+        public TeamsController(ITeamRepository teamsRepo, ISportRepository sportsRepo, IImageService imageManager)
         {
             teams = teamsRepo;
             sports = sportsRepo;
+            images = imageManager;
         }
 
         [HttpGet]
@@ -111,7 +118,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
+                string imgData = Base64Encode(team.Photo);
+                team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
                 result = TryAddTeam(team);
+                images.SaveImage(team.Photo, imgData);
             }
             catch (EntityAlreadyExistsException e)
             {
@@ -122,6 +132,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = NoDataAccess(e);
             }
             return result;
+        }
+
+        private string Base64Encode(string plainText)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
         }
 
         private IActionResult TryAddTeam(TeamModelIn team)
@@ -179,6 +195,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);
         }
 
+
         [HttpDelete("{sportName}/{teamName}")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string sportName, string teamName)
@@ -229,7 +246,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id = toReturn.Id,
                 SportName = toReturn.Sport.Name,
                 Name = toReturn.Name,
-                Photo = toReturn.Photo
+                Photo = images.ReadImage(toReturn.PhotoPath)
             };
             return output;
         }

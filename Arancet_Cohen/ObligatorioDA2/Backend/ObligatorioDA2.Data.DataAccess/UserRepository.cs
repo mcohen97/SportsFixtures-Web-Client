@@ -160,7 +160,8 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 IQueryable<TeamEntity> followed = context.UserTeams
                     .Where(ue => ue.UserEntityUserName.Equals(user.UserName))
-                    .Select(ue => ue.Team);
+                    .Select(ue => ue.Team)
+                    .Include(te=>te.Sport);
                 User built = userMapper.ToUser(user, followed.ToList());
                 users.Add(built);
             };

@@ -12,9 +12,8 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Net;
 using System.Reflection;
 using System.IO;
-using System.Text;
-using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -27,15 +26,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private ISportRepository sports;
         private const string DLL_EXTENSION = "*.dll";
         private ILoggerService logger;
+        private EncounterModelFactory factory;
 
         public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo, ILoggerService loggerService) {
             fixtureService = service;
             fixtureConfig = config;
             sports = sportsRepo;
             logger = loggerService;
+            factory = new EncounterModelFactory();
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult GetFixtureAlgorithms()
         {
             string algorithmsPath = fixtureConfig.Value.DllPath;        
@@ -52,6 +54,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpPost("{sportName}")]
+        [Authorize]
         public IActionResult CreateFixture(string sportName, FixtureModelIn input)
         {
             IActionResult result;
@@ -179,17 +182,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             Sport sport = sports.Get(sportName);
             ICollection<Encounter> added = fixtureService.AddFixture(sport);
-            ICollection<MatchModelOut> addedModelOut = new List<MatchModelOut>();
+            ICollection<EncounterModelOut> addedModelOut = new List<EncounterModelOut>();
             foreach (Encounter match in added)
             {
-                addedModelOut.Add(new MatchModelOut()
-                {
-                    Id = match.Id,
-                    TeamsIds = match.GetParticipants().Select(p => p.Id).ToList(),
-                    SportName = match.Sport.Name,
-                    Date = match.Date,
-                    CommentsIds = match.GetAllCommentaries().Select(c => c.Id).ToList()
-                });
+                addedModelOut.Add(factory.CreateModelOut(match));
             }
             result = Created("fixture-generator", addedModelOut);
             return result;

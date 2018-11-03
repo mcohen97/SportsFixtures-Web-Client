@@ -10,6 +10,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
         private DateTime initialDate;
         private int roundLength;
         private int daysBetweenRounds;
+        private EncounterFactory factory;
 
         public OneMatchFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
 
@@ -17,6 +18,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             this.initialDate = initialDate;
             this.roundLength = roundLength;
             this.daysBetweenRounds = daysBetweenRounds;
+            this.factory = new EncounterFactory();
         }
 
         public DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
@@ -132,7 +134,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             for (int i = 0; i < actualRound.GetLength(1); i++)
             {
                 Sport sport = actualRound[0, i].Sport;
-                Match newMatch = new Match(new List<Team>() { actualRound[0, i], actualRound[1, i] }, roundDate, sport);
+                Encounter newMatch = factory.CreateEncounter(new List<Team>() { actualRound[0, i], actualRound[1, i] }, roundDate, sport);
                 fixture.Add(newMatch);
             }
         }

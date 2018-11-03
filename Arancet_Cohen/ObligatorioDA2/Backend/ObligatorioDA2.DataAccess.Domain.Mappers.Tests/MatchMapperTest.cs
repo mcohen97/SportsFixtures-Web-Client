@@ -15,13 +15,15 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         private MatchMapper testMapper;
         private MatchEntity entity;
         private ICollection<MatchTeam> playingTeams;
-        private Match match;
+        private EncounterFactory factory;
+        private Encounter match;
         Team homeMock;
         Team awayMock;
 
         [TestInitialize]
         public void SetUp()
         {
+            factory = new EncounterFactory();
             testMapper = new MatchMapper();
             SportEntity testSport = new SportEntity() { Name = "Soccer", IsTwoTeams = true };
             TeamEntity homeTest = new TeamEntity { TeamNumber = 3, SportEntityName = "Soccer", Sport =testSport,Name = "Nacional", Photo = "aPath" };
@@ -40,7 +42,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
             homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer",true));
             awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer",true));
             Sport sport = new Sport("Soccer",true);
-            match = new Match(new List<Team>() { homeMock, awayMock }, DateTime.Now, sport);
+            match = factory.CreateEncounter(new List<Team>() { homeMock, awayMock }, DateTime.Now, sport);
         }
 
         [TestMethod]
@@ -84,7 +86,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void MatchToEntityWithResultTest()
         {
             Result matchResult = GetFakeResult();
-            match.SetResult(matchResult);
+            match.Result=matchResult;
             MatchEntity converted = testMapper.ToEntity(match);
             Assert.IsTrue(converted.HasResult);
         }
@@ -93,7 +95,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void MatchToEntityResultsTest()
         {
             Result matchResult = GetFakeResult();
-            match.SetResult(matchResult);
+            match.Result=matchResult;
             ICollection<MatchTeam> teams = testMapper.ConvertParticipants(match);
             Assert.IsTrue(teams.Any(t => t.Position == 1));
             Assert.IsTrue(teams.Any(t => t.Position == 2));
@@ -110,14 +112,14 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         [TestMethod]
         public void EntityToMatchTeamsTest()
         {
-            Match conversion = testMapper.ToMatch(entity,playingTeams);
+            Encounter conversion = testMapper.ToEncounter(entity,playingTeams);
             Assert.AreEqual(match.GetParticipants().Count, playingTeams.Count);
         }
 
         [TestMethod]
         public void EntityToMatchDateTest()
         {
-            Match conversion = testMapper.ToMatch(entity,playingTeams);
+            Encounter conversion = testMapper.ToEncounter(entity,playingTeams);
             Assert.AreEqual(match.Date.ToString(), conversion.Date.ToString());
         }
 
@@ -137,13 +139,13 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                     Email = "aEmail@aDomain.com"
                 }
             });
-            Match conversion = testMapper.ToMatch(entity,playingTeams);
+            Encounter conversion = testMapper.ToEncounter(entity,playingTeams);
             Assert.AreEqual(conversion.GetAllCommentaries().Count, 1);
         }
 
         [TestMethod]
         public void EntityToMatchNoResultTest() {
-            Match conversion = testMapper.ToMatch(entity, playingTeams);
+            Encounter conversion = testMapper.ToEncounter(entity, playingTeams);
             Assert.IsFalse(conversion.HasResult());
         }
 
@@ -155,7 +157,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 team.Position = position;
                 position++;
             }
-            Match conversion = testMapper.ToMatch(entity, playingTeams);
+            Encounter conversion = testMapper.ToEncounter(entity, playingTeams);
             ICollection<Tuple<Team,int>> translated = conversion.Result.GetPositions();
             Assert.IsTrue(translated.Any(t=>t.Item2 == 1));
             Assert.IsTrue(translated.Any(t => t.Item2 == 2));

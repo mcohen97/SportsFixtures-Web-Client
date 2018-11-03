@@ -11,7 +11,6 @@ using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using System.IO;
 using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 
 namespace ObligatorioDA2.Services.Tests
@@ -34,10 +33,12 @@ namespace ObligatorioDA2.Services.Tests
         private ISportRepository sportStorage;
         private FixtureService fixtureService;
         private DatabaseConnection context;
+        private EncounterFactory factory;
 
         [TestInitialize]
         public void Initialize()
         {
+            factory = new EncounterFactory();
             sport = new Sport("Soccer",true);
             teamA = new Mock<Team>(1, "teamA", "photo", sport).Object;
             teamB = new Mock<Team>(2, "teamB", "photo", sport).Object;
@@ -145,7 +146,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureTeamAlreadyHasMatchTest()
         {
             fixtureService.FixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
-            Match aMatch = new Match(new List<Team>() { teamA, teamB }, initialDate, sport);
+            Encounter aMatch = factory.CreateEncounter(new List<Team>() { teamA, teamB }, initialDate, sport);
             matchStorage.Add(aMatch);
             fixtureService.AddFixture(teamsCollection);
             Assert.IsTrue(matchStorage.IsEmpty());

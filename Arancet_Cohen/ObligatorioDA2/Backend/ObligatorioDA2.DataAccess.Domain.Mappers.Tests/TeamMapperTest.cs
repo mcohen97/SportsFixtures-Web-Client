@@ -28,7 +28,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         {
             Team convertedTeam = teamMapper.ToTeam(mockTeamEntity);
             Assert.AreEqual(convertedTeam.Name, mockTeamEntity.Name);
-            Assert.AreEqual(convertedTeam.Photo, mockTeamEntity.Photo);
+            Assert.AreEqual(convertedTeam.PhotoPath, mockTeamEntity.Photo);
         }
     }
 }

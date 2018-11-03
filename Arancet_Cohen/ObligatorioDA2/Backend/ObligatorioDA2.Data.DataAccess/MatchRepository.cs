@@ -18,18 +18,20 @@ namespace ObligatorioDA2.Data.Repositories
         private MatchMapper matchConverter;
         private TeamMapper teamConverter;
         private CommentMapper commentConverter;
+        private EncounterFactory factory;
         public MatchRepository(DatabaseConnection aContext)
         {
             context = aContext;
             matchConverter = new MatchMapper();
             commentConverter = new CommentMapper();
             teamConverter = new TeamMapper();
+            factory = new EncounterFactory();
         }
 
 
         public Encounter Add(Encounter aMatch)
         {
-            Match added;
+            Encounter added;
             try
             {
                 added = TryAdd(aMatch);
@@ -41,9 +43,9 @@ namespace ObligatorioDA2.Data.Repositories
             return added;
         }
 
-        private Match TryAdd(Encounter aMatch)
+        private Encounter TryAdd(Encounter aMatch)
         {
-            Match added;
+            Encounter added;
             if (!Exists(aMatch.Id))
             {
                 added = AddNew(aMatch);
@@ -55,12 +57,12 @@ namespace ObligatorioDA2.Data.Repositories
             return added;
         }
 
-        private Match AddNew(Encounter aMatch)
+        private Encounter AddNew(Encounter aMatch)
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
             AddComments(toAdd,aMatch.GetAllCommentaries());
-            Match added = new Match(toAdd.Id, aMatch.GetParticipants(), aMatch.Date, aMatch.Sport);
+            Encounter added = factory.CreateEncounter(toAdd.Id, aMatch.GetParticipants(), aMatch.Date, aMatch.Sport);
             ICollection<MatchTeam> playingTeams = matchConverter.ConvertParticipants(added);
             context.MatchTeams.AddRange(playingTeams);
 
@@ -193,7 +195,7 @@ namespace ObligatorioDA2.Data.Repositories
                                                                    .ThenInclude(t => t.Sport)                                                                             
                                                                    .Where(mt => mt.MatchId == anId)
                                                                    .ToList();
-            Encounter conversion = matchConverter.ToMatch(entity,match_teams);
+            Encounter conversion = matchConverter.ToEncounter(entity,match_teams);
 
             context.Entry(entity).State = EntityState.Detached;
             foreach (MatchTeam mt in match_teams) {
@@ -228,7 +230,7 @@ namespace ObligatorioDA2.Data.Repositories
                     .Include(mt => mt.Team).ThenInclude(t=>t.Sport)
                     .Include(mt => mt.Match).ThenInclude(m=> m.SportEntity)
                     .Where(mt => mt.MatchId == match.Id).AsNoTracking();
-                Encounter built = matchConverter.ToMatch(match, matchPlayers.ToList());
+                Encounter built = matchConverter.ToEncounter(match, matchPlayers.ToList());
 
                 /*context.Entry(match).State = EntityState.Detached;
                 foreach (MatchTeam mt in matchPlayers) {

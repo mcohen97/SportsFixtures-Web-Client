@@ -18,10 +18,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class MatchesController : ControllerBase
     {
         private IMatchService matchService;
+        private EncounterModelFactory factory;
 
         public MatchesController(IMatchService aService)
         {
             matchService = aService;
+            factory = new EncounterModelFactory();
         }
 
         [HttpGet]
@@ -29,7 +31,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         public IActionResult Get()
         {
             ICollection<Encounter> matches = matchService.GetAllMatches();
-            ICollection<MatchModelOut> output = matches.Select(m => BuildModelOut(m)).ToList();
+            ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
             return Ok(output);
         }
 
@@ -54,7 +56,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 Encounter added = matchService.AddMatch(input.TeamIds, input.SportName, input.Date);
-                MatchModelOut output = BuildModelOut(added);
+                EncounterModelOut output = factory.CreateModelOut(added);
                 result = CreatedAtRoute("GetMatchById",new {matchId = added.Id }, output);
             }
             catch (InvalidMatchDataException e)
@@ -90,7 +92,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryGetMatch(int matchId)
         {
             Encounter stored = matchService.GetMatch(matchId);
-            MatchModelOut modelOut = BuildModelOut(stored);
+            EncounterModelOut modelOut = factory.CreateModelOut(stored);
             IActionResult result = Ok(modelOut);
             return result;
         }
@@ -115,7 +117,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 matchService.ModifyMatch(id, aMatch.TeamIds, aMatch.Date, aMatch.SportName);
-                MatchModelOut output = BuildModelout(id, aMatch);
+                EncounterModelOut output = BuildModelout(id, aMatch);
                 result = Ok(output);
             }
             catch (InvalidMatchDataException e) {
@@ -130,20 +132,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
             catch (EntityNotFoundException e)
             {
                 Encounter added = matchService.AddMatch(id, aMatch.TeamIds, aMatch.SportName, aMatch.Date);
-                MatchModelOut output = BuildModelOut(added);
+                EncounterModelOut output = factory.CreateModelOut(added);
                 result = CreatedAtRoute("GetMatchById", new { matchId = added.Id }, output);
             }
             return result;
         }
 
-        private MatchModelOut BuildModelout(int id,MatchModelIn aMatch)
+        private EncounterModelOut BuildModelout(int id,MatchModelIn aMatch)
         {
 
-            MatchModelOut output = new MatchModelOut()
+            EncounterModelOut output = new MatchModelOut()
             {
                 Id = id,
                 SportName = aMatch.SportName,
                 TeamsIds = aMatch.TeamIds,
+                HasResult = false,
                 Date = aMatch.Date
             };
             return output;
@@ -230,7 +233,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try {
                 ICollection<Encounter> matches = matchService.GetAllMatches(sportName);
-                ICollection<MatchModelOut> output = matches.Select(m => BuildModelOut(m)).ToList();
+                ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
                 result = Ok(output);
             }
             catch (SportNotFoundException e)
@@ -248,7 +251,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 ICollection<Encounter> matches = matchService.GetAllMatches(teamId);
-                ICollection<MatchModelOut> output = matches.Select(m => BuildModelOut(m)).ToList();
+                ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
                 result = Ok(output);
             }
             catch (TeamNotFoundException e) {
@@ -257,18 +260,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             return result;
         }
-        private MatchModelOut BuildModelOut(Encounter aMatch)
-        {
-            ICollection<int> teamIds = aMatch.GetParticipants().Select(p => p.Id).ToList();
-            return new MatchModelOut()
-            {
-                Id = aMatch.Id,
-                SportName = aMatch.Sport.Name,
-                TeamsIds = teamIds,
-                Date= aMatch.Date,
-                CommentsIds = aMatch.GetAllCommentaries().Select(c => c.Id).ToList()
-            };
-        }
+
 
         [HttpGet("{matchId}/comments", Name = "GetCommentMatchComments")]
         public IActionResult GetMatchComments(int matchId) {
@@ -323,5 +315,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
             return Ok(output);
         }
+
+        [HttpPost("{matchId}/result")]
+        public IActionResult SetResult(int matchId, ResultModel resultModel)
+        {
+            ICollection<Tuple<int, int>> team_positions = resultModel.Team_Position
+                .Select(tp => new Tuple<int, int>(tp.TeamId, tp.Position)).ToList();
+            matchService.SetResult(matchId, team_positions);
+            Encounter matchWithResult = matchService.GetMatch(matchId);
+            EncounterModelOut result = factory.CreateModelOut(matchWithResult);
+            return Ok(result);
+        }
+
     }
 }

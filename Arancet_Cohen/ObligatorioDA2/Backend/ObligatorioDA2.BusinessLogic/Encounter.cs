@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ObligatorioDA2.BusinessLogic
 {
@@ -65,7 +64,7 @@ namespace ObligatorioDA2.BusinessLogic
             {
                 throw new InvalidMatchDataException("A match can't have repeated teams");
             }
-            if (Sport.IsTwoTeams && teams.Count > 2)
+            if (!ValidTeamsForSport(teams))
             {
                 throw new InvalidMatchDataException("The sport does not allow more than two teams");
             }
@@ -76,11 +75,6 @@ namespace ObligatorioDA2.BusinessLogic
             participants = teams;
         }
 
-        public ICollection<Team> GetParticipants()
-        {
-            return participants;
-        }
-
         private bool TeamsPlaySport(ICollection<Team> teams, Sport sport)
         {
             return !teams.Any(t => !t.Sport.Equals(sport));
@@ -89,6 +83,13 @@ namespace ObligatorioDA2.BusinessLogic
         private bool RepeatedMatches(ICollection<Team> teams)
         {
             return teams.Count != teams.Distinct().Count();
+        }
+
+        protected abstract bool ValidTeamsForSport(ICollection<Team> teams);
+
+        public ICollection<Team> GetParticipants()
+        {
+            return participants;
         }
 
         public bool HasCommentary(Commentary commentary)
@@ -127,7 +128,7 @@ namespace ObligatorioDA2.BusinessLogic
         {
             return Result != null;
         }
-        public void SetResult(Result aResult)
+        private void SetResult(Result aResult)
         {
             if (aResult == null) {
                 throw new InvalidMatchDataException("Result can't be null");
@@ -140,7 +141,9 @@ namespace ObligatorioDA2.BusinessLogic
                 throw new InvalidMatchDataException("The result can't have gap positions");
             }
             SpecificResultValidation(aResult);
-            result = aResult;
+
+            //result = aResult;
+            result =SortResult(aResult);
         }
 
         private bool ResultContainsTheTeams(Result aResult)
@@ -161,6 +164,16 @@ namespace ObligatorioDA2.BusinessLogic
                 positions[standing.Item2-1] = true;
             }
             return !positions.Any(p => !p);
+        }
+        private Result SortResult(Result aResult)
+        {
+            List<Tuple<Team,int>>positions =aResult.GetPositions().ToList();
+            positions.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+            Result sorted = new Result();
+            foreach (Tuple<Team, int> t in positions) {
+                sorted.Add(t.Item1, t.Item2);
+            }
+            return sorted;
         }
         protected virtual void SpecificResultValidation(Result aResult) { }
     }
