@@ -80,17 +80,35 @@ namespace ObligatorioDA2.Services
             return created;
         }
 
-        public Team GetTeam(int id)
+        public Team Modify(TeamDto testDto)
         {
-            Team toReturn;
-            if (authentication.IsLoggedIn())
-            {
-                toReturn = TryGetTeam(id);
-            }
-            else {
+            if (!authentication.IsLoggedIn()) {
                 throw new NotAuthenticatedException();
             }
-            return toReturn;
+            if (!authentication.HasAdminPermissions()) {
+                throw new NoPermissionsException();
+            }
+            Team old = TryGetTeam(testDto.id);
+            Team updated = Update(old, testDto);
+            teams.Modify(updated);
+            return updated;
+        }
+
+        private Team Update(Team old, TeamDto testDto)
+        {
+            int id = old.Id;
+            string name = string.IsNullOrWhiteSpace(testDto.name) ? old.Name : testDto.name;
+            string photoPath = string.IsNullOrWhiteSpace(testDto.photo) ? old.PhotoPath : testDto.photo;
+            return new Team(id, name, photoPath, old.Sport);
+        }
+
+        public Team GetTeam(int id)
+        {
+            if (!authentication.IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
+            return TryGetTeam(id);
         }
 
         private Team TryGetTeam(int id)
@@ -109,5 +127,7 @@ namespace ObligatorioDA2.Services
             }
             return toReturn;
         }
+
+      
     }
 }
