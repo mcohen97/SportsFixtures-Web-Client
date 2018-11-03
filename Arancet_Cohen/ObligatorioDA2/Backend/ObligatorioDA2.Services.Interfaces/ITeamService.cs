@@ -10,5 +10,6 @@ namespace ObligatorioDA2.Services.Interfaces
     {
         Team GetTeam(int id);
         Team AddTeam(TeamDto testDto);
+        Team Modify(TeamDto testDto);
     }
 }
