@@ -378,7 +378,7 @@ namespace ObligatorioDA2.Data.Repositories
             if (!Exists(id))
                 throw new TeamNotFoundException();
 
-            TeamEntity entity = context.Teams
+            TeamEntity entity = context.Teams.AsNoTracking()
                 .Include(t=> t.Sport)
                 .FirstOrDefault(e => e.TeamNumber == id);
             Team converted = mapper.ToTeam(entity);
