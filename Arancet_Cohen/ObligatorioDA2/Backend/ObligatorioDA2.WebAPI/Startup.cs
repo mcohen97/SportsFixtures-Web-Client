@@ -56,6 +56,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFixtureService, FixtureService>();
             services.AddScoped<ISportTableService, SportTableService>();
+            services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IImageService>(provider => new ImageService(Configuration.GetSection("TeamsImages").GetValue<string>("DirPath")));
             services.Configure<FixtureStrategies>(Configuration.GetSection("FixtureStrategies"));
         }
