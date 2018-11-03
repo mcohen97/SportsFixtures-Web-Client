@@ -11,6 +11,8 @@ using System.Net;
 using System.Text;
 using System.IO;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -18,36 +20,40 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class TeamsController : ControllerBase
     {
-        private ITeamRepository teams;
-        private ISportRepository sports;
+        private ITeamService teamService;
         private IImageService images;
+        IAuthenticationService authentication;
+        private ErrorActionResultFactory errors;
         private const string IMG_EXTENSION = ".jpg";
 
-        public TeamsController(ITeamRepository teamsRepo, ISportRepository sportsRepo, IImageService imageManager)
+        public TeamsController(ITeamService aService, IImageService imageManager, IAuthenticationService authService)
         {
-            teams = teamsRepo;
-            sports = sportsRepo;
+            teamService = aService;
+            errors = new ErrorActionResultFactory(this);
             images = imageManager;
+            authentication = authService;
+
         }
 
         [HttpGet]
         [Authorize]
         public IActionResult Get()
         {
+            SetSession();
             IActionResult result;
             try
             {
                 result = TryGet();
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryGet()
         {
-            ICollection<Team> allOfThem = teams.GetAll();
+            ICollection<Team> allOfThem = teamService.GetAllTeams();
             ICollection<TeamModelOut> conversion = allOfThem.Select(t => BuildTeamModelOut(t)).ToList();
             return Ok(conversion);
         }
@@ -56,51 +62,27 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(int id)
         {
+            SetSession();
             IActionResult result;
             try
             {
-                Team fetched = teams.Get(id);
+                Team fetched = teamService.GetTeam(id);
                 TeamModelOut output = BuildTeamModelOut(fetched);
                 result = Ok(output);
             }
-            catch (TeamNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = new NotFoundObjectResult(error);
+                result = errors.GenerateError(e);
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
+
             return result;
         }
-
-        [HttpGet("{sportName}/{teamName}")]
-        [Authorize]
-        public IActionResult Get(string sportName, string teamName)
-        {
-            IActionResult result;
-            try
-            {
-                Team fetched = teams.Get(sportName, teamName);
-                TeamModelOut transferObject = BuildTeamModelOut(fetched);
-                result = Ok(transferObject);
-            }
-            catch (TeamNotFoundException e)
-            {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = new NotFoundObjectResult(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
-            return result;
-        }
-
 
         [HttpPost]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] TeamModelIn team)
         {
+            SetSession();
             IActionResult result;
             if (ModelState.IsValid)
             {
@@ -115,21 +97,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult AddValidTeam(TeamModelIn team)
         {
+            SetSession();
             IActionResult result;
             try
             {
-                string imgData = Base64Encode(team.Photo);
-                team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
+
                 result = TryAddTeam(team);
-                images.SaveImage(team.Photo, imgData);
             }
-            catch (EntityAlreadyExistsException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = BadRequest(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -142,22 +119,30 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryAddTeam(TeamModelIn team)
         {
-            Sport played = sports.Get(team.SportName);
-            Team toAdd = new Team(team.Name, team.Photo, played);
-            Team added = teams.Add(toAdd);
+            string imgData = Base64Encode(team.Photo);
+            team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
+            TeamDto dto = BuildTransferObject(team);
+            Team added =teamService.AddTeam(dto);
             TeamModelOut modelOut = BuildTeamModelOut(added);
+            images.SaveImage(team.Photo, imgData);
             return CreatedAtRoute("GetTeamById",new {id =added.Id } ,modelOut);
+
         }
 
+        private TeamDto BuildTransferObject(TeamModelIn team)
+        {
+            return new TeamDto() { id = team.Id, name = team.Name, photo = team.Photo, sportName = team.SportName };
+        }
 
         [HttpPut("{teamId}")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(int teamId, [FromBody] TeamModelIn value)
         {
+            SetSession();
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = PutValid(teamId, value);
+                result = TryPut(teamId, value);
             }
             else
             {
@@ -166,54 +151,28 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult PutValid(int teamId, TeamModelIn value)
+        private IActionResult TryPut(int teamId, TeamModelIn value)
         {
             IActionResult result;
             try
             {
-                Sport played = sports.Get(value.SportName);
-                Team toModify = new Team(teamId, value.Name, value.Photo, played);
-                teams.Modify(toModify);
-                TeamModelOut output = BuildTeamModelOut(toModify);
+                value.Id = teamId;
+                TeamDto dto = BuildTransferObject(value);
+                Team modified = teamService.Modify(dto);
+                TeamModelOut output = BuildTeamModelOut(modified);
                 result = Ok(output);
             }
-            catch (EntityNotFoundException)
+            catch (ServiceException e)
             {
-                result = PostId(teamId, value);
+                if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
+                {
+                    result = Post(value);
+                }
+                else {
+                    result = errors.GenerateError(e);
+                }
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
-            return result;
-        }
 
-        private IActionResult PostId(int teamId, TeamModelIn team)
-        {
-            Team toAdd = new Team(teamId,team.Name, team.Photo,new Sport(team.SportName,true));
-            teams.Add(toAdd);
-            TeamModelOut addedTeam = BuildTeamModelOut(toAdd);
-            return CreatedAtRoute("GetTeamById", new { id = addedTeam.Id }, addedTeam);
-        }
-
-
-        [HttpDelete("{sportName}/{teamName}")]
-        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult Delete(string sportName, string teamName)
-        {
-            IActionResult result;
-            try
-            {
-                teams.Delete(sportName, teamName);
-                OkModelOut message = new OkModelOut() { OkMessage = "The team was deleted successfully" };
-                result = Ok(message);
-            }
-            catch (TeamNotFoundException e)
-            {
-                result = BadRequest(e.Message);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
             return result;
         }
 
@@ -221,21 +180,19 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(int id)
         {
+            SetSession();
             IActionResult result;
             try
             {
-                teams.Delete(id);
+                teamService.DeleteTeam(id);
                 OkModelOut message = new OkModelOut { OkMessage = "The team was deleted succesfully" };
                 result = Ok(message);
             }
-            catch (TeamNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = CreateErrorModel(e);
-                result = NotFound(error);
+                result = errors.GenerateError(e);
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
-            }
+
             return result;
         }
 
@@ -250,16 +207,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             };
             return output;
         }
-        private IActionResult NoDataAccess(DataInaccessibleException e)
-        {
-            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
-            return internalError;
-        }
 
-        private ErrorModelOut CreateErrorModel(Exception e)
-        {
-            return new ErrorModelOut() { ErrorMessage = e.Message };
+        private void SetSession() {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authentication.SetSession(username);
         }
     }
 }
