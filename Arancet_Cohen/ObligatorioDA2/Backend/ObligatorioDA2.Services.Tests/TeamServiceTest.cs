@@ -34,6 +34,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetTeamTest() {
+            auth.Setup(r => r.IsLoggedIn()).Returns(true);
             teams.Setup(r => r.Get(1)).Returns(testTeam);
             Team fetched = testService.GetTeam(1);
             Assert.AreEqual(testTeam.Name,fetched.Name);
@@ -42,12 +43,13 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void GetTeamNotExistent() {
+            auth.Setup(r => r.IsLoggedIn()).Returns(true);
             teams.Setup(r => r.Get(It.IsAny<int>())).Throws(new TeamNotFoundException());
             testService.GetTeam(1);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NotAuthenticatedException))]
         public void GetTeamNotLoggedTest() {
             teams.Setup(r => r.Get(1)).Returns(testTeam);
             auth.Setup(r => r.IsLoggedIn()).Returns(false);
@@ -71,7 +73,22 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
+        public void AddTeamInvalidDataTest()
+        {
+            auth.Setup(r => r.IsLoggedIn()).Returns(true);
+            auth.Setup(r => r.HasAdminPermissions()).Returns(true);
+            sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
+            teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
+
+            testDto.name = null;
+            Team added = testService.AddTeam(testDto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
         public void AddTeamNotExistentSportTest() {
+            auth.Setup(r => r.IsLoggedIn()).Returns(true);
+            auth.Setup(r => r.HasAdminPermissions()).Returns(true);
             sports.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
             teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
 
@@ -79,7 +96,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NotAuthenticatedException))]
         public void AddTeamNotLoggedException() {
             auth.Setup(r => r.IsLoggedIn()).Returns(false);
             auth.Setup(r => r.HasAdminPermissions()).Returns(false);
@@ -88,7 +105,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NoPermissionsException))]
         public void AddTeamNotAuthorizedException()
         {
             auth.Setup(r => r.IsLoggedIn()).Returns(true);
