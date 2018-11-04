@@ -83,7 +83,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
-        public void GetAllNoAuthTest()
+        public void GetSportNoAuthTest()
         {
             LogOut();
             serviceToTest.GetSport(testSport.Name);
