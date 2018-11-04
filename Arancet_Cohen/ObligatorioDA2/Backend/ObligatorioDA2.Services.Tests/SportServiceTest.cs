@@ -21,6 +21,7 @@ namespace ObligatorioDA2.Services.Tests
         public void SetUp() {
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
+            authentication = new Mock<IAuthenticationService>();
             serviceToTest = new SportService(sportsStorage.Object, teamsStorage.Object, authentication.Object);
             testSport = new Sport("Sport", true);
         }
@@ -30,6 +31,8 @@ namespace ObligatorioDA2.Services.Tests
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.GetAll()).Returns(new List<Sport>() { testSport, testSport, testSport });
             ICollection<Sport> result= serviceToTest.GetAllSports();
+            authentication.Verify(r => r.IsLoggedIn(), Times.Once);
+            authentication.Verify(r => r.HasAdminPermissions(), Times.Never);
             sportsStorage.Verify(r => r.GetAll(), Times.Once);
             Assert.AreEqual(3, result.Count);
         }
@@ -49,6 +52,43 @@ namespace ObligatorioDA2.Services.Tests
             sportsStorage.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
             serviceToTest.GetAllSports();
         }
+
+        [TestMethod]
+        public void GetTeamTest() {
+            GrantFollowerPermissions();
+            sportsStorage.Setup(r => r.Get(testSport.Name)).Returns(testSport);
+            Sport result = serviceToTest.GetSport(testSport.Name);
+            authentication.Verify(r => r.IsLoggedIn(), Times.Once);
+            authentication.Verify(r => r.HasAdminPermissions(), Times.Never);
+            sportsStorage.Verify(r => r.Get(testSport.Name), Times.Once);
+            Assert.AreEqual(testSport.Name, result.Name);
+            Assert.AreEqual(testSport.IsTwoTeams, result.IsTwoTeams);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetTeamNotFoundTest() {
+            GrantFollowerPermissions();
+            sportsStorage.Setup(r => r.Get(testSport.Name)).Throws(new SportNotFoundException());
+            serviceToTest.GetSport(testSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetTeamNoDataAccess() {
+            GrantFollowerPermissions();
+            sportsStorage.Setup(r => r.Get(testSport.Name)).Throws(new DataInaccessibleException());
+            serviceToTest.GetSport(testSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetAllNoAuthTest()
+        {
+            LogOut();
+            serviceToTest.GetSport(testSport.Name);
+        }
+
 
         private void GrantAdminPermissions()
         {
