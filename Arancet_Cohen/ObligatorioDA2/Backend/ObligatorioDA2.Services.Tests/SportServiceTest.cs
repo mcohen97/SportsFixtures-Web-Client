@@ -143,6 +143,41 @@ namespace ObligatorioDA2.Services.Tests
             serviceToTest.GetSport(testSport.Name);
         }
 
+        [TestMethod]
+        public void DeleteTest() {
+            serviceToTest.DeleteSport(testSport.Name);
+            sportsStorage.Verify(r => r.Delete(testSport.Name), Times.Once);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void DeleteNotExistentSportTest() {
+            sportsStorage.Setup(r => r.Delete(testSport.Name)).Throws(new SportNotFoundException());
+            serviceToTest.DeleteSport(testSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void DeleteNoDataAccessTest() {
+            sportsStorage.Setup(r => r.Delete(testSport.Name)).Throws(new DataInaccessibleException());
+            serviceToTest.DeleteSport(testSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NoPermissionsException))]
+        public void DeleteSportNoPermissionsTest()
+        {
+            GrantFollowerPermissions();
+            serviceToTest.DeleteSport(testSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void DeleteSportNoAuthTest()
+        {
+            LogOut();
+            serviceToTest.DeleteSport(testSport.Name);
+        }
 
         private void GrantAdminPermissions()
         {
