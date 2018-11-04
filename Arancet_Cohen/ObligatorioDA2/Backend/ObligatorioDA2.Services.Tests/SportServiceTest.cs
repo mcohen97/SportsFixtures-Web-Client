@@ -54,7 +54,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        public void GetTeamTest() {
+        public void GetSportTest() {
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             Sport result = serviceToTest.GetSport(testSport.Name);
@@ -67,7 +67,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
-        public void GetTeamNotFoundTest() {
+        public void GetSportNotFoundTest() {
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.Get(testSport.Name)).Throws(new SportNotFoundException());
             serviceToTest.GetSport(testSport.Name);
@@ -75,10 +75,59 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
-        public void GetTeamNoDataAccess() {
+        public void GetSportNoDataAccess() {
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.Get(testSport.Name)).Throws(new DataInaccessibleException());
             serviceToTest.GetSport(testSport.Name);
+        }
+
+        [TestMethod]
+        public void AddSportTest() {
+            GrantAdminPermissions();
+            Sport result = serviceToTest.AddSport(testDto);
+            sportsStorage.Verify(r => r.Add(It.IsAny<Sport>()), Times.Once);
+            Assert.AreEqual(testSport.Name,result.Name);
+            Assert.AreEqual(testSport.IsTwoTeams, result.IsTwoTeams);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddInvalidFormatSportTest() {
+            GrantAdminPermissions();
+            testDto.name = null;
+            serviceToTest.AddSport(testDto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddAlreadyExistentSportTest() {
+            GrantAdminPermissions();
+            sportsStorage.Setup(r => r.Add(It.IsAny<Sport>())).Throws(new SportAlreadyExistsException());
+            serviceToTest.AddSport(testDto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddSportNoDataAccessTest()
+        {
+            GrantAdminPermissions();
+            sportsStorage.Setup(r => r.Add(It.IsAny<Sport>())).Throws(new DataInaccessibleException());
+            serviceToTest.AddSport(testDto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddSportNoAuthenticationTest() {
+            LogOut();
+            serviceToTest.AddSport(testDto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddSportNoPermissionsTest()
+        {
+            GrantFollowerPermissions();
+            serviceToTest.AddSport(testDto);
         }
 
         [TestMethod]
