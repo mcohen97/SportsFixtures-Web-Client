@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.Services
 {
@@ -52,6 +55,34 @@ namespace ObligatorioDA2.Services
             return fromStorage;
         }
 
+        public Sport AddSport(SportDto dto)
+        {
+            AuthenticateAdmin();
+            Sport toAdd = TryCreate(dto);
+            try {
+                sports.Add(toAdd);
+            }
+            catch (SportAlreadyExistsException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_ALREADY_EXISTS);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+            return toAdd;
+        }
+
+        private Sport TryCreate(SportDto dto)
+        {
+            Sport built;
+            try {
+                built = new Sport(dto.name, dto.isTwoTeams);
+            }
+            catch (InvalidSportDataException e) {
+                throw new ServiceException(e.Message, ErrorType.INVALID_DATA);
+            }
+            return built;
+        }
+
         private void AuthenticateAdmin()
         {
             if (!authenticator.IsLoggedIn())
@@ -72,6 +103,5 @@ namespace ObligatorioDA2.Services
                 throw new NotAuthenticatedException();
             }
         }
-
     }
 }
