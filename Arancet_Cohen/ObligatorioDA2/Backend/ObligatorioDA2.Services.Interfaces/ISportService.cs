@@ -11,5 +11,6 @@ namespace ObligatorioDA2.Services.Interfaces
         ICollection<Sport> GetAllSports();
         Sport GetSport(string name);
         Sport AddSport(SportDto testDto);
+        void DeleteSport(string name);
     }
 }
