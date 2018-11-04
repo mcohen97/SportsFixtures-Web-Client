@@ -34,6 +34,24 @@ namespace ObligatorioDA2.Services
             return allOfThem;
         }
 
+        public Sport GetSport(string name)
+        {
+            Authenticate();
+            Sport fromStorage;
+            try
+            {
+                fromStorage = sports.Get(name);
+            }
+            catch (SportNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+            return fromStorage;
+        }
+
         private void AuthenticateAdmin()
         {
             if (!authenticator.IsLoggedIn())
@@ -54,5 +72,6 @@ namespace ObligatorioDA2.Services
                 throw new NotAuthenticatedException();
             }
         }
+
     }
 }
