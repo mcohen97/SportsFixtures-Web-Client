@@ -83,6 +83,20 @@ namespace ObligatorioDA2.Services
             return built;
         }
 
+        public void DeleteSport(string name)
+        {
+            AuthenticateAdmin();
+            try {
+                sports.Delete(name);
+            }
+            catch (SportNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+        }
+
         private void AuthenticateAdmin()
         {
             if (!authenticator.IsLoggedIn())
@@ -103,5 +117,7 @@ namespace ObligatorioDA2.Services
                 throw new NotAuthenticatedException();
             }
         }
+
+
     }
 }
