@@ -6,9 +6,12 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+
 
 namespace ObligatorioDA2.Services.Tests
 {
+    [TestClass]
     public class SportServiceTest
     {
         private ISportService serviceToTest;
@@ -16,6 +19,7 @@ namespace ObligatorioDA2.Services.Tests
         private Mock<ITeamRepository> teamsStorage;
         private Mock<IAuthenticationService> authentication;
         private Sport testSport;
+        private SportDto testDto;
 
         [TestInitialize]
         public void SetUp() {
@@ -24,6 +28,7 @@ namespace ObligatorioDA2.Services.Tests
             authentication = new Mock<IAuthenticationService>();
             serviceToTest = new SportService(sportsStorage.Object, teamsStorage.Object, authentication.Object);
             testSport = new Sport("Sport", true);
+            testDto = new SportDto() { name = testSport.Name, isTwoTeams = testSport.IsTwoTeams };
         }
 
         [TestMethod]
@@ -38,7 +43,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NotAuthenticatedException))]
         public void GetAllNoAuthTest() {
             LogOut();
             serviceToTest.GetAllSports();
@@ -116,14 +121,14 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NotAuthenticatedException))]
         public void AddSportNoAuthenticationTest() {
             LogOut();
             serviceToTest.AddSport(testDto);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NoPermissionsException))]
         public void AddSportNoPermissionsTest()
         {
             GrantFollowerPermissions();
@@ -131,7 +136,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NotAuthenticatedException))]
         public void GetSportNoAuthTest()
         {
             LogOut();
