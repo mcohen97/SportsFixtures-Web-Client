@@ -145,6 +145,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void DeleteTest() {
+            GrantAdminPermissions();
             serviceToTest.DeleteSport(testSport.Name);
             sportsStorage.Verify(r => r.Delete(testSport.Name), Times.Once);
         }
@@ -152,6 +153,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void DeleteNotExistentSportTest() {
+            GrantAdminPermissions();
             sportsStorage.Setup(r => r.Delete(testSport.Name)).Throws(new SportNotFoundException());
             serviceToTest.DeleteSport(testSport.Name);
         }
@@ -159,6 +161,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void DeleteNoDataAccessTest() {
+            GrantAdminPermissions();
             sportsStorage.Setup(r => r.Delete(testSport.Name)).Throws(new DataInaccessibleException());
             serviceToTest.DeleteSport(testSport.Name);
         }
