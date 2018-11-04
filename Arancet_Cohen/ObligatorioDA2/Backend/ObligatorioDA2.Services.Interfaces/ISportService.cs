@@ -8,5 +8,6 @@ namespace ObligatorioDA2.Services.Interfaces
     public interface ISportService
     {
         ICollection<Sport> GetAllSports();
+        Sport GetSport(string name);
     }
 }
