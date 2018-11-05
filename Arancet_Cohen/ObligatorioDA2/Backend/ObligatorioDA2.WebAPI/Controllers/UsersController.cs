@@ -4,12 +4,10 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
-using System.Net;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
@@ -19,14 +17,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService userService;
+        private IAuthenticationService authenticator;
         private UserFactory factory;
         private IImageService images;
         private ErrorActionResultFactory errors;
 
 
-        public UsersController(IUserService aService, IImageService imageService) {
+        public UsersController(IUserService aService,IAuthenticationService authenticationService, IImageService imageService) {
             userService = aService;
             images = imageService;
+            authenticator = authenticationService;
             factory = new UserFactory();
             errors = new ErrorActionResultFactory(this);
         }
@@ -35,6 +35,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
+            SetSession();
             IActionResult result;
             try {
                 result = TryGetAll();
@@ -56,6 +57,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(string username)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -85,7 +87,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] UserModelIn user)
-        {          
+        {
+            SetSession();
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
@@ -126,6 +129,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(string username, [FromBody] UpdateUserModelIn input)
         {
+            SetSession();
             IActionResult result;
             UserDto toModify = BuildUser(username, input);
             try
@@ -152,6 +156,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string username)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -198,6 +203,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult FollowTeam(int teamId)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -225,11 +231,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult UnFollowTeam(int teamId)
         {
-            return UnFollowValidFormat(teamId);
-        }
-
-        private IActionResult UnFollowValidFormat(int teamId)
-        {
+            SetSession();
             IActionResult result;
             try
             {
@@ -256,6 +258,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult GetFollowedTeams(string username)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -267,7 +270,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             return result;
         }
-
+        private void SetSession()
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authenticator.SetSession(username);
+        }
         private IActionResult TryGetFollowedTeams(string username)
         {
             ICollection<Team> followed = userService.GetUserTeams(username);
