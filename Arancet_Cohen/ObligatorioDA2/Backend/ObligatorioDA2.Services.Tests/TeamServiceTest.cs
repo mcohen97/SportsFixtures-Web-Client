@@ -207,10 +207,10 @@ namespace ObligatorioDA2.Services.Tests
         public void GetSportTeamsTest()
         {
             GrantFollowerPermissions();
-            auth.Verify(r => r.IsLoggedIn(), Times.Once);
-            auth.Verify(r => r.HasAdminPermissions(), Times.Never);
             teams.Setup(r => r.GetTeams(testSport.Name)).Returns(new List<Team>() { testTeam, testTeam, testTeam });
             ICollection<Team> result = testService.GetSportTeams(testSport.Name);
+            auth.Verify(r => r.IsLoggedIn(), Times.Once);
+            auth.Verify(r => r.HasAdminPermissions(), Times.Never);
             teams.Verify(r => r.GetTeams(testSport.Name), Times.Once);
             Assert.AreEqual(3, result.Count);
         }
