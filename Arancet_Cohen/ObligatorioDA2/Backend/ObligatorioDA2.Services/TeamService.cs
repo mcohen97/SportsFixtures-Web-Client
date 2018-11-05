@@ -144,6 +144,24 @@ namespace ObligatorioDA2.Services
             return allOfThem;
         }
 
+        public ICollection<Team> GetSportTeams(string name)
+        {
+            Authenticate();
+            ICollection<Team> sportTeams;
+            try
+            {
+                sportTeams = teams.GetTeams(name);
+            }
+            catch (SportNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+            return sportTeams;
+        }
+
         private void AuthenticateAdmin() {
             if (!authentication.IsLoggedIn())
             {
@@ -162,7 +180,5 @@ namespace ObligatorioDA2.Services
                 throw new NotAuthenticatedException();
             }
         }
-
-   
     }
 }
