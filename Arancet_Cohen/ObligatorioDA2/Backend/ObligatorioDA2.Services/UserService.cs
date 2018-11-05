@@ -7,7 +7,6 @@ using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ObligatorioDA2.Services
 {
@@ -15,17 +14,20 @@ namespace ObligatorioDA2.Services
     {
         private IUserRepository usersStorage;
         private ITeamRepository teamsStorage;
+        private IAuthenticationService authenticator;
         private UserFactory factory;
 
-        public UserService(IUserRepository usersRepository, ITeamRepository teamRepository)
+        public UserService(IUserRepository usersRepository, ITeamRepository teamRepository, IAuthenticationService authService)
         {
             usersStorage = usersRepository;
             teamsStorage = teamRepository;
+            authenticator = authService;
             factory = new UserFactory();
         }
 
         public User AddUser(UserDto userData)
         {
+            AuthenticateAdmin();
             User toAdd= TryCreate(userData);
             TryAdd(toAdd);
             return toAdd;
@@ -79,6 +81,7 @@ namespace ObligatorioDA2.Services
 
         public void DeleteUser(string userName)
         {
+            AuthenticateAdmin();
             try
             {
                 usersStorage.Delete(userName);
@@ -94,6 +97,7 @@ namespace ObligatorioDA2.Services
 
         public User GetUser(string username)
         {
+            Authenticate();
             try
             {
                 return usersStorage.Get(username);
@@ -110,6 +114,7 @@ namespace ObligatorioDA2.Services
 
         public User ModifyUser(UserDto toModify)
         {
+            AuthenticateAdmin();
             User old = GetUser(toModify.username);
             User updated = TryUpdate(old, toModify);
             try
@@ -154,12 +159,14 @@ namespace ObligatorioDA2.Services
 
         public void FollowTeam(string userName, int idTeam)
         {
-            Team toFollow = teamsStorage.Get(idTeam);
+            Authenticate();
+            Team toFollow = TryGetTeam(idTeam);
             FollowTeam(userName, toFollow);
         }
 
         public void FollowTeam(string username, Team toFollow)
         {
+            Authenticate();
             try
             {
                 TryFollowTeam(username, toFollow);
@@ -172,22 +179,37 @@ namespace ObligatorioDA2.Services
 
         private void TryFollowTeam(string username, Team toFollow)
         {
-            User follower = usersStorage.Get(username);
+            User follower = GetUser(username);
             follower.AddFavourite(toFollow);
             usersStorage.Modify(follower);
         }
 
         public void UnFollowTeam(string userName, int idTeam)
         {
-            Team toUnfollow = teamsStorage.Get(idTeam);
+            Authenticate();
+            Team toUnfollow = TryGetTeam(idTeam); 
             UnFollowTeam(userName, toUnfollow);
         }
 
-        public void UnFollowTeam(string username, Team fake)
+        private Team TryGetTeam(int idTeam)
         {
+            Team stored;
             try
             {
-                TryUnFollow(username, fake);
+                stored = teamsStorage.Get(idTeam);
+            }
+            catch (TeamNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            return stored;
+        }
+
+        public void UnFollowTeam(string username, Team toFollow)
+        {
+            Authenticate();
+            try
+            {
+                TryUnFollow(username, toFollow);
             }
             catch (InvalidUserDataException)
             {
@@ -197,7 +219,7 @@ namespace ObligatorioDA2.Services
 
         private void TryUnFollow(string username, Team fake)
         {
-            User follower = usersStorage.Get(username);
+            User follower = GetUser(username);
             follower.RemoveFavouriteTeam(fake);
             usersStorage.Modify(follower);
         }
@@ -205,6 +227,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Team> GetUserTeams(string userName)
         {
+            Authenticate();
             ICollection<Team> userTeams;
             try
             {
@@ -222,6 +245,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<User> GetAllUsers()
         {
+            Authenticate();
             ICollection<User> allOfThem;
             try
             {
@@ -231,6 +255,27 @@ namespace ObligatorioDA2.Services
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
             return allOfThem;
+        }
+
+        private void AuthenticateAdmin()
+        {
+            if (!authenticator.IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
+
+            if (!authenticator.HasAdminPermissions())
+            {
+                throw new NoPermissionsException();
+            }
+        }
+
+        private void Authenticate()
+        {
+            if (!authenticator.IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
         }
 
     }
