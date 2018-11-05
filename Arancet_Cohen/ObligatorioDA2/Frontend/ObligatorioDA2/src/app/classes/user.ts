@@ -9,6 +9,7 @@ export class User {
     public static getClone(aUser:User): User{
         var user = new User(aUser.username, aUser.name, aUser.surname, aUser.email);
         user.password = aUser.password;
+        user.isAdmin = aUser.isAdmin;
         return user;
     }
     
@@ -18,7 +19,7 @@ export class User {
         this.username = username;
         this.email = email;
         this.isAdmin = false;
-        this.password = "aPassword";
+        this.password = "";
     }
 
 }

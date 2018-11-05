@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA, MatDialog, ErrorStateMatcher} from '@angular/material';
-import { UsersComponent } from '.././users.component';
+import { UsersComponent } from '../users.component';
 import { Injectable } from "@angular/core";
 import { Http, Response, RequestOptions, Headers } from "@angular/http"; 
 import { Observable, throwError } from "rxjs";  
@@ -14,33 +14,42 @@ import { UserError } from 'src/app/classes/userError';
 import { CustomValidators } from 'src/app/classes/custom-validators';
 
 @Component({
-  selector: 'app-user-add-dialog',
-  templateUrl: './user-add-dialog.component.html',
-  styleUrls: ['./user-add-dialog.component.css']
+  selector: 'app-user-dialog',
+  templateUrl: './user-dialog.component.html',
+  styleUrls: ['./user-dialog.component.css']
 })
-export class UserAddDialogComponent {
+export class UserDialogComponent {
 
   userError = new UserError();
-  errorBooleans = [];
-  
+  errorFlags = [];
+  updatePassword = true;
   usernameControl:FormControl;
   passwordControl:FormControl;
+  passwordConfirmationControl:FormControl;
   nameControl:FormControl;
   surnameControl:FormControl;
   emailControl:FormControl;
 
+
   constructor(
-    public dialogRef: MatDialogRef<UserAddDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data:User,
+    public dialogRef: MatDialogRef<UserDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data:UserDialogData,
     private globals:Globals, 
     private usersService: UsersService
   ) { 
     this.resetErrors();
-    this.usernameControl = new FormControl('',);
-    this.passwordControl = new FormControl('',);
-    this.nameControl = new FormControl('',);
-    this.surnameControl = new FormControl('',);
-    this.emailControl = new FormControl('',);
+    this.usernameControl = new FormControl();
+    this.passwordControl = new FormControl();
+    this.passwordConfirmationControl = new FormControl();
+    this.nameControl = new FormControl();
+    this.surnameControl = new FormControl();
+    this.emailControl = new FormControl();
+    this.updatePassword = this.data.isNewUser;
+    if(!this.data.isNewUser){
+      this.usernameControl.disable();
+      this.passwordConfirmationControl.disable();
+      this.passwordControl.disable();
+    }
     this.setValidators();
   }
 
@@ -51,13 +60,33 @@ export class UserAddDialogComponent {
   }
 
   onSaveClick():void{
-    this.addUser(this.data);
+    this.markControlsAsTouched();
+    this.updateControls();
+    if(this.allValid())
+      this.data.isNewUser ? this.addUser(this.data.aUser) : this.updateUser(this.data.aUser);
+  }
+  allValid(): boolean {
+    return (this.usernameControl.valid || this.usernameControl.disabled)
+      && (this.passwordControl.valid || this.passwordControl.disabled)
+      && (this.passwordConfirmationControl.valid || this.passwordConfirmationControl.disabled)
+      && this.nameControl.valid
+      && this.surnameControl.valid
+      && this.emailControl.valid
   }
 
   addUser(newUser:User):void{
     this.usersService.addUser(newUser).subscribe(
       ((result:User) => {
         this.dialogRef.close(newUser);
+      }),
+      ((error:ErrorResponse) => this.handleError(error))
+    );
+  }
+
+  updateUser(userEdited:User):void{
+    this.usersService.modifyUser(userEdited).subscribe(
+      ((result:User) => {
+        this.dialogRef.close(userEdited);
       }),
       ((error:ErrorResponse) => this.handleError(error))
     );
@@ -70,12 +99,12 @@ export class UserAddDialogComponent {
     this.markControlsAsTouched();
     this.updateControls();
     this.resetErrors();
-    console.log(this.usernameControl.errors); 
   }
 
   private updateControls() {
     this.usernameControl.updateValueAndValidity();
     this.passwordControl.updateValueAndValidity();
+    this.passwordConfirmationControl.updateValueAndValidity();
     this.nameControl.updateValueAndValidity();
     this.surnameControl.updateValueAndValidity();
     this.emailControl.updateValueAndValidity();
@@ -84,27 +113,30 @@ export class UserAddDialogComponent {
   private markControlsAsTouched() {
     this.usernameControl.markAsTouched();
     this.passwordControl.markAsTouched();
+    this.passwordConfirmationControl.markAsTouched();
     this.emailControl.markAsTouched();
     this.nameControl.markAsTouched();
     this.surnameControl.markAsTouched();
   }
 
   private checkErrors() {
-    this.errorBooleans['usernameInput'] = this.userError.Username != undefined;
-    this.errorBooleans['passwordInput'] = this.userError.Password != undefined;
-    this.errorBooleans['nameInput'] = this.userError.Name != undefined;
-    this.errorBooleans['surnameInput'] = this.userError.Surname != undefined;
-    this.errorBooleans['emailInput'] = this.userError.Email != undefined;
-    this.errorBooleans['errorMessageInput'] = this.userError.errorMessage != undefined;
+    this.errorFlags['usernameInput'] = this.userError.Username != undefined;
+    this.errorFlags['passwordInput'] = this.userError.Password != undefined;
+    this.errorFlags['passwordConfirmationInput'] = this.passwordConfirmationControl.value != this.passwordConfirmationControl.value;
+    this.errorFlags['nameInput'] = this.userError.Name != undefined;
+    this.errorFlags['surnameInput'] = this.userError.Surname != undefined;
+    this.errorFlags['emailInput'] = this.userError.Email != undefined;
+    this.errorFlags['errorMessageInput'] = this.userError.errorMessage != undefined;
   }
 
   private resetErrors(){
-    this.errorBooleans['usernameInput'] = false;
-    this.errorBooleans['passwordInput'] = false;
-    this.errorBooleans['nameInput'] = false;
-    this.errorBooleans['surnameInput'] = false;
-    this.errorBooleans['emailInput'] = false;
-    this.errorBooleans['errorMessageInput'] = false;
+    this.errorFlags['usernameInput'] = false;
+    this.errorFlags['passwordInput'] = false;
+    this.errorFlags['nameInput'] = false;
+    this.errorFlags['surnameInput'] = false;
+    this.errorFlags['emailInput'] = false;
+    this.errorFlags['errorMessageInput'] = false;
+    this.errorFlags['passwordConfirmationInput'] = false;
   }
 
   private setValidators() {
@@ -115,6 +147,10 @@ export class UserAddDialogComponent {
     ]);
     this.passwordControl.setValidators([
       this.existError("passwordInput"),
+      Validators.required
+    ]);
+    this.passwordConfirmationControl.setValidators([
+      this.existError("passwordConfirmationInput"),
       Validators.required
     ]);
     this.nameControl.setValidators([
@@ -134,7 +170,7 @@ export class UserAddDialogComponent {
 
   private existError(keyError:string): ValidatorFn {
     return (control:AbstractControl) : ValidationErrors | null=>{
-      if(this.errorBooleans[keyError]){
+      if(this.errorFlags[keyError]){
         let temp = [];
         temp[keyError] = true;
         return temp;
@@ -146,8 +182,25 @@ export class UserAddDialogComponent {
 
   removeError(control:AbstractControl, keyError:string):void{
     control.setErrors(null);
-    this.errorBooleans[keyError] = false;
+    this.errorFlags[keyError] = false;
     control.updateValueAndValidity();
+  }
+
+  togglePasswordEnabled():void{
+    if(this.updatePassword){
+      this.passwordControl.enable();
+      this.passwordConfirmationControl.enable();
+    }
+    else{
+      this.passwordControl.disable();
+      this.passwordConfirmationControl.disable();
+    }
+  }
+
+  checkPasswordConfirmation(){
+    this.errorFlags['passwordConfirmationInput'] = this.passwordControl.value != this.passwordConfirmationControl.value;
+    this.passwordConfirmationControl.markAsTouched();
+    this.passwordConfirmationControl.updateValueAndValidity();
   }
 
 }
@@ -159,11 +212,8 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   }
 }
 
-export interface ErrorsBools{
-  usernameError:boolean;
-  passwordError:boolean;
-  nameError:boolean;
-  surnameError:boolean;
-  emailError:boolean;
-  errorMessage:boolean;
+export interface UserDialogData{
+  aUser: User;
+  isNewUser: boolean;
+  tiitle: string;
 }

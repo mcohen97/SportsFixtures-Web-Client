@@ -3,9 +3,9 @@ import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA
 import { User } from 'src/app/classes/user';
 import { Globals } from 'src/app/globals';
 import { UsersService } from 'src/app/services/users/users.service';
-import { UserEditDialogComponent } from './user-edit-dialog';
+import { UserEditDialogComponent } from './user-edit-dialog/user-edit-dialog';
 import { ConfirmationDialogComponent, DialogInfo } from '../confirmation-dialog/confirmation-dialog';
-import { UserAddDialogComponent } from './user-add-dialog/user-add-dialog.component';
+import { UserDialogComponent } from './user-dialog/user-dialog.component';
 import { ErrorResponse } from 'src/app/classes/error';
 
 @Component({
@@ -14,7 +14,7 @@ import { ErrorResponse } from 'src/app/classes/error';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  displayedColumns: string[] = ['username', 'name', 'surname', 'email', 'options'];
+  displayedColumns: string[] = ['username', 'name', 'surname', 'email', 'isAdmin', 'options'];
   dataSource:MatTableDataSource<User>;
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
@@ -56,15 +56,22 @@ export class UsersComponent implements OnInit {
   openEditDialog(aUser:User):void{
     this.userEdited = User.getClone(aUser);
     this.rowEdited = aUser;
-    const dialogRef = this.dialog.open(UserEditDialogComponent, {
+    const dialogRef = this.dialog.open(UserDialogComponent, {
       width:'500px',
-      data: this.userEdited
+      data: {
+        aUser: this.userEdited,
+        title: "Edit user",
+        isNewUser: false
+      }
     });
     dialogRef.afterClosed().subscribe(
       ((result:User) => {
-        this.rowEdited.name = result.name;
-        this.rowEdited.surname = result.surname;
-        this.rowEdited.email = result.email;
+        if(result!=undefined){
+          this.rowEdited.name = result.name;
+          this.rowEdited.surname = result.surname;
+          this.rowEdited.email = result.email;
+          this.rowEdited.isAdmin = result.isAdmin;
+        }       
       })
     )
   }
@@ -95,11 +102,13 @@ export class UsersComponent implements OnInit {
   }
 
   openAddDialog():void{
-    var user:User;
-    const dialogRef = this.dialog.open(UserAddDialogComponent, {
+    var user = new User("","","","");
+    const dialogRef = this.dialog.open(UserDialogComponent, {
       width:'500px',
       data: {
-        data: user,
+        aUser: user,
+        title: "Add new user",
+        isNewUser: true
       }
     });
     dialogRef.afterClosed().subscribe(

@@ -37,7 +37,7 @@ export class UsersService {
         ); 
     }
 
-    modifyUser(user:User):Observable<Response>{
+    modifyUser(user:User):Observable<User>{
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');
         myHeaders.append('Authorization', 'Bearer '+this.globals.token);

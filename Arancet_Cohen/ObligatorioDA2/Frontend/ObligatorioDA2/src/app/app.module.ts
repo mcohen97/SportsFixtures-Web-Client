@@ -54,10 +54,10 @@ import { Globals } from './globals';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { UsersService } from './services/users/users.service';
 import { UsersComponent } from './components/users/users.component';
-import { UserEditDialogComponent } from './components/users/user-edit-dialog';
+import { UserEditDialogComponent } from './components/users/user-edit-dialog/user-edit-dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { User } from './classes/user';
-import { UserAddDialogComponent } from './components/users/user-add-dialog/user-add-dialog.component';
+import { UserDialogComponent } from './components/users/user-dialog/user-dialog.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +69,7 @@ import { UserAddDialogComponent } from './components/users/user-add-dialog/user-
     UsersComponent,
     UserEditDialogComponent,
     ConfirmationDialogComponent,
-    UserAddDialogComponent
+    UserDialogComponent
   ],
   imports: [
     RouterModule.forRoot([
@@ -138,7 +138,7 @@ import { UserAddDialogComponent } from './components/users/user-add-dialog/user-
   entryComponents: [
     UserEditDialogComponent, 
     ConfirmationDialogComponent,
-    UserAddDialogComponent,
+    UserDialogComponent,
   ],
   bootstrap: [AppComponent],
   

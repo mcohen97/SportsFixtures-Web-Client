@@ -5,6 +5,8 @@
     margin-bottom: 10px;
 }
 
+.dialog-input[hidden] { display: none; }
+
 .dialog-title{
     color: rgb(20, 140, 60);
 }

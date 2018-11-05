@@ -7,23 +7,54 @@ table {
     width: 100%;
 }
 
-th {
-    width: 25%;
-    text-align: left;
+
+.table-header{
     color: rgb(20, 140, 60);
 }
-
-td{
-    width:25%;
+td.mat-cell{
     text-align: left;
     font-size: 12px;
+    padding: 5px;
 }
 
   
 .table-container{
-    width: 90%;
+    width: max-content;
     display: block;
     margin-left: auto;
     margin-right: auto;
     margin-top: 10px;
+}
+
+.add-user-button-fab{
+    margin: 10px;
+    position: fixed;;
+    right: 5px;
+    bottom: 5px;
+    display: block
+}
+
+.add-user-button-raised{
+    margin: 10px;
+    display: none
+}
+
+.option-button{
+    display: inline-block;
+    width:40px;
+}
+
+.option-button-container{
+    width: 80px;
+}
+
+@media only screen and (min-width: 768px) {
+    .add-user-button-raised{
+        display: inline-block;
+    }
+
+    .add-user-button-fab{
+        display: none;
+    }
+    
 }

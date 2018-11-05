@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA, MatDialog} from '@angular/material';
 import { User } from 'src/app/classes/user';
-import { UsersComponent } from './users.component';
+import { UsersComponent } from '../users.component';
 
 @Component({
     selector: 'dialog-user-edit',
