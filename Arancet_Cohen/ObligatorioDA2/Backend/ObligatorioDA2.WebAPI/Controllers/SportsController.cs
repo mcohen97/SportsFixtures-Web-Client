@@ -10,6 +10,8 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.Services.Interfaces;
 using System.Net;
 using Microsoft.Extensions.Options;
+using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -17,18 +19,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class SportsController : ControllerBase
     {
-        private ISportRepository sports;
-        private ITeamRepository teams;
+        private ISportService sports;
+        private ITeamService teams;
         private IFixtureService fixture;
         private ISportTableService tableService;
+        private IAuthenticationService authenticator;
+        private IImageService images;
+        private ErrorActionResultFactory errors;
 
-        public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, 
-            IFixtureService fixtureService,ISportTableService tableGenerator)
+        public SportsController(ISportService sportRepo, ITeamService teamRepo, 
+            IFixtureService fixtureService,ISportTableService tableGenerator, 
+            IAuthenticationService authService, IImageService imageService)
         {
             sports = sportRepo;
             fixture = fixtureService;
             teams = teamRepo;
             tableService = tableGenerator;
+            images = imageService;
+            errors = new ErrorActionResultFactory(this);
         }
 
         [HttpPost]
@@ -53,23 +61,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try {
                 result = TryAddSport(modelIn);
             }
-            catch (SportAlreadyExistsException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryAddSport(SportModelIn modelIn)
         {
-            Sport toAdd = new Sport(modelIn.Name,modelIn.IsTwoTeams);
-            sports.Add(toAdd);
-            SportModelOut modelOut = new SportModelOut(){Name = toAdd.Name};
-            IActionResult result = CreatedAtRoute("GetSportById",new {name = toAdd.Name },modelOut);
+            SportDto data = BuildSportDto(modelIn);
+            Sport added = sports.AddSport(data);
+            SportModelOut modelOut = new SportModelOut(){Name = added.Name};
+            IActionResult result = CreatedAtRoute("GetSportById",new {name = added.Name },modelOut);
             return result;
+        }
+
+        private SportDto BuildSportDto(SportModelIn modelIn)
+        {
+            return new SportDto() { name = modelIn.Name, isTwoTeams = modelIn.IsTwoTeams };
         }
 
         [HttpGet]
@@ -81,15 +90,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGetAll();
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryGetAll()
         {
-            ICollection<Sport> allOfThem = sports.GetAll();
+            ICollection<Sport> allOfThem = sports.GetAllSports();
             IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name });
             return Ok(output);
         }
@@ -104,21 +113,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGet(name);
             }
-            catch (SportNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
             return result;
-
         }
 
         private IActionResult TryGet(string name)
         {
-            Sport retrieved = sports.Get(name);
+            Sport retrieved = sports.GetSport(name);
             SportModelOut output = new SportModelOut() { Name = retrieved.Name };
             return Ok(output);
         }
@@ -132,63 +136,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryDelete(name);
             }
-            catch (SportNotFoundException e)
+            catch (ServiceException e)
             {
-                result = NotFound(e.Message);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryDelete(string name)
         {
-            sports.Delete(name);
+            sports.DeleteSport(name);
             OkModelOut okMessage = new OkModelOut() { OkMessage = "Sport was deleted" };
             return Ok(okMessage);
-        }
-
-        [HttpPut("{name}")]
-        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult Put(string name, [FromBody] SportModelIn modelIn)
-        {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = ModifyOrAdd(name, modelIn);
-            }
-            else
-            {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private IActionResult ModifyOrAdd(string name, SportModelIn modelIn)
-        {
-            IActionResult result;
-            Sport toAdd = new Sport(modelIn.Name,modelIn.IsTwoTeams);
-            try
-            {
-                sports.Modify(toAdd);
-                SportModelOut modelOut = new SportModelOut()
-                {
-                    Name = modelIn.Name
-                };
-                result = Ok(modelOut);
-            }
-            catch (SportNotFoundException)
-            {
-                sports.Add(toAdd);
-                SportModelOut modelOut = new SportModelOut() { Name = toAdd.Name };
-                result = CreatedAtRoute("GetSportById",new { name= toAdd.Name} ,modelOut);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
-            }
-            return result;
         }
 
 
@@ -198,17 +157,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             IActionResult result;
             try { 
-                ICollection<Team> sportTeams = teams.GetTeams(name);
+                ICollection<Team> sportTeams = teams.GetSportTeams(name);
                 ICollection<TeamModelOut> output = sportTeams.Select(t => CreateModelOut(t)).ToList();
                 result = Ok(output);
             }
-            catch (SportNotFoundException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -223,10 +177,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = TryCalculateTable(sportName);
 
             }
-            catch (EntityNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -251,15 +204,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id = aTeam.Id,
                 SportName = aTeam.Sport.Name,
                 Name = aTeam.Name,
-                Photo = new byte[0]
+                Photo = images.ReadImage(aTeam.PhotoPath)
             };
-        }
-
-        private IActionResult NoDataAccess(DataInaccessibleException e)
-        {
-            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
-            return internalError;
         }
     }
 }
