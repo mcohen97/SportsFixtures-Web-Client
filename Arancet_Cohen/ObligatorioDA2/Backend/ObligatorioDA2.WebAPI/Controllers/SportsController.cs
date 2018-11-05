@@ -5,11 +5,8 @@ using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.Services.Interfaces;
-using System.Net;
-using Microsoft.Extensions.Options;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 
