@@ -10,6 +10,9 @@
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
   </mat-form-field>
   <div class="mat-elevation-z8">
+    <div class="loading-shade" *ngIf="isLoading">
+      <mat-spinner *ngIf="isLoading"></mat-spinner>
+    </div>
     <table mat-table [dataSource]="dataSource" matSort>
 
       <ng-container matColumnDef="username">

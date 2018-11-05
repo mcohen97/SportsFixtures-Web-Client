@@ -16,12 +16,12 @@ export class HomeComponent {
   @ViewChild('sidenav') sidenav:MatSidenav;
   title = 'Sportlendar';
 
-  constructor(private globals:Globals){
+  constructor(){
   }
 
   getLogged():string{
-    if(this.globals.loggedUser != undefined)
-      return this.globals.loggedUser.username;
+    if(Globals.isUserLogged())
+      return Globals.getUserLogged();
     else
       return "Log in";
   }
@@ -30,4 +30,12 @@ export class HomeComponent {
     this.sidenav.close();
   }
 
+  logOut(){
+    Globals.logOut();
+    this.getLogged();
+  }
+
+  isUserLogged():boolean{
+    return Globals.isUserLogged();
+  }
 }

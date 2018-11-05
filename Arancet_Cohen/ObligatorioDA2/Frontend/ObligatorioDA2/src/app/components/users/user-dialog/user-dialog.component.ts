@@ -84,6 +84,8 @@ export class UserDialogComponent {
   }
 
   updateUser(userEdited:User):void{
+    if(!this.data.isNewUser && !this.updatePassword)
+      userEdited.password = undefined;
     this.usersService.modifyUser(userEdited).subscribe(
       ((result:User) => {
         this.dialogRef.close(userEdited);

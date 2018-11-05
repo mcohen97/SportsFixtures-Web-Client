@@ -21,6 +21,7 @@ export class UsersComponent implements OnInit {
   errorMessage: string;
   userEdited: User;
   rowEdited: User;
+  isLoading = false;
 
   constructor(private dialog:MatDialog, private globals:Globals, private usersService:UsersService) {
     this.getUsers();
@@ -31,6 +32,7 @@ export class UsersComponent implements OnInit {
   }
 
   private getUsers(){
+    this.isLoading = true;
     this.usersService.getAllUsers().subscribe(
       ((data:Array<User>) => this.updateTableData(data)),
       ((error:any) => this.handleError(error))
@@ -41,9 +43,11 @@ export class UsersComponent implements OnInit {
     this.dataSource = new MatTableDataSource(users);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.isLoading = false;
   }
 
   private handleError(error:ErrorResponse) {
+    this.isLoading = false;
   }
   
   applyFilter(filterValue:string){

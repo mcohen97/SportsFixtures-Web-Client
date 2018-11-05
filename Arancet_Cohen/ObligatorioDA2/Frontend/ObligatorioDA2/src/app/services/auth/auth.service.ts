@@ -4,6 +4,7 @@ import { Http, Response, RequestOptions, Headers } from "@angular/http";
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from "rxjs";  
 import { map, tap, catchError } from 'rxjs/operators'; 
+import { ErrorResponse } from "src/app/classes/error";
 
 @Injectable()
 export class AuthService {
@@ -24,9 +25,13 @@ export class AuthService {
     
     }
     
-    private handleError(error: Response) { 
-        console.error(error.status); 
-        return throwError(error.json()|| 'Server error'); 
+    private handleError(errorResponse: Response) { 
+        console.error(errorResponse.status);
+        var error = new ErrorResponse();
+        error.errorMessage = errorResponse.statusText;
+        error.errorCode = errorResponse.status;
+        error.errorObject = errorResponse.json();
+        return throwError(error || 'Server error'); 
     } 
 
 }

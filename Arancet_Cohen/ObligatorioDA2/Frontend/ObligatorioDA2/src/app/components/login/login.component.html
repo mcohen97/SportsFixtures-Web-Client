@@ -1,5 +1,8 @@
     <mat-card class = "login-card">
         <form (submit) = "login($event)" class = "login-form">
+            <div class="loading-shade" *ngIf="isLoading">
+                <mat-spinner *ngIf="isLoading"></mat-spinner>
+            </div>
             <mat-card-title class = "login-card-title">
                 Log in
             </mat-card-title>

@@ -9,12 +9,17 @@
     <span class = "title-toolbar">{{title}}</span>
     <span class = "logged-user">
       
-      <button type="button" routerLink="login" (click)="sidenav.close()" mat-button>
+      <button [matMenuTriggerFor]="menu" type="button"  mat-button>
           <i class="material-icons" style="vertical-align: middle; padding-bottom: 3px;">
               account_circle
           </i>  
         {{getLogged()}}
       </button>
+      <mat-menu #menu="matMenu">
+          <button mat-menu-item *ngIf = "!isUserLogged()" routerLink="login" (click)="sidenav.close()">Log in</button>
+          <button mat-menu-item *ngIf = "isUserLogged()" routerLink="users" (click)="sidenav.close()">Profile</button>
+          <button mat-menu-item *ngIf = "isUserLogged()" routerLink="login" (click)="logOut()">Log out</button>
+      </mat-menu>
     </span>
 </mat-toolbar>
 <mat-sidenav-container class="frontpage-container" (backdropClick) = "close()">

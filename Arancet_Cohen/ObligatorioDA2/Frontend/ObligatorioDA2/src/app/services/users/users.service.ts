@@ -10,13 +10,13 @@ import { ErrorResponse } from "src/app/classes/error";
 export class UsersService {
     private WEB_API_URL : string = 'https://localhost:5001/api/users/'; 
  
-    constructor(private globals:Globals, private _httpService: Http) {  } 
+    constructor(private _httpService: Http) {  } 
 
 
     getUser(username:string): Observable<User>{
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');
-        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
         const requestOptions = new RequestOptions({headers: myHeaders}); 
         return this._httpService.get(this.WEB_API_URL+username, requestOptions) 
         .pipe( 
@@ -28,7 +28,7 @@ export class UsersService {
     getAllUsers():Observable<Array<User>>{
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');
-        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
         const requestOptions = new RequestOptions({headers: myHeaders}); 
         return this._httpService.get(this.WEB_API_URL, requestOptions) 
         .pipe( 
@@ -40,7 +40,7 @@ export class UsersService {
     modifyUser(user:User):Observable<User>{
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');
-        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
         const requestOptions = new RequestOptions({headers: myHeaders}); 
         return this._httpService.put(this.WEB_API_URL+user.username, user, requestOptions) 
         .pipe( 
@@ -52,7 +52,7 @@ export class UsersService {
     deleteUser(username:string):Observable<Response>{
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');
-        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
         const requestOptions = new RequestOptions({headers: myHeaders}); 
         return this._httpService.delete(this.WEB_API_URL+username, requestOptions) 
         .pipe( 
@@ -64,7 +64,7 @@ export class UsersService {
     addUser(aUser:User):Observable<User>{
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');
-        myHeaders.append('Authorization', 'Bearer '+this.globals.token);
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
         const requestOptions = new RequestOptions({headers: myHeaders}); 
         return this._httpService.post(this.WEB_API_URL, aUser, requestOptions) 
         .pipe( 
