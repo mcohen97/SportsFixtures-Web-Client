@@ -29,7 +29,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         private ICollection<Team> teamsCollection;
         private ICollection<Encounter> oneMatchCollection;
         private ICollection<Encounter> homeAwayMatchCollection;
-        private Mock<IOptions<FixtureStrategies>> settings;
 
 
         [TestInitialize]
