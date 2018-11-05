@@ -202,6 +202,45 @@ namespace ObligatorioDA2.Services.Tests
             testService.DeleteTeam(2);
         }
 
+
+        [TestMethod]
+        public void GetSportTeamsTest()
+        {
+            GrantFollowerPermissions();
+            auth.Verify(r => r.IsLoggedIn(), Times.Once);
+            auth.Verify(r => r.HasAdminPermissions(), Times.Never);
+            teams.Setup(r => r.GetTeams(testSport.Name)).Returns(new List<Team>() { testTeam, testTeam, testTeam });
+            ICollection<Team> result = testService.GetSportTeams(testSport.Name);
+            teams.Verify(r => r.GetTeams(testSport.Name), Times.Once);
+            Assert.AreEqual(3, result.Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetSportTeamsNotFoundTest()
+        {
+            GrantFollowerPermissions();
+            teams.Setup(r => r.GetTeams(testSport.Name)).Throws(new SportNotFoundException());
+            testService.GetSportTeams(testSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetSportTeamsNoDataAccessTest()
+        {
+            GrantFollowerPermissions();
+            teams.Setup(r => r.GetTeams(testSport.Name)).Throws(new DataInaccessibleException());
+            testService.GetSportTeams(testSport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void GetSportTeamsWhenNotLoggedTest()
+        {
+            LogOut();
+            testService.GetSportTeams(testSport.Name);
+        }
+
         private void GrantAdminPermissions() {
             auth.Setup(r => r.IsLoggedIn()).Returns(true);
             auth.Setup(r => r.HasAdminPermissions()).Returns(true);
