@@ -7,40 +7,104 @@ using System.Linq;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Mappers;
+using ObligatorioDA2.BusinessLogic.Exceptions;
 
 namespace ObligatorioDA2.Services
 {
-    public class MatchService : IMatchService
+    public class MatchService : IInnerMatchService, IMatchService
     {
         private IMatchRepository matchesStorage;
         private ITeamRepository teamsStorage;
         private ISportRepository sportsStorage;
         private IUserRepository usersStorage;
         private EncounterFactory factory;
+        private EncounterDtoMapper encounterConverter;
+        private CommentaryDtoMapper commentConverter;
 
-        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository)
+        public MatchService(IMatchRepository matchesRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository)
         {
             factory = new EncounterFactory();
-            matchesStorage = matchsRepository;
+            matchesStorage = matchesRepository;
             teamsStorage = teamsRepository;
             sportsStorage = sportsRepository;
+            encounterConverter = new EncounterDtoMapper(teamsStorage, matchesStorage,sportsStorage);
         }
 
         public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository, IUserRepository usersRepository)
             : this(matchsRepository, teamsRepository, sportsRepository)
         {
             usersStorage = usersRepository;
+            commentConverter = new CommentaryDtoMapper(usersStorage);
+
         }
 
-        public Encounter AddMatch(Encounter aMatch)
+        public EncounterDto AddMatch(ICollection<int> teamsIds, string sportName, DateTime date)
         {
-            ValidateDate(aMatch);
-            return matchesStorage.Add(aMatch);
+            return AddMatch(0, teamsIds, sportName, date);
         }
-        public void ModifyMatch(Encounter aMatch)
+
+        public EncounterDto AddMatch(int idMatch, ICollection<int> teamsIds, string sportName, DateTime encounterDate)
         {
-            ValidateDate(aMatch);
-            matchesStorage.Modify(aMatch);
+            EncounterDto toAdd = new EncounterDto() { id = idMatch,sportName = sportName , date = encounterDate, teamsIds = teamsIds };
+            return AddMatch(toAdd);
+        }
+
+        public EncounterDto AddMatch(EncounterDto anEncounter)
+        {
+            Encounter toAdd = TryCreateEncounter(anEncounter);
+            Encounter added = AddMatch(toAdd);
+            anEncounter.id = added.Id;
+            return anEncounter;
+        }
+
+        private Encounter TryCreateEncounter(EncounterDto anEncounter) {
+            try
+            {
+                return encounterConverter.ToEncounter(anEncounter);
+            }
+            catch (InvalidMatchDataException e) {
+                throw new ServiceException(e.Message, ErrorType.INVALID_DATA);
+            }
+        }
+
+        public Encounter AddMatch(Encounter toAdd) {
+            ValidateDate(toAdd);
+            try
+            {
+                return matchesStorage.Add(toAdd);
+            }
+            catch (MatchAlreadyExistsException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_ALREADY_EXISTS);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+        }
+
+        public void ModifyMatch(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName)
+        {
+            EncounterDto toModify = new EncounterDto() { id = idMatch, sportName = sportName, date = date, teamsIds = teamsIds };
+            ModifyMatch(toModify);
+        }
+
+        public void ModifyMatch(EncounterDto anEncounter)
+        {
+            Encounter toAdd = encounterConverter.ToEncounter(anEncounter);
+            ValidateDate(toAdd);
+            try
+            {
+                matchesStorage.Modify(toAdd);
+            }
+            catch (MatchNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
         private void ValidateDate(Encounter aMatch) {
@@ -71,102 +135,193 @@ namespace ObligatorioDA2.Services
             return sameYear && sameMonth && sameDay;
         }
 
-        public ICollection<Encounter> GetAllMatches()
+        public ICollection<EncounterDto> GetAllMatches()
         {
-            return matchesStorage.GetAll();
+            try
+            {
+                return matchesStorage.GetAll()
+                    .Select(e => encounterConverter.ToDto(e))
+                    .ToList();
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
-        public Encounter GetMatch(int anId)
+        public EncounterDto GetMatch(int anId)
         {
-            return matchesStorage.Get(anId);
+            try
+            {
+                Encounter queried = matchesStorage.Get(anId);
+                return encounterConverter.ToDto(queried);
+            }
+            catch (MatchNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
         public void DeleteMatch(int anId)
         {
-            matchesStorage.Delete(anId);
+            try
+            {
+                matchesStorage.Delete(anId);
+            }
+            catch (MatchNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
-        public ICollection<Encounter> GetAllMatches(string sportName)
+        public ICollection<EncounterDto> GetAllEncounterDtos(string sportName)
         {
+            try
+            {
+                return GetAllMatches(sportName).Select(e => encounterConverter.ToDto(e)).ToList();
+            }
+            catch (SportNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+       }
+
+        public ICollection<Encounter> GetAllMatches(string sportName) {
             if (!sportsStorage.Exists(sportName))
             {
-                throw new SportNotFoundException();
+                throw new ServiceException("Sport not found", ErrorType.ENTITY_NOT_FOUND);
             }
             return matchesStorage.GetAll().Where(m => m.Sport.Name.Equals(sportName)).ToList();
         }
 
-        public ICollection<Encounter> GetAllMatches(int idTeam)
+        public ICollection<EncounterDto> GetAllEncounterDtos(int idTeam)
         {
             if (!teamsStorage.Exists(idTeam))
             {
-                throw new TeamNotFoundException();
+                throw new ServiceException("Team not found", ErrorType.ENTITY_NOT_FOUND);
             }
-            return matchesStorage.GetAll().Where(m => m.GetParticipants().Any(t => t.Id == idTeam)).ToList();
+            return matchesStorage.GetAll()
+                .Where(m => m.GetParticipants()
+                .Any(t => t.Id == idTeam))
+                .Select(e => encounterConverter.ToDto(e))
+                .ToList();
         }
 
         public bool Exists(int id)
         {
-            return matchesStorage.Exists(id);
-        }
-
-        public Encounter AddMatch(ICollection<int> teamsIds, string sportName, DateTime date)
-        {
-            return AddMatch(0, teamsIds, sportName, date);
-        }
-
-        public Encounter AddMatch(int idMatch, ICollection<int> teamsIds, string sportName, DateTime date)
-        {
-            ICollection<Team> playingTeams = GetTeams(teamsIds);
-            Sport played = sportsStorage.Get(sportName);
-            Encounter toAdd = factory.CreateEncounter(idMatch, playingTeams, date, played);
-            return AddMatch(toAdd);
-        }
-
-        public void ModifyMatch(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName)
-        {
-            ICollection<Team> playingTeams = GetTeams(teamsIds);
-            Sport played = sportsStorage.Get(sportName);
-            Encounter toModify =factory.CreateEncounter(idMatch, playingTeams, date, played);
-            ModifyMatch(toModify);
-        }
-
-        private ICollection<Team> GetTeams(ICollection<int> teamsIds) {
-            ICollection<Team> playingTeams = new List<Team>();
-            foreach (int teamId in teamsIds)
+            try
             {
-                Team fetched = teamsStorage.Get(teamId);
-                playingTeams.Add(fetched);
+                return matchesStorage.Exists(id);
             }
-            return playingTeams;
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+        }     
+
+
+        public CommentaryDto CommentOnMatch(int matchId, string userName, string commentText)
+        {
+            CommentaryDto dto = new CommentaryDto() { makerUsername = userName, text = commentText };
+            Commentary toAdd = commentConverter.ToCommentary(dto);
+            Commentary added = AddComment(matchId, toAdd); 
+            dto.commentId = added.Id;
+            return dto;
         }
 
-        public Commentary CommentOnMatch(int matchId, string userName, string text)
+        private Commentary AddComment(int matchId, Commentary toAdd)
         {
-            User commentarist = usersStorage.Get(userName);
-            return matchesStorage.CommentOnMatch(matchId, new Commentary(text, commentarist));
+            try
+            {
+                return matchesStorage.CommentOnMatch(matchId, toAdd);
+            }
+            catch (MatchNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
-        public ICollection<Commentary> GetMatchCommentaries(int matchId)
+        public ICollection<CommentaryDto> GetMatchCommentaries(int matchId)
         {
-            Encounter stored = GetMatch(matchId);
-            return stored.GetAllCommentaries();
+            try
+            {
+                Encounter stored = matchesStorage.Get(matchId);
+                return stored.GetAllCommentaries()
+                    .Select(c => commentConverter.ToDto(c))
+                    .ToList();
+            }
+            catch (MatchNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
-        public ICollection<Commentary> GetAllCommentaries()
+        public ICollection<CommentaryDto> GetAllCommentaries()
         {
-            return matchesStorage.GetComments();
+            try
+            {
+                return matchesStorage.GetComments()
+                    .Select(c => commentConverter.ToDto(c))
+                    .ToList();
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
-        public Commentary GetComment(int id)
+        public CommentaryDto GetComment(int id)
         {
-            return matchesStorage.GetComment(id);
+            try
+            {
+                Commentary stored = matchesStorage.GetComment(id);
+                return commentConverter.ToDto(stored);
+            }
+            catch (EntityNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
-        public void SetResult(int id, ICollection<Tuple<int,int>> teamsPositions)
+        public void SetResult(int id, ResultDto resultDto)
         {
-            Result result = LoadResult(teamsPositions);
+            try
+            {
+                TrySetResult(id, resultDto);
+            }
+            catch (EntityNotFoundException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+
+            }
+
+        }
+
+        private void TrySetResult(int id, ResultDto resultDto)
+        {
+            Result result = LoadResult(resultDto.teams_positions);
             Encounter retrieved = matchesStorage.Get(id);
-            retrieved.Result=result;
+            retrieved.Result = result;
             matchesStorage.Modify(retrieved);
         }
 
