@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
-using ObligatorioDA2.BusinessLogic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Interfaces;
@@ -18,7 +17,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
     {
         private IUserService userService;
         private IAuthenticationService authenticator;
-        private UserFactory factory;
         private IImageService images;
         private ErrorActionResultFactory errors;
 
@@ -27,7 +25,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             userService = aService;
             images = imageService;
             authenticator = authenticationService;
-            factory = new UserFactory();
             errors = new ErrorActionResultFactory(this);
         }
 
