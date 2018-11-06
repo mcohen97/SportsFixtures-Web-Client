@@ -38,21 +38,21 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetTest()
         {
             //Arrange.
-            User fake = GetFakeUser();
-            service.Setup(us => us.GetUser(fake.UserName)).Returns(fake);
+            UserDto fake = GetFakeUser();
+            service.Setup(us => us.GetUser(fake.username)).Returns(fake);
 
             //Act.
-            IActionResult result = controller.Get(fake.UserName);
+            IActionResult result = controller.Get(fake.username);
             OkObjectResult okResult = result as OkObjectResult;
             UserModelOut modelOut = okResult.Value as UserModelOut;
 
             //Assert.
-            service.Verify(us => us.GetUser(fake.UserName), Times.Once);
+            service.Verify(us => us.GetUser(fake.username), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(modelOut);
-            Assert.AreEqual(modelOut.Username, fake.UserName);
+            Assert.AreEqual(modelOut.Username, fake.username);
         }
 
         [TestMethod]
@@ -332,7 +332,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetAllTest()
         {
             //Arrange.
-            ICollection<User> fakeList = new List<User>() { GetFakeUser(), GetFakeUser(), GetFakeUser() };
+            ICollection<UserDto> fakeList = new List<UserDto>() { GetFakeUser(), GetFakeUser(), GetFakeUser() };
             service.Setup(us => us.GetAllUsers()).Returns(fakeList);
 
             //Act.
@@ -538,8 +538,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetFollowedTeamsTest() {
             //Arrange.
-            Team aTeam = new Team("aTeam", "aPhoto", new Sport("aSport",true));
-            ICollection<Team> list2return = new List<Team>() { aTeam, aTeam, aTeam };
+            TeamDto aTeam = new TeamDto() { name = "aTeam", photo = "aPhoto", sportName = "Soccer" };
+            ICollection<TeamDto> list2return = new List<TeamDto>() { aTeam, aTeam, aTeam };
             service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Returns(list2return);
 
             //Act.
@@ -617,17 +617,17 @@ namespace ObligatorioDA2.WebAPI.Tests
             controllerContextMock.Object.HttpContext = contextMock.Object;
             return controllerContextMock.Object;
         }
-        private User GetFakeUser()
+        private UserDto GetFakeUser()
         {
-            UserId identity = new UserId()
+            UserDto created = new UserDto()
             {
-                Name = "name",
-                Surname = "surname",
-                UserName = "username",
-                Password = "password",
-                Email = "mail@mail.com"
+                name = "name",
+                surname = "surname",
+                username = "username",
+                password = "password",
+                email = "mail@mail.com",
+                isAdmin = false
             };
-            User created = new User(identity, false);
             return created;
         }
     }

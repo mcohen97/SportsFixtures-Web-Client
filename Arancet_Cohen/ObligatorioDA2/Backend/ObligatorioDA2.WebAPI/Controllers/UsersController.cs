@@ -48,7 +48,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetAll()
         {
-            ICollection<User> users = userService.GetAllUsers();
+            ICollection<UserDto> users = userService.GetAllUsers();
             ICollection<UserModelOut> output = users.Select(u => CreateModelOut(u)).ToList();
             return Ok(output);
         }
@@ -72,14 +72,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         private UserModelOut TryGetUser(string username) {
-            User queried = userService.GetUser(username);
+            UserDto queried = userService.GetUser(username);
             UserModelOut toReturn = new UserModelOut
             {
-                Name = queried.Name,
-                Surname = queried.Surname,
-                Username = queried.UserName,
-                Email = queried.Email,
-                IsAdmin = queried.IsAdmin
+                Name = queried.name,
+                Surname = queried.surname,
+                Username = queried.username,
+                Email = queried.email,
+                IsAdmin = queried.isAdmin
             };
             return toReturn;
         }
@@ -120,7 +120,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
 
             UserDto toAdd = BuildUser(user);
-            User added =userService.AddUser(toAdd);
+            UserDto added =userService.AddUser(toAdd);
             UserModelOut modelOut = CreateModelOut(added);
             return CreatedAtRoute("GetUserById", new { username = toAdd.username }, modelOut);
         }
@@ -134,14 +134,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             UserDto toModify = BuildUser(username, input);
             try
             {
-                User modified =userService.ModifyUser(toModify);
+                UserDto modified =userService.ModifyUser(toModify);
                 result = Ok(CreateModelOut(modified));
             }
             catch (ServiceException e)
             {
                 if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
                 {
-                    User added = userService.AddUser(toModify);
+                    UserDto added = userService.AddUser(toModify);
                     result = CreatedAtRoute("GetUserById", new { username = toModify.username }, CreateModelOut(added));
                 }
                 else
@@ -277,32 +277,32 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
         private IActionResult TryGetFollowedTeams(string username)
         {
-            ICollection<Team> followed = userService.GetUserTeams(username);
+            ICollection<TeamDto> followed = userService.GetUserTeams(username);
             ICollection<TeamModelOut> converted = followed.Select(t => CreateModelOut(t)).ToList();
             return Ok(converted);
         }
 
-        private UserModelOut CreateModelOut(User user)
+        private UserModelOut CreateModelOut(UserDto user)
         {
             UserModelOut built = new UserModelOut()
             {
-                Username = user.UserName,
-                Name = user.Name,
-                Surname = user.Surname,
-                Email = user.Email,
-                IsAdmin = user.IsAdmin
+                Username = user.username,
+                Name = user.name,
+                Surname = user.surname,
+                Email = user.email,
+                IsAdmin = user.isAdmin
             };
             return built;
         }
 
-        private TeamModelOut CreateModelOut(Team stored)
+        private TeamModelOut CreateModelOut(TeamDto stored)
         {
             TeamModelOut built = new TeamModelOut()
             {
-                Id = stored.Id,
-                Name = stored.Name,
-                SportName = stored.Sport.Name,
-                Photo = images.ReadImage(stored.PhotoPath)
+                Id = stored.id,
+                Name = stored.name,
+                SportName = stored.sportName,
+                Photo = images.ReadImage(stored.photo)
             };
             return built;
         }
