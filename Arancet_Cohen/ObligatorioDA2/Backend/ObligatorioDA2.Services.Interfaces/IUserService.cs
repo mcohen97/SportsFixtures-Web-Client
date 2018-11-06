@@ -8,15 +8,13 @@ namespace ObligatorioDA2.Services.Interfaces
 {
     public interface IUserService
     {
-        User GetUser(string username);
-        User AddUser(UserDto testUser);
-        User ModifyUser(UserDto testUser);
+        UserDto GetUser(string username);
+        UserDto AddUser(UserDto testUser);
+        UserDto ModifyUser(UserDto testUser);
         void DeleteUser(string userName);
-        void FollowTeam(string username, Team toFollow);
         void FollowTeam(string userName, int idTeam);
-        ICollection<Team> GetUserTeams(string userName);
-        void UnFollowTeam(string userName, Team fake);
+        ICollection<TeamDto> GetUserTeams(string userName);
         void UnFollowTeam(string userName, int id);
-        ICollection<User> GetAllUsers();
+        ICollection<UserDto> GetAllUsers();
     }
 }
