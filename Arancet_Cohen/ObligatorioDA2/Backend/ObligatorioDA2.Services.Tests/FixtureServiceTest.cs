@@ -52,8 +52,7 @@ namespace ObligatorioDA2.Services.Tests
                 teamB,
                 teamC,
                 teamD
-            };
-            
+            };       
 
             initialDate = DateTime.Now;
             oneMatchGenerator = new OneMatchFixture(initialDate, 2, 5);
