@@ -114,6 +114,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetMatchTeamsTest()
         {
+            AddSportAndTeams();
             matchesStorage.Add(match);
             Encounter retrieved = matchesStorage.Get(match.Id);
             Assert.AreEqual(retrieved.GetParticipants().Count, match.GetParticipants().Count);
@@ -122,12 +123,22 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetMatchCommentsTest()
         {
+            AddSportAndTeams();
             Commentary dummy = BuildFakeCommentary();
             usersRepo.Add(dummy.Maker);
             match.AddCommentary(dummy);
-            matchesStorage.Add(match);
-            Encounter retrieved = matchesStorage.Get(match.Id);
+            Encounter added = matchesStorage.Add(match);
+            Encounter retrieved = matchesStorage.Get(added.Id);
             Assert.AreEqual(retrieved.GetAllCommentaries().Count, 1);
+        }
+
+        private void AddSportAndTeams()
+        {
+            sportsStorage.Add(sport);
+            foreach (Team t in GetFakeTeams())
+            {
+                teamsStorage.Add(t);
+            }
         }
 
         [TestMethod]
@@ -217,6 +228,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetAllTest()
         {
+            AddSportAndTeams();
             matchesStorage.Add(match);
             ICollection<Encounter> all = matchesStorage.GetAll();
             Assert.AreEqual(all.Count, 1);
@@ -233,6 +245,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void ModifyTest()
         {
+            AddSportAndTeams();
             matchesStorage.Add(match);
             Match modified = BuildModifiedFakeMatch();
             SetUpRepository();
