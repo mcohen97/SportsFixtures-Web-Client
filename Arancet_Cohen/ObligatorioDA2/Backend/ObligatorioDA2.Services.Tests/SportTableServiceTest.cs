@@ -17,13 +17,13 @@ namespace ObligatorioDA2.Services.Tests
         private ISportTableService serviceToTest;
         private Mock<ISportRepository> sportsStorage;
         private Mock<ITeamRepository> teamsStorage;
-        private Mock<IMatchService> matchesService;
+        private Mock<IInnerMatchService> matchesService;
 
         [TestInitialize]
         public void SetUp() {
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
-            matchesService= new Mock<IMatchService>();
+            matchesService = new Mock<IInnerMatchService>();
             serviceToTest = new SportTableService(sportsStorage.Object, teamsStorage.Object, matchesService.Object);
             SetUpSports();
             SetUpTeams();

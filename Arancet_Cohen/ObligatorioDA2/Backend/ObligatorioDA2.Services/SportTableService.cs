@@ -12,9 +12,9 @@ namespace ObligatorioDA2.Services
     {
         private ISportRepository sportsStorage;
         private ITeamRepository teamsStorage;
-        private IMatchService matchesService;
+        private IInnerMatchService matchesService;
 
-        public SportTableService(ISportRepository sportsRepo, ITeamRepository teamsRepo, IMatchService service)
+        public SportTableService(ISportRepository sportsRepo, ITeamRepository teamsRepo, IInnerMatchService service)
         {
             sportsStorage = sportsRepo;
             teamsStorage = teamsRepo;
