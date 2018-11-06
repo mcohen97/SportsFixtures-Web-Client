@@ -12,8 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
-using Match = ObligatorioDA2.BusinessLogic.Match;
 using System.Linq;
+using Match = ObligatorioDA2.BusinessLogic.Match;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Mappers;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -21,30 +23,36 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class MatchesControllerTest{
 
         private Mock<IMatchService> matchService;
+        private Mock<EncounterDtoMapper> mapper;
         private MatchesController controller;
-        private Match testMatch;
+        private EncounterDto testEncounter;
 
         [TestInitialize]
         public void SetUp() {
             matchService = new Mock<IMatchService>();
-            testMatch = BuildFakeMatch();
+            mapper = new Mock<EncounterDtoMapper>();
+            testEncounter = BuildFakeMatch();
             controller = new MatchesController(matchService.Object);
         }
 
-        private Match BuildFakeMatch()
+        private EncounterDto BuildFakeMatch()
         {
-            Sport played = new Sport("Football",true);
-            Team home = new Team("Patriots", "aPhoto", played);
-            Team away = new Team("Falcons", "aPhoto", played);
-            Match built = new Match(1,new List<Team>() { home, away }, DateTime.Now, played);
-            return built;
+            EncounterDto dto = new EncounterDto()
+            {
+                id = 1,
+                sportName = "Football",
+                date = DateTime.Now,
+                teamsIds = new List<int>() { 1, 2 },
+                hasResult = false
+            };
+            return dto;
         }
 
         [TestMethod]
         public void GetTest()
         {
             //Arrange.
-            matchService.Setup(s => s.GetAllMatches()).Returns(new List<Encounter>() { testMatch });
+            matchService.Setup(s => s.GetAllMatches()).Returns(new List<EncounterDto>() { testEncounter });
 
             //Act.
             IActionResult result = controller.Get();
@@ -62,8 +70,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CreateValidMatchTest() {
             matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
-                It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testMatch);
-            MatchModelIn input = BuildMatchModelIn(testMatch);
+                It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testEncounter);
+            MatchModelIn input = BuildMatchModelIn(testEncounter);
 
             IActionResult result = controller.Post(input);
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
@@ -76,16 +84,16 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual("GetMatchById", createdResult.RouteName);
             Assert.IsNotNull(created);
-            Assert.AreEqual(testMatch.Date, testMatch.Date);
+            Assert.AreEqual(testEncounter.date, testEncounter.date);
         }
 
-        private MatchModelIn BuildMatchModelIn(Match aMatch)
+        private MatchModelIn BuildMatchModelIn(EncounterDto anEncounter)
         {
             MatchModelIn built = new MatchModelIn()
             {
-                SportName = aMatch.Sport.Name,
-                TeamIds = aMatch.GetParticipants().Select(p => p.Id).ToList(),
-                Date = aMatch.Date
+                SportName = anEncounter.sportName,
+                TeamIds = anEncounter.teamsIds,
+                Date = anEncounter.date
             };
             return built;
         }
@@ -101,7 +109,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             IActionResult result = controller.Post(input);
             BadRequestObjectResult badRequest = result as BadRequestObjectResult;
 
-            matchService.Verify(ms => ms.AddMatch(testMatch), Times.Never);
+            matchService.Verify(ms => ms.AddMatch(testEncounter), Times.Never);
             Assert.AreEqual(400, badRequest.StatusCode);
         }
 
@@ -111,7 +119,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Exception toThrow = new TeamAlreadyHasMatchException();
             matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Throws(toThrow);
-            MatchModelIn input = BuildMatchModelIn(testMatch);
+            MatchModelIn input = BuildMatchModelIn(testEncounter);
 
             //Act.
             IActionResult result = controller.Post(input);
@@ -129,7 +137,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetMatchTest() {
             //Arrange.
-            matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Returns(testMatch);
+            matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Returns(testEncounter);
 
             //Act.
             IActionResult result =controller.Get(1);
@@ -147,18 +155,19 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetNotExistingMatchTest() {
             //Arrange.
-            Exception toThrow = new MatchNotFoundException();
+            Exception internalEx = new MatchNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Get(1);
-            BadRequestObjectResult notFoundresult = result as BadRequestObjectResult;
+            NotFoundObjectResult notFoundresult = result as NotFoundObjectResult;
             ErrorModelOut error = notFoundresult.Value as ErrorModelOut;
 
             //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFoundresult);
-            Assert.AreEqual(400, notFoundresult.StatusCode);
+            Assert.AreEqual(404, notFoundresult.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
@@ -166,7 +175,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void PutModifyMatchTest() {
             //Arrange.
-            MatchModelIn input = BuildMatchModelIn(testMatch);
+            MatchModelIn input = BuildMatchModelIn(testEncounter);
 
             //Act.
             IActionResult result = controller.Put(1, input);
@@ -183,18 +192,20 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(modified);
-            Assert.AreEqual(modified.Id, testMatch.Id);
+            Assert.AreEqual(modified.Id, testEncounter.id);
         }
 
         [TestMethod]
         public void PutAdd() {
             //Arrange.
+            Exception internalEx = new MatchNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
-                It.IsAny<DateTime>(),It.IsAny<string>())).Throws(new MatchNotFoundException());
+                It.IsAny<DateTime>(),It.IsAny<string>())).Throws(toThrow);
             matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
-                It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testMatch);
+                It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testEncounter);
 
-            MatchModelIn input = BuildMatchModelIn(testMatch);
+            MatchModelIn input = BuildMatchModelIn(testEncounter);
 
             //Act.
             IActionResult result = controller.Put(1, input);
@@ -213,7 +224,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual("GetMatchById", createdResult.RouteName);
             Assert.IsNotNull(modified);
-            Assert.AreEqual(modified.Id, testMatch.Id);
+            Assert.AreEqual(modified.Id, testEncounter.id);
         }
 
         [TestMethod]
@@ -245,7 +256,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Exception toThrow = new TeamAlreadyHasMatchException();
             matchService.Setup(ms => ms.ModifyMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<DateTime>(), It.IsAny<string>())).Throws(toThrow);
-            MatchModelIn input = BuildMatchModelIn(testMatch);
+            MatchModelIn input = BuildMatchModelIn(testEncounter);
 
             //Act.
             IActionResult result = controller.Put(1, input);
@@ -279,19 +290,20 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void DeleteNotExistentTest() {
             //Arrange.
-            Exception toThrow = new MatchNotFoundException();
+            Exception internalEx = new MatchNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             matchService.Setup(ms => ms.DeleteMatch(3)).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Delete(3);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            NotFoundObjectResult badRequest = result as NotFoundObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
             Assert.IsNotNull(error);
-            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.AreEqual(404, badRequest.StatusCode);
             Assert.AreEqual(error.ErrorMessage,toThrow.Message);
         }
 
@@ -301,7 +313,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ControllerContext fakeContext = GetFakeControllerContext();
             controller.ControllerContext = fakeContext;
             User commentarist = GetFakeUser();
-            Commentary made = new Commentary("this is a comment", commentarist);
+            CommentaryDto made = new CommentaryDto() { makerUsername = commentarist.UserName, text = "this is a comment" };
 
             CommentModelIn input = new CommentModelIn() {
                 Text = "this is a comment"
@@ -353,19 +365,20 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Text = "this is a comment"
             };
-            Exception toThrow = new MatchNotFoundException();
+            Exception internalEx = new MatchNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.CommentOnMatch(3,input);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            NotFoundObjectResult badRequest = result as NotFoundObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
             matchService.Verify(ms => ms.CommentOnMatch(3, "username", input.Text), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.AreEqual(404, badRequest.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
         }
@@ -379,19 +392,20 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Text = "this is a comment"
             };
-            Exception toThrow = new UserNotFoundException();
+            Exception internalEx = new UserNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             matchService.Setup(ms => ms.CommentOnMatch(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.CommentOnMatch(3,input);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
+            NotFoundObjectResult badRequest = result as NotFoundObjectResult;
             ErrorModelOut error = badRequest.Value as ErrorModelOut;
 
             //Assert.
             matchService.Verify(ms => ms.CommentOnMatch(3, "username", input.Text), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400, badRequest.StatusCode);
+            Assert.AreEqual(404, badRequest.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(error.ErrorMessage, toThrow.Message);
 
@@ -401,8 +415,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void ViewAllMatchCommentsTest() {
             //Arrange.
             User dummyUser = GetFakeUser();
-            Commentary dummyComment = new Commentary("Comment", dummyUser);
-            ICollection<Commentary> fakeList = new List<Commentary>() { dummyComment, dummyComment, dummyComment };
+            CommentaryDto dummyComment = new CommentaryDto() { text="Comment", makerUsername= dummyUser.UserName };
+            ICollection<CommentaryDto> fakeList = new List<CommentaryDto>() { dummyComment, dummyComment, dummyComment };
             matchService.Setup(ms => ms.GetMatchCommentaries(It.IsAny<int>())).Returns(fakeList);
 
             //Act.
@@ -423,7 +437,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void ViewCommentTest() {
             //Arrange.
             User dummyUser = GetFakeUser();
-            Commentary dummyComment = new Commentary("Comment", dummyUser);
+            CommentaryDto dummyComment = new CommentaryDto() { text="Comment", makerUsername=dummyUser.UserName };
             matchService.Setup(ms => ms.GetComment(3)).Returns(dummyComment);
 
             //Act.
@@ -436,13 +450,14 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(comment);
-            Assert.AreEqual(dummyComment.Text,comment.Text);
+            Assert.AreEqual(dummyComment.text,comment.Text);
         }
 
         [TestMethod]
         public void ViewNotExistingCommentTest() {
             //Arrange.
-            Exception toThrow = new CommentNotFoundException();
+            Exception internalEx = new CommentNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             matchService.Setup(ms => ms.GetComment(3)).Throws(toThrow);
 
             //Act.
@@ -462,8 +477,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void ViewAllTheCommentsTest() {
             //Arrange.
             User dummyUser = GetFakeUser();
-            Commentary dummyComment = new Commentary("Comment", dummyUser);
-            ICollection<Commentary> fakeList = new List<Commentary>() { dummyComment, dummyComment, dummyComment };
+            CommentaryDto dummyComment = new CommentaryDto() { text="Comment", makerUsername= dummyUser.UserName };
+            ICollection<CommentaryDto> fakeList = new List<CommentaryDto>() { dummyComment, dummyComment, dummyComment };
             matchService.Setup(ms => ms.GetAllCommentaries()).Returns(fakeList);
 
             //Act.
@@ -483,8 +498,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetSportMatchesTest() {
             //Arrange.
-            ICollection<Encounter> dummies = new List<Encounter>() { testMatch, testMatch, testMatch };
-            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<string>())).Returns(dummies);
+            ICollection<EncounterDto> dummies = new List<EncounterDto>() { testEncounter, testEncounter, testEncounter };
+            matchService.Setup(ms => ms.GetAllEncounterDtos(It.IsAny<string>())).Returns(dummies);
 
             //Act.
             IActionResult result = controller.GetBySport("Soccer");
@@ -492,7 +507,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ICollection<EncounterModelOut> matches = okResult.Value as ICollection<EncounterModelOut>;
 
             //Assert.
-            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<string>()), Times.Once);
+            matchService.Verify(ms => ms.GetAllEncounterDtos(It.IsAny<string>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
@@ -503,8 +518,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetSportMatchesNotFoundTest() {
             //Arrange.
-            Exception toThrow = new SportNotFoundException();
-            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<string>())).Throws(toThrow);
+            Exception internalEx = new SportNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
+            matchService.Setup(ms => ms.GetAllEncounterDtos(It.IsAny<string>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.GetBySport("Soccer");
@@ -512,7 +528,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<string>()), Times.Once);
+            matchService.Verify(ms => ms.GetAllEncounterDtos(It.IsAny<string>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFound);
             Assert.AreEqual(404, notFound.StatusCode);
@@ -523,8 +539,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetTeamMatchesTest() {
             //Arrange.
-            ICollection<Encounter> dummies = new List<Encounter>() { testMatch, testMatch, testMatch };
-            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Returns(dummies);
+            ICollection<EncounterDto> dummies = new List<EncounterDto>() { testEncounter, testEncounter, testEncounter };
+            matchService.Setup(ms => ms.GetAllEncounterDtos(It.IsAny<int>())).Returns(dummies);
 
             //Act.
             IActionResult result = controller.GetByTeam(5);
@@ -532,7 +548,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ICollection<EncounterModelOut> matches = okResult.Value as ICollection<EncounterModelOut>;
 
             //Assert.
-            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<int>()), Times.Once);
+            matchService.Verify(ms => ms.GetAllEncounterDtos(It.IsAny<int>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
@@ -545,8 +561,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetTeamMatchesNotFoundTest()
         {
             //Arrange.
-            Exception toThrow = new TeamNotFoundException();
-            matchService.Setup(ms => ms.GetAllMatches(It.IsAny<int>())).Throws(toThrow);
+            Exception internalEx = new TeamNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
+            matchService.Setup(ms => ms.GetAllEncounterDtos(It.IsAny<int>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.GetByTeam(5);
@@ -554,7 +571,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = notFound.Value as ErrorModelOut;
 
             //Assert.
-            matchService.Verify(ms => ms.GetAllMatches(It.IsAny<int>()), Times.Once);
+            matchService.Verify(ms => ms.GetAllEncounterDtos(It.IsAny<int>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFound);
             Assert.AreEqual(404, notFound.StatusCode);
@@ -585,8 +602,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void SetResultTest() {
             //Arrange.
-            matchService.Setup(ms => ms.SetResult(It.IsAny<int>(), It.IsAny<ICollection<Tuple<int,int>>>()));
-            matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Returns(testMatch);
+            matchService.Setup(ms => ms.SetResult(It.IsAny<int>(), It.IsAny<ResultDto>()));
+            matchService.Setup(ms => ms.GetMatch(It.IsAny<int>())).Returns(testEncounter);
             ResultModel resultModel = GetFakeResult();
 
             //Act.
@@ -599,7 +616,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(matchWithResult);
-            Assert.AreEqual(matchWithResult.Id, testMatch.Id);
+            Assert.AreEqual(matchWithResult.Id, testEncounter.id);
         }
 
         private ResultModel GetFakeResult()

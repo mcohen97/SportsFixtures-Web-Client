@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
-using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.BusinessLogic.Exceptions;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -19,18 +19,20 @@ namespace ObligatorioDA2.WebAPI.Controllers
     {
         private IMatchService matchService;
         private EncounterModelFactory factory;
+        private ErrorActionResultFactory errors;
 
         public MatchesController(IMatchService aService)
         {
             matchService = aService;
             factory = new EncounterModelFactory();
+            errors = new ErrorActionResultFactory(this);
         }
 
         [HttpGet]
         [Authorize]
         public IActionResult Get()
         {
-            ICollection<Encounter> matches = matchService.GetAllMatches();
+            ICollection<EncounterDto> matches = matchService.GetAllMatches();
             ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
             return Ok(output);
         }
@@ -55,21 +57,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Encounter added = matchService.AddMatch(input.TeamIds, input.SportName, input.Date);
+                EncounterDto added = matchService.AddMatch(input.TeamIds, input.SportName, input.Date);
                 EncounterModelOut output = factory.CreateModelOut(added);
-                result = CreatedAtRoute("GetMatchById",new {matchId = added.Id }, output);
+                result = CreatedAtRoute("GetMatchById",new {matchId = added.id }, output);
             }
-            catch (InvalidMatchDataException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
+                result = errors.GenerateError(e);
             }
-            catch (EntityNotFoundException e) {
-                result = CreateErrorMessage(e);
-            }
-            catch (TeamAlreadyHasMatchException e) {
-                result = CreateErrorMessage(e);
-            }
+
             return result;
         }
 
@@ -83,15 +79,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGetMatch(matchId);
             }
-            catch (MatchNotFoundException e) {
-                result = CreateErrorMessage(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryGetMatch(int matchId)
         {
-            Encounter stored = matchService.GetMatch(matchId);
+            EncounterDto stored = matchService.GetMatch(matchId);
             EncounterModelOut modelOut = factory.CreateModelOut(stored);
             IActionResult result = Ok(modelOut);
             return result;
@@ -121,20 +117,17 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 EncounterModelOut output = BuildModelout(id, aMatch);
                 result = Ok(output);
             }
-            catch (InvalidMatchDataException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-            }
-            catch (TeamAlreadyHasMatchException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-            }
-            catch (EntityNotFoundException e)
-            {
-                Encounter added = matchService.AddMatch(id, aMatch.TeamIds, aMatch.SportName, aMatch.Date);
-                EncounterModelOut output = factory.CreateModelOut(added);
-                result = CreatedAtRoute("GetMatchById", new { matchId = added.Id }, output);
+                if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
+                {
+                    EncounterDto added = matchService.AddMatch(id, aMatch.TeamIds, aMatch.SportName, aMatch.Date);
+                    EncounterModelOut output = factory.CreateModelOut(added);
+                    result = CreatedAtRoute("GetMatchById", new { matchId = added.id }, output);
+                }
+                else {
+                    result = errors.GenerateError(e);
+                }
             }
             return result;
         }
@@ -161,8 +154,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try {
                 result = TryToDelete(id);
             }
-            catch (MatchNotFoundException e) {
-                result = CreateErrorMessage(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -196,13 +189,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryAddComment(matchId, input);
             }
-            catch (EntityNotFoundException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage =e.Message };
-                result = BadRequest(error);
-            }
-            catch (DataAccessException e)
-            {
-                result = CreateErrorMessage(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -210,21 +198,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryAddComment(int matchId,CommentModelIn input)
         {
             string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-            Commentary created = matchService.CommentOnMatch(matchId, username, input.Text);
+            CommentaryDto created = matchService.CommentOnMatch(matchId, username, input.Text);
             CommentModelOut output = new CommentModelOut
             {
-                Id = created.Id,
+                Id = created.commentId,
                 MakerUsername = username,
                 Text = input.Text
             };
-            return CreatedAtRoute("GetCommentById",new {id =created.Id }, output);
-        }
-
-        private IActionResult CreateErrorMessage(Exception e)
-        {
-            ErrorModelOut error = new ErrorModelOut { ErrorMessage = e.Message };
-            IActionResult errorResult = BadRequest(error);
-            return errorResult;
+            return CreatedAtRoute("GetCommentById",new {id =output.Id }, output);
         }
 
         [HttpGet("sport/{sportName}")]
@@ -233,14 +214,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             IActionResult result;
             try {
-                ICollection<Encounter> matches = matchService.GetAllMatches(sportName);
+                ICollection<EncounterDto> matches = matchService.GetAllEncounterDtos(sportName);
                 ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
                 result = Ok(output);
             }
-            catch (SportNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -251,13 +231,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                ICollection<Encounter> matches = matchService.GetAllMatches(teamId);
+                ICollection<EncounterDto> matches = matchService.GetAllEncounterDtos(teamId);
                 ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
                 result = Ok(output);
             }
-            catch (TeamNotFoundException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -265,8 +244,20 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         [HttpGet("{matchId}/comments", Name = "GetCommentMatchComments")]
         public IActionResult GetMatchComments(int matchId) {
+            IActionResult result;
+            try
+            {
+                result = TryGetMatchComments(matchId);
+            }
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
+            }
+            return result;
+        }
 
-            ICollection<Commentary> matchComments = matchService.GetMatchCommentaries(matchId);
+        private IActionResult TryGetMatchComments(int matchId)
+        {
+            ICollection<CommentaryDto> matchComments = matchService.GetMatchCommentaries(matchId);
             ICollection<CommentModelOut> output = matchComments.Select(c => BuildCommentModelOut(c)).ToList();
             return Ok(output);
         }
@@ -274,17 +265,30 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpGet("comments")]
         public IActionResult GetAllComments()
         {
-            ICollection<Commentary> allComments = matchService.GetAllCommentaries();
+            IActionResult result;
+            try
+            {
+                result = TryGetAllComments();
+            }
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryGetAllComments()
+        {
+            ICollection<CommentaryDto> allComments = matchService.GetAllCommentaries();
             ICollection<CommentModelOut> output = allComments.Select(c => BuildCommentModelOut(c)).ToList();
             return Ok(output);
         }
 
-        private CommentModelOut BuildCommentModelOut(Commentary aComment) {
+        private CommentModelOut BuildCommentModelOut(CommentaryDto aComment) {
             CommentModelOut comment = new CommentModelOut()
             {
-                Id = aComment.Id,
-                MakerUsername = aComment.Maker.UserName,
-                Text = aComment.Text
+                Id = aComment.commentId,
+                MakerUsername = aComment.makerUsername,
+                Text = aComment.text
             };
             return comment;
         }
@@ -296,23 +300,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 result = TryGetComment(id);
-
             }
-            catch (CommentNotFoundException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryGetComment(int id)
         {
-            Commentary comment = matchService.GetComment(id);
+            CommentaryDto comment = matchService.GetComment(id);
             CommentModelOut output = new CommentModelOut
             {
-                Id = comment.Id,
-                MakerUsername = comment.Maker.UserName,
-                Text = comment.Text
+                Id = comment.commentId,
+                MakerUsername = comment.makerUsername,
+                Text = comment.text
             };
             return Ok(output);
         }
@@ -321,13 +323,25 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult SetResult(int matchId, ResultModel resultModel)
         {
+            IActionResult result;
+            try {
+                result = TrySetResult(matchId, resultModel);
+            }
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
+            }
+            return result;
+        }
+
+        private IActionResult TrySetResult(int matchId, ResultModel resultModel)
+        {
             ICollection<Tuple<int, int>> team_positions = resultModel.Team_Position
                 .Select(tp => new Tuple<int, int>(tp.TeamId, tp.Position)).ToList();
-            matchService.SetResult(matchId, team_positions);
-            Encounter matchWithResult = matchService.GetMatch(matchId);
+            ResultDto encounterResult = new ResultDto() { teams_positions = team_positions };
+            matchService.SetResult(matchId, encounterResult);
+            EncounterDto matchWithResult = matchService.GetMatch(matchId);
             EncounterModelOut result = factory.CreateModelOut(matchWithResult);
             return Ok(result);
         }
-
     }
 }
