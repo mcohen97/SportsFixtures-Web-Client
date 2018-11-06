@@ -33,6 +33,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             teams = teamRepo;
             tableService = tableGenerator;
             images = imageService;
+            authenticator = authService;
             errors = new ErrorActionResultFactory(this);
         }
 
@@ -67,9 +68,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryAddSport(SportModelIn modelIn)
         {
             SportDto data = BuildSportDto(modelIn);
-            Sport added = sports.AddSport(data);
-            SportModelOut modelOut = new SportModelOut(){Name = added.Name};
-            IActionResult result = CreatedAtRoute("GetSportById",new {name = added.Name },modelOut);
+            SportDto added = sports.AddSport(data);
+            SportModelOut modelOut = CreateModelOut(added);
+            IActionResult result = CreatedAtRoute("GetSportById",new {name = added.name },modelOut);
             return result;
         }
 
@@ -95,8 +96,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetAll()
         {
-            ICollection<Sport> allOfThem = sports.GetAllSports();
-            IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name });
+            ICollection<SportDto> allOfThem = sports.GetAllSports();
+            IEnumerable<SportModelOut> output = allOfThem.Select(s => CreateModelOut(s));
             return Ok(output);
         }
 
@@ -119,8 +120,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGet(string name)
         {
-            Sport retrieved = sports.GetSport(name);
-            SportModelOut output = new SportModelOut() { Name = retrieved.Name };
+            SportDto retrieved = sports.GetSport(name);
+            SportModelOut output = CreateModelOut(retrieved);
             return Ok(output);
         }
 
@@ -192,6 +193,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             Team team = standing.Item1;
             return new StandingModelOut() { TeamId = team.Id, Points = standing.Item2 };
+        }
+
+        private SportModelOut CreateModelOut(SportDto aSport) {
+            return new SportModelOut() { Name = aSport.name };
         }
 
         private TeamModelOut CreateModelOut(Team aTeam)

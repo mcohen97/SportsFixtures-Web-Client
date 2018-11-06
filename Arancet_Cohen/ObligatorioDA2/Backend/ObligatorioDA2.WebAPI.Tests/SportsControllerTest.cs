@@ -37,13 +37,13 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<IAuthenticationService> mockService = new Mock<IAuthenticationService>();
             Mock<IImageService> mockImgService = new Mock<IImageService>();
 
-            Sport testSport1 = new Sport("Tennis",true);
-            Sport testSport2 = new Sport("Basketball",true);
+            SportDto testSport1 = new SportDto() { name = "Tennis", isTwoTeams =true };
+            SportDto testSport2 = new SportDto() { name = "Basketball", isTwoTeams =true };
 
             sportsService.Setup(s => s.AddSport(It.IsAny<SportDto>())).Returns(testSport1);
             sportsService.Setup(r => r.GetSport("Tennis")).Returns(testSport1);
             sportsService.Setup(r => r.GetSport(It.Is<String>(x => (x != "Tennis") && (x !="Basketball")))).Throws(new SportNotFoundException());
-            sportsService.Setup(r => r.GetAllSports()).Returns(new List<Sport>() {new Sport("Basketball",true), new Sport("Tennis",true) });
+            sportsService.Setup(r => r.GetAllSports()).Returns(new List<SportDto>() {testSport1,testSport2 });
 
             IFixtureService dummyService = new Mock<IFixtureService>().Object;
             tableGenerator = new Mock<ISportTableService>();
@@ -277,7 +277,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange.
             Team dummyTeam = new Team("Dummy", "Dummy", new Sport("Dummy",true));
             ICollection<Team> cannedResponse = new List<Team>() { dummyTeam, dummyTeam, dummyTeam };
-            sportsService.Setup(r => r.GetSport(It.IsAny<string>())).Returns(new Sport("Dummy",true));
+            sportsService.Setup(r => r.GetSport(It.IsAny<string>())).Returns(new SportDto() { name = "Dummy", isTwoTeams =true });
             teamsRepo.Setup(r => r.GetSportTeams(It.IsAny<string>())).Returns(cannedResponse);
 
             //Act.
