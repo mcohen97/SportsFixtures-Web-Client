@@ -8,11 +8,11 @@ namespace ObligatorioDA2.Services.Interfaces
 {
     public interface ITeamService
     {
-        Team GetTeam(int id);
-        Team AddTeam(TeamDto testDto);
-        Team Modify(TeamDto testDto);
-        ICollection<Team> GetAllTeams();
+        TeamDto GetTeam(int id);
+        TeamDto AddTeam(TeamDto testDto);
+        TeamDto Modify(TeamDto testDto);
+        ICollection<TeamDto> GetAllTeams();
         void DeleteTeam(int id);
-        ICollection<Team> GetSportTeams(string name);
+        ICollection<TeamDto> GetSportTeams(string name);
     }
 }
