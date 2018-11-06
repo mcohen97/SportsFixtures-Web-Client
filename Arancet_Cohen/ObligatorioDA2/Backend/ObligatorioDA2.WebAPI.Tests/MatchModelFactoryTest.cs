@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,8 @@ namespace ObligatorioDA2.WebAPI.Tests
     [TestClass]
     public class MatchModelFactoryTest
     {
-        private Encounter testMatch;
-        private Encounter testCompetition;
+        private EncounterDto testMatch;
+        private EncounterDto testCompetition;
         private EncounterModelFactory factory;
 
         [TestInitialize]
@@ -19,9 +20,11 @@ namespace ObligatorioDA2.WebAPI.Tests
             Team teamA = new Team(1, "teamA", "photo", sport);
             Team teamB = new Team(2, "teamB", "photo", sport);
             Team teamC = new Team(3, "teamC", "photo", sport);
-            testMatch = new Match(1, new List<Team>() { teamA, teamB }, DateTime.Now.AddDays(1), sport);
+            testMatch = new EncounterDto() { id = 1, teamsIds = new List<int>() { teamA.Id, teamB.Id },
+                date = DateTime.Now.AddDays(1), sportName = sport.Name, isSportTwoTeams = sport.IsTwoTeams };
             ChangeSport(ref sport,ref teamA,ref teamB,ref teamC);
-            testCompetition = new Competition(2, new List<Team>() { teamA, teamB, teamC }, DateTime.Now.AddDays(2), sport);
+            testCompetition = new EncounterDto() { id = 2, teamsIds = new List<int>() { teamA.Id, teamB.Id, teamC.Id },
+                date = DateTime.Now.AddDays(2), sportName = sport.Name,isSportTwoTeams = sport.IsTwoTeams };
             SetResult(testMatch);
             SetResult(testCompetition);
             factory = new EncounterModelFactory();
@@ -35,15 +38,16 @@ namespace ObligatorioDA2.WebAPI.Tests
             teamC = new Team(3, "teamC", "photo", sport);
         }
 
-        private void SetResult(Encounter testMatch)
+        private void SetResult(EncounterDto testMatch)
         {
-            Result res = new Result();
+            ICollection<Tuple<int,int>> res = new List<Tuple<int, int>>();
             int pos = 1;
-            foreach (Team t in testMatch.GetParticipants()) {
-                res.Add(t, pos);
+            foreach (int t in testMatch.teamsIds) {
+                res.Add(new Tuple<int,int>(t, pos));
                 pos++;
             }
-            testMatch.Result=res;
+            testMatch.hasResult = true;
+            testMatch.result = new ResultDto() { teams_positions = res };
         }
 
         [TestMethod]
