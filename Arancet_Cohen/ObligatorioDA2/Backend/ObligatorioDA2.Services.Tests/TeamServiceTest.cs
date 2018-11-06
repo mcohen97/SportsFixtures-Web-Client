@@ -37,8 +37,8 @@ namespace ObligatorioDA2.Services.Tests
         public void GetTeamTest() {
             auth.Setup(r => r.IsLoggedIn()).Returns(true);
             teams.Setup(r => r.Get(1)).Returns(testTeam);
-            Team fetched = testService.GetTeam(1);
-            Assert.AreEqual(testTeam.Name,fetched.Name);
+            TeamDto fetched = testService.GetTeam(1);
+            Assert.AreEqual(testTeam.Name,fetched.name);
         }
 
         [TestMethod]
@@ -63,12 +63,12 @@ namespace ObligatorioDA2.Services.Tests
             sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
 
-            Team added =testService.AddTeam(testDto);
+            TeamDto added =testService.AddTeam(testDto);
 
             auth.VerifyAll();
             sports.VerifyAll();
             teams.VerifyAll();
-            Assert.AreEqual(testTeam.Id, added.Id);
+            Assert.AreEqual(testTeam.Id, added.id);
         }
 
         [TestMethod]
@@ -80,7 +80,7 @@ namespace ObligatorioDA2.Services.Tests
             teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
 
             testDto.name = null;
-            Team added = testService.AddTeam(testDto);
+            testService.AddTeam(testDto);
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace ObligatorioDA2.Services.Tests
             GrantAdminPermissions();
             sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             teams.Setup(r => r.Add(testTeam)).Throws(new TeamAlreadyExistsException());
-            Team added = testService.AddTeam(testDto);
+            testService.AddTeam(testDto);
         }
 
         [TestMethod]
@@ -100,14 +100,14 @@ namespace ObligatorioDA2.Services.Tests
             sports.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
             teams.Setup(r => r.Add(testTeam)).Returns(testTeam);
 
-            Team added = testService.AddTeam(testDto);    
+            testService.AddTeam(testDto);    
         }
 
         [TestMethod]
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void AddTeamNotLoggedException() {
             LogOut();
-            Team added = testService.AddTeam(testDto);
+            testService.AddTeam(testDto);
         }
 
         [TestMethod]
@@ -115,7 +115,7 @@ namespace ObligatorioDA2.Services.Tests
         public void AddTeamNotAuthorizedException()
         {
             GrantFollowerPermissions();
-            Team added = testService.AddTeam(testDto);
+            testService.AddTeam(testDto);
         }
 
         [TestMethod]
@@ -123,9 +123,9 @@ namespace ObligatorioDA2.Services.Tests
             GrantAdminPermissions();
             teams.Setup(r => r.Get(It.IsAny<int>())).Returns(testTeam);
             testDto.name = "Manchester United";
-            Team modified = testService.Modify(testDto);
+            TeamDto modified = testService.Modify(testDto);
             teams.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
-            Assert.AreEqual(testDto.name, modified.Name);
+            Assert.AreEqual(testDto.name, modified.name);
         }
 
         [TestMethod]
@@ -135,14 +135,14 @@ namespace ObligatorioDA2.Services.Tests
             GrantAdminPermissions();
             teams.Setup(r => r.Get(It.IsAny<int>())).Throws(new TeamNotFoundException());
             sports.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
-            Team modified = testService.Modify(testDto);
+            testService.Modify(testDto);
         }
 
         [TestMethod]
         public void GetAllTeamsTest() {
             GrantFollowerPermissions();
             teams.Setup(r => r.GetAll()).Returns(new List<Team>() { testTeam, testTeam, testTeam });
-            ICollection<Team> allTeams = testService.GetAllTeams();
+            ICollection<TeamDto> allTeams = testService.GetAllTeams();
             teams.Verify(r => r.GetAll(), Times.Once);
             Assert.AreEqual(3, allTeams.Count);
         }
@@ -208,7 +208,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             GrantFollowerPermissions();
             teams.Setup(r => r.GetTeams(testSport.Name)).Returns(new List<Team>() { testTeam, testTeam, testTeam });
-            ICollection<Team> result = testService.GetSportTeams(testSport.Name);
+            ICollection<TeamDto> result = testService.GetSportTeams(testSport.Name);
             auth.Verify(r => r.IsLoggedIn(), Times.Once);
             auth.Verify(r => r.HasAdminPermissions(), Times.Never);
             teams.Verify(r => r.GetTeams(testSport.Name), Times.Once);

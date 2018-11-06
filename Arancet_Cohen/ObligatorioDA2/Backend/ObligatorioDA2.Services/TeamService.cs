@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.BusinessLogic.Exceptions;
@@ -8,6 +7,7 @@ using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Mappers;
 
 namespace ObligatorioDA2.Services
 {
@@ -16,18 +16,21 @@ namespace ObligatorioDA2.Services
         private ISportRepository sports;
         private ITeamRepository teams;
         private IAuthenticationService authentication;
+        private TeamDtoMapper mapper;
 
         public TeamService(ISportRepository sportsRepo, ITeamRepository teamsRepo, IAuthenticationService authService)
         {
             sports = sportsRepo;
             teams = teamsRepo;
             authentication = authService;
+            mapper = new TeamDtoMapper();
         }
 
-        public Team AddTeam(TeamDto team)
+        public TeamDto AddTeam(TeamDto team)
         {
             AuthenticateAdmin();
-            return TryAddTeam(team);
+            Team added= TryAddTeam(team);
+            return mapper.ToDto(added);
         }
 
         private Team TryAddTeam(TeamDto team)
@@ -73,13 +76,13 @@ namespace ObligatorioDA2.Services
             return created;
         }
 
-        public Team Modify(TeamDto testDto)
+        public TeamDto Modify(TeamDto testDto)
         {
             AuthenticateAdmin();
             Team old = TryGetTeam(testDto.id);
             Team updated = Update(old, testDto);
             teams.Modify(updated);
-            return updated;
+            return mapper.ToDto(updated);
         }
 
         private Team Update(Team old, TeamDto testDto)
@@ -90,13 +93,11 @@ namespace ObligatorioDA2.Services
             return new Team(id, name, photoPath, old.Sport);
         }
 
-        public Team GetTeam(int id)
+        public TeamDto GetTeam(int id)
         {
-            if (!authentication.IsLoggedIn())
-            {
-                throw new NotAuthenticatedException();
-            }
-            return TryGetTeam(id);
+            Authenticate();
+            Team stored = TryGetTeam(id);
+            return mapper.ToDto(stored);
         }
 
         private Team TryGetTeam(int id)
@@ -130,13 +131,15 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public ICollection<Team> GetAllTeams()
+        public ICollection<TeamDto> GetAllTeams()
         {
             Authenticate();
-            ICollection<Team> allOfThem;
+            ICollection<TeamDto> allOfThem;
             try
             {
-                allOfThem = teams.GetAll();
+                allOfThem = teams.GetAll()
+                    .Select(t => mapper.ToDto(t))
+                    .ToList();
             }catch(DataInaccessibleException e)
             {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
@@ -144,7 +147,7 @@ namespace ObligatorioDA2.Services
             return allOfThem;
         }
 
-        public ICollection<Team> GetSportTeams(string name)
+        public ICollection<TeamDto> GetSportTeams(string name)
         {
             Authenticate();
             ICollection<Team> sportTeams;
@@ -159,7 +162,9 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
-            return sportTeams;
+            return sportTeams
+                .Select(t => mapper.ToDto(t))
+                .ToList();
         }
 
         private void AuthenticateAdmin() {
