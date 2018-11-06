@@ -155,7 +155,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             IActionResult result;
             try { 
-                ICollection<Team> sportTeams = teams.GetSportTeams(name);
+                ICollection<TeamDto> sportTeams = teams.GetSportTeams(name);
                 ICollection<TeamModelOut> output = sportTeams.Select(t => CreateModelOut(t)).ToList();
                 result = Ok(output);
             }
@@ -199,14 +199,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return new SportModelOut() { Name = aSport.name };
         }
 
-        private TeamModelOut CreateModelOut(Team aTeam)
+        private TeamModelOut CreateModelOut(TeamDto aTeam)
         {
             return new TeamModelOut()
             {
-                Id = aTeam.Id,
-                SportName = aTeam.Sport.Name,
-                Name = aTeam.Name,
-                Photo = images.ReadImage(aTeam.PhotoPath)
+                Id = aTeam.id,
+                SportName = aTeam.sportName,
+                Name = aTeam.name,
+                Photo = images.ReadImage(aTeam.photo)
             };
         }
     }

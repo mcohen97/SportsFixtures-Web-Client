@@ -275,8 +275,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetSportTeamsTest() {
             //Arrange.
-            Team dummyTeam = new Team("Dummy", "Dummy", new Sport("Dummy",true));
-            ICollection<Team> cannedResponse = new List<Team>() { dummyTeam, dummyTeam, dummyTeam };
+            TeamDto dummyTeam = new TeamDto() { name= "Dummy", photo ="Dummy", sportName ="Dummy" };
+            ICollection<TeamDto> cannedResponse = new List<TeamDto>() { dummyTeam, dummyTeam, dummyTeam };
             sportsService.Setup(r => r.GetSport(It.IsAny<string>())).Returns(new SportDto() { name = "Dummy", isTwoTeams =true });
             teamsRepo.Setup(r => r.GetSportTeams(It.IsAny<string>())).Returns(cannedResponse);
 
