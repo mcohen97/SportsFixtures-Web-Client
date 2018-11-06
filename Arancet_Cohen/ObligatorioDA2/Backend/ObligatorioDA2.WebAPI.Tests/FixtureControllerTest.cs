@@ -13,6 +13,9 @@ using System.Collections.Generic;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using Microsoft.Extensions.Options;
 using System.IO;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Linq;
+using ObligatorioDA2.Services.Mappers;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -23,13 +26,18 @@ namespace ObligatorioDA2.WebAPI.Tests
         private Sport testSport;
         private Mock<ISportRepository> sportsRepo;
         private Mock<IMatchRepository> matchesRepo;
+
+        private IMatchService matches;
+        private IInnerMatchService innerMatches;
+
         private Mock<ITeamRepository> teamsRepo;
         private Mock<ILoggerService> logger;
+        private EncounterDtoMapper mapper;
         private IFixtureService fixture;
         private ICollection<Team> teamsCollection;
+
         private ICollection<Encounter> oneMatchCollection;
         private ICollection<Encounter> homeAwayMatchCollection;
-
 
         [TestInitialize]
         public void Initialize()
@@ -53,35 +61,35 @@ namespace ObligatorioDA2.WebAPI.Tests
                 teamC,
                 teamD
             };
-            oneMatchCollection = new List<Encounter>
-            {
-                new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
-                new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
-                new Match(3, List(teamA, teamC), DateTime.Now.AddDays(8), testSport),
-                new Match(4, List(teamD, teamB), DateTime.Now.AddDays(8), testSport),
-                new Match(5, List(teamA, teamD), DateTime.Now.AddDays(16), testSport),
-                new Match(6, List(teamC, teamB), DateTime.Now.AddDays(16), testSport)
+            oneMatchCollection = new List<Encounter>() {
+                new Match(1,List(teamA, teamB),DateTime.Now.AddDays(1),testSport ),
+                new Match(2,List(teamC, teamD),DateTime.Now.AddDays(1),testSport ),
+                new Match(3,List(teamA, teamC),DateTime.Now.AddDays(8),testSport ),
+                new Match(4, List(teamD,teamB),DateTime.Now.AddDays(8),testSport ),
+                new Match(5, List(teamA,teamD),DateTime.Now.AddDays(16),testSport ),
+                new Match(6, List(teamC,teamB),DateTime.Now.AddDays(16),testSport )
             };
-            homeAwayMatchCollection = new List<Encounter>
-            {
-                new Match(1, List(teamA, teamB), DateTime.Now.AddDays(1), testSport),
-                new Match(2, List(teamC, teamD), DateTime.Now.AddDays(1), testSport),
-                new Match(3, List(teamA, teamC), DateTime.Now.AddDays(8), testSport),
-                new Match(4, List(teamD, teamB), DateTime.Now.AddDays(8), testSport),
-                new Match(5, List(teamA, teamD), DateTime.Now.AddDays(16), testSport),
-                new Match(6, List(teamC, teamB), DateTime.Now.AddDays(16), testSport),
-                new Match(7, List(teamB, teamA), DateTime.Now.AddDays(24), testSport),
-                new Match(8, List(teamD, teamC), DateTime.Now.AddDays(24), testSport),
-                new Match(9, List(teamC, teamA), DateTime.Now.AddDays(32), testSport),
-                new Match(10, List(teamB, teamD), DateTime.Now.AddDays(32), testSport),
-                new Match(11, List(teamD, teamA), DateTime.Now.AddDays(40), testSport),
-                new Match(12, List(teamB, teamC), DateTime.Now.AddDays(40), testSport)
+            homeAwayMatchCollection = new List<Encounter>() {
+                new Match(1,List(teamA,teamB),DateTime.Now.AddDays(1),testSport),
+                new Match(2,List(teamC,teamD),DateTime.Now.AddDays(1),testSport),
+                new Match(3,List(teamA,teamC),DateTime.Now.AddDays(8),testSport),
+                new Match(4,List(teamD,teamB),DateTime.Now.AddDays(8),testSport),
+                new Match(5,List(teamA,teamD),DateTime.Now.AddDays(16),testSport),
+                new Match(6,List(teamC,teamB),DateTime.Now.AddDays(16),testSport),
+                new Match(7,List(teamB,teamA),DateTime.Now.AddDays(24),testSport),
+                new Match(8,List(teamD,teamC),DateTime.Now.AddDays(24),testSport),
+                new Match(9,List(teamC,teamA),DateTime.Now.AddDays(32),testSport),
+                new Match(10,List(teamB,teamD),DateTime.Now.AddDays(32),testSport),
+                new Match(11,List(teamD,teamA),DateTime.Now.AddDays(40),testSport),
+                new Match(12,List(teamB,teamC),DateTime.Now.AddDays(40),testSport)
             };
         }
 
-        private ICollection<Team> List(Team home, Team away) {
+        private ICollection<Team> List(Team home, Team away)
+        {
             return new List<Team>() { home, away };
         }
+
         private void SetUpController()
         {
             sportsRepo = new Mock<ISportRepository>();
@@ -91,14 +99,19 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             matchesRepo = new Mock<IMatchRepository>();
             matchesRepo.Setup(m => m.Add(It.IsAny<Match>())).Returns((Match mat) => { return mat; });
-            matchesRepo.Setup(m => m.Exists(It.IsAny<int>())).Returns(false);
-            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Encounter>());
 
             teamsRepo = new Mock<ITeamRepository>();
             teamsRepo.Setup(t => t.GetTeams(It.IsAny<string>())).Returns(teamsCollection);
             teamsRepo.Setup(t => t.GetAll()).Returns(teamsCollection);
+            Mock<IMatchRepository> matchRepository = new Mock<IMatchRepository>();
+            mapper = new EncounterDtoMapper(teamsRepo.Object,matchRepository.Object,sportsRepo.Object);
 
-            fixture = new FixtureService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
+
+            innerMatches = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
+            matches = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
+
+            fixture = new FixtureService(teamsRepo.Object, sportsRepo.Object, innerMatches, matches, matchRepository.Object);
+
 
             logger = new Mock<ILoggerService>();
             logger.Setup(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>())).Returns(1);
@@ -120,6 +133,8 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Year = DateTime.Now.Year,
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
             };
+            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Encounter>());
+
 
             //Act.
             IActionResult result = controller.CreateFixture(testSport.Name,input);
@@ -146,8 +161,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
-            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(oneMatchCollection);
-
+            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(GetEncounterDtos(oneMatchCollection));
 
             //Act
             IActionResult result = controller.CreateFixture(testSport.Name, input);
@@ -190,16 +204,20 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         }
 
-        private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<Encounter> matches)
+        private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<EncounterDto> encounters)
         {
             ICollection<string> errorMessagges = new List<string>();
-            foreach (Match aMatch in matches)
+            foreach (EncounterDto encounter in encounters)
             {
-                foreach (Team team in aMatch.GetParticipants()) {
-                    errorMessagges.Add(team.Name + " already has a match on date " + new DateTime(aMatch.Date.Year, aMatch.Date.Month, aMatch.Date.Day));
+                foreach (int teamId in encounter.teamsIds) {
+                    errorMessagges.Add(GetTeam(teamId).Name + " already has a match on date " + new DateTime(encounter.date.Year, encounter.date.Month, encounter.date.Day));
                 }
             }
             return errorMessagges;
+        }
+
+        private Team GetTeam(int id) {
+            return teamsCollection.First(tc => tc.Id == id);
         }
 
         [TestMethod]
@@ -235,6 +253,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Year = DateTime.Now.Year,
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture"
             };
+            matchesRepo.Setup(m => m.GetAll()).Returns(new List<Encounter>());
 
             //Act.
             IActionResult result = controller.CreateFixture(testSport.Name, input);
@@ -262,7 +281,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
-            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(homeAwayMatchCollection);
+            ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(GetEncounterDtos(homeAwayMatchCollection));
 
 
             //Act.
@@ -290,7 +309,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Year = DateTime.Now.Year,
                 FixtureName = "HomeAwayFixture"
             };
-            matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
+            //matches.Setup(m => m.GetAllMatches()).Returns(GetEncounterDtos(homeAwayMatchCollection));
 
 
             //Act.
@@ -341,6 +360,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(strategies);
 
+        }
+
+        private ICollection<EncounterDto> GetEncounterDtos(ICollection<Encounter> encounters) {
+            return encounters.Select(e => mapper.ToDto(e)).ToList();
         }
     }
 }

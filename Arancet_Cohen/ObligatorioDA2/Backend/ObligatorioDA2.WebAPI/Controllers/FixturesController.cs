@@ -14,6 +14,7 @@ using System.Reflection;
 using System.IO;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -181,9 +182,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             IActionResult result;
             Sport sport = sports.Get(sportName);
-            ICollection<Encounter> added = fixtureService.AddFixture(sport);
+            ICollection<EncounterDto> added = fixtureService.AddFixture(sport);
             ICollection<EncounterModelOut> addedModelOut = new List<EncounterModelOut>();
-            foreach (Encounter match in added)
+            foreach (EncounterDto match in added)
             {
                 addedModelOut.Add(factory.CreateModelOut(match));
             }
