@@ -191,7 +191,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private StandingModelOut CreateStanding(Tuple<Team, int> standing)
         {
             Team team = standing.Item1;
-            return new StandingModelOut() { TeamId = team.Id, TeamName = team.Name, Points = standing.Item2 };
+            return new StandingModelOut() { TeamId = team.Id, Points = standing.Item2 };
         }
 
         private TeamModelOut CreateModelOut(Team aTeam)
