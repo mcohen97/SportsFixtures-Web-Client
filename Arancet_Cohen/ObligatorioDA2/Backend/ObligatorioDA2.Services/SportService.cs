@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.BusinessLogic.Exceptions;
@@ -7,6 +8,7 @@ using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Mappers;
 
 namespace ObligatorioDA2.Services
 {
@@ -15,15 +17,17 @@ namespace ObligatorioDA2.Services
         private ISportRepository sports;
         private ITeamRepository teams;
         private IAuthenticationService authenticator;
+        private SportDtoMapper mapper;
 
         public SportService(ISportRepository sportRepository, ITeamRepository teamRepository, IAuthenticationService authService)
         {
             sports = sportRepository;
             teams = teamRepository;
             authenticator = authService;
+            mapper = new SportDtoMapper();
         }
 
-        public ICollection<Sport> GetAllSports()
+        public ICollection<SportDto> GetAllSports()
         {
             Authenticate();
             ICollection<Sport> allOfThem;
@@ -34,10 +38,12 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
-            return allOfThem;
+            return allOfThem
+                .Select(s => mapper.ToDto(s))
+                .ToList();
         }
 
-        public Sport GetSport(string name)
+        public SportDto GetSport(string name)
         {
             Authenticate();
             Sport fromStorage;
@@ -52,10 +58,10 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
-            return fromStorage;
+            return mapper.ToDto(fromStorage);
         }
 
-        public Sport AddSport(SportDto dto)
+        public SportDto AddSport(SportDto dto)
         {
             AuthenticateAdmin();
             Sport toAdd = TryCreate(dto);
@@ -68,7 +74,7 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
-            return toAdd;
+            return dto;
         }
 
         private Sport TryCreate(SportDto dto)

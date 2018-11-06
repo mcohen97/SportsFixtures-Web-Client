@@ -35,7 +35,7 @@ namespace ObligatorioDA2.Services.Tests
         public void GetAllTest() {
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.GetAll()).Returns(new List<Sport>() { testSport, testSport, testSport });
-            ICollection<Sport> result= serviceToTest.GetAllSports();
+            ICollection<SportDto> result= serviceToTest.GetAllSports();
             authentication.Verify(r => r.IsLoggedIn(), Times.Once);
             authentication.Verify(r => r.HasAdminPermissions(), Times.Never);
             sportsStorage.Verify(r => r.GetAll(), Times.Once);
@@ -62,12 +62,12 @@ namespace ObligatorioDA2.Services.Tests
         public void GetSportTest() {
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.Get(testSport.Name)).Returns(testSport);
-            Sport result = serviceToTest.GetSport(testSport.Name);
+            SportDto result = serviceToTest.GetSport(testSport.Name);
             authentication.Verify(r => r.IsLoggedIn(), Times.Once);
             authentication.Verify(r => r.HasAdminPermissions(), Times.Never);
             sportsStorage.Verify(r => r.Get(testSport.Name), Times.Once);
-            Assert.AreEqual(testSport.Name, result.Name);
-            Assert.AreEqual(testSport.IsTwoTeams, result.IsTwoTeams);
+            Assert.AreEqual(testSport.Name, result.name);
+            Assert.AreEqual(testSport.IsTwoTeams, result.isTwoTeams);
         }
 
         [TestMethod]
@@ -89,10 +89,10 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void AddSportTest() {
             GrantAdminPermissions();
-            Sport result = serviceToTest.AddSport(testDto);
+            SportDto result = serviceToTest.AddSport(testDto);
             sportsStorage.Verify(r => r.Add(It.IsAny<Sport>()), Times.Once);
-            Assert.AreEqual(testSport.Name,result.Name);
-            Assert.AreEqual(testSport.IsTwoTeams, result.IsTwoTeams);
+            Assert.AreEqual(testSport.Name,result.name);
+            Assert.AreEqual(testSport.IsTwoTeams, result.isTwoTeams);
         }
 
         [TestMethod]
