@@ -8,23 +8,30 @@ using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using System.Reflection;
 using System.IO;
+using ObligatorioDA2.Services.Mappers;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.Services
 {
     public class FixtureService : IFixtureService
     {
-        private MatchService matchService;
+        private IInnerMatchService matchAddingService;
+        private IMatchService matchService;
         private ITeamRepository teamStorage;
         private ISportRepository sportsStorage;
         private IFixtureGenerator fixtureAlgorithm;
+        private EncounterDtoMapper mapper;
         private const string DLL_EXTENSION = "*.dll";
 
 
-        public FixtureService(IMatchRepository matchStorage, ITeamRepository teamRepository, ISportRepository sportsRepository)
+        public FixtureService( ITeamRepository teamRepository, ISportRepository sportsRepository, 
+            IInnerMatchService matchAddition, IMatchService aMatchService, IMatchRepository encounterRepository)
         {
-            matchService = new MatchService(matchStorage, teamRepository, sportsRepository);
+            matchAddingService = matchAddition;
+            matchService = aMatchService;
             sportsStorage = sportsRepository;
             teamStorage = teamRepository;
+            mapper = new EncounterDtoMapper(teamStorage, encounterRepository, sportsRepository);
         }
 
         public IFixtureGenerator FixtureAlgorithm { get => fixtureAlgorithm; set => SetFixtureAlgorithm(value); }
@@ -42,19 +49,19 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public ICollection<Encounter> AddFixture(ICollection<string> teamsNames, string sportName)
+        public ICollection<EncounterDto> AddFixture(ICollection<string> teamsNames, string sportName)
         {
             ICollection<Team> teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<Encounter> AddFixture(Sport sport)
+        public ICollection<EncounterDto> AddFixture(Sport sport)
         {
             ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<Encounter> AddFixture(ICollection<Team> teamsCollection)
+        public ICollection<EncounterDto> AddFixture(ICollection<Team> teamsCollection)
         {
             ICollection<Encounter> added = new List<Encounter>();
             try
@@ -73,14 +80,14 @@ namespace ObligatorioDA2.Services
                 throw new WrongFixtureException(e.Message);
             }
 
-            return added;
+            return added.Select(e => mapper.ToDto(e)).ToList();
 
         }
         private ICollection<Encounter> AddMatches(ref ICollection<Encounter> added, ICollection<Encounter> generated)
         {
             foreach (Encounter match in generated)
             {
-                Encounter matchAdded = matchService.AddMatch(match);
+                Encounter matchAdded = matchAddingService.AddMatch(match);
                 added.Add(matchAdded);
             }
             return added;
