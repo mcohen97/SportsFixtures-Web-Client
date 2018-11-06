@@ -53,7 +53,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGet()
         {
-            ICollection<Team> allOfThem = teamService.GetAllTeams();
+            ICollection<TeamDto> allOfThem = teamService.GetAllTeams();
             ICollection<TeamModelOut> conversion = allOfThem.Select(t => BuildTeamModelOut(t)).ToList();
             return Ok(conversion);
         }
@@ -66,7 +66,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                Team fetched = teamService.GetTeam(id);
+                TeamDto fetched = teamService.GetTeam(id);
                 TeamModelOut output = BuildTeamModelOut(fetched);
                 result = Ok(output);
             }
@@ -122,10 +122,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             string imgData = Base64Encode(team.Photo);
             team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
             TeamDto dto = BuildTransferObject(team);
-            Team added =teamService.AddTeam(dto);
+            TeamDto added =teamService.AddTeam(dto);
             TeamModelOut modelOut = BuildTeamModelOut(added);
             images.SaveImage(team.Photo, imgData);
-            return CreatedAtRoute("GetTeamById",new {id =added.Id } ,modelOut);
+            return CreatedAtRoute("GetTeamById",new {id =added.id } ,modelOut);
 
         }
 
@@ -158,7 +158,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 value.Id = teamId;
                 TeamDto dto = BuildTransferObject(value);
-                Team modified = teamService.Modify(dto);
+                TeamDto modified = teamService.Modify(dto);
                 TeamModelOut output = BuildTeamModelOut(modified);
                 result = Ok(output);
             }
@@ -196,14 +196,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private TeamModelOut BuildTeamModelOut(Team toReturn)
+        private TeamModelOut BuildTeamModelOut(TeamDto toReturn)
         {
             TeamModelOut output = new TeamModelOut()
             {
-                Id = toReturn.Id,
-                SportName = toReturn.Sport.Name,
-                Name = toReturn.Name,
-                Photo = images.ReadImage(toReturn.PhotoPath)
+                Id = toReturn.id,
+                SportName = toReturn.sportName,
+                Name = toReturn.name,
+                Photo = images.ReadImage(toReturn.photo)
             };
             return output;
         }

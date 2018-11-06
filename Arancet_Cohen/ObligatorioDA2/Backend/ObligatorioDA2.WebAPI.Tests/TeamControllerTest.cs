@@ -24,12 +24,12 @@ namespace ObligatorioDA2.WebAPI.Tests
         private TeamsController controller;
         private Mock<ITeamService> teamsService;
         private Mock<IAuthenticationService> auth;
-        Team team;
+        TeamDto team;
 
         [TestInitialize]
         public void SetUp() {
             Sport testSport = new Sport("Soccer", true);
-            team = new Team(2,"Nacional", "/MyResource/Nacional.png",testSport);
+            team = new TeamDto() { id = 2, name = "Nacional",photo= "/MyResource/Nacional.png", sportName =testSport.Name };
             teamsService = new Mock<ITeamService>();
             auth = new Mock<IAuthenticationService>();
             controller = new TeamsController(teamsService.Object, new ImageService("TestDirectory"),auth.Object);
@@ -39,7 +39,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetAllTeamsTest() {
             //Arrange.
-            ICollection<Team> dummyTeams = new List<Team>() { team, team, team };
+            ICollection<TeamDto> dummyTeams = new List<TeamDto>() { team, team, team };
             teamsService.Setup(r => r.GetAllTeams()).Returns(dummyTeams);
 
             //Act.
@@ -94,7 +94,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(200, okResult.StatusCode);
-            Assert.AreEqual(resultTeam.Name, team.Name);
+            Assert.AreEqual(resultTeam.Name, team.name);
         }
 
         [TestMethod]
@@ -164,9 +164,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             return new TeamModelIn()
             {
-                Name = team.Name,
-                Photo = team.PhotoPath,
-                SportName = team.Sport.Name
+                Name = team.name,
+                Photo = team.photo,
+                SportName = team.sportName
             };
         }
 
