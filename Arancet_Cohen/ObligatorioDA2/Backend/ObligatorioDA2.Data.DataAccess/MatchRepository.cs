@@ -61,10 +61,8 @@ namespace ObligatorioDA2.Data.Repositories
         {
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
-            AddComments(toAdd,aMatch.GetAllCommentaries());
-            Encounter added = factory.CreateEncounter(toAdd.Id, aMatch.GetParticipants(), aMatch.Date, aMatch.Sport);
-            ICollection<MatchTeam> playingTeams = matchConverter.ConvertParticipants(added);
-            context.MatchTeams.AddRange(playingTeams);
+            AddComments(toAdd, aMatch.GetAllCommentaries());
+            //context.MatchTeams.AddRange(playingTeams);
 
             //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
             if (aMatch.Id > 0 && context.Database.IsSqlServer())
@@ -75,6 +73,13 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 context.SaveChanges();
             }
+            Encounter added = factory.CreateEncounter(toAdd.Id, aMatch.GetParticipants(), aMatch.Date, aMatch.Sport);
+            ICollection<MatchTeam> playingTeams = matchConverter.ConvertParticipants(added);
+            foreach (MatchTeam team in playingTeams)
+            {
+                context.Entry(team).State = EntityState.Added;
+            }
+            context.SaveChanges();
             context.Entry(toAdd).State = EntityState.Detached;
             return added;
         }
