@@ -70,10 +70,10 @@ namespace ObligatorioDA2.Services.Tests
         public void GetUserTest()
         {
             GrantFollowerPermissions();
-            User retrieved = service.GetUser("JohnDoe");
+            UserDto retrieved = service.GetUser("JohnDoe");
 
             users.Verify(r => r.Get("JohnDoe"), Times.Once);
-            Assert.AreEqual(retrieved, testUser);
+            Assert.AreEqual(retrieved.username, testUser.UserName);
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace ObligatorioDA2.Services.Tests
         public void GetNotExistsTest()
         {
             GrantFollowerPermissions();
-            User retrieved = service.GetUser("JohnLennon");
+            UserDto retrieved = service.GetUser("JohnLennon");
         }
 
         [TestMethod]
@@ -89,7 +89,7 @@ namespace ObligatorioDA2.Services.Tests
         public void GetNoDataAccessTest() {
             GrantFollowerPermissions();
             users.Setup(r => r.Get(It.IsAny<string>())).Throws(new DataInaccessibleException());
-            User retrieved = service.GetUser("username");
+            UserDto retrieved = service.GetUser("username");
         }
 
         [TestMethod]
@@ -169,8 +169,8 @@ namespace ObligatorioDA2.Services.Tests
         {
             GrantAdminPermissions();
             UserDto changeName = new UserDto() {username= testUser.UserName ,name = "a new name" };
-            User modified = service.ModifyUser(changeName);
-            Assert.AreEqual(changeName.name,modified.Name);
+            UserDto modified = service.ModifyUser(changeName);
+            Assert.AreEqual(changeName.name,modified.name);
         }
 
         [TestMethod]
@@ -258,7 +258,7 @@ namespace ObligatorioDA2.Services.Tests
         public void FollowTeamtest()
         {
             GrantFollowerPermissions();
-            service.FollowTeam(testUser.UserName, toFollow);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Once);
         }
@@ -268,8 +268,8 @@ namespace ObligatorioDA2.Services.Tests
         public void FollowAlreadyFollowingTeam()
         {
             GrantFollowerPermissions();
-            service.FollowTeam(testUser.UserName, toFollow);
-            service.FollowTeam(testUser.UserName, toFollow);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
         }
 
         [TestMethod]
@@ -278,7 +278,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             GrantFollowerPermissions();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
-            service.FollowTeam(testUser.UserName, toFollow);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
         }
 
         [TestMethod]
@@ -287,7 +287,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             GrantFollowerPermissions();
             users.Setup(r => r.Modify(testUser)).Throws(new TeamNotFoundException());
-            service.FollowTeam(testUser.UserName, toFollow);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
         }
 
         [TestMethod]
@@ -327,7 +327,7 @@ namespace ObligatorioDA2.Services.Tests
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
-            ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
+            ICollection<TeamDto> userTeams = service.GetUserTeams(testUser.UserName);
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             Assert.AreEqual(userTeams.Count, 1);
         }
@@ -338,7 +338,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             GrantFollowerPermissions();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
-            ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
+            ICollection<TeamDto> userTeams = service.GetUserTeams(testUser.UserName);
         }
 
         [TestMethod]
@@ -357,8 +357,9 @@ namespace ObligatorioDA2.Services.Tests
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
+            teams.Setup(r => r.Get(fake.Id)).Returns(fake);
 
-            service.UnFollowTeam(testUser.UserName, fake);
+            service.UnFollowTeam(testUser.UserName, fake.Id);
 
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Once);
@@ -373,7 +374,7 @@ namespace ObligatorioDA2.Services.Tests
             Team fake = GetFakeTeam();
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
-            service.UnFollowTeam(testUser.UserName, fake);
+            service.UnFollowTeam(testUser.UserName, fake.Id);
         }
 
         [TestMethod]
@@ -385,7 +386,7 @@ namespace ObligatorioDA2.Services.Tests
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
             testUser.AddFavourite(fake);
 
-            service.UnFollowTeam(testUser.UserName, fake);
+            service.UnFollowTeam(testUser.UserName, fake.Id);
 
 
         }
@@ -437,7 +438,7 @@ namespace ObligatorioDA2.Services.Tests
             ICollection<User> fakeUsers = new List<User>() { testUser, testUser, testUser };
             users.Setup(r => r.GetAll()).Returns(fakeUsers);
 
-            ICollection<User> stored = service.GetAllUsers();
+            ICollection<UserDto> stored = service.GetAllUsers();
 
             Assert.AreEqual(stored.Count, fakeUsers.Count);
         }
