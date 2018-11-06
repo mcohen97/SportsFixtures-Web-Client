@@ -2,38 +2,39 @@
 using System.Collections.Generic;
 using System.Text;
 using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.Services.Interfaces
 {
     public interface IMatchService
     {
-        Encounter AddMatch(Encounter aMatch);
+        EncounterDto AddMatch(EncounterDto aMatch);
 
-        Encounter AddMatch(ICollection<int> teamsIds, string sportName, DateTime date);
+        EncounterDto AddMatch(ICollection<int> teamsIds, string sportName, DateTime date);
 
-        Encounter AddMatch(int assignedId, ICollection<int> teamsIds, string sportName, DateTime date);
+        EncounterDto AddMatch(int assignedId, ICollection<int> teamsIds, string sportName, DateTime date);
 
-        ICollection<Encounter> GetAllMatches();
+        ICollection<EncounterDto> GetAllMatches();
 
-        Encounter GetMatch(int anId);
+        EncounterDto GetMatch(int anId);
 
         void DeleteMatch(int anId);
 
-        void ModifyMatch(Encounter aMatch);
+        void ModifyMatch(EncounterDto aMatch);
 
         void ModifyMatch(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName);
 
-        ICollection<Encounter> GetAllMatches(string sportName);
+        ICollection<EncounterDto> GetAllEncounterDtos(string sportName);
 
-        ICollection<Encounter> GetAllMatches(int teamId);
+        ICollection<EncounterDto> GetAllEncounterDtos(int teamId);
 
         bool Exists(int id);
 
-        Commentary CommentOnMatch(int matchId, string userName, string text);
+        CommentaryDto CommentOnMatch(int matchId, string userName, string text);
 
-        ICollection<Commentary> GetMatchCommentaries(int matchId);
-        ICollection<Commentary> GetAllCommentaries();
-        Commentary GetComment(int id);
-        void SetResult(int id, ICollection<Tuple<int, int>> teamsPositions);
+        ICollection<CommentaryDto> GetMatchCommentaries(int matchId);
+        ICollection<CommentaryDto> GetAllCommentaries();
+        CommentaryDto GetComment(int id);
+        void SetResult(int id, ResultDto resultDto);
     }
 }
