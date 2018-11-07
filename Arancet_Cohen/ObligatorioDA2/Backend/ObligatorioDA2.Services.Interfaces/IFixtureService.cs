@@ -8,9 +8,8 @@ namespace ObligatorioDA2.Services.Interfaces
     public interface IFixtureService
     {
         IFixtureGenerator FixtureAlgorithm { get; set; }
-        ICollection<EncounterDto> AddFixture(ICollection<Team> teamsCollection);
         ICollection<EncounterDto> AddFixture(ICollection<string> teamsNames, string sportName);
-        ICollection<EncounterDto> AddFixture(Sport sport);
+        ICollection<EncounterDto> AddFixture(string sportName);
         ICollection<Type> GetAlgorithms(string dllPath);
     }
 }
