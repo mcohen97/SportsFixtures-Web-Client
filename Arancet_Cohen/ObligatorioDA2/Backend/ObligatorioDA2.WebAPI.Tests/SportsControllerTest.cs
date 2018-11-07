@@ -9,14 +9,15 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
-using Microsoft.Extensions.Options;
 using System.Linq;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class SportsControllerTest
     {
         private Mock<ISportService> sportsService;

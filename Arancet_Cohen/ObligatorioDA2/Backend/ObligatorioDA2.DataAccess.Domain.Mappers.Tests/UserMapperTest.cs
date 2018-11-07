@@ -1,13 +1,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.Entities;
-using ObligatorioDA2.Data.DomainMappers.Mappers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UserMapperTest
     {
         User toStore;

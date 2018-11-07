@@ -8,13 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.Data.Entities;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DataRepositoriesTest
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class MatchRepositoryTest
     {
         private IMatchRepository matchesStorage;

@@ -16,10 +16,12 @@ using System.IO;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using System.Linq;
 using ObligatorioDA2.Services.Mappers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class FixtureControllerTest
     {
         private FixturesController controller;

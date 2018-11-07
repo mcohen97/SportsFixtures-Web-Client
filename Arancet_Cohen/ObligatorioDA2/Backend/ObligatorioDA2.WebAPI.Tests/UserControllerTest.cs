@@ -3,7 +3,6 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using ObligatorioDA2.BusinessLogic;
 using System;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
@@ -13,10 +12,12 @@ using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UserControllerTest
     {
         UsersController controller;

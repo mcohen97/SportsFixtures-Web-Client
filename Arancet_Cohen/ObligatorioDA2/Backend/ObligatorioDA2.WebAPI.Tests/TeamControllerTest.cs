@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.Data.Repositories.Interfaces;
-using ObligatorioDA2.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using ObligatorioDA2.Services;
@@ -15,10 +13,12 @@ using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Exceptions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class TeamControllerTest
     {
         private TeamsController controller;

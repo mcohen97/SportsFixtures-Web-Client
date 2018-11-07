@@ -6,10 +6,12 @@ using Moq;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class EncounterTest
     {
         private Team teamA;

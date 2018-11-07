@@ -9,10 +9,12 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using System;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class AuthControllerTest
     {
         private AuthenticationController controllerToTest;
