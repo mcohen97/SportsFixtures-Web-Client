@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.WebAPI.Models;
@@ -15,10 +15,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class LogsController : ControllerBase
     {
         private ILoggerService logger;
+        private ErrorActionResultFactory errors;
 
         public LogsController(ILoggerService logService)
         {
             logger = logService;
+            errors = new ErrorActionResultFactory(this);
         }
 
         [HttpGet]
@@ -30,10 +32,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGet();
             }
-            catch (DataInaccessibleException e)
+            catch (ServiceException e)
             {
-
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
 
             return result;
@@ -52,11 +53,5 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(output);
         }
 
-        private IActionResult NoDataAccess(DataInaccessibleException e)
-        {
-            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
-            return internalError;
-        }
     }
 }
