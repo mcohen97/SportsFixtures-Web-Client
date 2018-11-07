@@ -5,6 +5,7 @@ using Moq;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -41,18 +42,18 @@ namespace ObligatorioDA2.Services.Tests
             repo.Setup(r => r.Get("aUsername")).Returns(admin);
 
             //act
-            User logged = logger.Login("aUsername", "aPassword");
+            UserDto logged = logger.Login("aUsername", "aPassword");
 
             repo.VerifyAll();
-            Assert.AreEqual(logged.Name, "aName");
-            Assert.AreEqual(logged.Surname, "aSurname");
-            Assert.AreEqual(logged.UserName, "aUsername");
-            Assert.AreEqual(logged.Password, "aPassword");
-            Assert.AreEqual(logged.Email, "anEmail@aDomain.com");
+            Assert.AreEqual(logged.name, "aName");
+            Assert.AreEqual(logged.surname, "aSurname");
+            Assert.AreEqual(logged.username, "aUsername");
+            Assert.AreEqual(logged.password, "aPassword");
+            Assert.AreEqual(logged.email, "anEmail@aDomain.com");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void UserNotFoundTest()
         {
             //arrange.
@@ -69,7 +70,7 @@ namespace ObligatorioDA2.Services.Tests
             repo.Setup(r => r.Get("aUsername")).Returns(admin);
 
             //act
-            User logged = logger.Login("aUsername", "otherPassword");
+            UserDto logged = logger.Login("aUsername", "otherPassword");
         }
 
         [TestMethod]

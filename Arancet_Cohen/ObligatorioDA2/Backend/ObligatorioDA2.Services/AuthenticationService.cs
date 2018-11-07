@@ -1,10 +1,11 @@
-﻿using ObligatorioDA2.BusinessLogic;
+﻿using System;
+using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Mappers;
 
 namespace ObligatorioDA2.Services
 {
@@ -12,20 +13,36 @@ namespace ObligatorioDA2.Services
     {
         private IUserRepository users;
         private User current;
+        private UserDtoMapper mapper;
 
         public AuthenticationService(IUserRepository aRepo)
         {
             users = aRepo;
+            mapper = new UserDtoMapper();
         }
 
-        public User Login(string aUsername, string aPassword)
+        public UserDto Login(string aUsername, string aPassword)
         {
-            User fetched = users.Get(aUsername);
+            User fetched = TryGetUser(aUsername); 
             if (!aPassword.Equals(fetched.Password))
             {
                 throw new WrongPasswordException();
             }
-            return fetched;
+            return mapper.ToDto(fetched);
+        }
+
+        private User TryGetUser(string aUsername)
+        {
+            try
+            {
+                return users.Get(aUsername);
+            }
+            catch (UserNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
         }
 
         public void SetSession(string userName)
