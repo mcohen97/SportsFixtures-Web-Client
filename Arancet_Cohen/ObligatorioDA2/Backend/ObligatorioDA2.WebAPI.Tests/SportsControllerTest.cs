@@ -376,15 +376,15 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
-        private ICollection<Tuple<Team, int>> GetFakeTable() {
+        private ICollection<Tuple<TeamDto, int>> GetFakeTable() {
             Sport sport = new Sport("Golf", false);
-            Team teamA = new Team(1, "TeamA", "Photo/A", sport);
-            Team teamB = new Team(2, "TeamB", "Photo/B", sport);
-            Team teamC = new Team(3, "TeamC", "Photo/C", sport);
-            ICollection<Tuple<Team, int>> tuples = new List<Tuple<Team, int>>() {
-                new Tuple<Team, int>(teamA,15),
-                new Tuple<Team, int>(teamB,12),
-                new Tuple<Team, int>(teamC,3)
+            TeamDto teamA = new TeamDto() { id = 1, name = "TeamA", photo = "Photo/A", sportName = sport.Name };
+            TeamDto teamB = new TeamDto() { id = 2, name = "TeamB", photo = "Photo/B", sportName = sport.Name };
+            TeamDto teamC = new TeamDto() { id = 3, name = "TeamC", photo = "Photo/C", sportName = sport.Name };
+            ICollection<Tuple<TeamDto, int>> tuples = new List<Tuple<TeamDto, int>>() {
+                new Tuple<TeamDto, int>(teamA,15),
+                new Tuple<TeamDto, int>(teamB,12),
+                new Tuple<TeamDto, int>(teamC,3)
             };
             return tuples;
         }

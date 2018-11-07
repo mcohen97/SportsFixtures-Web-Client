@@ -184,15 +184,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryCalculateTable(string sportName)
         {
-            ICollection<Tuple<Team, int>> standings = tableService.GetScoreTable(sportName);
+            ICollection<Tuple<TeamDto, int>> standings = tableService.GetScoreTable(sportName);
             IEnumerable<StandingModelOut> output = standings.Select(s => CreateStanding(s));
             return Ok(output);
         }
 
-        private StandingModelOut CreateStanding(Tuple<Team, int> standing)
+        private StandingModelOut CreateStanding(Tuple<TeamDto, int> standing)
         {
-            Team team = standing.Item1;
-            return new StandingModelOut() { TeamId = team.Id, Points = standing.Item2 };
+            TeamDto team = standing.Item1;
+            return new StandingModelOut() { TeamId = team.id, Points = standing.Item2 };
         }
 
         private SportModelOut CreateModelOut(SportDto aSport) {
