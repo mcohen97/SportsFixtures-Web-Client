@@ -55,9 +55,9 @@ namespace ObligatorioDA2.Services
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<EncounterDto> AddFixture(Sport sport)
+        public ICollection<EncounterDto> AddFixture(string sportName)
         {
-            ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Equals(sport)).ToList();
+            ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Name.Equals(sportName)).ToList();
             return AddFixture(teamsCollection);
         }
 

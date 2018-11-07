@@ -144,7 +144,7 @@ namespace ObligatorioDA2.Services.Tests
         {
             AddTeamsToRepo();
             fixtureService.FixtureAlgorithm= new OneMatchFixture(DateTime.Now, 2, 5);
-            ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(sport);
+            ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(sport.Name);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.id)));
         }
 
