@@ -9,7 +9,6 @@ using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
