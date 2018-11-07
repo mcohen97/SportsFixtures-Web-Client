@@ -11,6 +11,7 @@ using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using System.Net;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -47,16 +48,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
-                User logged = loginService.Login(user.Username, user.Password);
+                UserDto logged = loginService.Login(user.Username, user.Password);
                 string tokenString = GenerateJSONWebToken(logged);
                 result = Ok(new { Token = tokenString });
                 logger.Log(LogType.LOGIN, LogMessage.LOGIN_OK, user.Username, DateTime.Now);
             }
-            catch (UserNotFoundException e1)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e1.Message };
-                result = BadRequest(error);
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, user.Username, DateTime.Now);
+                result = GenerateResponse(e);
+                LogError(e, user.Username);
             }
             catch (WrongPasswordException e2)
             {
@@ -64,15 +64,34 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = BadRequest(error);
                 logger.Log(LogType.LOGIN, LogMessage.LOGIN_WRONG_PASSWORD, user.Username, DateTime.Now);
             }
-            catch (DataInaccessibleException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = StatusCode((int)HttpStatusCode.InternalServerError, error);
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_DATAINACCESSIBLE, user.Username, DateTime.Now);
-            }
             return result;
         }
 
-        private string GenerateJSONWebToken(User userInfo)
+        private IActionResult GenerateResponse(ServiceException e)
+        {
+            IActionResult errorResult;
+            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
+            if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
+            {
+                errorResult = BadRequest(error);
+            }
+            else
+            {
+                errorResult = StatusCode((int)HttpStatusCode.InternalServerError, error);
+            }
+            return errorResult;
+        }
+
+        private void LogError(ServiceException e, string username)
+        {
+            //if there is data access, log
+            if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
+            {
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, username, DateTime.Now);
+            }
+        }
+
+        private string GenerateJSONWebToken(UserDto userInfo)
         {
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -82,7 +101,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                audience: "http://localhost:5000",
                claims: new List<Claim>{
                         new Claim(ClaimTypes.Role, AdminOrFollower(userInfo)),
-                        new Claim(AuthenticationConstants.USERNAME_CLAIM, userInfo.UserName),
+                        new Claim(AuthenticationConstants.USERNAME_CLAIM, userInfo.username),
                         },
                expires: DateTime.Now.AddMinutes(30),
                signingCredentials: credentials
@@ -91,9 +110,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string AdminOrFollower(User aUser)
+        private string AdminOrFollower(UserDto aUser)
         {
-            return aUser.IsAdmin ? AuthenticationConstants.ADMIN_ROLE : AuthenticationConstants.FOLLOWER_ROLE;
+            return aUser.isAdmin ? AuthenticationConstants.ADMIN_ROLE : AuthenticationConstants.FOLLOWER_ROLE;
         }
     }
 }
