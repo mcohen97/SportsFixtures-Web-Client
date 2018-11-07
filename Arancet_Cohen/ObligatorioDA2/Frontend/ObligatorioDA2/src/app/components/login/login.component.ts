@@ -35,15 +35,15 @@ export class LoginComponent {
         this.isLoading = true;
         this.token = this.auth.authenticate(username, password); 
         this.token.subscribe(
-            ((data:Token) => this.successfulLogin(data, username)),
+            ((data:Token) => this.successfulLogin(data, username, password)),
             ((error:ErrorResponse) => this.handleError(error))
         )
 
     }
 
-    private successfulLogin(tokenResponse:Token, username:string) {
+    private successfulLogin(tokenResponse:Token, username:string, password:string) {
         Globals.setToken(tokenResponse.token);
-        Globals.setLoggedUser(username);
+        Globals.setLoggedUser(username, password);
         console.log("logueado con exito: " + Globals.getToken());
         this.isLoading = false;
     }

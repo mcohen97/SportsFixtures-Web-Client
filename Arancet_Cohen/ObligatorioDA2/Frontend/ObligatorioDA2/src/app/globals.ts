@@ -1,5 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { User } from './classes/user';
+import { StringifyOptions } from 'querystring';
 
 @Injectable()
 export class Globals {
@@ -14,11 +15,16 @@ export class Globals {
     return localStorage.getItem("token");
   }
 
-  static setLoggedUser(username:string){
-    localStorage.setItem("username", username)
+  static setLoggedUser(username:string, password:string){
+    localStorage.setItem("username", username);
+    localStorage.setItem("password", password);
   }
 
-  static getUserLogged():string{
+  static getPassword():string{
+    return localStorage.getItem("password");
+  }
+
+  static getUsername():string{
     return localStorage.getItem("username");
   }
 

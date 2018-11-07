@@ -14,14 +14,14 @@ import { Globals } from 'src/app/globals';
 })
 export class HomeComponent {
   @ViewChild('sidenav') sidenav:MatSidenav;
-  title = 'Sportlendar';
+  title = 'Fix Sports';
 
   constructor(){
   }
 
   getLogged():string{
     if(Globals.isUserLogged())
-      return Globals.getUserLogged();
+      return Globals.getUsername();
     else
       return "Log in";
   }

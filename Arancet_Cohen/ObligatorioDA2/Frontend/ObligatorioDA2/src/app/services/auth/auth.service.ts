@@ -26,12 +26,11 @@ export class AuthService {
     }
     
     private handleError(errorResponse: Response) { 
-        console.error(errorResponse.status);
         var error = new ErrorResponse();
         error.errorMessage = errorResponse.statusText;
         error.errorCode = errorResponse.status;
         error.errorObject = errorResponse.json();
-        return throwError(error || 'Server error'); 
+        return throwError(error); 
     } 
 
 }

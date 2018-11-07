@@ -2,5 +2,9 @@ export class ErrorResponse {
     errorMessage: string;
     errorCode: number;
     errorObject: any
-    constructor(){}
+    constructor(){
+        this.errorMessage = "";
+        this.errorCode = -1;
+        this.errorObject = undefined;
+    }
 }

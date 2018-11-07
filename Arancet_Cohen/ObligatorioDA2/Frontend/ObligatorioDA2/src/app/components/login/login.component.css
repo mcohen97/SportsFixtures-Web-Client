@@ -9,6 +9,12 @@
 .login-card{
     width: 80%;
     margin: 10px auto 10px auto;
+    display: block;
+}
+
+.login-container{
+    display: block;
+    
 }
 
 @media only screen and (min-width: 768px) {

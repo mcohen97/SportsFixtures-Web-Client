@@ -5,6 +5,7 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { Globals } from "src/app/globals";
 import { User } from "src/app/classes/user";
 import { ErrorResponse } from "src/app/classes/error";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable()
 export class UsersService {
@@ -73,13 +74,12 @@ export class UsersService {
         ); 
     }
     
-    private handleError(errorResponse: Response) { 
-        console.error(errorResponse.status);
-        var error = new ErrorResponse();
-        error.errorMessage = errorResponse.statusText;
-        error.errorCode = errorResponse.status;
-        error.errorObject = errorResponse.json();
-        return throwError(error || 'Server error'); 
+    private handleError(error: Response) { 
+        const errorObj = new ErrorResponse();
+        errorObj.errorMessage = error.statusText;
+        errorObj.errorCode = error.status;
+        errorObj.errorObject = error.json();
+        return throwError(errorObj || 'Server error'); 
     } 
 
 }

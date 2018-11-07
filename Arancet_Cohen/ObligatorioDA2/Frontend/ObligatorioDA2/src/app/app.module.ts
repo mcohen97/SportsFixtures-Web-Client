@@ -54,10 +54,13 @@ import { Globals } from './globals';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { UsersService } from './services/users/users.service';
 import { UsersComponent } from './components/users/users.component';
-import { UserEditDialogComponent } from './components/users/user-edit-dialog/user-edit-dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { User } from './classes/user';
 import { UserDialogComponent } from './components/users/user-dialog/user-dialog.component';
+import { ReConnector } from './services/auth/reconnector';
+import { SportsComponent } from './components/sports/sports.component';
+import { SportDialogComponent } from './components/sports/sport-dialog/sport-dialog.component';
+import { SportsService } from './services/sports/sports.service';
 
 @NgModule({
   declarations: [
@@ -67,9 +70,11 @@ import { UserDialogComponent } from './components/users/user-dialog/user-dialog.
     NotFoundComponent,
     UserInfoComponent,
     UsersComponent,
-    UserEditDialogComponent,
     ConfirmationDialogComponent,
-    UserDialogComponent
+    UserDialogComponent,
+    SportsComponent,
+    SportDialogComponent,
+
   ],
   imports: [
     RouterModule.forRoot([
@@ -80,6 +85,10 @@ import { UserDialogComponent } from './components/users/user-dialog/user-dialog.
       {
         path:'users',
         component:UsersComponent
+      },
+      {
+        path:'sports',
+        component:SportsComponent
       },
       {
         path: '**',
@@ -132,13 +141,15 @@ import { UserDialogComponent } from './components/users/user-dialog/user-dialog.
     Globals,
     AuthService,
     UsersService,
+    SportsService,
+    ReConnector,
     {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
 
   ],
   entryComponents: [
-    UserEditDialogComponent, 
     ConfirmationDialogComponent,
     UserDialogComponent,
+    SportDialogComponent
   ],
   bootstrap: [AppComponent],
   

@@ -1,3 +1,4 @@
+<div class="login-container">
     <mat-card class = "login-card">
         <form (submit) = "login($event)" class = "login-form">
             <div class="loading-shade" *ngIf="isLoading">
@@ -17,6 +18,7 @@
                 {{errorMessage}}
             </mat-error>    
         </form>
-
     </mat-card>
+</div>
+    
    

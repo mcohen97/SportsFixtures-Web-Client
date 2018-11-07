@@ -3,10 +3,10 @@ import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA
 import { User } from 'src/app/classes/user';
 import { Globals } from 'src/app/globals';
 import { UsersService } from 'src/app/services/users/users.service';
-import { UserEditDialogComponent } from './user-edit-dialog/user-edit-dialog';
 import { ConfirmationDialogComponent, DialogInfo } from '../confirmation-dialog/confirmation-dialog';
 import { UserDialogComponent } from './user-dialog/user-dialog.component';
 import { ErrorResponse } from 'src/app/classes/error';
+import { ReConnector } from 'src/app/services/auth/reconnector';
 
 @Component({
   selector: 'users-list',
@@ -23,7 +23,7 @@ export class UsersComponent implements OnInit {
   rowEdited: User;
   isLoading = false;
 
-  constructor(private dialog:MatDialog, private globals:Globals, private usersService:UsersService) {
+  constructor(private reconnector:ReConnector ,private dialog:MatDialog, private globals:Globals, private usersService:UsersService) {
     this.getUsers();
   }
   
@@ -31,11 +31,11 @@ export class UsersComponent implements OnInit {
 
   }
 
-  private getUsers(){
+  public getUsers():void{
     this.isLoading = true;
     this.usersService.getAllUsers().subscribe(
       ((data:Array<User>) => this.updateTableData(data)),
-      ((error:any) => this.handleError(error))
+      ((error:ErrorResponse) => this.handleUserError(error))
     )
   }
 
@@ -46,8 +46,14 @@ export class UsersComponent implements OnInit {
     this.isLoading = false;
   }
 
-  private handleError(error:ErrorResponse) {
-    this.isLoading = false;
+  private handleUserError(error:ErrorResponse) {
+    if(error.errorCode == 0 || error.errorCode == 401){
+      this.reconnector.tryReconnect();
+      this.getUsers();
+    }
+    else {
+      this.isLoading = false;
+    }
   }
   
   applyFilter(filterValue:string){
@@ -101,8 +107,17 @@ export class UsersComponent implements OnInit {
   performDelete(aUser: User): void {
     this.usersService.deleteUser(aUser.username).subscribe(
       ((result:any) => this.updateTableData(this.dataSource.data.filter((u:User)=>u.username != aUser.username))),
-      ((error:any) => this.handleError(error))
+      ((error:any) => this.handleDeleteError(error, aUser))
     );
+  }
+  handleDeleteError(error: ErrorResponse, aUser:User): void {
+    if(error.errorCode == 0 || error.errorCode == 401){
+      this.reconnector.tryReconnect();
+      this.performDelete(aUser);
+    }
+    else {
+      this.isLoading = false;
+    }
   }
 
   openAddDialog():void{
