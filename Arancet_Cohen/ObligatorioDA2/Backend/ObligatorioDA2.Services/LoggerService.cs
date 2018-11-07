@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 
@@ -50,7 +52,13 @@ namespace ObligatorioDA2.Services
                 Username = username,
                 Date = date
             };
-            newLog = logRepo.Add(newLog);
+            try
+            {
+                newLog = logRepo.Add(newLog);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
             return newLog.Id;
         }
 
