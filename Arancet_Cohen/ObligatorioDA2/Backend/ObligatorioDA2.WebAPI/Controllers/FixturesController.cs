@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using ObligatorioDA2.Services.Exceptions;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using System.Net;
 using System.Reflection;
 using System.IO;
 using System.Security.Claims;
@@ -28,6 +26,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private const string DLL_EXTENSION = "*.dll";
         private ILoggerService logger;
         private EncounterModelFactory factory;
+        private ErrorActionResultFactory errors;
 
         public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo, ILoggerService loggerService) {
             fixtureService = service;
@@ -35,6 +34,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             sports = sportsRepo;
             logger = loggerService;
             factory = new EncounterModelFactory();
+            errors = new ErrorActionResultFactory(this);
         }
 
         [HttpGet]
@@ -129,26 +129,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = TryCreate(input, sportName);
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_OK, username, DateTime.Now);
             }
-            catch (WrongFixtureException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG + " " + e.Message, username, DateTime.Now);
+                LogError(e,username);
+                result = errors.GenerateError(e);
             }
-            catch (EntityNotFoundException e)
-            {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
-                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_SPORT_NOT_FOUND, username, DateTime.Now);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
-                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_DATAINACCESSIBLE, username, DateTime.Now);
-            }
-
             return result;
         }
+
+        private void LogError(ServiceException e, string username)
+        {
+            if (e.Error.Equals(ErrorType.ENTITY_ALREADY_EXISTS))
+            {
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG + " " + e.Message, username, DateTime.Now);
+            } else if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND)) {
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_SPORT_NOT_FOUND, username, DateTime.Now);
+            }
+        }
+
         private IFixtureGenerator BuildFixtureAlgorithm(DateTime date, string fixtureName)
         {
             string algorithmsPath = fixtureConfig.Value.DllPath;
@@ -189,13 +187,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             result = Created("fixture-generator", addedModelOut);
             return result;
-        }
-
-        private IActionResult NoDataAccess(DataInaccessibleException e)
-        {
-            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
-            return internalError;
         }
     }
 }
