@@ -4,6 +4,7 @@ using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -70,18 +71,18 @@ namespace ObligatorioDA2.Services.Tests
         public void GetLogTest()
         {
             int id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
-            LogInfo logRetrieved = logger.GetLog(id);
-            Assert.AreEqual(aLog.LogType, logRetrieved.LogType);
-            Assert.AreEqual(aLog.Message, logRetrieved.Message);
-            Assert.AreEqual(aLog.Date, logRetrieved.Date);
-            Assert.AreEqual(aLog.Username, logRetrieved.Username);
+            LogInfoDto logRetrieved = logger.GetLog(id);
+            Assert.AreEqual(aLog.LogType, logRetrieved.logType);
+            Assert.AreEqual(aLog.Message, logRetrieved.message);
+            Assert.AreEqual(aLog.Date, logRetrieved.date);
+            Assert.AreEqual(aLog.Username, logRetrieved.username);
         }
 
         [TestMethod]
         public void GetAllTest()
         {
             logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
-            ICollection<LogInfo> logs = logger.GetAllLogs();
+            ICollection<LogInfoDto> logs = logger.GetAllLogs();
             Assert.AreEqual(1, logs.Count);
         }
 
