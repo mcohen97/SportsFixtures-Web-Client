@@ -4,6 +4,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
@@ -17,7 +18,7 @@ namespace ObligatorioDA2.WebAPI.Tests
     {
         private ILoggerService logger;
         private LogsController controller;
-        private ICollection<LogInfo> someLogList;
+        private ICollection<LogInfoDto> someLogList;
 
         [TestInitialize]
         public void Initialize()
@@ -26,31 +27,31 @@ namespace ObligatorioDA2.WebAPI.Tests
             controller = new LogsController(logger);
             DateTime someDate = new DateTime(2020, 02, 20);
             string someUsername = "SomePepitoFulanito";
-            someLogList = new List<LogInfo>()
+            someLogList = new List<LogInfoDto>()
             {
-                new LogInfo()
+                new LogInfoDto()
                 {
-                    Id = 1,
-                    Date = someDate,
-                    LogType = LogType.LOGIN,
-                    Message = LogMessage.LOGIN_OK,
-                    Username = someUsername
+                    id = 1,
+                    date = someDate,
+                    logType = LogType.LOGIN,
+                    message = LogMessage.LOGIN_OK,
+                    username = someUsername
                 },
-                new LogInfo()
+                new LogInfoDto()
                 {
-                    Id = 2,
-                    Date = someDate,
-                    LogType = LogType.LOGIN,
-                    Message = LogMessage.LOGIN_USER_NOT_FOUND,
-                    Username = someUsername+"Roberto"
+                    id = 2,
+                    date = someDate,
+                    logType = LogType.LOGIN,
+                    message = LogMessage.LOGIN_USER_NOT_FOUND,
+                    username = someUsername+"Roberto"
                 },
-                new LogInfo()
+                new LogInfoDto()
                 {
-                    Id = 3,
-                    Date = someDate,
-                    LogType = LogType.LOGIN,
-                    Message = LogMessage.LOGIN_OK,
-                    Username = someUsername
+                    id = 3,
+                    date = someDate,
+                    logType = LogType.LOGIN,
+                    message = LogMessage.LOGIN_OK,
+                    username = someUsername
                 }
             };
         }
