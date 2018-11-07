@@ -6,7 +6,6 @@ using System.Text;
 using ObligatorioDA2.BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
