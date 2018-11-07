@@ -181,8 +181,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryCreate(FixtureModelIn input, string sportName)
         {
             IActionResult result;
-            Sport sport = sports.Get(sportName);
-            ICollection<EncounterDto> added = fixtureService.AddFixture(sport);
+            ICollection<EncounterDto> added = fixtureService.AddFixture(sportName);
             ICollection<EncounterModelOut> addedModelOut = new List<EncounterModelOut>();
             foreach (EncounterDto match in added)
             {
