@@ -7,10 +7,12 @@ using ObligatorioDA2.BusinessLogic.Exceptions;
 using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class FixtureTest
     {
 

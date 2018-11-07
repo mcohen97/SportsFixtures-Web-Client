@@ -16,10 +16,12 @@ using System.Linq;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Mappers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class MatchesControllerTest{
 
         private Mock<IMatchService> matchService;

@@ -1,12 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.Services.Interfaces;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
 namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class ImageServiceTest
     {
         private IImageService service;

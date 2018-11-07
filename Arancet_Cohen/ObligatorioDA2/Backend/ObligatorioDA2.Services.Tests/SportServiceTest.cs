@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
@@ -12,6 +13,7 @@ using ObligatorioDA2.Services.Interfaces.Dtos;
 namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class SportServiceTest
     {
         private ISportService serviceToTest;

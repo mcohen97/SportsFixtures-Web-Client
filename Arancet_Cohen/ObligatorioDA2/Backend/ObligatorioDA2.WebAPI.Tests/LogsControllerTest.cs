@@ -10,10 +10,12 @@ using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class LogsControllerTest
     {
         private ILoggerService logger;

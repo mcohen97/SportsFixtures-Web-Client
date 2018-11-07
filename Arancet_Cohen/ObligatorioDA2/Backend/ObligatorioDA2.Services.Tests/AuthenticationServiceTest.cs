@@ -6,10 +6,12 @@ using ObligatorioDA2.Services;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class AuthenticationServiceTest
     {
 

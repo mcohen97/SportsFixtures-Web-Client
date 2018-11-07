@@ -11,10 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DataRepositoriesTest
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class SportRepositoryTest
     {
         private ISportRepository sportStorage;

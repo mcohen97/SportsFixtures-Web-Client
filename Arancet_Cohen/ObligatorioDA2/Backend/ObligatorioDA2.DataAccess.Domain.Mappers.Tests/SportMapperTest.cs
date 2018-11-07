@@ -3,10 +3,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.Data.Entities;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class SportMapperTest
     {
         private SportMapper testMapper;
