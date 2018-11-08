@@ -171,7 +171,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
 
             if (first2comply == null) {
-                throw new WrongFixtureException("Fixture not found");
+                throw new ServiceException("Fixture not found", ErrorType.ENTITY_NOT_FOUND);
             }
             return first2comply;
         }
