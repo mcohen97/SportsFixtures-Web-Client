@@ -57,6 +57,9 @@ namespace ObligatorioDA2.Services
 
         public ICollection<EncounterDto> AddFixture(string sportName)
         {
+            if (!sportsStorage.Exists(sportName)) {
+                throw new ServiceException("Sport not found", ErrorType.ENTITY_NOT_FOUND);
+            }
             ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Name.Equals(sportName)).ToList();
             return AddFixture(teamsCollection);
         }
