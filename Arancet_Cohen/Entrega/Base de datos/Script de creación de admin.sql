@@ -1,1 +1,1 @@
-INSERT INTO Users VALUES('admin','admin','admin','admin','diegomarcel27@hotmail.com',1);
+INSERT INTO Users VALUES('admin','admin','admin','admin','admin@admin.com',1);
