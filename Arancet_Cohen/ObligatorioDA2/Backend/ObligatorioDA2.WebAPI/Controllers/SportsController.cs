@@ -41,6 +41,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody]SportModelIn modelIn)
         {
+            SetSession();
             IActionResult result;
             if (ModelState.IsValid)
             {
@@ -83,6 +84,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -105,7 +107,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(string name)
         {
-
+            SetSession();
             IActionResult result;
             try
             {
@@ -129,6 +131,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string name)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -144,7 +147,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryDelete(string name)
         {
             sports.DeleteSport(name);
-            OkModelOut okMessage = new OkModelOut() { OkMessage = "Sport was deleted" };
+            OkModelOut okMessage = new OkModelOut() { OkMessage = "The sport has been deleted successfully" };
             return Ok(okMessage);
         }
 
@@ -153,6 +156,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult GetTeams(string name)
         {
+            SetSession();
             IActionResult result;
             try { 
                 ICollection<TeamDto> sportTeams = teams.GetSportTeams(name);
@@ -169,6 +173,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult CalculateSportTable(string sportName)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -194,9 +199,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
             TeamDto team = standing.Item1;
             return new StandingModelOut() { TeamId = team.id, Points = standing.Item2 };
         }
+        private void SetSession()
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authenticator.SetSession(username);
+        }
 
         private SportModelOut CreateModelOut(SportDto aSport) {
-            return new SportModelOut() { Name = aSport.name };
+            return new SportModelOut() { Name = aSport.name, IsTwoTeams = aSport.isTwoTeams };
         }
 
         private TeamModelOut CreateModelOut(TeamDto aTeam)
