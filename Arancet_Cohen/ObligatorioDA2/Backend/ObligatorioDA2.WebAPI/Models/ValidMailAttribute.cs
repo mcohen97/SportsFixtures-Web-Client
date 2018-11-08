@@ -24,7 +24,7 @@ namespace ObligatorioDA2.WebAPI.Models
             {
                 result = new ValidationResult(GetErrorMessage());
             }
-            catch (ArgumentNullException) {
+            catch (ArgumentException) {
                 result = new ValidationResult(GetErrorMessage());
             }
 
