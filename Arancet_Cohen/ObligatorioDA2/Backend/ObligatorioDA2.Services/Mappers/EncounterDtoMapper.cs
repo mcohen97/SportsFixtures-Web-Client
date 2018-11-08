@@ -30,6 +30,7 @@ namespace ObligatorioDA2.Services.Mappers
             {
                 id = encounterDto.Id,
                 sportName = encounterDto.Sport.Name,
+                isSportTwoTeams = encounterDto.Sport.IsTwoTeams,
                 date = encounterDto.Date,
                 teamsIds = encounterDto.GetParticipants().Select(t => t.Id).ToList(),
                 commentsIds = encounterDto.GetAllCommentaries().Select(c => c.Id).ToList(),
