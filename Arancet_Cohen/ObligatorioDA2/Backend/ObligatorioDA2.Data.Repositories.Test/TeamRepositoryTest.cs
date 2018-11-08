@@ -10,10 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DataRepositoriesTest
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class TeamRepositoryTest
     {
         private ITeamRepository teamsStorage;

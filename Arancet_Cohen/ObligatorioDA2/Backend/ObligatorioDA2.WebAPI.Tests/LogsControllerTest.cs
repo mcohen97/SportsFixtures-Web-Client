@@ -3,21 +3,24 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class LogsControllerTest
     {
         private ILoggerService logger;
         private LogsController controller;
-        private ICollection<LogInfo> someLogList;
+        private ICollection<LogInfoDto> someLogList;
 
         [TestInitialize]
         public void Initialize()
@@ -26,31 +29,31 @@ namespace ObligatorioDA2.WebAPI.Tests
             controller = new LogsController(logger);
             DateTime someDate = new DateTime(2020, 02, 20);
             string someUsername = "SomePepitoFulanito";
-            someLogList = new List<LogInfo>()
+            someLogList = new List<LogInfoDto>()
             {
-                new LogInfo()
+                new LogInfoDto()
                 {
-                    Id = 1,
-                    Date = someDate,
-                    LogType = LogType.LOGIN,
-                    Message = LogMessage.LOGIN_OK,
-                    Username = someUsername
+                    id = 1,
+                    date = someDate,
+                    logType = LogType.LOGIN,
+                    message = LogMessage.LOGIN_OK,
+                    username = someUsername
                 },
-                new LogInfo()
+                new LogInfoDto()
                 {
-                    Id = 2,
-                    Date = someDate,
-                    LogType = LogType.LOGIN,
-                    Message = LogMessage.LOGIN_USER_NOT_FOUND,
-                    Username = someUsername+"Roberto"
+                    id = 2,
+                    date = someDate,
+                    logType = LogType.LOGIN,
+                    message = LogMessage.LOGIN_USER_NOT_FOUND,
+                    username = someUsername+"Roberto"
                 },
-                new LogInfo()
+                new LogInfoDto()
                 {
-                    Id = 3,
-                    Date = someDate,
-                    LogType = LogType.LOGIN,
-                    Message = LogMessage.LOGIN_OK,
-                    Username = someUsername
+                    id = 3,
+                    date = someDate,
+                    logType = LogType.LOGIN,
+                    message = LogMessage.LOGIN_OK,
+                    username = someUsername
                 }
             };
         }
@@ -77,7 +80,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetLogsNoDataAccessTest()
         {
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             Mock.Get(logger).Setup(l => l.GetAllLogs()).Throws(toThrow);
 
             //Act.

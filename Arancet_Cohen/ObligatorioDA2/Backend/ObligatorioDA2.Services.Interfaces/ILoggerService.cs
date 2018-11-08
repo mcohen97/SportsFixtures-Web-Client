@@ -1,16 +1,15 @@
-﻿using ObligatorioDA2.BusinessLogic;
+﻿using ObligatorioDA2.Services.Interfaces.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ObligatorioDA2.Services.Interfaces
 {
     public interface ILoggerService
     {
         int Log(string logType, string messagge, string username, DateTime date);
-        LogInfo GetLog(int id);
+        LogInfoDto GetLog(int id);
         bool Exists(int id);
         void Delete(int id);
-        ICollection<LogInfo> GetAllLogs();
+        ICollection<LogInfoDto> GetAllLogs();
     }
 }

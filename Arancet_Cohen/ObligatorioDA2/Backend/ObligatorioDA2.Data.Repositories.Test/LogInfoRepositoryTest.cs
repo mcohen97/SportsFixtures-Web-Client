@@ -9,11 +9,12 @@ using ObligatorioDA2.Data.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Data.Repositories.Test
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class LogInfoRepositoryTest
     {
         LogInfo log1;

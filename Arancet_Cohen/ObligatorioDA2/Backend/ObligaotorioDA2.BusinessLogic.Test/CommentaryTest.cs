@@ -1,13 +1,12 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObligatorioDA2.BusinessLogic;
-using System.Collections.Generic;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class CommentaryTest
     {
         private Commentary commentary;

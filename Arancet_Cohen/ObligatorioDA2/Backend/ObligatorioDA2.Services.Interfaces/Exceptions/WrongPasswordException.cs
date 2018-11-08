@@ -4,9 +4,8 @@ using System.Text;
 
 namespace ObligatorioDA2.Services.Exceptions
 {
-    public class WrongPasswordException:Exception
+    public class WrongPasswordException:ServiceException
     {
-        public WrongPasswordException() {
-        }
+        public WrongPasswordException():base("Incorrect username or password", ErrorType.INVALID_DATA) {}
     }
 }

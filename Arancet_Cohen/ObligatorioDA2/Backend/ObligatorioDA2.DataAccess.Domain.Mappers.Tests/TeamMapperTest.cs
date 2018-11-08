@@ -2,11 +2,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.Entities;
-using ObligatorioDA2.Data.DomainMappers.Mappers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class TeamMapperTest
     {
         private Mock<Team> mockTeam;

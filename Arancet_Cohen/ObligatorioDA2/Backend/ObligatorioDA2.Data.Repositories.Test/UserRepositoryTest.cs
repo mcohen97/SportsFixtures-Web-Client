@@ -7,10 +7,12 @@ using ObligatorioDA2.BusinessLogic;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DataRepositoriesTest
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UserRepositoryTest
     {
         IUserRepository usersStorage;

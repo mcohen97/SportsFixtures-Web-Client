@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObligatorioDA2.BusinessLogic;
-using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UserFactoryTest
     {
         UserId identity;

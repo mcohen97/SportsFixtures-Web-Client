@@ -1,14 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.BusinessLogic;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ObligatorioDA2.Data.Entities;
 using ObligatorioDA2.Data.DomainMappers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class LogInfoMapperTest
     {
         private LogInfoMapper mapper;

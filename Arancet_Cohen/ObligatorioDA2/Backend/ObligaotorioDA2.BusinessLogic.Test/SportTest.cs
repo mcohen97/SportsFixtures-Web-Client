@@ -1,13 +1,11 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObligatorioDA2.BusinessLogic;
-using System.Collections.Generic;
-using Moq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.BusinessLogic.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class SportTest
     {
         [TestMethod]
@@ -68,16 +66,14 @@ namespace ObligatorioDA2.BusinessLogic.Test
         [ExpectedException(typeof(InvalidSportDataException))]
         public void SetEmptyNameTest()
         {
-            Sport sport = new Sport("Name",true);
-            sport.Name = "";
+            Sport sport = new Sport("",true);
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidSportDataException))]
         public void SetNullNameTest()
         {
-            Sport sport = new Sport("Name",true);
-            sport.Name = null;
+            Sport sport = new Sport(null,true);
         }
 
         [TestMethod]

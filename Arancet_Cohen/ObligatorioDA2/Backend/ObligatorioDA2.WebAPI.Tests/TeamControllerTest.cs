@@ -5,37 +5,42 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.Data.Repositories.Interfaces;
-using ObligatorioDA2.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using ObligatorioDA2.Services;
+using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Exceptions;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class TeamControllerTest
     {
         private TeamsController controller;
-        private Mock<ITeamRepository> teamsRepo;
-        private Mock<ISportRepository> sportsRepo;
-        Team team;
+        private Mock<ITeamService> teamsService;
+        private Mock<IAuthenticationService> auth;
+        TeamDto team;
 
         [TestInitialize]
         public void SetUp() {
             Sport testSport = new Sport("Soccer", true);
-            team = new Team(2,"Nacional", "/MyResource/Nacional.png",testSport);
-            teamsRepo = new Mock<ITeamRepository>();
-            sportsRepo = new Mock<ISportRepository>();
-            sportsRepo.Setup(r => r.Get("Soccer")).Returns(testSport);
-            controller = new TeamsController(teamsRepo.Object,sportsRepo.Object, new ImageService("TestDirectory"));
+            team = new TeamDto() { id = 2, name = "Nacional",photo= "/MyResource/Nacional.png", sportName =testSport.Name };
+            teamsService = new Mock<ITeamService>();
+            auth = new Mock<IAuthenticationService>();
+            controller = new TeamsController(teamsService.Object, new ImageService("TestDirectory"),auth.Object);
+            controller.ControllerContext = GetFakeControllerContext();
         }
 
         [TestMethod]
         public void GetAllTeamsTest() {
             //Arrange.
-            ICollection<Team> dummyTeams = new List<Team>() { team, team, team };
-            teamsRepo.Setup(r => r.GetAll()).Returns(dummyTeams);
+            ICollection<TeamDto> dummyTeams = new List<TeamDto>() { team, team, team };
+            teamsService.Setup(r => r.GetAllTeams()).Returns(dummyTeams);
 
             //Act.
             IActionResult result = controller.Get();
@@ -43,7 +48,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ICollection<TeamModelOut> allTeams = okResult.Value as ICollection<TeamModelOut>;
 
             //Assert.
-            teamsRepo.Verify(r => r.GetAll(), Times.Once);
+            teamsService.Verify(r => r.GetAllTeams(), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
@@ -56,75 +61,13 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
 
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
-            teamsRepo.Setup(us => us.GetAll()).Throws(toThrow);
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
+            teamsService.Setup(us => us.GetAllTeams()).Throws(toThrow);
 
 
             //Act.
             IActionResult result = controller.Get();
-            ObjectResult noData = result as ObjectResult;
-            ErrorModelOut error = noData.Value as ErrorModelOut;
-
-            //Assert.
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(noData);
-            Assert.AreEqual(500, noData.StatusCode);
-            Assert.IsNotNull(error);
-            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
-        }
-
-        [TestMethod]
-        public void GetTeamByNamesTest()
-        {
-
-            //Arrange.
-            teamsRepo.Setup(r => r.Get(team.Sport.Name, team.Name)).Returns(team);
-
-            //Act.
-            IActionResult result = controller.Get("Soccer", "Nacional");
-            OkObjectResult okResult = result as OkObjectResult;
-            TeamModelOut resultTeam = okResult.Value as TeamModelOut;
-
-            //Assert.
-            teamsRepo.Verify(r => r.Get("Soccer", "Nacional"), Times.Once);
-            Assert.IsNotNull(okResult);
-            Assert.IsNotNull(okResult.Value);
-            Assert.AreEqual(200, okResult.StatusCode);
-            Assert.AreEqual(resultTeam.Name, team.Name);
-        }
-
-        [TestMethod]
-        public void GetTeamByNamesNotFoundTest()
-        {
-            //Arrange.
-            Exception toThrow = new TeamNotFoundException();
-            teamsRepo.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
-
-            //Act.
-            IActionResult result = controller.Get("Basketball", "DreamTeam");
-            NotFoundObjectResult notFoundResult = result as NotFoundObjectResult;
-            ErrorModelOut error = notFoundResult.Value as ErrorModelOut;
-
-            //Assert.
-            teamsRepo.Verify(r => r.Get("Basketball", "DreamTeam"), Times.Once);
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(notFoundResult);
-            Assert.AreEqual(404, notFoundResult.StatusCode);
-            Assert.IsNotNull(error);
-            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
-        }
-
-        [TestMethod]
-        public void GetTeamByNameNoDataAccessTest()
-        {
-
-            //Arrange.
-            Exception toThrow = new DataInaccessibleException();
-            teamsRepo.Setup(r => r.Get(It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
-
-
-            //Act.
-            IActionResult result = controller.Get("Basketball", "DreamTeam");
             ObjectResult noData = result as ObjectResult;
             ErrorModelOut error = noData.Value as ErrorModelOut;
 
@@ -139,7 +82,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetTeamByIdTest() {
             //Arrange.
-            teamsRepo.Setup(r => r.Get(2)).Returns(team);
+            teamsService.Setup(r => r.GetTeam(2)).Returns(team);
 
             //Act.
             IActionResult result = controller.Get(2);
@@ -147,18 +90,19 @@ namespace ObligatorioDA2.WebAPI.Tests
             TeamModelOut resultTeam = okResult.Value as TeamModelOut;
 
             //Assert.
-            teamsRepo.Verify(r => r.Get(2), Times.Once);
+            teamsService.Verify(r => r.GetTeam(2), Times.Once);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(200, okResult.StatusCode);
-            Assert.AreEqual(resultTeam.Name, team.Name);
+            Assert.AreEqual(resultTeam.Name, team.name);
         }
 
         [TestMethod]
         public void GetTeamByIdNotFoundTest() {
             //Arrange.
-            Exception toThrow = new TeamNotFoundException();
-            teamsRepo.Setup(r => r.Get(It.IsAny<int>())).Throws(toThrow);
+            Exception internalEx = new TeamNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
+            teamsService.Setup(r => r.GetTeam(It.IsAny<int>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Get(2);
@@ -166,7 +110,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = notFoundResult.Value as ErrorModelOut;
 
             //Assert.
-            teamsRepo.Verify(r => r.Get(2), Times.Once);
+            teamsService.Verify(r => r.GetTeam(2), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(404, notFoundResult.StatusCode);
@@ -178,8 +122,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetTeamByIdNoDataAccessTest()
         {
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
-            teamsRepo.Setup(r => r.Get(It.IsAny<int>())).Throws(toThrow);
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
+            teamsService.Setup(r => r.GetTeam(It.IsAny<int>())).Throws(toThrow);
 
 
             //Act.
@@ -200,7 +145,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             //Arrange.
             TeamModelIn input = CreateTeamModelIn();
-            teamsRepo.Setup(r => r.Add(It.IsAny<Team>())).Returns(team);
+            teamsService.Setup(r => r.AddTeam(It.IsAny<TeamDto>())).Returns(team);
 
             //Act.
             IActionResult result = controller.Post(input);
@@ -208,7 +153,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             TeamModelOut modelOut = createdResult.Value as TeamModelOut;
 
             //Assert
-            teamsRepo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
+            teamsService.Verify(r => r.AddTeam(It.IsAny<TeamDto>()), Times.Once);
             Assert.IsNotNull(createdResult);
             Assert.AreEqual("GetTeamById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
@@ -219,9 +164,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             return new TeamModelIn()
             {
-                Name = team.Name,
-                Photo = team.PhotoPath,
-                SportName = team.Sport.Name
+                Name = team.name,
+                Photo = team.photo,
+                SportName = team.sportName
             };
         }
 
@@ -248,7 +193,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateAlreadyExistingTeam() {
             //Arrange.
             Exception toThrow = new TeamAlreadyExistsException();
-            teamsRepo.Setup(tr => tr.Add(It.IsAny<Team>())).Throws(toThrow);
+            teamsService.Setup(tr => tr.AddTeam(It.IsAny<TeamDto>())).Throws(new ServiceException(toThrow.Message,ErrorType.ENTITY_ALREADY_EXISTS));
             TeamModelIn input = CreateTeamModelIn();
 
             //Act.
@@ -269,7 +214,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             //Arrange.
             Exception toThrow = new DataInaccessibleException();
-            teamsRepo.Setup(tr => tr.Add(It.IsAny<Team>())).Throws(toThrow);
+            teamsService.Setup(tr => tr.AddTeam(It.IsAny<TeamDto>())).Throws(new ServiceException(toThrow.Message, ErrorType.DATA_INACCESSIBLE));
             TeamModelIn input = CreateTeamModelIn();
 
             //Act.
@@ -289,6 +234,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutTest() {
             //Arrange.
             TeamModelIn input = CreateTeamModelIn();
+            teamsService.Setup(r => r.Modify(It.IsAny<TeamDto>())).Returns(team);
+
 
             //Act.
             IActionResult result = controller.Put(2,input);
@@ -296,8 +243,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             TeamModelOut modified = okResult.Value as TeamModelOut;
 
             //Assert.
-            teamsRepo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
-            teamsRepo.Verify(r => r.Add(It.IsAny<Team>()), Times.Never);
+            teamsService.Verify(r => r.Modify(It.IsAny<TeamDto>()), Times.Once);
+            teamsService.Verify(r => r.AddTeam(It.IsAny<TeamDto>()), Times.Never);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200,okResult.StatusCode);
@@ -307,7 +254,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutAddTest() {
 
             //Arrange.
-            teamsRepo.Setup(r => r.Modify(It.IsAny<Team>())).Throws(new TeamNotFoundException());
+            Exception internalEx = new TeamNotFoundException();
+            teamsService.Setup(r => r.Modify(It.IsAny<TeamDto>())).Throws(new ServiceException(internalEx.Message,ErrorType.ENTITY_NOT_FOUND));
+            teamsService.Setup(r => r.AddTeam(It.IsAny<TeamDto>())).Returns(team);
             TeamModelIn input = CreateTeamModelIn();
 
             //Act.
@@ -316,8 +265,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             TeamModelOut modelOut = createdResult.Value as TeamModelOut;
 
             //Assert.
-            teamsRepo.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
-            teamsRepo.Verify(r => r.Add(It.IsAny<Team>()), Times.Once);
+            teamsService.Verify(r => r.Modify(It.IsAny<TeamDto>()), Times.Once);
+            teamsService.Verify(r => r.AddTeam(It.IsAny<TeamDto>()), Times.Once);
             Assert.AreEqual("GetTeamById", createdResult.RouteName);
             Assert.AreEqual(201, createdResult.StatusCode);
             Assert.AreEqual(2, modelOut.Id);
@@ -344,8 +293,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutNoDataAccessTest()
         {
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
-            teamsRepo.Setup(r => r.Modify(It.IsAny<Team>())).Throws(toThrow);
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
+            teamsService.Setup(r => r.Modify(It.IsAny<TeamDto>())).Throws(toThrow);
             TeamModelIn input = CreateTeamModelIn();
 
             //Act.
@@ -371,7 +321,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkModelOut okMessage = okResult.Value as OkModelOut;
 
             //Assert.
-            teamsRepo.Verify(r => r.Delete(2), Times.Once);
+            teamsService.Verify(r => r.DeleteTeam(2), Times.Once);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(okResult.StatusCode, 200);
             Assert.IsNotNull(okMessage);
@@ -381,8 +331,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void DeleteByIdNotExistentTest()
         {
             //Arrange.
-            Exception toThrow = new TeamNotFoundException();
-            teamsRepo.Setup(r => r.Delete(It.IsAny<int>())).Throws(toThrow);
+            Exception internalEx = new TeamNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
+            teamsService.Setup(r => r.DeleteTeam(It.IsAny<int>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Delete(2);
@@ -390,7 +341,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             ErrorModelOut error = notFound.Value as ErrorModelOut;
             
             //Assert.
-            teamsRepo.Verify(r => r.Delete(2), Times.Once);
+            teamsService.Verify(r => r.DeleteTeam(2), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(notFound);
             Assert.AreEqual(404, notFound.StatusCode);
@@ -402,8 +353,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void DeleteByIdNoDataAccessTest()
         {
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
-            teamsRepo.Setup(r => r.Delete(It.IsAny<int>())).Throws(toThrow);
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
+            teamsService.Setup(r => r.DeleteTeam(It.IsAny<int>())).Throws(toThrow);
 
             //Act.
             IActionResult result = controller.Delete(2);
@@ -418,51 +370,18 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
         }
 
-        [TestMethod]
-        public void DeleteTest() {
-
-            //Act.
-            IActionResult result =controller.Delete("Soccer","Nacional");
-            OkObjectResult okResult = result as OkObjectResult;
-            OkModelOut okMessage = okResult.Value as OkModelOut;
-
-            //Assert.
-            teamsRepo.Verify(r => r.Delete("Soccer", "Nacional"), Times.Once);
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual(okResult.StatusCode, 200);
-        }
-
-        [TestMethod]
-        public void DeleteNotExistentTest() {
-            teamsRepo.Setup(r => r.Delete(It.IsAny<string>(),It.IsAny<string>())).Throws(new TeamNotFoundException());
-
-            IActionResult result = controller.Delete("Soccer", "Nacional");
-            BadRequestObjectResult okResult = result as BadRequestObjectResult;
-
-            teamsRepo.Verify(r => r.Delete("Soccer", "Nacional"), Times.Once);
-            Assert.IsNotNull(okResult);
-            Assert.IsNotNull(okResult.Value);
-            Assert.AreEqual(okResult.StatusCode, 400);
-        }
-
-        [TestMethod]
-        public void DeleteNoDataAccessTest()
+        private ControllerContext GetFakeControllerContext()
         {
-            //Arrange.
-            Exception toThrow = new DataInaccessibleException();
-            teamsRepo.Setup(r => r.Delete(It.IsAny<string>(), It.IsAny<string>())).Throws(toThrow);
+            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", "username") };
 
-            //Act.
-            IActionResult result = controller.Delete("Soccer", "Nacional");
-            ObjectResult noData = result as ObjectResult;
-            ErrorModelOut error = noData.Value as ErrorModelOut;
+            Mock<ClaimsPrincipal> cp = new Mock<ClaimsPrincipal>();
+            cp.Setup(m => m.Claims).Returns(fakeClaims);
+            Mock<HttpContext> contextMock = new Mock<HttpContext>();
+            contextMock.Setup(ctx => ctx.User).Returns(cp.Object);
 
-            //Assert.
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(noData);
-            Assert.AreEqual(500, noData.StatusCode);
-            Assert.IsNotNull(error);
-            Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+            Mock<ControllerContext> controllerContextMock = new Mock<ControllerContext>();
+            controllerContextMock.Object.HttpContext = contextMock.Object;
+            return controllerContextMock.Object;
         }
     }
 }

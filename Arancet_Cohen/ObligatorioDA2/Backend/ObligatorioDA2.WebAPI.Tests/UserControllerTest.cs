@@ -3,7 +3,6 @@ using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.WebAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using ObligatorioDA2.BusinessLogic;
 using System;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
@@ -13,44 +12,48 @@ using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UserControllerTest
     {
         UsersController controller;
         Mock<IUserService> service;
+        Mock<IAuthenticationService> auth;
         UserModelIn input;
 
         [TestInitialize]
         public void SetUp()
         {
-
             service = new Mock<IUserService>();
-            controller = new UsersController(service.Object, new ImageService("aPath"));
+            auth = new Mock<IAuthenticationService>();
+            controller = new UsersController(service.Object,auth.Object ,new ImageService("aPath"));
             input = new UserModelIn() { Name = "name", Surname = "surname", Username = "username", Password = "password", Email = "mail@gmail.com" };
+            controller.ControllerContext = GetFakeControllerContext();
         }
 
         [TestMethod]
         public void GetTest()
         {
             //Arrange.
-            User fake = GetFakeUser();
-            service.Setup(us => us.GetUser(fake.UserName)).Returns(fake);
+            UserDto fake = GetFakeUser();
+            service.Setup(us => us.GetUser(fake.username)).Returns(fake);
 
             //Act.
-            IActionResult result = controller.Get(fake.UserName);
+            IActionResult result = controller.Get(fake.username);
             OkObjectResult okResult = result as OkObjectResult;
             UserModelOut modelOut = okResult.Value as UserModelOut;
 
             //Assert.
-            service.Verify(us => us.GetUser(fake.UserName), Times.Once);
+            service.Verify(us => us.GetUser(fake.username), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(modelOut);
-            Assert.AreEqual(modelOut.Username, fake.UserName);
+            Assert.AreEqual(modelOut.Username, fake.username);
         }
 
         [TestMethod]
@@ -330,7 +333,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void GetAllTest()
         {
             //Arrange.
-            ICollection<User> fakeList = new List<User>() { GetFakeUser(), GetFakeUser(), GetFakeUser() };
+            ICollection<UserDto> fakeList = new List<UserDto>() { GetFakeUser(), GetFakeUser(), GetFakeUser() };
             service.Setup(us => us.GetAllUsers()).Returns(fakeList);
 
             //Act.
@@ -372,10 +375,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void FollowTeamTest()
         {
-            //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
-
             //Act.
             IActionResult result = controller.FollowTeam(3);
             OkObjectResult okResult = result as OkObjectResult;
@@ -392,9 +391,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void FollowTeamAlreadyFollowing() {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
-
             Exception toThrow = new TeamAlreadyFollowedException();
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
 
@@ -416,9 +412,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void FollowTeamNotExistentTest() {
 
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
-
             Exception internalEx = new TeamNotFoundException();
             Exception toThrow = new ServiceException(internalEx.Message,ErrorType.ENTITY_NOT_FOUND);
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
@@ -441,8 +434,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void FollowTeamNoDataAccessTest()
         {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             Exception internalEx = new DataInaccessibleException();
             Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             service.Setup(us => us.FollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
@@ -465,8 +456,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void UnFollowTeamTest() {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             TeamModelIn input = GetTeamModelIn();
 
             //Act.
@@ -485,8 +474,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void UnfollowTeamNotFoundTest() {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             TeamModelIn input = GetTeamModelIn();
             Exception internalEx = new TeamNotFoundException();
             Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
@@ -509,8 +496,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void UnfollowNotFollowedTest() {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             TeamModelIn input = GetTeamModelIn();
             Exception toThrow = new TeamNotFollowedException();
             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
@@ -533,8 +518,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void UnfollowTeamNoDataAccessTest()
         {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             Exception internalEx = new DataInaccessibleException();
             Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             service.Setup(us => us.UnFollowTeam(It.IsAny<string>(), It.IsAny<int>())).Throws(toThrow);
@@ -556,9 +539,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void GetFollowedTeamsTest() {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            Team aTeam = new Team("aTeam", "aPhoto", new Sport("aSport",true));
-            ICollection<Team> list2return = new List<Team>() { aTeam, aTeam, aTeam };
+            TeamDto aTeam = new TeamDto() { name = "aTeam", photo = "aPhoto", sportName = "Soccer" };
+            ICollection<TeamDto> list2return = new List<TeamDto>() { aTeam, aTeam, aTeam };
             service.Setup(us => us.GetUserTeams(It.IsAny<string>())).Returns(list2return);
 
             //Act.
@@ -636,17 +618,17 @@ namespace ObligatorioDA2.WebAPI.Tests
             controllerContextMock.Object.HttpContext = contextMock.Object;
             return controllerContextMock.Object;
         }
-        private User GetFakeUser()
+        private UserDto GetFakeUser()
         {
-            UserId identity = new UserId()
+            UserDto created = new UserDto()
             {
-                Name = "name",
-                Surname = "surname",
-                UserName = "username",
-                Password = "password",
-                Email = "mail@mail.com"
+                name = "name",
+                surname = "surname",
+                username = "username",
+                password = "password",
+                email = "mail@mail.com",
+                isAdmin = false
             };
-            User created = new User(identity, false);
             return created;
         }
     }

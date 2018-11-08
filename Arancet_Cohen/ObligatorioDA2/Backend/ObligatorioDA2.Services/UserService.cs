@@ -5,9 +5,10 @@ using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Mappers;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace ObligatorioDA2.Services
 {
@@ -15,20 +16,27 @@ namespace ObligatorioDA2.Services
     {
         private IUserRepository usersStorage;
         private ITeamRepository teamsStorage;
+        private IAuthenticationService authenticator;
         private UserFactory factory;
+        private UserDtoMapper userMapper;
+        private TeamDtoMapper teamMapper;
 
-        public UserService(IUserRepository usersRepository, ITeamRepository teamRepository)
+        public UserService(IUserRepository usersRepository, ITeamRepository teamRepository, IAuthenticationService authService)
         {
             usersStorage = usersRepository;
             teamsStorage = teamRepository;
+            authenticator = authService;
             factory = new UserFactory();
+            userMapper = new UserDtoMapper();
+            teamMapper = new TeamDtoMapper();
         }
 
-        public User AddUser(UserDto userData)
+        public UserDto AddUser(UserDto userData)
         {
+            AuthenticateAdmin();
             User toAdd= TryCreate(userData);
             TryAdd(toAdd);
-            return toAdd;
+            return userData;
         }
 
         private User TryCreate(UserDto userData)
@@ -55,7 +63,7 @@ namespace ObligatorioDA2.Services
             {
                 throw new ServiceException(e.Message, ErrorType.ENTITY_ALREADY_EXISTS);
             }
-            catch (EntityNotFoundException e)
+            catch (DataInaccessibleException e)
             {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
@@ -79,6 +87,7 @@ namespace ObligatorioDA2.Services
 
         public void DeleteUser(string userName)
         {
+            AuthenticateAdmin();
             try
             {
                 usersStorage.Delete(userName);
@@ -92,11 +101,17 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public User GetUser(string username)
+        public UserDto GetUser(string username)
         {
+            Authenticate();
+            User stored = TryGetUser(username);
+            return userMapper.ToDto(stored);
+        }
+
+        private User TryGetUser(string username) {
             try
             {
-                return usersStorage.Get(username);
+               return usersStorage.Get(username);
             }
             catch (EntityNotFoundException e)
             {
@@ -108,9 +123,10 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public User ModifyUser(UserDto toModify)
+        public UserDto ModifyUser(UserDto toModify)
         {
-            User old = GetUser(toModify.username);
+            AuthenticateAdmin();
+            UserDto old = GetUser(toModify.username);
             User updated = TryUpdate(old, toModify);
             try
             {
@@ -122,10 +138,10 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
-            return updated;
+            return userMapper.ToDto(updated);
        }
 
-        private User TryUpdate(User old, UserDto toModify)
+        private User TryUpdate(UserDto old, UserDto toModify)
         {
             User updated;
             try
@@ -138,13 +154,13 @@ namespace ObligatorioDA2.Services
             return updated;
         }
 
-        private User UpdateUserData(User old, UserDto toModify)
+        private User UpdateUserData(UserDto old, UserDto toModify)
         {
-            string newName = string.IsNullOrWhiteSpace(toModify.name) ? old.Name : toModify.name;
-            string newSurname = string.IsNullOrWhiteSpace(toModify.surname) ? old.Surname : toModify.surname;
-            string newUsername = string.IsNullOrWhiteSpace(toModify.username) ? old.UserName : toModify.username;
-            string newPassword = string.IsNullOrWhiteSpace(toModify.password) ? old.Password : toModify.password;
-            string newEmail = string.IsNullOrWhiteSpace(toModify.email) ? old.Email : toModify.email;
+            string newName = string.IsNullOrWhiteSpace(toModify.name) ? old.name : toModify.name;
+            string newSurname = string.IsNullOrWhiteSpace(toModify.surname) ? old.surname : toModify.surname;
+            string newUsername = old.username;
+            string newPassword = string.IsNullOrWhiteSpace(toModify.password) ? old.password : toModify.password;
+            string newEmail = string.IsNullOrWhiteSpace(toModify.email) ? old.email : toModify.email;
 
             UserId data = new UserId() {
                 Name = newName,Surname = newSurname,UserName = newUsername,Email = newEmail,Password = newPassword};
@@ -154,15 +170,11 @@ namespace ObligatorioDA2.Services
 
         public void FollowTeam(string userName, int idTeam)
         {
-            Team toFollow = teamsStorage.Get(idTeam);
-            FollowTeam(userName, toFollow);
-        }
-
-        public void FollowTeam(string username, Team toFollow)
-        {
+            Authenticate();
+            Team toFollow = TryGetTeam(idTeam);
             try
             {
-                TryFollowTeam(username, toFollow);
+                TryFollowTeam(userName, toFollow);
             }
             catch (InvalidUserDataException)
             {
@@ -172,39 +184,50 @@ namespace ObligatorioDA2.Services
 
         private void TryFollowTeam(string username, Team toFollow)
         {
-            User follower = usersStorage.Get(username);
+            User follower = TryGetUser(username);
             follower.AddFavourite(toFollow);
             usersStorage.Modify(follower);
         }
 
         public void UnFollowTeam(string userName, int idTeam)
         {
-            Team toUnfollow = teamsStorage.Get(idTeam);
-            UnFollowTeam(userName, toUnfollow);
+            Authenticate();
+            Team toUnfollow = TryGetTeam(idTeam);
+            
+            TryUnFollow(userName, toUnfollow);
         }
 
-        public void UnFollowTeam(string username, Team fake)
+        private Team TryGetTeam(int idTeam)
         {
+            Team stored;
             try
             {
-                TryUnFollow(username, fake);
+                stored = teamsStorage.Get(idTeam);
             }
-            catch (InvalidUserDataException)
-            {
-                throw new TeamNotFollowedException();
+            catch (TeamNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
             }
+            return stored;
         }
+
 
         private void TryUnFollow(string username, Team fake)
         {
-            User follower = usersStorage.Get(username);
-            follower.RemoveFavouriteTeam(fake);
+            User follower = TryGetUser(username);
+            try
+            {
+                follower.RemoveFavouriteTeam(fake);
+            }
+            catch (InvalidUserDataException e) {
+                throw new TeamNotFollowedException();
+            }
             usersStorage.Modify(follower);
         }
 
 
-        public ICollection<Team> GetUserTeams(string userName)
+        public ICollection<TeamDto> GetUserTeams(string userName)
         {
+            Authenticate();
             ICollection<Team> userTeams;
             try
             {
@@ -217,11 +240,14 @@ namespace ObligatorioDA2.Services
             {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
-            return userTeams;
+            return userTeams
+                .Select(ut => teamMapper.ToDto(ut))
+                .ToList();
         }
 
-        public ICollection<User> GetAllUsers()
+        public ICollection<UserDto> GetAllUsers()
         {
+            Authenticate();
             ICollection<User> allOfThem;
             try
             {
@@ -230,7 +256,30 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
-            return allOfThem;
+            return allOfThem
+                .Select(u => userMapper.ToDto(u))
+                .ToList();
+        }
+
+        private void AuthenticateAdmin()
+        {
+            if (!authenticator.IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
+
+            if (!authenticator.HasAdminPermissions())
+            {
+                throw new NoPermissionsException();
+            }
+        }
+
+        private void Authenticate()
+        {
+            if (!authenticator.IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
         }
 
     }

@@ -12,6 +12,7 @@ using ObligatorioDA2.Data.Repositories;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Mappers;
 
 namespace ObligatorioDA2.WebAPI
 {
@@ -49,13 +50,16 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ITeamRepository ,TeamRepository>();
             services.AddScoped<ILogInfoRepository, LogInfoRepository>();
             services.AddScoped<ILoggerService, LoggerService>();
-            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IInnerMatchService, MatchService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMatchRepository, MatchRepository>();
             services.AddScoped<ISportRepository, SportRepository>();
+            services.AddScoped<ISportService, SportService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFixtureService, FixtureService>();
             services.AddScoped<ISportTableService, SportTableService>();
+            services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IImageService>(provider => new ImageService(Configuration.GetSection("TeamsImages").GetValue<string>("DirPath")));
             services.Configure<FixtureStrategies>(Configuration.GetSection("FixtureStrategies"));
         }

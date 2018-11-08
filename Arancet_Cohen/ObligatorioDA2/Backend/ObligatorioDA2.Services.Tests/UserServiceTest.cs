@@ -1,4 +1,3 @@
-using System;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.Services.Interfaces;
@@ -8,16 +7,18 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
-using ObligatorioDA2.BusinessLogic.Exceptions;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class UserServiceTest
     {
         private Mock<IUserRepository> users;
         private Mock<ITeamRepository> teams;
+        private Mock<IAuthenticationService> authentication;
         private IUserService service;
         private User testUser;
         private UserDto dto;
@@ -28,7 +29,8 @@ namespace ObligatorioDA2.Services.Tests
         {
             users = new Mock<IUserRepository>();
             teams = new Mock<ITeamRepository>();
-            service = new UserService(users.Object, teams.Object);
+            authentication = new Mock<IAuthenticationService>();
+            service = new UserService(users.Object, teams.Object, authentication.Object);
             testUser = GetFakeUser();
             users.Setup(r => r.Get("JohnDoe")).Returns(testUser);
             users.Setup(r => r.Get(It.Is<string>(s => !s.Equals("JohnDoe")))).Throws(new UserNotFoundException());
@@ -67,22 +69,50 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetUserTest()
         {
-            User retrieved = service.GetUser("JohnDoe");
+            GrantFollowerPermissions();
+            UserDto retrieved = service.GetUser("JohnDoe");
 
             users.Verify(r => r.Get("JohnDoe"), Times.Once);
-            Assert.AreEqual(retrieved, testUser);
+            Assert.AreEqual(retrieved.username, testUser.UserName);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void GetNotExistsTest()
         {
-            User retrieved = service.GetUser("JohnLennon");
+            GrantFollowerPermissions();
+            UserDto retrieved = service.GetUser("JohnLennon");
         }
 
         [TestMethod]
-        public void AddUserTest()
+        [ExpectedException(typeof(ServiceException))]
+        public void GetNoDataAccessTest() {
+            GrantFollowerPermissions();
+            users.Setup(r => r.Get(It.IsAny<string>())).Throws(new DataInaccessibleException());
+            UserDto retrieved = service.GetUser("username");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void GetNotAuthenticatedTest() {
+            LogOut();
+            service.GetUser("username");
+        }
+
+
+        [TestMethod]
+        public void AddAdminTest()
         {
+            GrantAdminPermissions();
+            service.AddUser(dto);
+            users.Verify(r => r.Add(testUser), Times.Once);
+        }
+
+        [TestMethod]
+        public void AddFollowerTest()
+        {
+            GrantAdminPermissions();
+            dto.isAdmin = false;
             service.AddUser(dto);
             users.Verify(r => r.Add(testUser), Times.Once);
         }
@@ -91,36 +121,103 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(ServiceException))]
         public void AddAlreadyExistentUserTest()
         {
+            GrantAdminPermissions();
             users.Setup(r => r.Add(testUser)).Throws(new UserAlreadyExistsException());
+            service.AddUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddUserNoDataAccessTest() {
+            GrantAdminPermissions();
+            users.Setup(r => r.Add(It.IsAny<User>())).Throws(new DataInaccessibleException());
+            service.AddUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddInvalidUserTest() {
+            GrantAdminPermissions();
+            dto.email = "asdads";
+            service.AddUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void AddUserNoAuthenticationTest() {
+            service.AddUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NoPermissionsException))]
+        public void AddUserNoPermissionsTest() {
+            GrantFollowerPermissions();
             service.AddUser(dto);
         }
 
         [TestMethod]
         public void ModifyUserTest()
         {
+            GrantAdminPermissions();
             service.ModifyUser(dto);
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Once);
         }
 
         [TestMethod]
-        public void ModifyNullFieldsTest() {
+        public void ModifyNullFieldsTest()
+        {
+            GrantAdminPermissions();
             UserDto changeName = new UserDto() {username= testUser.UserName ,name = "a new name" };
-            User modified = service.ModifyUser(changeName);
-            Assert.AreEqual(changeName.name,modified.Name);
+            UserDto modified = service.ModifyUser(changeName);
+            Assert.AreEqual(changeName.name,modified.name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void ModifyInvalidUserTest()
+        {
+            GrantAdminPermissions();
+            UserDto changeName = new UserDto() { username = testUser.UserName, name = "a new name", email = "asdads" };
+            service.ModifyUser(changeName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void ModifyNoDataAccessTest() {
+            GrantAdminPermissions();
+            users.Setup(r => r.Modify(It.IsAny<User>())).Throws(new DataInaccessibleException());
+            service.ModifyUser(dto);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void ModifyNotExistentTest()
         {
+            GrantAdminPermissions();
             users.Setup(r => r.Modify(testUser)).Throws(new UserNotFoundException());
+            service.ModifyUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void ModifyNoAuthenticationTest()
+        {
+            service.ModifyUser(dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NoPermissionsException))]
+        public void ModifyNoPermissionsTest()
+        {
+            GrantFollowerPermissions();
             service.ModifyUser(dto);
         }
 
         [TestMethod]
         public void DeleteUserTest()
         {
+            GrantAdminPermissions();
             service.DeleteUser(testUser.UserName);
             users.Verify(r => r.Delete(testUser.UserName));
         }
@@ -129,15 +226,39 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(ServiceException))]
         public void DeleteNotExistentUserTest()
         {
+            GrantAdminPermissions();
             users.Setup(r => r.Delete(testUser.UserName)).Throws(new UserNotFoundException());
             service.DeleteUser(testUser.UserName);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void DeleteNoDataAcessTest() {
+            GrantAdminPermissions();
+            users.Setup(r => r.Delete(It.IsAny<string>())).Throws(new DataInaccessibleException());
+            service.DeleteUser(testUser.UserName);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void DeleteNoAuthenticationTest()
+        {
+            service.DeleteUser("username");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NoPermissionsException))]
+        public void DeleteNoPermissionsTest()
+        {
+            GrantFollowerPermissions();
+            service.DeleteUser("username");
+        }
+
+        [TestMethod]
         public void FollowTeamtest()
         {
-            service.FollowTeam(testUser.UserName, toFollow);
-
+            GrantFollowerPermissions();
+            service.FollowTeam(testUser.UserName, toFollow.Id);
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Once);
         }
@@ -146,31 +267,33 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(TeamAlreadyFollowedException))]
         public void FollowAlreadyFollowingTeam()
         {
-            service.FollowTeam(testUser.UserName, toFollow);
-            service.FollowTeam(testUser.UserName, toFollow);
+            GrantFollowerPermissions();
+            service.FollowTeam(testUser.UserName, toFollow.Id);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void FollowTeamNotExistentUserTest()
         {
+            GrantFollowerPermissions();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
-
-            service.FollowTeam(testUser.UserName, toFollow);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
         }
 
         [TestMethod]
         [ExpectedException(typeof(TeamNotFoundException))]
         public void FollowNotExistentTeamTest()
         {
+            GrantFollowerPermissions();
             users.Setup(r => r.Modify(testUser)).Throws(new TeamNotFoundException());
-
-            service.FollowTeam(testUser.UserName, toFollow);
+            service.FollowTeam(testUser.UserName, toFollow.Id);
         }
 
         [TestMethod]
         public void FollowByIdTest()
         {
+            GrantFollowerPermissions();
             service.FollowTeam(testUser.UserName, toFollow.Id);
 
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
@@ -179,32 +302,32 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void FollowTeamNotExistentUserIdTest()
         {
+            GrantFollowerPermissions();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
-
             service.FollowTeam(testUser.UserName, toFollow.Id);
-
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TeamNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void FollowNotExistentTeamIdTest()
         {
-            users.Setup(r => r.Modify(testUser)).Throws(new TeamNotFoundException());
-
+            GrantFollowerPermissions();
+            teams.Setup(r => r.Get(toFollow.Id)).Throws(new TeamNotFoundException());
             service.FollowTeam(testUser.UserName, toFollow.Id);
         }
 
         [TestMethod]
         public void GetUserTeamsTest()
         {
+            GrantFollowerPermissions();
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
-            ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
+            ICollection<TeamDto> userTeams = service.GetUserTeams(testUser.UserName);
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             Assert.AreEqual(userTeams.Count, 1);
         }
@@ -213,18 +336,30 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(ServiceException))]
         public void GetNotExistentUserTeams()
         {
+            GrantFollowerPermissions();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
-            ICollection<Team> userTeams = service.GetUserTeams(testUser.UserName);
+            ICollection<TeamDto> userTeams = service.GetUserTeams(testUser.UserName);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetUserTeamsNoDataAccessTest() {
+            GrantFollowerPermissions();
+            users.Setup(r => r.Get(It.IsAny<string>())).Throws(new DataInaccessibleException());
+            service.GetUserTeams(testUser.UserName);
+        }
+
 
         [TestMethod]
         public void UnfollowTeamTest()
         {
+            GrantFollowerPermissions();
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
+            teams.Setup(r => r.Get(fake.Id)).Returns(fake);
 
-            service.UnFollowTeam(testUser.UserName, fake);
+            service.UnFollowTeam(testUser.UserName, fake.Id);
 
             users.Verify(r => r.Get(testUser.UserName), Times.Once);
             users.Verify(r => r.Modify(testUser), Times.Once);
@@ -235,21 +370,23 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(TeamNotFollowedException))]
         public void UnfollowNotFollowedTeamTest()
         {
+            GrantFollowerPermissions();
             Team fake = GetFakeTeam();
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
-            service.UnFollowTeam(testUser.UserName, fake);
+            service.UnFollowTeam(testUser.UserName, fake.Id);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void UnfollowNotFoundUserTest()
         {
+            GrantFollowerPermissions();
             Team fake = GetFakeTeam();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
             testUser.AddFavourite(fake);
 
-            service.UnFollowTeam(testUser.UserName, fake);
+            service.UnFollowTeam(testUser.UserName, fake.Id);
 
 
         }
@@ -257,6 +394,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void UnfollowTeamIdTest()
         {
+            GrantFollowerPermissions();
             Team fake = GetFakeTeam();
             testUser.AddFavourite(fake);
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
@@ -274,6 +412,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(TeamNotFollowedException))]
         public void UnfollowNotFollowedTeamIdTest()
         {
+            GrantFollowerPermissions();
             Team fake = GetFakeTeam();
             users.Setup(r => r.Get(testUser.UserName)).Returns(testUser);
 
@@ -281,9 +420,10 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void UnfollowNotFoundUserIdTest()
         {
+            GrantFollowerPermissions();
             Team fake = GetFakeTeam();
             users.Setup(r => r.Get(testUser.UserName)).Throws(new UserNotFoundException());
             testUser.AddFavourite(fake);
@@ -294,13 +434,37 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetAllUsersTest()
         {
+            GrantFollowerPermissions();
             ICollection<User> fakeUsers = new List<User>() { testUser, testUser, testUser };
             users.Setup(r => r.GetAll()).Returns(fakeUsers);
 
-            ICollection<User> stored = service.GetAllUsers();
+            ICollection<UserDto> stored = service.GetAllUsers();
 
             Assert.AreEqual(stored.Count, fakeUsers.Count);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetAllUsersNoDataAccessTest() {
+            GrantFollowerPermissions();
+            users.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
+            service.GetAllUsers();
+        }
+
+        private void GrantAdminPermissions()
+        {
+            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            authentication.Setup(r => r.HasAdminPermissions()).Returns(true);
+        }
+        private void GrantFollowerPermissions()
+        {
+            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            authentication.Setup(r => r.HasAdminPermissions()).Returns(false);
+        }
+
+        private void LogOut()
+        {
+            authentication.Setup(r => r.IsLoggedIn()).Returns(false);
+        }
     }
 }

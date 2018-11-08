@@ -1,13 +1,13 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObligatorioDA2.BusinessLogic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 using Moq;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.BusinessLogic.Test
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class TeamTest
     {
         private Team testTeam;
