@@ -32,7 +32,8 @@ namespace ObligatorioDA2.Services
         private byte[] TryRead(string path)
         {
             byte[] bytes = new byte[0];
-            using (Stream source = File.OpenRead(path))
+            string fullPath = imagesPath + "/" + path;
+            using (Stream source = File.OpenRead(fullPath))
             {
                 bytes = new byte[source.Length];
                 source.Read(bytes, 0, bytes.Length);
