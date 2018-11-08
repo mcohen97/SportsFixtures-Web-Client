@@ -55,6 +55,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMatchRepository, MatchRepository>();
             services.AddScoped<ISportRepository, SportRepository>();
+            services.AddScoped<ISportService, SportService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFixtureService, FixtureService>();
             services.AddScoped<ISportTableService, SportTableService>();
