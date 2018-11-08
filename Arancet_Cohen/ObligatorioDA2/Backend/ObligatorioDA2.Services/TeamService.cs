@@ -90,7 +90,8 @@ namespace ObligatorioDA2.Services
             int id = old.Id;
             string name = string.IsNullOrWhiteSpace(testDto.name) ? old.Name : testDto.name;
             string photoPath = string.IsNullOrWhiteSpace(testDto.photo) ? old.PhotoPath : testDto.photo;
-            return new Team(id, name, photoPath, old.Sport);
+            Sport newSport = GetSport(testDto.sportName);
+            return new Team(id, name, photoPath, newSport);
         }
 
         public TeamDto GetTeam(int id)
