@@ -1,15 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
-using System.Net;
 using System.Text;
-using System.IO;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces.Dtos;
@@ -119,14 +113,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryAddTeam(TeamModelIn team)
         {
-            string imgData = Base64Encode(team.Photo);
+            string imgData = team.Photo;
             team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
+
             TeamDto dto = BuildTransferObject(team);
             TeamDto added =teamService.AddTeam(dto);
-            TeamModelOut modelOut = BuildTeamModelOut(added);
+            //if team could be added without exception thrown, then save its image.
             images.SaveImage(team.Photo, imgData);
-            return CreatedAtRoute("GetTeamById",new {id =added.id } ,modelOut);
 
+            TeamModelOut modelOut = BuildTeamModelOut(added);
+            return CreatedAtRoute("GetTeamById",new {id =added.id } ,modelOut);
         }
 
         private TeamDto BuildTransferObject(TeamModelIn team)
@@ -142,7 +138,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             if (ModelState.IsValid)
             {
-                result = TryPut(teamId, value);
+                result = PutValidFormat(teamId, value);
             }
             else
             {
@@ -151,22 +147,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult TryPut(int teamId, TeamModelIn value)
+        private IActionResult PutValidFormat(int teamId, TeamModelIn team)
         {
             IActionResult result;
             try
             {
-                value.Id = teamId;
-                TeamDto dto = BuildTransferObject(value);
-                TeamDto modified = teamService.Modify(dto);
-                TeamModelOut output = BuildTeamModelOut(modified);
-                result = Ok(output);
+                result = TryPut(teamId, team);
             }
             catch (ServiceException e)
             {
                 if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
                 {
-                    result = Post(value);
+                    result = Post(team);
                 }
                 else {
                     result = errors.GenerateError(e);
@@ -174,6 +166,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
 
             return result;
+        }
+
+        private IActionResult TryPut(int teamId, TeamModelIn team)
+        {
+            string imgData = team.Photo;
+            team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
+            team.Id = teamId;
+
+            TeamDto dto = BuildTransferObject(team);
+            TeamDto modified = teamService.Modify(dto);
+            //if team could be added without exception thrown, then save its image.
+            images.SaveImage(team.Photo, imgData);
+
+            TeamModelOut output = BuildTeamModelOut(modified);
+            return Ok(output);
         }
 
         [HttpDelete("{id}")]
