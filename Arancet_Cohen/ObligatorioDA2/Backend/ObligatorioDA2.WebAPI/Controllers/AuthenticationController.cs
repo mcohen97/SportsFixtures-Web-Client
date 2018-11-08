@@ -52,17 +52,18 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 result = Ok(new { Token = tokenString });
                 logger.Log(LogType.LOGIN, LogMessage.LOGIN_OK, user.Username, DateTime.Now);
             }
-            catch (ServiceException e)
-            {
-                result = GenerateResponse(e);
-                LogError(e, user.Username);
-            }
             catch (WrongPasswordException e2)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e2.Message };
                 result = BadRequest(error);
                 logger.Log(LogType.LOGIN, LogMessage.LOGIN_WRONG_PASSWORD, user.Username, DateTime.Now);
             }
+            catch (ServiceException e)
+            {
+                result = GenerateResponse(e);
+                LogError(e, user.Username);
+            }
+
             return result;
         }
 
