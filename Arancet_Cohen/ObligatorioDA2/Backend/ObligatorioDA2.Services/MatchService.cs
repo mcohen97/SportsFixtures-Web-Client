@@ -55,8 +55,7 @@ namespace ObligatorioDA2.Services
         {
             Encounter toAdd = TryCreateEncounter(anEncounter);
             Encounter added = AddMatch(toAdd);
-            anEncounter.id = added.Id;
-            return anEncounter;
+            return encounterConverter.ToDto(added);
         }
 
         private Encounter TryCreateEncounter(EncounterDto anEncounter) {
@@ -119,11 +118,11 @@ namespace ObligatorioDA2.Services
         {
             if (matchId > 0)
             {
-                return matchesStorage.GetAll().Any(m => (m.GetParticipants().Any(t => t.Equals(team))) && SameDates(m.Date, date));
+                return matchesStorage.GetAll().Any(m => (m.Id != matchId) && (m.GetParticipants().Any(t => t.Equals(team))) && SameDates(m.Date, date));
             }
             else
             {
-                return matchesStorage.GetAll().Any(m => (m.Id != matchId) && (m.GetParticipants().Any(t => t.Equals(team))) && SameDates(m.Date, date));
+                return matchesStorage.GetAll().Any(m => (m.GetParticipants().Any(t => t.Equals(team))) && SameDates(m.Date, date));
             }
         }
 
@@ -321,7 +320,13 @@ namespace ObligatorioDA2.Services
         {
             Result result = LoadResult(resultDto.teams_positions);
             Encounter retrieved = matchesStorage.Get(id);
-            retrieved.Result = result;
+            try
+            {
+                retrieved.Result = result;
+            }
+            catch (InvalidMatchDataException e) {
+                throw new ServiceException(e.Message, ErrorType.INVALID_DATA);
+            }
             matchesStorage.Modify(retrieved);
         }
 
