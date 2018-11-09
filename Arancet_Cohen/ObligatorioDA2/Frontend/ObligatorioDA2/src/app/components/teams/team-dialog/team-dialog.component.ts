@@ -22,6 +22,7 @@ export class TeamDialogComponent {
 
   teamError = new TeamError();
   errorFlags = [];
+  errorStatus = 200;
   nameControl:FormControl;
   sportNameControl:FormControl;
   photoControl:FormControl;
@@ -78,6 +79,8 @@ export class TeamDialogComponent {
 
   handleError(error: ErrorResponse): void {    
     this.teamError = <TeamError> error.errorObject;
+    this.errorStatus = error.errorCode;
+    console.log(this.errorStatus);
     this.checkErrors();
     this.setValidators();
     this.markControlsAsTouched();
@@ -101,24 +104,28 @@ export class TeamDialogComponent {
     this.errorFlags['nameInput'] = this.teamError.Name != undefined;
     this.errorFlags['sportNameInput'] = this.teamError.SportName != undefined;
     this.errorFlags['photoInput'] = this.teamError.Photo != undefined;
-    this.errorFlags['errorMessageInput'] = this.teamError.errorMessage != undefined;
+    this.errorFlags['errorMessageNameInput'] = this.teamError.errorMessage && this.errorStatus == 400;
+    this.errorFlags['errorMessageSportNameInput'] = this.teamError.errorMessage && this.errorStatus == 404;
+
   }
 
   private resetErrors(){
     this.errorFlags['sportNameInput'] = false;
     this.errorFlags['photoInput'] = false;
     this.errorFlags['nameInput'] = false;
-    this.errorFlags['errorMessageInput'] = false;
+    this.errorFlags['errorMessageNameInput'] = false;
+    this.errorFlags['errorMessageSportNameInput'] = false;
+
   }
 
   private setValidators() {
     this.nameControl.setValidators([
       this.existError("nameInput"),
-      this.existError("errorMessageInput"),
+      this.existError("errorMessageNameInput"),
       Validators.required
     ]);
     this.sportNameControl.setValidators([
-      this.existError("sportNameInput"),
+      this.existError("sportNameSportNameInput"),
       Validators.required
     ]);
     this.photoControl.setValidators([

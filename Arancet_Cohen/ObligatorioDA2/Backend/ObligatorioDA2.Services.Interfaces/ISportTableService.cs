@@ -1,12 +1,11 @@
-﻿using ObligatorioDA2.BusinessLogic;
+﻿using ObligatorioDA2.Services.Interfaces.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ObligatorioDA2.Data.Repositories.Interfaces
 {
     public interface ISportTableService
     {
-        ICollection<Tuple<Team,int>> GetScoreTable(string sportName);
+        ICollection<Tuple<TeamDto,int>> GetScoreTable(string sportName);
     }
 }

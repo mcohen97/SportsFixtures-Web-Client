@@ -5,11 +5,10 @@ using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.Services.Interfaces;
-using System.Net;
-using Microsoft.Extensions.Options;
+using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -17,27 +16,32 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class SportsController : ControllerBase
     {
-        private ISportRepository sports;
-        private ITeamRepository teams;
+        private ISportService sports;
+        private ITeamService teams;
         private IFixtureService fixture;
-        private IOptions<FixtureStrategies> fixtureSettings;
         private ISportTableService tableService;
+        private IAuthenticationService authenticator;
+        private IImageService images;
+        private ErrorActionResultFactory errors;
 
-        public SportsController(ISportRepository sportRepo, ITeamRepository teamRepo, 
-            IFixtureService fixtureService, IOptions<FixtureStrategies> algorithmsSettings,
-            ISportTableService tableGenerator)
+        public SportsController(ISportService sportRepo, ITeamService teamRepo, 
+            IFixtureService fixtureService,ISportTableService tableGenerator, 
+            IAuthenticationService authService, IImageService imageService)
         {
             sports = sportRepo;
             fixture = fixtureService;
             teams = teamRepo;
-            fixtureSettings = algorithmsSettings;
             tableService = tableGenerator;
+            images = imageService;
+            authenticator = authService;
+            errors = new ErrorActionResultFactory(this);
         }
 
         [HttpPost]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody]SportModelIn modelIn)
         {
+            SetSession();
             IActionResult result;
             if (ModelState.IsValid)
             {
@@ -56,44 +60,46 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try {
                 result = TryAddSport(modelIn);
             }
-            catch (SportAlreadyExistsException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = BadRequest(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryAddSport(SportModelIn modelIn)
         {
-            Sport toAdd = new Sport(modelIn.Name,modelIn.IsTwoTeams);
-            sports.Add(toAdd);
-            SportModelOut modelOut = new SportModelOut(){Name = toAdd.Name};
-            IActionResult result = CreatedAtRoute("GetSportById",new {name = toAdd.Name },modelOut);
+            SportDto data = BuildSportDto(modelIn);
+            SportDto added = sports.AddSport(data);
+            SportModelOut modelOut = CreateModelOut(added);
+            IActionResult result = CreatedAtRoute("GetSportById",new {name = added.name },modelOut);
             return result;
+        }
+
+        private SportDto BuildSportDto(SportModelIn modelIn)
+        {
+            return new SportDto() { name = modelIn.Name, isTwoTeams = modelIn.IsTwoTeams };
         }
 
         [HttpGet]
         [Authorize]
         public IActionResult Get()
         {
+            SetSession();
             IActionResult result;
             try
             {
                 result = TryGetAll();
             }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryGetAll()
         {
-            ICollection<Sport> allOfThem = sports.GetAll();
-            IEnumerable<SportModelOut> output = allOfThem.Select(s => new SportModelOut { Name = s.Name });
+            ICollection<SportDto> allOfThem = sports.GetAllSports();
+            IEnumerable<SportModelOut> output = allOfThem.Select(s => CreateModelOut(s));
             return Ok(output);
         }
 
@@ -101,28 +107,23 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(string name)
         {
-
+            SetSession();
             IActionResult result;
             try
             {
                 result = TryGet(name);
             }
-            catch (SportNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
             return result;
-
         }
 
         private IActionResult TryGet(string name)
         {
-            Sport retrieved = sports.Get(name);
-            SportModelOut output = new SportModelOut() { Name = retrieved.Name };
+            SportDto retrieved = sports.GetSport(name);
+            SportModelOut output = CreateModelOut(retrieved);
             return Ok(output);
         }
 
@@ -130,68 +131,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string name)
         {
+            SetSession();
             IActionResult result;
             try
             {
                 result = TryDelete(name);
             }
-            catch (SportNotFoundException e)
+            catch (ServiceException e)
             {
-                result = NotFound(e.Message);
-            }
-            catch (DataInaccessibleException e) {
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryDelete(string name)
         {
-            sports.Delete(name);
-            OkModelOut okMessage = new OkModelOut() { OkMessage = "Sport was deleted" };
+            sports.DeleteSport(name);
+            OkModelOut okMessage = new OkModelOut() { OkMessage = "The sport has been deleted successfully" };
             return Ok(okMessage);
-        }
-
-        [HttpPut("{name}")]
-        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult Put(string name, [FromBody] SportModelIn modelIn)
-        {
-            IActionResult result;
-            if (ModelState.IsValid)
-            {
-                result = ModifyOrAdd(name, modelIn);
-            }
-            else
-            {
-                result = BadRequest(ModelState);
-            }
-            return result;
-        }
-
-        private IActionResult ModifyOrAdd(string name, SportModelIn modelIn)
-        {
-            IActionResult result;
-            Sport toAdd = new Sport(modelIn.Name,modelIn.IsTwoTeams);
-            try
-            {
-                sports.Modify(toAdd);
-                SportModelOut modelOut = new SportModelOut()
-                {
-                    Name = modelIn.Name
-                };
-                result = Ok(modelOut);
-            }
-            catch (SportNotFoundException)
-            {
-                sports.Add(toAdd);
-                SportModelOut modelOut = new SportModelOut() { Name = toAdd.Name };
-                result = CreatedAtRoute("GetSportById",new { name= toAdd.Name} ,modelOut);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
-            }
-            return result;
         }
 
 
@@ -199,19 +156,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult GetTeams(string name)
         {
+            SetSession();
             IActionResult result;
             try { 
-                ICollection<Team> sportTeams = teams.GetTeams(name);
+                ICollection<TeamDto> sportTeams = teams.GetSportTeams(name);
                 ICollection<TeamModelOut> output = sportTeams.Select(t => CreateModelOut(t)).ToList();
                 result = Ok(output);
             }
-            catch (SportNotFoundException e) {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
-            }
-            catch (DataInaccessibleException e)
-            {
-                result = NoDataAccess(e);
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
             }
             return result;
         }
@@ -220,49 +173,51 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult CalculateSportTable(string sportName)
         {
+            SetSession();
             IActionResult result;
             try
             {
                 result = TryCalculateTable(sportName);
 
             }
-            catch (EntityNotFoundException e)
+            catch (ServiceException e)
             {
-                ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-                result = NotFound(error);
+                result = errors.GenerateError(e);
             }
             return result;
         }
 
         private IActionResult TryCalculateTable(string sportName)
         {
-            ICollection<Tuple<Team, int>> standings = tableService.GetScoreTable(sportName);
+            ICollection<Tuple<TeamDto, int>> standings = tableService.GetScoreTable(sportName);
             IEnumerable<StandingModelOut> output = standings.Select(s => CreateStanding(s));
             return Ok(output);
         }
 
-        private StandingModelOut CreateStanding(Tuple<Team, int> standing)
+        private StandingModelOut CreateStanding(Tuple<TeamDto, int> standing)
         {
-            Team team = standing.Item1;
-            return new StandingModelOut() { TeamId = team.Id, TeamName = team.Name, Points = standing.Item2 };
+            TeamDto team = standing.Item1;
+            return new StandingModelOut() { TeamId = team.id, Points = standing.Item2 };
+        }
+        private void SetSession()
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authenticator.SetSession(username);
         }
 
-        private TeamModelOut CreateModelOut(Team aTeam)
+        private SportModelOut CreateModelOut(SportDto aSport) {
+            return new SportModelOut() { Name = aSport.name, IsTwoTeams = aSport.isTwoTeams };
+        }
+
+        private TeamModelOut CreateModelOut(TeamDto aTeam)
         {
             return new TeamModelOut()
             {
-                Id = aTeam.Id,
-                SportName = aTeam.Sport.Name,
-                Name = aTeam.Name,
-                Photo = new byte[0]
+                Id = aTeam.id,
+                SportName = aTeam.sportName,
+                Name = aTeam.name,
+                Photo = images.ReadImage(aTeam.photo)
             };
-        }
-
-        private IActionResult NoDataAccess(DataInaccessibleException e)
-        {
-            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
-            return internalError;
         }
     }
 }

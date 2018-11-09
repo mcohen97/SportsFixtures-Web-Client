@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.Services
 {
@@ -25,14 +29,17 @@ namespace ObligatorioDA2.Services
             return logRepo.Exists(id);
         }
 
-        public ICollection<LogInfo> GetAllLogs()
+        public ICollection<LogInfoDto> GetAllLogs()
         {
-            return logRepo.GetAll();
+            return logRepo.GetAll()
+                .Select(l => CreateDto(l))
+                .ToList();
         }
 
-        public LogInfo GetLog(int id)
+        public LogInfoDto GetLog(int id)
         {
-            return logRepo.Get(id);
+            LogInfo stored = logRepo.Get(id);
+            return CreateDto(stored);
         }
 
         public int Log(string logType, string messagge, string username, DateTime date)
@@ -45,8 +52,26 @@ namespace ObligatorioDA2.Services
                 Username = username,
                 Date = date
             };
-            newLog = logRepo.Add(newLog);
+            try
+            {
+                newLog = logRepo.Add(newLog);
+            }
+            catch (DataInaccessibleException e) {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
             return newLog.Id;
+        }
+
+        private LogInfoDto CreateDto(LogInfo log) {
+            LogInfoDto dto = new LogInfoDto()
+            {
+                id = log.Id,
+                date = log.Date,
+                logType = log.LogType,
+                message = log.Message,
+                username = log.Username
+            };
+            return dto;
         }
     }
 }

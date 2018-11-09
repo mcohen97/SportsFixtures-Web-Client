@@ -1,29 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 
 namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class SportTableServiceTest
     {
         private ISportTableService serviceToTest;
         private Mock<ISportRepository> sportsStorage;
         private Mock<ITeamRepository> teamsStorage;
-        private Mock<IMatchService> matchesService;
+        private Mock<IInnerMatchService> matchesService;
 
         [TestInitialize]
         public void SetUp() {
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
-            matchesService= new Mock<IMatchService>();
+            matchesService = new Mock<IInnerMatchService>();
             serviceToTest = new SportTableService(sportsStorage.Object, teamsStorage.Object, matchesService.Object);
             SetUpSports();
             SetUpTeams();
@@ -110,15 +112,15 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void ArcheryTableTest() {
-            List<Tuple<Team, int>> positions = serviceToTest.GetScoreTable("Archery").ToList();
+            List<Tuple<TeamDto, int>> positions = serviceToTest.GetScoreTable("Archery").ToList();
             //ids.
-            Assert.AreEqual(positions[0].Item1.Id, 4);
-            Assert.AreEqual(positions[1].Item1.Id, 5);
-            Assert.AreEqual(positions[2].Item1.Id, 6);
+            Assert.AreEqual(positions[0].Item1.id, 4);
+            Assert.AreEqual(positions[1].Item1.id, 5);
+            Assert.AreEqual(positions[2].Item1.id, 6);
             //names.
-            Assert.AreEqual(positions[0].Item1.Name, "athleteD");
-            Assert.AreEqual(positions[1].Item1.Name, "athleteE");
-            Assert.AreEqual(positions[2].Item1.Name, "athleteF");
+            Assert.AreEqual(positions[0].Item1.name, "athleteD");
+            Assert.AreEqual(positions[1].Item1.name, "athleteE");
+            Assert.AreEqual(positions[2].Item1.name, "athleteF");
             //points.
             Assert.AreEqual(positions[0].Item2, 7);
             Assert.AreEqual(positions[1].Item2, 6);
@@ -127,15 +129,15 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void SoccerTableTest() {
-            List<Tuple<Team, int>> positions = serviceToTest.GetScoreTable("Soccer").ToList();
+            List<Tuple<TeamDto, int>> positions = serviceToTest.GetScoreTable("Soccer").ToList();
             //ids.
-            Assert.AreEqual(3,positions[0].Item1.Id);
-            Assert.AreEqual(1,positions[1].Item1.Id);
-            Assert.AreEqual(2,positions[2].Item1.Id);
+            Assert.AreEqual(3,positions[0].Item1.id);
+            Assert.AreEqual(1,positions[1].Item1.id);
+            Assert.AreEqual(2,positions[2].Item1.id);
             //names.
-            Assert.AreEqual("teamC",positions[0].Item1.Name);
-            Assert.AreEqual("teamA",positions[1].Item1.Name);
-            Assert.AreEqual("teamB",positions[2].Item1.Name);
+            Assert.AreEqual("teamC",positions[0].Item1.name);
+            Assert.AreEqual("teamA",positions[1].Item1.name);
+            Assert.AreEqual("teamB",positions[2].Item1.name);
             //points.
             Assert.AreEqual(4,positions[0].Item2);
             Assert.AreEqual(3,positions[1].Item2);

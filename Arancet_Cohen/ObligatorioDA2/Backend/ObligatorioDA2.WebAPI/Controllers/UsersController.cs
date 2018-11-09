@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
-using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
-using System.Net;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
@@ -19,15 +16,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService userService;
-        private UserFactory factory;
+        private IAuthenticationService authenticator;
         private IImageService images;
         private ErrorActionResultFactory errors;
 
 
-        public UsersController(IUserService aService, IImageService imageService) {
+        public UsersController(IUserService aService,IAuthenticationService authenticationService, IImageService imageService) {
             userService = aService;
             images = imageService;
-            factory = new UserFactory();
+            authenticator = authenticationService;
             errors = new ErrorActionResultFactory(this);
         }
 
@@ -35,6 +32,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
+            SetSession();
             IActionResult result;
             try {
                 result = TryGetAll();
@@ -47,7 +45,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetAll()
         {
-            ICollection<User> users = userService.GetAllUsers();
+            ICollection<UserDto> users = userService.GetAllUsers();
             ICollection<UserModelOut> output = users.Select(u => CreateModelOut(u)).ToList();
             return Ok(output);
         }
@@ -56,6 +54,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(string username)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -70,14 +69,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         private UserModelOut TryGetUser(string username) {
-            User queried = userService.GetUser(username);
+            UserDto queried = userService.GetUser(username);
             UserModelOut toReturn = new UserModelOut
             {
-                Name = queried.Name,
-                Surname = queried.Surname,
-                Username = queried.UserName,
-                Email = queried.Email,
-                IsAdmin = queried.IsAdmin
+                Name = queried.name,
+                Surname = queried.surname,
+                Username = queried.username,
+                Email = queried.email,
+                IsAdmin = queried.isAdmin
             };
             return toReturn;
         }
@@ -85,7 +84,8 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [HttpPost]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] UserModelIn user)
-        {          
+        {
+            SetSession();
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
@@ -117,7 +117,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
 
             UserDto toAdd = BuildUser(user);
-            User added =userService.AddUser(toAdd);
+            UserDto added =userService.AddUser(toAdd);
             UserModelOut modelOut = CreateModelOut(added);
             return CreatedAtRoute("GetUserById", new { username = toAdd.username }, modelOut);
         }
@@ -126,18 +126,19 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(string username, [FromBody] UpdateUserModelIn input)
         {
+            SetSession();
             IActionResult result;
             UserDto toModify = BuildUser(username, input);
             try
             {
-                User modified =userService.ModifyUser(toModify);
+                UserDto modified =userService.ModifyUser(toModify);
                 result = Ok(CreateModelOut(modified));
             }
             catch (ServiceException e)
             {
                 if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
                 {
-                    User added = userService.AddUser(toModify);
+                    UserDto added = userService.AddUser(toModify);
                     result = CreatedAtRoute("GetUserById", new { username = toModify.username }, CreateModelOut(added));
                 }
                 else
@@ -152,6 +153,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string username)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -180,7 +182,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return built;
         }
 
-
         private UserDto BuildUser(UserModelIn modelIn)
         {
             UserDto built = new UserDto()
@@ -199,11 +200,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult FollowTeam(int teamId)
         {
-          return FollowValidFormatTeam(teamId);
-        }
-
-        private IActionResult FollowValidFormatTeam(int teamId)
-        {
+            SetSession();
             IActionResult result;
             try
             {
@@ -231,11 +228,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult UnFollowTeam(int teamId)
         {
-            return UnFollowValidFormat(teamId);
-        }
-
-        private IActionResult UnFollowValidFormat(int teamId)
-        {
+            SetSession();
             IActionResult result;
             try
             {
@@ -262,6 +255,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult GetFollowedTeams(string username)
         {
+            SetSession();
             IActionResult result;
             try
             {
@@ -273,35 +267,39 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             return result;
         }
-
+        private void SetSession()
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authenticator.SetSession(username);
+        }
         private IActionResult TryGetFollowedTeams(string username)
         {
-            ICollection<Team> followed = userService.GetUserTeams(username);
+            ICollection<TeamDto> followed = userService.GetUserTeams(username);
             ICollection<TeamModelOut> converted = followed.Select(t => CreateModelOut(t)).ToList();
             return Ok(converted);
         }
 
-        private UserModelOut CreateModelOut(User user)
+        private UserModelOut CreateModelOut(UserDto user)
         {
             UserModelOut built = new UserModelOut()
             {
-                Username = user.UserName,
-                Name = user.Name,
-                Surname = user.Surname,
-                Email = user.Email,
-                IsAdmin = user.IsAdmin
+                Username = user.username,
+                Name = user.name,
+                Surname = user.surname,
+                Email = user.email,
+                IsAdmin = user.isAdmin
             };
             return built;
         }
 
-        private TeamModelOut CreateModelOut(Team stored)
+        private TeamModelOut CreateModelOut(TeamDto stored)
         {
             TeamModelOut built = new TeamModelOut()
             {
-                Id = stored.Id,
-                Name = stored.Name,
-                SportName = stored.Sport.Name,
-                Photo = images.ReadImage(stored.PhotoPath)
+                Id = stored.id,
+                Name = stored.name,
+                SportName = stored.sportName,
+                Photo = images.ReadImage(stored.photo)
             };
             return built;
         }

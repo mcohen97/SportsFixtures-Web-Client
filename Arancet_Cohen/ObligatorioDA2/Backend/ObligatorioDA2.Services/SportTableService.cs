@@ -1,6 +1,10 @@
 ﻿using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Mappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,22 +16,35 @@ namespace ObligatorioDA2.Services
     {
         private ISportRepository sportsStorage;
         private ITeamRepository teamsStorage;
-        private IMatchService matchesService;
+        private IInnerMatchService matchesService;
+        private TeamDtoMapper mapper;
 
-        public SportTableService(ISportRepository sportsRepo, ITeamRepository teamsRepo, IMatchService service)
+        public SportTableService(ISportRepository sportsRepo, ITeamRepository teamsRepo, IInnerMatchService service)
         {
             sportsStorage = sportsRepo;
             teamsStorage = teamsRepo;
             matchesService = service;
+            mapper = new TeamDtoMapper();
         }
 
-        public ICollection<Tuple<Team, int>> GetScoreTable(string sportName)
+        public ICollection<Tuple<TeamDto, int>> GetScoreTable(string sportName)
         {
-            Sport asked = sportsStorage.Get(sportName);
-            ICollection<Team> sportTeams = teamsStorage.GetTeams(sportName);
-            ICollection<Encounter> teamsEncounters = matchesService.GetAllMatches(sportName);
+            try
+            {
+                Sport asked = sportsStorage.Get(sportName);
+                return CalculateExistingSportTable(asked);
+            }
+            catch (SportNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+        }
+
+        private ICollection<Tuple<TeamDto, int>> CalculateExistingSportTable(Sport aSport)
+        {
+            ICollection<Team> sportTeams = teamsStorage.GetTeams(aSport.Name);
+            ICollection<Encounter> teamsEncounters = matchesService.GetAllMatches(aSport.Name);
             ICollection<Tuple<Team, int>> positions;
-            if (asked.IsTwoTeams)
+            if (aSport.IsTwoTeams)
             {
                 positions = CalculateMatchesTable(sportTeams, teamsEncounters);
             }
@@ -35,7 +52,9 @@ namespace ObligatorioDA2.Services
             {
                 positions = CalculateCompetitionsTable(sportTeams, teamsEncounters);
             }
-            return positions;
+            return positions
+                .Select(t => new Tuple<TeamDto, int>(mapper.ToDto(t.Item1), t.Item2))
+                .ToList();
         }
 
         private ICollection<Tuple<Team, int>> CalculateCompetitionsTable(ICollection<Team> sportTeams, ICollection<Encounter> teamsEncounters)

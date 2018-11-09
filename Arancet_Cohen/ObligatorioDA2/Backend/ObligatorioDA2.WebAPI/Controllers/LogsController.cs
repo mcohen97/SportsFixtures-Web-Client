@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.WebAPI.Models;
 
 namespace ObligatorioDA2.WebAPI.Controllers
@@ -18,10 +15,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class LogsController : ControllerBase
     {
         private ILoggerService logger;
+        private ErrorActionResultFactory errors;
 
         public LogsController(ILoggerService logService)
         {
             logger = logService;
+            errors = new ErrorActionResultFactory(this);
         }
 
         [HttpGet]
@@ -33,10 +32,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 result = TryGet();
             }
-            catch (DataInaccessibleException e)
+            catch (ServiceException e)
             {
-
-                result = NoDataAccess(e);
+                result = errors.GenerateError(e);
             }
 
             return result;
@@ -44,22 +42,16 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGet()
         {
-            ICollection<LogInfo> logs = logger.GetAllLogs();
+            ICollection<LogInfoDto> logs = logger.GetAllLogs();
             IEnumerable<LogModelOut> output = logs.Select(l => new LogModelOut {
-                Id = l.Id,
-                Date = l.Date,
-                LogType = l.LogType,
-                Message = l.Message,
-                Useranme = l.Username
+                Id = l.id,
+                Date = l.date,
+                LogType = l.logType,
+                Message = l.message,
+                Useranme = l.username
             });
             return Ok(output);
         }
 
-        private IActionResult NoDataAccess(DataInaccessibleException e)
-        {
-            ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e.Message };
-            IActionResult internalError = StatusCode((int)HttpStatusCode.InternalServerError, error);
-            return internalError;
-        }
     }
 }

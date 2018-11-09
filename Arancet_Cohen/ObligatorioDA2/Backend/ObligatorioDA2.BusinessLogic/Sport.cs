@@ -30,7 +30,7 @@ namespace ObligatorioDA2.BusinessLogic
 
         public Sport(string aName, bool isTwoTeams)
         {
-            name = aName;
+            Name = aName;
             IsTwoTeams = isTwoTeams;
         }
 

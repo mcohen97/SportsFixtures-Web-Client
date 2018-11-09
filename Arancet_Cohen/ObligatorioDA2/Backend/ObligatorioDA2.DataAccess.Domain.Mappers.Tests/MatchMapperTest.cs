@@ -4,12 +4,13 @@ using Moq;
 using ObligatorioDA2.Data.Entities;
 using System;
 using System.Collections.Generic;
-using Match = ObligatorioDA2.BusinessLogic.Match;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class MatchMapperTest
     {
         private MatchMapper testMapper;

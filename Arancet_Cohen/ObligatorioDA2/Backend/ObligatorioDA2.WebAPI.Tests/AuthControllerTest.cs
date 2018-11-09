@@ -8,31 +8,33 @@ using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using System;
+using ObligatorioDA2.Services.Interfaces.Dtos;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
     [TestClass]
+    [ExcludeFromCodeCoverage]
     public class AuthControllerTest
     {
         private AuthenticationController controllerToTest;
-        private Mock<ILoginService> loginService;
+        private Mock<IAuthenticationService> loginService;
         private Mock<ILoggerService> logger;
-        private Mock<User> testUser;
+        private UserDto testUser;
 
         [TestInitialize]
         public void StartUp() {
-            loginService = new Mock<ILoginService>();
+            loginService = new Mock<IAuthenticationService>();
             logger = new Mock<ILoggerService>();
-            UserId identity = new UserId() { Name= "aName", Surname="aUsername", UserName="aUsername",
-                Password= "aPassword", Email= "anEmail@aDomain.com" };
-            testUser = new Mock<User>(identity,true);
+            testUser = new UserDto() { name ="aName",surname ="aUsername",username = "aUsername",
+                password = "aPassword",email= "anEmail@aDomain.com", isAdmin=true };
             controllerToTest = new AuthenticationController(loginService.Object, logger.Object);
         }
 
         [TestMethod]
         public void LoginSuccesfullyTest() {
             //arrange
-            loginService.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser.Object);
+            loginService.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser);
             logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "aUsername", It.IsAny<DateTime>())).Returns(1);
 
             //act
@@ -49,7 +51,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void LoginNotFoundTest() {
             //Arrange.
-            Exception toThrow = new UserNotFoundException();
+            Exception internalEx = new UserNotFoundException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             loginService.Setup(l => l.Login("otherUsername", "aPassword")).Throws(toThrow);
             logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "otherUsername", It.IsAny<DateTime>())).Returns(1);
 
@@ -71,7 +74,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void LoginNoDataAccessTest()
         {
             //Arrange.
-            Exception toThrow = new DataInaccessibleException();
+            Exception internalEx = new DataInaccessibleException();
+            Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             loginService.Setup(us => us.Login(It.IsAny<string>(),It.IsAny<string>())).Throws(toThrow);
             LoginModelIn credentials = new LoginModelIn() { Username = "otherUsername", Password = "aPassword" };
             logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "otherUsername", It.IsAny<DateTime>())).Returns(1);
