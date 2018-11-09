@@ -29,7 +29,11 @@ export class AuthService {
         var error = new ErrorResponse();
         error.errorMessage = errorResponse.statusText;
         error.errorCode = errorResponse.status;
-        error.errorObject = errorResponse.json();
+        try {
+          error.errorObject = errorResponse.json();
+        } catch (error) {
+          error.errorObject = {};  
+        }
         return throwError(error); 
     } 
 

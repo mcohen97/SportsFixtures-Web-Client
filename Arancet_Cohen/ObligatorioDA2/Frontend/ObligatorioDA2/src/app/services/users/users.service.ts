@@ -74,12 +74,16 @@ export class UsersService {
         ); 
     }
     
-    private handleError(error: Response) { 
-        const errorObj = new ErrorResponse();
-        errorObj.errorMessage = error.statusText;
-        errorObj.errorCode = error.status;
-        errorObj.errorObject = error.json();
-        return throwError(errorObj || 'Server error'); 
+    private handleError(errorResponse: Response) { 
+        var error = new ErrorResponse();
+        error.errorMessage = errorResponse.statusText;
+        error.errorCode = errorResponse.status;
+        try {
+          error.errorObject = errorResponse.json();
+        } catch (error) {
+          error.errorObject = {};  
+        }
+        return throwError(error); 
     } 
 
 }

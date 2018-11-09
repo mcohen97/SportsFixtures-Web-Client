@@ -7,6 +7,7 @@ import { ConfirmationDialogComponent, DialogInfo } from '../confirmation-dialog/
 import { SportDialogComponent } from './sport-dialog/sport-dialog.component';
 import { ErrorResponse } from 'src/app/classes/error';
 import { ReConnector } from 'src/app/services/auth/reconnector';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sports',
@@ -24,7 +25,7 @@ export class SportsComponent implements OnInit {
   rowEdited: Sport;
   isLoading = false;
 
-  constructor(private reconnector:ReConnector ,private dialog:MatDialog, private sportsService:SportsService) {
+  constructor(private router:Router, private reconnector:ReConnector ,private dialog:MatDialog, private sportsService:SportsService) {
     this.getSports();
   }
 
@@ -47,13 +48,19 @@ export class SportsComponent implements OnInit {
   }
 
   private handleSportError(error:ErrorResponse) {
+    console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
-      this.reconnector.tryReconnect();
-      this.getSports();
+      var resultByRef = {result: false};
+      this.reconnector.tryReconnect(resultByRef);
+      while(!resultByRef.result && this.reconnector.tryCount <= 20){
+        //wait
+      }
+      if(resultByRef.result)
+        this.getSports()
+      else
+        this.router.navigate(['login']);
     }
-    else {
-      this.isLoading = false;
-    }
+    this.isLoading = false;
   }
   
   applyFilter(filterValue:string){
@@ -90,13 +97,19 @@ export class SportsComponent implements OnInit {
   }
 
   handleDeleteError(error: ErrorResponse, aSport:Sport): void {
+    console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
-      this.reconnector.tryReconnect();
-      this.performDelete(aSport);
+      var resultByRef = {result: false};
+      this.reconnector.tryReconnect(resultByRef);
+      while(!resultByRef.result && this.reconnector.tryCount <= 20){
+        //wait
+      }
+      if(resultByRef.result)
+        this.performDelete(aSport);
+      else
+        this.router.navigate(['login']);
     }
-    else {
-      this.isLoading = false;
-    }
+    this.isLoading = false;
   }
 
   openAddDialog():void{

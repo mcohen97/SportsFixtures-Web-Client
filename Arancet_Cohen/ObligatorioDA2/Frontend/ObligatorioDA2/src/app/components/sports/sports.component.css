@@ -16,19 +16,16 @@ table {
 .table-header-50px{
     color: rgb(20, 140, 60);
     width:50px;
-    z-index: 0;
 }
 .table-header-80px{
     color: rgb(20, 140, 60);
     width:80px;
-    z-index: 0;
 
 }
 
 td.mat-cell{
     text-align: left;
     font-size: 12px;
-    padding: 5px;
 
     overflow: hidden;
 }
@@ -94,7 +91,7 @@ td.mat-cell{
     bottom: 56px;
     right: 0;
     background: rgba(0, 0, 0, 0.15);
-    z-index: 99;
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -1,53 +1,61 @@
 import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA, MatDialog} from '@angular/material';
-import { User } from 'src/app/classes/user';
+import { Team } from 'src/app/classes/team';
 import { Globals } from 'src/app/globals';
-import { UsersService } from 'src/app/services/users/users.service';
+import { TeamsService } from 'src/app/services/teams/teams.service';
 import { ConfirmationDialogComponent, DialogInfo } from '../confirmation-dialog/confirmation-dialog';
-import { UserDialogComponent } from './user-dialog/user-dialog.component';
+import { TeamDialogComponent } from './team-dialog/team-dialog.component';
 import { ErrorResponse } from 'src/app/classes/error';
 import { ReConnector } from 'src/app/services/auth/reconnector';
+import { ErrorObserver } from 'rxjs';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'users-list',
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  selector: 'teams-list',
+  templateUrl: './teams.component.html',
+  styleUrls: ['./teams.component.css']
 })
-export class UsersComponent implements OnInit {
-  displayedColumns: string[] = ['username', 'name', 'surname', 'email', 'isAdmin', 'options'];
-  dataSource:MatTableDataSource<User>;
+export class TeamsComponent implements OnInit {
+  displayedColumns: string[] = ['id', 'name', 'sportName', 'photo','options'];
+  dataSource:MatTableDataSource<Team>;
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
   errorMessage: string;
-  userEdited: User;
-  rowEdited: User;
+  teamEdited: Team;
+  rowEdited: Team;
   isLoading = false;
 
-  constructor(private router:Router, private reconnector:ReConnector ,private dialog:MatDialog, private globals:Globals, private usersService:UsersService) {
-    this.getUsers();
+  constructor(private router: Router, private domSanitizer: DomSanitizer, private reconnector:ReConnector ,private dialog:MatDialog, private teamsService:TeamsService) {
+    this.getTeams();
   }
   
   ngOnInit() {
 
   }
 
-  public getUsers():void{
+  public getTeams():void{
     this.isLoading = true;
-    this.usersService.getAllUsers().subscribe(
-      ((data:Array<User>) => this.updateTableData(data)),
-      ((error:ErrorResponse) => this.handleUserError(error))
+    this.teamsService.getAllTeams().subscribe(
+      ((data:Array<Team>) => this.updateTableData(data)),
+      ((error:any) => this.handleTeamError(error))
     )
   }
 
-  private updateTableData(users:Array<User>){
-    this.dataSource = new MatTableDataSource(users);
+  private updateTableData(teams:Array<Team>){
+    this.dataSource = new MatTableDataSource(teams);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.isLoading = false;
   }
 
-  private handleUserError(error:ErrorResponse) {
+  sanitizeImage(base64Image:string):string{
+    var path = 'data:image/jpg;base64,' + atob(base64Image)
+    this.domSanitizer.bypassSecurityTrustUrl(path);
+    return path
+  }
+
+  private handleTeamError(error:ErrorResponse) {
     console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
       var resultByRef = {result: false};
@@ -56,11 +64,12 @@ export class UsersComponent implements OnInit {
         //wait
       }
       if(resultByRef.result)
-        this.getUsers();
+        this.getTeams();
       else
         this.router.navigate(['login']);
     }
     this.isLoading = false;
+  
   }
   
   applyFilter(filterValue:string){
@@ -70,54 +79,54 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  openEditDialog(aUser:User):void{
-    this.userEdited = User.getClone(aUser);
-    this.rowEdited = aUser;
-    const dialogRef = this.dialog.open(UserDialogComponent, {
+  openEditDialog(aTeam:Team):void{
+    this.teamEdited = Team.getClone(aTeam);
+    this.rowEdited = aTeam;
+    const dialogRef = this.dialog.open(TeamDialogComponent, {
       width:'500px',
       data: {
-        aUser: this.userEdited,
-        title: "Edit user",
-        isNewUser: false
+        aTeam: this.teamEdited,
+        title: "Edit team",
+        isNewTeam: false
       }
     });
     dialogRef.afterClosed().subscribe(
-      ((result:User) => {
+      ((result:Team) => {
         if(result!=undefined){
           this.rowEdited.name = result.name;
-          this.rowEdited.surname = result.surname;
-          this.rowEdited.email = result.email;
-          this.rowEdited.isAdmin = result.isAdmin;
+          this.rowEdited.id = result.id;
+          this.rowEdited.photo = result.photo;
+          this.rowEdited.sportName = result.sportName;
         }       
       })
     )
   }
 
-  openDeleteDialog(aUser:User):void{
+  openDeleteDialog(aTeam:Team):void{
     var confirmation:Boolean;
     confirmation = false;
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width:'500px',
       data: {
         confirmation: confirmation,
-        title: "Delete " + aUser.username,
+        title: "Delete " + aTeam.id,
         message: "This operation needs confirmation. It can not be undone."
       }
     });
     dialogRef.afterClosed().subscribe(
       ((dialgoResponse:DialogInfo) => {
         if(dialgoResponse.confirmation)
-          this.performDelete(aUser);
+          this.performDelete(aTeam);
       })
     )
   }
-  performDelete(aUser: User): void {
-    this.usersService.deleteUser(aUser.username).subscribe(
-      ((result:any) => this.updateTableData(this.dataSource.data.filter((u:User)=>u.username != aUser.username))),
-      ((error:any) => this.handleDeleteError(error, aUser))
+  performDelete(aTeam: Team): void {
+    this.teamsService.deleteTeam(aTeam.id).subscribe(
+      ((result:any) => this.updateTableData(this.dataSource.data.filter((t:Team)=>t.id != aTeam.id))),
+      ((error:any) => this.handleDeleteError(error, aTeam))
     );
   }
-  handleDeleteError(error: ErrorResponse, aUser:User): void {
+  handleDeleteError(error: ErrorResponse, aTeam:Team): void {
     console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
       var resultByRef = {result: false};
@@ -126,33 +135,34 @@ export class UsersComponent implements OnInit {
         //wait
       }
       if(resultByRef.result)
-        this.performDelete(aUser);
+        this.performDelete(aTeam);
       else
         this.router.navigate(['login']);
     }
     this.isLoading = false;
+  
   }
 
   openAddDialog():void{
-    var user = new User("","","","");
-    const dialogRef = this.dialog.open(UserDialogComponent, {
+    var team = new Team("","");
+    const dialogRef = this.dialog.open(TeamDialogComponent, {
       width:'500px',
       data: {
-        aUser: user,
-        title: "Add new user",
-        isNewUser: true
+        aTeam: team,
+        title: "Add new team",
+        isNewTeam: true
       }
     });
     dialogRef.afterClosed().subscribe(
-      ((newUser:User) => {
-        if(newUser != undefined)
-          this.performAdd(newUser);
+      ((newTeam:Team) => {
+        if(newTeam != undefined)
+          this.performAdd(newTeam);
       })
     )
   }
 
-  performAdd(newUser:User):void{
-    this.dataSource.data.push(newUser);
+  performAdd(newTeam:Team):void{
+    this.dataSource.data.push(newTeam);
     this.dataSource._updateChangeSubscription();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;

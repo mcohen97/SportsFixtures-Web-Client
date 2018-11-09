@@ -61,6 +61,9 @@ import { ReConnector } from './services/auth/reconnector';
 import { SportsComponent } from './components/sports/sports.component';
 import { SportDialogComponent } from './components/sports/sport-dialog/sport-dialog.component';
 import { SportsService } from './services/sports/sports.service';
+import { TeamsComponent } from './components/teams/teams.component';
+import { TeamDialogComponent } from './components/teams/team-dialog/team-dialog.component';
+import { TeamsService } from './services/teams/teams.service';
 
 @NgModule({
   declarations: [
@@ -74,6 +77,8 @@ import { SportsService } from './services/sports/sports.service';
     UserDialogComponent,
     SportsComponent,
     SportDialogComponent,
+    TeamsComponent,
+    TeamDialogComponent,
 
   ],
   imports: [
@@ -89,6 +94,10 @@ import { SportsService } from './services/sports/sports.service';
       {
         path:'sports',
         component:SportsComponent
+      },
+      {
+        path:'teams',
+        component:TeamsComponent
       },
       {
         path: '**',
@@ -142,6 +151,7 @@ import { SportsService } from './services/sports/sports.service';
     AuthService,
     UsersService,
     SportsService,
+    TeamsService,
     ReConnector,
     {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
 
@@ -149,7 +159,8 @@ import { SportsService } from './services/sports/sports.service';
   entryComponents: [
     ConfirmationDialogComponent,
     UserDialogComponent,
-    SportDialogComponent
+    SportDialogComponent,
+    TeamDialogComponent
   ],
   bootstrap: [AppComponent],
   

@@ -10,19 +10,21 @@ export class ReConnector{
 
     token:Observable<Token>;
     tryCount:number;
+    
 
     constructor(private auth: AuthService){
         this.tryCount = 0;
     }
 
-    tryReconnect(){
+    tryReconnect(resultRef:{result:boolean}){
         this.tryCount++;
         const username = Globals.getUsername();
         const password = Globals.getPassword();
         this.token = this.auth.authenticate(username, password); 
         this.token.subscribe(
             ((data:Token) => this.successfulLogin(data, username, password)),
-            ((error:ErrorResponse) => this.handleError(error))
+            ((error:ErrorResponse) => this.handleError(error)),
+            (()=>{resultRef.result = Globals.isUserLogged()})
         )
     }
 
@@ -33,11 +35,12 @@ export class ReConnector{
     }
 
     private handleError(error:ErrorResponse) {
-        if(this.tryCount <= 15){
-            this.tryReconnect();
-        } else if (error.errorCode == 0){
+        if (error.errorCode == 0){
             Globals.logOut();
         }
+    }
+
+    private reset(){
         this.tryCount = 0;
     }
 
