@@ -32,9 +32,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
-            SetSession();
             IActionResult result;
             try {
+                SetSession();
                 result = TryGetAll();
             }
             catch (ServiceException e) {
@@ -54,10 +54,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(string username)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 UserModelOut toReturn = TryGetUser(username);
                 result = Ok(toReturn);
             }
@@ -85,7 +85,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] UserModelIn user)
         {
-            SetSession();
             IActionResult toReturn;
             if (ModelState.IsValid)
             {
@@ -103,6 +102,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryAddUser(user);
             }
             catch (ServiceException e)
@@ -126,11 +126,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(string username, [FromBody] UpdateUserModelIn input)
         {
-            SetSession();
             IActionResult result;
             UserDto toModify = BuildUser(username, input);
             try
             {
+                SetSession();
                 UserDto modified =userService.ModifyUser(toModify);
                 result = Ok(CreateModelOut(modified));
             }
@@ -153,10 +153,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string username)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 userService.DeleteUser(username);
                 OkModelOut okMessage = new OkModelOut() { OkMessage = "The user has been deleted successfully" };
                 result = Ok(okMessage);
@@ -200,10 +200,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult FollowTeam(int teamId)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryFollowTeam(teamId);
             }
             catch (ServiceException e)
@@ -228,10 +228,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult UnFollowTeam(int teamId)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryUnFollow(teamId);
             }
             catch (ServiceException e)
@@ -255,10 +255,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult GetFollowedTeams(string username)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryGetFollowedTeams(username);
             }
             catch (ServiceException e)
