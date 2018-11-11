@@ -110,9 +110,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<IMatchRepository> matchRepository = new Mock<IMatchRepository>();
             mapper = new EncounterDtoMapper(teamsRepo.Object,matchRepository.Object,sportsRepo.Object);
 
-
-            innerMatches = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
-            matches = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object);
+            Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
+            MatchService matchService = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object, auth.Object);
+            innerMatches = matchService;
+            matches = matchService;
 
             fixture = new FixtureService(teamsRepo.Object, sportsRepo.Object, innerMatches, matches, matchRepository.Object);
 

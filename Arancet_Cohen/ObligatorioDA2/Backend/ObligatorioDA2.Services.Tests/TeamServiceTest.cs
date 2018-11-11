@@ -37,7 +37,6 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetTeamTest() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(true);
             teams.Setup(r => r.Get(1)).Returns(testTeam);
             TeamDto fetched = testService.GetTeam(1);
             Assert.AreEqual(testTeam.Name,fetched.name);
@@ -46,7 +45,6 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void GetTeamNotExistent() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(true);
             teams.Setup(r => r.Get(It.IsAny<int>())).Throws(new TeamNotFoundException());
             testService.GetTeam(1);
         }
@@ -213,8 +211,8 @@ namespace ObligatorioDA2.Services.Tests
             GrantFollowerPermissions();
             teams.Setup(r => r.GetTeams(testSport.Name)).Returns(new List<Team>() { testTeam, testTeam, testTeam });
             ICollection<TeamDto> result = testService.GetSportTeams(testSport.Name);
-            auth.Verify(r => r.IsLoggedIn(), Times.Once);
-            auth.Verify(r => r.HasAdminPermissions(), Times.Never);
+            auth.Verify(r => r.Authenticate(), Times.Once);
+            auth.Verify(r => r.AuthenticateAdmin(), Times.Never);
             teams.Verify(r => r.GetTeams(testSport.Name), Times.Once);
             Assert.AreEqual(3, result.Count);
         }
@@ -245,17 +243,21 @@ namespace ObligatorioDA2.Services.Tests
             testService.GetSportTeams(testSport.Name);
         }
 
-        private void GrantAdminPermissions() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(true);
-            auth.Setup(r => r.HasAdminPermissions()).Returns(true);
+          private void GrantAdminPermissions()
+        {
+            //authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            //authentication.Setup(r => r.HasAdminPermissions()).Returns(true);
         }
-        private void GrantFollowerPermissions() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(true);
-            auth.Setup(r => r.HasAdminPermissions()).Returns(false);
+        private void GrantFollowerPermissions()
+        {
+            //authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            auth.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
         }
 
-        private void LogOut() {
-            auth.Setup(r => r.IsLoggedIn()).Returns(false);
+        private void LogOut()
+        {
+            auth.Setup(r => r.Authenticate()).Throws(new NotAuthenticatedException());
+            auth.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
         }
     }
 }
