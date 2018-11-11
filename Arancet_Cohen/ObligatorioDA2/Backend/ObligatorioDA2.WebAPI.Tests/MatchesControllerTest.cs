@@ -11,9 +11,6 @@ using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
-using System.Linq;
-using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Mappers;
 using System.Diagnostics.CodeAnalysis;
@@ -25,6 +22,7 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class MatchesControllerTest{
 
         private Mock<IMatchService> matchService;
+        private Mock<IAuthenticationService> auth;
         private Mock<EncounterDtoMapper> mapper;
         private MatchesController controller;
         private EncounterDto testEncounter;
@@ -32,9 +30,10 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestInitialize]
         public void SetUp() {
             matchService = new Mock<IMatchService>();
+            auth = new Mock<IAuthenticationService>();
             mapper = new Mock<EncounterDtoMapper>();
             testEncounter = BuildFakeMatch();
-            controller = new MatchesController(matchService.Object);
+            controller = new MatchesController(matchService.Object, auth.Object);
         }
 
         private EncounterDto BuildFakeMatch()

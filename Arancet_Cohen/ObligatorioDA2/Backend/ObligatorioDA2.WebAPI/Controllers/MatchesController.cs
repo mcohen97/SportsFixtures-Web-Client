@@ -18,12 +18,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IMatchService matchService;
         private EncounterModelFactory factory;
         private ErrorActionResultFactory errors;
+        private IAuthenticationService authenticator;
 
-        public MatchesController(IMatchService aService)
+        public MatchesController(IMatchService aService, IAuthenticationService authService)
         {
             matchService = aService;
             factory = new EncounterModelFactory();
             errors = new ErrorActionResultFactory(this);
+            authenticator = authService;
         }
 
         [HttpGet]
