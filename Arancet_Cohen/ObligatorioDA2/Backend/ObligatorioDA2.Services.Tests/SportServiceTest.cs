@@ -38,8 +38,8 @@ namespace ObligatorioDA2.Services.Tests
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.GetAll()).Returns(new List<Sport>() { testSport, testSport, testSport });
             ICollection<SportDto> result= serviceToTest.GetAllSports();
-            authentication.Verify(r => r.IsLoggedIn(), Times.Once);
-            authentication.Verify(r => r.HasAdminPermissions(), Times.Never);
+            authentication.Verify(r => r.Authenticate(), Times.Once);
+            authentication.Verify(r => r.AuthenticateAdmin(), Times.Never);
             sportsStorage.Verify(r => r.GetAll(), Times.Once);
             Assert.AreEqual(3, result.Count);
         }
@@ -65,8 +65,8 @@ namespace ObligatorioDA2.Services.Tests
             GrantFollowerPermissions();
             sportsStorage.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             SportDto result = serviceToTest.GetSport(testSport.Name);
-            authentication.Verify(r => r.IsLoggedIn(), Times.Once);
-            authentication.Verify(r => r.HasAdminPermissions(), Times.Never);
+            authentication.Verify(r => r.Authenticate(), Times.Once);
+            authentication.Verify(r => r.AuthenticateAdmin(), Times.Never);
             sportsStorage.Verify(r => r.Get(testSport.Name), Times.Once);
             Assert.AreEqual(testSport.Name, result.name);
             Assert.AreEqual(testSport.IsTwoTeams, result.isTwoTeams);
@@ -186,18 +186,19 @@ namespace ObligatorioDA2.Services.Tests
 
         private void GrantAdminPermissions()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
-            authentication.Setup(r => r.HasAdminPermissions()).Returns(true);
+            //authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            //authentication.Setup(r => r.HasAdminPermissions()).Returns(true);
         }
         private void GrantFollowerPermissions()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
-            authentication.Setup(r => r.HasAdminPermissions()).Returns(false);
+            //authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
         }
 
         private void LogOut()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(false);
+            authentication.Setup(r => r.Authenticate()).Throws(new NotAuthenticatedException());
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
         }
     }
 }
