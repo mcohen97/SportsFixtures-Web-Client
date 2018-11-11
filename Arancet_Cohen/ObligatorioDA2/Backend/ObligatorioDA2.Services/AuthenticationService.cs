@@ -47,7 +47,13 @@ namespace ObligatorioDA2.Services
 
         public void SetSession(string userName)
         {
-            current = users.Get(userName);
+            try
+            {
+                current = users.Get(userName);
+            }
+            catch (UserNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.NOT_AUTHENTICATED);
+            }
         }
 
         public bool HasAdminPermissions()
