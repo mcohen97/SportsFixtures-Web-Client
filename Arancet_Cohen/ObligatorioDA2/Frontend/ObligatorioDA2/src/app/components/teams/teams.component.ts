@@ -10,6 +10,7 @@ import { ReConnector } from 'src/app/services/auth/reconnector';
 import { ErrorObserver } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { Token } from 'src/app/classes/token';
 
 @Component({
   selector: 'teams-list',
@@ -25,6 +26,7 @@ export class TeamsComponent implements OnInit {
   teamEdited: Team;
   rowEdited: Team;
   isLoading = false;
+  auth: any;
 
   constructor(private router: Router, private domSanitizer: DomSanitizer, private reconnector:ReConnector ,private dialog:MatDialog, private teamsService:TeamsService) {
     this.getTeams();
@@ -56,20 +58,16 @@ export class TeamsComponent implements OnInit {
   }
 
   private handleTeamError(error:ErrorResponse) {
-    console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
-      var resultByRef = {result: false};
-      this.reconnector.tryReconnect(resultByRef);
-      while(!resultByRef.result && this.reconnector.tryCount <= 20){
-        //wait
-      }
-      if(resultByRef.result)
-        this.getTeams();
-      else
-        this.router.navigate(['login']);
+      this.auth.authenticate(Globals.getUsername(), Globals.getPassword()).subscribe(
+        ((token:Token)=>Globals.setToken(token.token)),
+        ((error:any) => this.router.navigate['login']),
+        (()=> {
+          this.isLoading = false;
+          this.getTeams();
+        })
+      )
     }
-    this.isLoading = false;
-  
   }
   
   applyFilter(filterValue:string){
@@ -109,7 +107,7 @@ export class TeamsComponent implements OnInit {
       width:'500px',
       data: {
         confirmation: confirmation,
-        title: "Delete " + aTeam.id,
+        title: "Delete " + aTeam.name + " (" + aTeam.sportName + ")",
         message: "This operation needs confirmation. It can not be undone."
       }
     });
@@ -120,27 +118,25 @@ export class TeamsComponent implements OnInit {
       })
     )
   }
+
   performDelete(aTeam: Team): void {
     this.teamsService.deleteTeam(aTeam.id).subscribe(
       ((result:any) => this.updateTableData(this.dataSource.data.filter((t:Team)=>t.id != aTeam.id))),
       ((error:any) => this.handleDeleteError(error, aTeam))
     );
   }
+
   handleDeleteError(error: ErrorResponse, aTeam:Team): void {
-    console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
-      var resultByRef = {result: false};
-      this.reconnector.tryReconnect(resultByRef);
-      while(!resultByRef.result && this.reconnector.tryCount <= 20){
-        //wait
-      }
-      if(resultByRef.result)
-        this.performDelete(aTeam);
-      else
-        this.router.navigate(['login']);
+      this.auth.authenticate(Globals.getUsername(), Globals.getPassword()).subscribe(
+        ((token:Token)=>Globals.setToken(token.token)),
+        ((error:any) => this.router.navigate['login']),
+        (()=> {
+          this.isLoading = false;
+          this.performDelete(aTeam);
+        })
+      )
     }
-    this.isLoading = false;
-  
   }
 
   openAddDialog():void{

@@ -1,0 +1,194 @@
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
+import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA, MatDialog} from '@angular/material';
+import { Encounter } from 'src/app/classes/encounter';
+import { Globals } from 'src/app/globals';
+import { EncountersService } from 'src/app/services/encounters/encounters.service';
+import { ConfirmationDialogComponent, DialogInfo } from '../confirmation-dialog/confirmation-dialog';
+import { EncounterDialogComponent } from './encounter-dialog/encounter-dialog.component';
+import { ErrorResponse } from 'src/app/classes/error';
+import { ReConnector } from 'src/app/services/auth/reconnector';
+import { ErrorObserver } from 'rxjs';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { Token } from 'src/app/classes/token';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { TeamsService } from 'src/app/services/teams/teams.service';
+import { Team } from 'src/app/classes/team';
+
+@Component({
+  selector: 'encounters-list',
+  templateUrl: './encounters.component.html',
+  styleUrls: ['./encounters.component.css']
+})
+export class EncountersComponent implements OnInit {
+  displayedColumns: string[] = ['id', 'sportName', 'teamIds', 'date', 'hasResult', 'options'];
+  dataSource:MatTableDataSource<Encounter>;
+  @ViewChild(MatPaginator) paginator:MatPaginator;
+  @ViewChild(MatSort) sort:MatSort;
+  errorMessage: string;
+  encounterEdited: Encounter;
+  rowEdited: Encounter;
+  isLoading = false;
+  teams:Array<Team>;
+  encounters:Array<Encounter>;
+
+  constructor(private teamsService:TeamsService, private router: Router, private domSanitizer: DomSanitizer, private auth:AuthService ,private dialog:MatDialog, private encountersService:EncountersService) {
+    this.getEncounters();
+  }
+  
+  ngOnInit() {
+
+  }
+
+  public getEncounters():void{
+    this.isLoading = true;
+    this.encountersService.getAllEncounters().subscribe(
+      ((data:Array<Encounter>) => {
+        this.encounters = data;
+        this.getTeamsNames();
+      }),
+      ((error:any) => this.handleEncounterError(error))
+    )
+  }
+
+  private getTeamsNames(){
+    this.teamsService.getAllTeams().subscribe(
+      ((teams:Array<Team>) => this.teams = teams),
+      ((error:any) => {console.log(error)}),
+      (()=>this.assignNamesToEncounters())
+    )
+  }
+
+  assignNamesToEncounters(): void {
+    this.encounters.forEach(encounter => {
+      encounter.teams = new Array<Team>();
+      encounter.teamIds.forEach(id => {
+        encounter.teams.push(this.teams.find(t => t.id == id));
+      });
+    });
+    this.updateTableData(this.encounters);
+  }
+
+  private updateTableData(encounters:Array<Encounter>){
+    this.dataSource = new MatTableDataSource(encounters);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.isLoading = false;
+  }
+
+  sanitizeImage(base64Image:string):string{
+    var path = 'data:image/jpg;base64,' + atob(base64Image)
+    this.domSanitizer.bypassSecurityTrustUrl(path);
+    return path
+  }
+
+  public getArrayOfNames(id:number):Array<string>{
+    return this.encounters.find(t => t.id == id).teamNames();
+  }
+
+  private handleEncounterError(error:ErrorResponse) {
+    if(error.errorCode == 0 || error.errorCode == 401){
+      this.auth.authenticate(Globals.getUsername(), Globals.getPassword()).subscribe(
+        ((token:Token)=>Globals.setToken(token.token)),
+        ((error:any) => this.router.navigate['login']),
+        (()=> {
+          this.isLoading = false;
+          this.getEncounters();
+        })
+      )
+    }
+  }
+  
+  applyFilter(filterValue:string){
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if(this.dataSource.paginator){
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  openEditDialog(aEncounter:Encounter):void{
+    this.encounterEdited = Encounter.getClone(aEncounter);
+    this.rowEdited = aEncounter;
+    const dialogRef = this.dialog.open(EncounterDialogComponent, {
+      width:'500px',
+      data: {
+        aEncounter: this.encounterEdited,
+        title: "Edit encounter",
+        isNewEncounter: false
+      }
+    });
+    dialogRef.afterClosed().subscribe(
+      ((result:Encounter) => {
+        if(result!=undefined){
+          this.rowEdited.sportName = result.sportName;
+          this.rowEdited.id = result.id;
+          this.rowEdited.date = result.date;
+          this.rowEdited.sportName = result.sportName;
+        }       
+      })
+    )
+  }
+
+  openDeleteDialog(aEncounter:Encounter):void{
+    var confirmation:Boolean;
+    confirmation = false;
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width:'500px',
+      data: {
+        confirmation: confirmation,
+        title: "Delete " + aEncounter.id,
+        message: "This operation needs confirmation. It can not be undone."
+      }
+    });
+    dialogRef.afterClosed().subscribe(
+      ((dialgoResponse:DialogInfo) => {
+        if(dialgoResponse.confirmation)
+          this.performDelete(aEncounter);
+      })
+    )
+  }
+
+  performDelete(aEncounter: Encounter): void {
+    this.encountersService.deleteEncounter(aEncounter.id).subscribe(
+      ((result:any) => this.updateTableData(this.dataSource.data.filter((t:Encounter)=>t.id != aEncounter.id))),
+      ((error:any) => this.handleDeleteError(error, aEncounter))
+    );
+  }
+
+  handleDeleteError(error: ErrorResponse, aEncounter:Encounter): void {
+    if(error.errorCode == 0 || error.errorCode == 401){
+      this.auth.authenticate(Globals.getUsername(), Globals.getPassword()).subscribe(
+        ((token:Token)=>Globals.setToken(token.token)),
+        ((error:any) => this.router.navigate['login']),
+        (()=> {
+          this.isLoading = false;
+          this.performDelete(aEncounter);
+        })
+      )
+    }
+  }
+
+  openAddDialog():void{
+    var encounter = new Encounter("", false, new Date(Date.now()));
+    const dialogRef = this.dialog.open(EncounterDialogComponent, {
+      width:'500px',
+      data: {
+        aEncounter: encounter,
+        title: "Add new encounter",
+        isNewEncounter: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(
+      ((newEncounter:Encounter) => {
+        if(newEncounter != undefined)
+          this.performAdd(newEncounter);
+      })
+    )
+  }
+
+  performAdd(newEncounter:Encounter):void{
+    this.getEncounters();
+  }
+}
+
+

@@ -8,6 +8,11 @@ import { UserDialogComponent } from './user-dialog/user-dialog.component';
 import { ErrorResponse } from 'src/app/classes/error';
 import { ReConnector } from 'src/app/services/auth/reconnector';
 import { Router } from '@angular/router';
+import { timer } from 'rxjs';
+import { TimeInterval } from 'rxjs/internal/operators/timeInterval';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { Token } from 'src/app/classes/token';
+
 
 @Component({
   selector: 'users-list',
@@ -24,7 +29,7 @@ export class UsersComponent implements OnInit {
   rowEdited: User;
   isLoading = false;
 
-  constructor(private router:Router, private reconnector:ReConnector ,private dialog:MatDialog, private globals:Globals, private usersService:UsersService) {
+  constructor(private router:Router, private auth: AuthService, private reconnector:ReConnector ,private dialog:MatDialog, private globals:Globals, private usersService:UsersService) {
     this.getUsers();
   }
   
@@ -48,19 +53,16 @@ export class UsersComponent implements OnInit {
   }
 
   private handleUserError(error:ErrorResponse) {
-    console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
-      var resultByRef = {result: false};
-      this.reconnector.tryReconnect(resultByRef);
-      while(!resultByRef.result && this.reconnector.tryCount <= 20){
-        //wait
-      }
-      if(resultByRef.result)
-        this.getUsers();
-      else
-        this.router.navigate(['login']);
+      this.auth.authenticate(Globals.getUsername(), Globals.getPassword()).subscribe(
+        ((token:Token)=>Globals.setToken(token.token)),
+        ((error:any) => this.router.navigate['login']),
+        (()=> {
+          this.isLoading = false;
+          this.getUsers();
+        })
+      )
     }
-    this.isLoading = false;
   }
   
   applyFilter(filterValue:string){
@@ -118,19 +120,16 @@ export class UsersComponent implements OnInit {
     );
   }
   handleDeleteError(error: ErrorResponse, aUser:User): void {
-    console.log(error);
     if(error.errorCode == 0 || error.errorCode == 401){
-      var resultByRef = {result: false};
-      this.reconnector.tryReconnect(resultByRef);
-      while(!resultByRef.result && this.reconnector.tryCount <= 20){
-        //wait
-      }
-      if(resultByRef.result)
-        this.performDelete(aUser);
-      else
-        this.router.navigate(['login']);
+      this.auth.authenticate(Globals.getUsername(), Globals.getPassword()).subscribe(
+        ((token:Token)=>Globals.setToken(token.token)),
+        ((error:any) => this.router.navigate['login']),
+        (()=> {
+          this.isLoading = false;
+          this.performDelete(aUser);
+        })
+      )
     }
-    this.isLoading = false;
   }
 
   openAddDialog():void{

@@ -3,12 +3,12 @@ import {MatPaginator, MatSort, MatTableDataSource, MatDialogRef, MAT_DIALOG_DATA
 import { UsersComponent } from '../users.component';
 import { Injectable } from "@angular/core";
 import { Http, Response, RequestOptions, Headers } from "@angular/http"; 
-import { Observable, throwError } from "rxjs";  
+import { Observable, throwError, of } from "rxjs";  
 import { map, tap, catchError } from 'rxjs/operators'; 
 import { Globals } from "src/app/globals";
 import { User } from "src/app/classes/user";
 import { ErrorResponse } from "src/app/classes/error";
-import { Validators, FormControl, FormGroupDirective, NgForm, ValidationErrors, ValidatorFn, AbstractControl } from '@angular/forms';
+import { Validators, FormControl, FormGroupDirective, NgForm, ValidationErrors, ValidatorFn, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 import { UsersService } from 'src/app/services/users/users.service';
 import { UserError } from 'src/app/classes/userError';
 import { CustomValidators } from 'src/app/classes/custom-validators';
@@ -50,7 +50,6 @@ export class UserDialogComponent {
       this.passwordConfirmationControl.disable();
       this.passwordControl.disable();
     }
-    this.setValidators();
   }
 
   matcher = new MyErrorStateMatcher();
@@ -182,9 +181,53 @@ export class UserDialogComponent {
     }
   }
 
+  checkUsername(){
+    if(this.usernameControl.value != ""){
+      this.usersService.getUser(this.usernameControl.value).subscribe(
+        ((u:User) => {
+            this.errorFlags["errorMessageInput"] = true;
+            this.userError.errorMessage="User already exist";
+        }),
+        ((er:ErrorResponse) => {
+          this.usernameControl.setErrors(null);
+          this.errorFlags["errorMessageInput"] = false;
+          this.userError.errorMessage=undefined;
+        }),
+        (() =>{
+          this.usernameControl.setValidators([
+            this.existError("usernameInput"),
+            this.existError("errorMessageInput"),
+            Validators.required
+          ]);
+          this.usernameControl.markAsTouched();
+          this.usernameControl.updateValueAndValidity();
+        })
+      )
+    }
+  }
+
+  private existErrorAsync(keyError:string): AsyncValidatorFn {
+    return (control:AbstractControl) : Observable<ValidationErrors> | null=>{
+      if(this.errorFlags[keyError]){
+        let temp = [];      
+        this.usersService.getUser(this.usernameControl.value).subscribe(
+          ((u:User) => {temp[keyError] = true;}),
+          ((a:any) => {temp[keyError] = false;}),
+          (() =>{})
+        )
+        return of(temp[keyError]).pipe(
+          map(result => result ? { invalid: true } : null)
+        );
+      }
+      else
+        return null;
+    }
+  }
+
   removeError(control:AbstractControl, keyError:string):void{
     control.setErrors(null);
     this.errorFlags[keyError] = false;
+    this.setValidators();
     control.updateValueAndValidity();
   }
 

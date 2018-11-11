@@ -64,6 +64,12 @@ import { SportsService } from './services/sports/sports.service';
 import { TeamsComponent } from './components/teams/teams.component';
 import { TeamDialogComponent } from './components/teams/team-dialog/team-dialog.component';
 import { TeamsService } from './services/teams/teams.service';
+import { EncountersComponent } from './components/encounters/encounters.component';
+import { EncounterDialogComponent } from './components/encounters/encounter-dialog/encounter-dialog.component';
+import { EncounterCardComponent } from './components/encounters/encounter-card/encounter-card.component';
+import { EncounterCardDeckComponent } from './components/encounters/encounter-card-deck/encounter-card-deck.component';
+import { EncountersService } from './services/encounters/encounters.service';
+import { EncounterResultDialogComponent } from './components/encounters/encounter-result-dialog/encounter-result-dialog.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +85,11 @@ import { TeamsService } from './services/teams/teams.service';
     SportDialogComponent,
     TeamsComponent,
     TeamDialogComponent,
+    EncountersComponent,
+    EncounterDialogComponent,
+    EncounterCardComponent,
+    EncounterCardDeckComponent,
+    EncounterResultDialogComponent,
 
   ],
   imports: [
@@ -98,6 +109,10 @@ import { TeamsService } from './services/teams/teams.service';
       {
         path:'teams',
         component:TeamsComponent
+      },
+      {
+        path:'encounters',
+        component:EncountersComponent
       },
       {
         path: '**',
@@ -152,6 +167,7 @@ import { TeamsService } from './services/teams/teams.service';
     UsersService,
     SportsService,
     TeamsService,
+    EncountersService,
     ReConnector,
     {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
 
@@ -160,7 +176,8 @@ import { TeamsService } from './services/teams/teams.service';
     ConfirmationDialogComponent,
     UserDialogComponent,
     SportDialogComponent,
-    TeamDialogComponent
+    TeamDialogComponent,
+    EncounterDialogComponent
   ],
   bootstrap: [AppComponent],
   

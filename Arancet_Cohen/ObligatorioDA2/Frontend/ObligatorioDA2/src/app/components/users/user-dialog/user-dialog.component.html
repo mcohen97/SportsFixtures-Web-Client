@@ -1,10 +1,10 @@
 <h1 class = "dialog-title" mat-dialog-title>{{data.title}}</h1>
 <div mat-dialog-content>
   <mat-form-field class = "dialog-input">
-    <input matInput [errorStateMatcher]="matcher" [formControl] = "usernameControl" type = "text" placeholder="Username" [(ngModel)]="data.aUser.username" (focus) = "removeError(usernameControl, 'errorMessage')">
+    <input matInput [errorStateMatcher]="matcher" [formControl] = "usernameControl" type = "text" placeholder="Username" [(ngModel)]="data.aUser.username" (focus) = "removeError(usernameControl, 'errorMessageInput')" (blur) = "checkUsername()">
     <mat-error *ngIf="usernameControl.hasError('errorMessageInput')">{{userError.errorMessage}}</mat-error>
     <mat-error *ngIf="usernameControl.hasError('usernameInput')">{{userError.Username.toString()}}</mat-error>
-    <mat-error *ngIf="usernameControl.hasError('required') && !usernameControl.hasError('usernameInput')">This field is required</mat-error>
+    <mat-error *ngIf="usernameControl.hasError('required') && !usernameControl.hasError('usernameInput') && !usernameControl.hasError('errorMessageInput')">This field is required</mat-error>
   </mat-form-field>
   <mat-form-field class = "dialog-input">
     <input matInput [errorStateMatcher]="matcher" [formControl] = "passwordControl" type = "password" placeholder="Password" [(ngModel)]="data.aUser.password" (focus) = "removeError(passwordControl, 'passwordInput')">

@@ -62,6 +62,7 @@ export class TeamDialogComponent {
   addTeam(newTeam:Team):void{
     this.teamsService.addTeam(newTeam).subscribe(
       ((result:Team) => {
+        newTeam.id = result.id;
         this.dialogRef.close(newTeam);
       }),
       ((error:ErrorResponse) => this.handleError(error))
@@ -80,7 +81,6 @@ export class TeamDialogComponent {
   handleError(error: ErrorResponse): void {    
     this.teamError = <TeamError> error.errorObject;
     this.errorStatus = error.errorCode;
-    console.log(this.errorStatus);
     this.checkErrors();
     this.setValidators();
     this.markControlsAsTouched();
@@ -125,7 +125,9 @@ export class TeamDialogComponent {
       Validators.required
     ]);
     this.sportNameControl.setValidators([
-      this.existError("sportNameSportNameInput"),
+      this.existError("sportNameInput"),
+      this.existError("errorMessageSportNameInput"),
+
       Validators.required
     ]);
     this.photoControl.setValidators([

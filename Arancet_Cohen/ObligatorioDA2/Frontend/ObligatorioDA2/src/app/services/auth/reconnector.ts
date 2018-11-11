@@ -16,15 +16,30 @@ export class ReConnector{
         this.tryCount = 0;
     }
 
+    reconnect()
+    {
+        var b = false;
+        
+    }
+
     tryReconnect(resultRef:{result:boolean}){
         this.tryCount++;
+        Globals.logOut();
         const username = Globals.getUsername();
         const password = Globals.getPassword();
         this.token = this.auth.authenticate(username, password); 
         this.token.subscribe(
-            ((data:Token) => this.successfulLogin(data, username, password)),
+            ((data:Token) => {
+                resultRef.result = true;
+                this.successfulLogin(data, username, password)
+            }),
             ((error:ErrorResponse) => this.handleError(error)),
-            (()=>{resultRef.result = Globals.isUserLogged()})
+            (()=>{
+                if(this.tryCount <= 15 && !Globals.isUserLogged())
+                    this.tryReconnect(resultRef);
+                else
+                    resultRef.result = true;
+            })
         )
     }
 
@@ -35,12 +50,13 @@ export class ReConnector{
     }
 
     private handleError(error:ErrorResponse) {
-        if (error.errorCode == 0){
+        if (error.errorCode != 401){
             Globals.logOut();
         }
+        
     }
 
-    private reset(){
+    reset(){
         this.tryCount = 0;
     }
 

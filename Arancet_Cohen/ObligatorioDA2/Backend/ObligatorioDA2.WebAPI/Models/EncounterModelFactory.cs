@@ -27,7 +27,7 @@ namespace ObligatorioDA2.WebAPI.Models
             {
                 Id = encounter.id,
                 SportName = encounter.sportName,
-                TeamsIds = encounter.teamsIds,
+                TeamIds = encounter.teamsIds,
                 Date = encounter.date,
                 CommentsIds = encounter.commentsIds,
                 HasResult = encounter.hasResult
@@ -48,7 +48,7 @@ namespace ObligatorioDA2.WebAPI.Models
             CompetitionModelOut converted = new CompetitionModelOut()
             {
                 Id = encounter.id,
-                TeamsIds = encounter.teamsIds,
+                TeamIds = encounter.teamsIds,
                 Date = encounter.date,
                 SportName = encounter.sportName,
                 CommentsIds = encounter.commentsIds,

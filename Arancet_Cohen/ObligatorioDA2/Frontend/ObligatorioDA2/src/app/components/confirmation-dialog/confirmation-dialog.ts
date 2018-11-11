@@ -17,7 +17,7 @@ import { UsersComponent } from '../users/users.component';
   
     onCancelClick(): void {
       this.data.confirmation = false;
-      this.dialogRef.close();
+      this.dialogRef.close(this.data);
     }
 
     onConfirmClick():void{
@@ -27,7 +27,7 @@ import { UsersComponent } from '../users/users.component';
   }
 
   export interface DialogInfo {
-    confirmation:Boolean,
+    confirmation:boolean,
     title:string,
     message:string
   }

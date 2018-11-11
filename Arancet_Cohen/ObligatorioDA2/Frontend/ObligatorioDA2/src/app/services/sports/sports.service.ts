@@ -6,6 +6,7 @@ import { Globals } from "src/app/globals";
 import { ErrorResponse } from "src/app/classes/error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Sport } from "src/app/classes/sport";
+import { Team } from "src/app/classes/team";
 
 @Injectable()
 export class SportsService {
@@ -25,6 +26,18 @@ export class SportsService {
           catchError(this.handleError)
       ); 
   }
+
+  getTeams(name:string): Observable<Array<Team>>{
+    const myHeaders = new Headers(); 
+    myHeaders.append('Accept', 'application/json');
+    myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+    const requestOptions = new RequestOptions({headers: myHeaders}); 
+    return this._httpService.get(this.WEB_API_URL+name+"/teams", requestOptions) 
+    .pipe( 
+        map((response : Response) => response.json()),
+        catchError(this.handleError)
+    ); 
+}
 
   getAllSports():Observable<Array<Sport>>{
       const myHeaders = new Headers(); 

@@ -1,7 +1,7 @@
 <div class = "table-container">
     <button mat-raised-button class = "add-button-raised" color = "primary" (click)="openAddDialog()">
       <mat-icon aria-label="Add">add</mat-icon>
-      Add team
+      Add encounter
     </button>
     <div class = "error-message">
       {{errorMessage}}
@@ -21,19 +21,24 @@
             <td mat-cell class = "cell" *matCellDef="let row"><p>{{row.id}}</p> </td>
           </ng-container>
 
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Name </th>
-            <td mat-cell class = "cell" *matCellDef="let row"> {{row.name}} </td>
-          </ng-container>
-
           <ng-container matColumnDef="sportName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Sport </th>
             <td mat-cell class = "cell" *matCellDef="let row"> {{row.sportName}} </td>
           </ng-container>
 
-          <ng-container matColumnDef="photo">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Photo </th>
-            <td mat-cell class = "cell" *matCellDef="let row"><img [src]="" alt=""> {{row.Photo}}</td>
+          <ng-container matColumnDef="teamIds">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Teams </th>
+            <td mat-cell class = "cell" *matCellDef="let row"> {{getArrayOfNames(row.id)}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Date </th>
+            <td mat-cell class = "cell" *matCellDef="let row"> {{row.date.substring(0, 10)}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="hasResult">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Has Result </th>
+            <td mat-cell class = "cell" *matCellDef="let row"><img [src]="" alt=""> {{row.hasResult}}</td>
           </ng-container>
 
           <ng-container matColumnDef="options" sticky stickyEnd>
