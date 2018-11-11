@@ -101,7 +101,10 @@ namespace ObligatorioDA2.Data.Repositories
             {
                 IQueryable<MatchTeam> teamsMatches = context.MatchTeams.Include(mt => mt.Team)
                      .Where(mt => mt.Team.Sport.Name.Equals(sportName));
-                IQueryable<MatchEntity> played = context.Matches.Where(m => teamsMatches.Any(mt => mt.MatchId == m.Id));
+                IQueryable<MatchEntity> played = context.Matches
+                    .Include(m => m.Commentaries)
+                    .Where(m => teamsMatches.Any(mt => mt.MatchId == m.Id));
+
                 context.MatchTeams.RemoveRange(teamsMatches);
                 context.Matches.RemoveRange(played);
                 IQueryable<UserTeam> followings = context.UserTeams.Where(t => t.Team.TeamNumber == deleted.TeamNumber);
