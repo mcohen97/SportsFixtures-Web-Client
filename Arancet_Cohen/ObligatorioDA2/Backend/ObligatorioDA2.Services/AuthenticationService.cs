@@ -56,12 +56,32 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public bool HasAdminPermissions()
+        public void AuthenticateAdmin()
+        {
+            if (!IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
+
+            if (!HasAdminPermissions())
+            {
+                throw new NoPermissionsException();
+            }
+        }
+
+        public void Authenticate()
+        {
+            if (!IsLoggedIn())
+            {
+                throw new NotAuthenticatedException();
+            }
+        }
+        private bool HasAdminPermissions()
         {
             return (current != null) && current.IsAdmin;
         }
 
-        public bool IsLoggedIn()
+        private bool IsLoggedIn()
         {
             return (current != null);
         }
