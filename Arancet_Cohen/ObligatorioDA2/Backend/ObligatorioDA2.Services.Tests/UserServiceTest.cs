@@ -453,18 +453,19 @@ namespace ObligatorioDA2.Services.Tests
 
         private void GrantAdminPermissions()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
-            authentication.Setup(r => r.HasAdminPermissions()).Returns(true);
+            //authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            //authentication.Setup(r => r.HasAdminPermissions()).Returns(true);
         }
         private void GrantFollowerPermissions()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
-            authentication.Setup(r => r.HasAdminPermissions()).Returns(false);
+            //authentication.Setup(r => r.IsLoggedIn()).Returns(true);
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
         }
 
         private void LogOut()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(false);
+            authentication.Setup(r => r.Authenticate()).Throws(new NotAuthenticatedException());
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
         }
     }
 }

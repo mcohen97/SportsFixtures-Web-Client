@@ -6,7 +6,6 @@ using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Mappers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,7 +32,7 @@ namespace ObligatorioDA2.Services
 
         public UserDto AddUser(UserDto userData)
         {
-            AuthenticateAdmin();
+            authenticator.AuthenticateAdmin();
             User toAdd= TryCreate(userData);
             TryAdd(toAdd);
             return userData;
@@ -87,7 +86,7 @@ namespace ObligatorioDA2.Services
 
         public void DeleteUser(string userName)
         {
-            AuthenticateAdmin();
+            authenticator.AuthenticateAdmin();
             try
             {
                 usersStorage.Delete(userName);
@@ -103,7 +102,7 @@ namespace ObligatorioDA2.Services
 
         public UserDto GetUser(string username)
         {
-            Authenticate();
+            authenticator.Authenticate();
             User stored = TryGetUser(username);
             return userMapper.ToDto(stored);
         }
@@ -125,7 +124,7 @@ namespace ObligatorioDA2.Services
 
         public UserDto ModifyUser(UserDto toModify)
         {
-            AuthenticateAdmin();
+            authenticator.AuthenticateAdmin();
             UserDto old = GetUser(toModify.username);
             User updated = TryUpdate(old, toModify);
             try
@@ -170,7 +169,7 @@ namespace ObligatorioDA2.Services
 
         public void FollowTeam(string userName, int idTeam)
         {
-            Authenticate();
+            authenticator.Authenticate();
             Team toFollow = TryGetTeam(idTeam);
             try
             {
@@ -191,7 +190,7 @@ namespace ObligatorioDA2.Services
 
         public void UnFollowTeam(string userName, int idTeam)
         {
-            Authenticate();
+            authenticator.Authenticate();
             Team toUnfollow = TryGetTeam(idTeam);
             
             TryUnFollow(userName, toUnfollow);
@@ -227,7 +226,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<TeamDto> GetUserTeams(string userName)
         {
-            Authenticate();
+            authenticator.Authenticate();
             ICollection<Team> userTeams;
             try
             {
@@ -247,7 +246,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<UserDto> GetAllUsers()
         {
-            Authenticate();
+            authenticator.Authenticate();
             ICollection<User> allOfThem;
             try
             {
@@ -259,27 +258,6 @@ namespace ObligatorioDA2.Services
             return allOfThem
                 .Select(u => userMapper.ToDto(u))
                 .ToList();
-        }
-
-        private void AuthenticateAdmin()
-        {
-            if (!authenticator.IsLoggedIn())
-            {
-                throw new NotAuthenticatedException();
-            }
-
-            if (!authenticator.HasAdminPermissions())
-            {
-                throw new NoPermissionsException();
-            }
-        }
-
-        private void Authenticate()
-        {
-            if (!authenticator.IsLoggedIn())
-            {
-                throw new NotAuthenticatedException();
-            }
         }
 
     }
