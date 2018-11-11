@@ -73,7 +73,7 @@ namespace ObligatorioDA2.Services
         {
             UserId identity = new UserId()
             {
-                Name = userData.email,
+                Name = userData.name,
                 Surname = userData.surname,
                 UserName = userData.username,
                 Password = userData.password,
