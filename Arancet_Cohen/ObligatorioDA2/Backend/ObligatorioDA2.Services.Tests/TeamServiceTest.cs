@@ -123,10 +123,12 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void ModifyTeamTest() {
             GrantAdminPermissions();
+            sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             teams.Setup(r => r.Get(It.IsAny<int>())).Returns(testTeam);
             testDto.name = "Manchester United";
             TeamDto modified = testService.Modify(testDto);
             teams.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
+            sports.Verify(r => r.Get(testSport.Name), Times.Once);
             Assert.AreEqual(testDto.name, modified.name);
         }
 

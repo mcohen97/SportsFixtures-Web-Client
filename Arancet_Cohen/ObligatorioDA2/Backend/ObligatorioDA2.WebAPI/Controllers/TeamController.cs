@@ -170,10 +170,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryPut(int teamId, TeamModelIn team)
         {
             string imgData = team.Photo;
-            team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
             team.Id = teamId;
 
             TeamDto dto = BuildTransferObject(team);
+            dto.photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
+
             TeamDto modified = teamService.Modify(dto);
             //if team could be added without exception thrown, then save its image.
             images.SaveImage(team.Photo, imgData);

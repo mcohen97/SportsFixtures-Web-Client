@@ -96,7 +96,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             sportsRepo = new Mock<ISportRepository>();
             sportsRepo.Setup(r => r.Get((testSport.Name))).Returns(testSport);
-            sportsRepo.Setup(r => r.Get(It.Is<String>(x => (x != testSport.Name)))).Throws(new SportNotFoundException());
+            sportsRepo.Setup(r => r.Get(It.Is<string>(x => (!x.Equals(testSport.Name))))).Throws(new SportNotFoundException());
+            sportsRepo.Setup(r => r.Get(testSport.Name)).Returns(testSport);
+            sportsRepo.Setup(r => r.Exists(testSport.Name)).Returns(true);
             sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() { testSport });
 
             matchesRepo = new Mock<IMatchRepository>();
@@ -162,6 +164,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Year = DateTime.Now.Year,
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
             };
+            sportsRepo.Setup(r => r.Get(testSport.Name)).Returns(testSport);
             matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
             ICollection<string> errorMessagges = TeamAlreadyHasMatchErrorMessagges(GetEncounterDtos(oneMatchCollection));
 

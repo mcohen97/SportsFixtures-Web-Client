@@ -29,7 +29,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestInitialize]
         public void SetUp() {
             Sport testSport = new Sport("Soccer", true);
-            team = new TeamDto() { id = 2, name = "Nacional",photo= "/MyResource/Nacional.png", sportName =testSport.Name };
+            team = new TeamDto() { id = 2, name = "Nacional",photo= "foto", sportName =testSport.Name };
             teamsService = new Mock<ITeamService>();
             auth = new Mock<IAuthenticationService>();
             controller = new TeamsController(teamsService.Object, new ImageService("TestDirectory"),auth.Object);

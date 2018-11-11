@@ -86,7 +86,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UserNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void SetUnexistentUserTest() {
             //Arrange.
             repo.Setup(r => r.Get(It.IsAny<string>())).Throws(new UserNotFoundException());
