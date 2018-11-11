@@ -98,13 +98,15 @@ namespace ObligatorioDA2.Services.Tests
         public void IsLoggedInTest() {
             repo.Setup(r => r.Get("aUsername")).Returns(admin);
             logger.SetSession("aUsername");
-            Assert.IsTrue(logger.IsLoggedIn());
+            repo.VerifyAll();
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
         public void IsNotLoggedInTest() {
-            Assert.IsFalse(logger.IsLoggedIn());
-        }
+            repo.Setup(r => r.Get("aUsername")).Throws(new UserNotFoundException());
+            logger.Authenticate();
+        } 
 
         [TestMethod]
         public void HasAdminPermissionTest() {
@@ -113,10 +115,12 @@ namespace ObligatorioDA2.Services.Tests
             //Act.
             logger.SetSession(admin.UserName);
             //Assert.
-            Assert.IsTrue(logger.HasAdminPermissions());   
+            logger.AuthenticateAdmin();
+            repo.VerifyAll();
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
         public void HasNoAdminPermissionsTest()
         {
             //Arrange.
@@ -124,7 +128,7 @@ namespace ObligatorioDA2.Services.Tests
             //Act.
             logger.SetSession(follower.UserName);
             //Assert.
-            Assert.IsFalse(logger.HasAdminPermissions());
+            logger.AuthenticateAdmin();
         }
     }
 }
