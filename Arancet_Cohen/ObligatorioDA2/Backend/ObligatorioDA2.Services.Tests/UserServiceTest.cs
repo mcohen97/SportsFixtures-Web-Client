@@ -145,6 +145,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void AddUserNoAuthenticationTest() {
+            LogOut();
             service.AddUser(dto);
         }
 
@@ -203,6 +204,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void ModifyNoAuthenticationTest()
         {
+            LogOut();
             service.ModifyUser(dto);
         }
 
@@ -243,6 +245,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void DeleteNoAuthenticationTest()
         {
+            LogOut();
             service.DeleteUser("username");
         }
 
@@ -465,7 +468,7 @@ namespace ObligatorioDA2.Services.Tests
         private void LogOut()
         {
             authentication.Setup(r => r.Authenticate()).Throws(new NotAuthenticatedException());
-            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NotAuthenticatedException());
         }
     }
 }

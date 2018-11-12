@@ -102,7 +102,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NotAuthenticatedException))]
         public void IsNotLoggedInTest() {
             repo.Setup(r => r.Get("aUsername")).Throws(new UserNotFoundException());
             logger.Authenticate();
@@ -120,7 +120,7 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ServiceException))]
+        [ExpectedException(typeof(NoPermissionsException))]
         public void HasNoAdminPermissionsTest()
         {
             //Arrange.

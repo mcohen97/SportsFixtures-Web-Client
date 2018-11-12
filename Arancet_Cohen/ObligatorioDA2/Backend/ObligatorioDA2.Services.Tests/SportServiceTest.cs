@@ -198,7 +198,7 @@ namespace ObligatorioDA2.Services.Tests
         private void LogOut()
         {
             authentication.Setup(r => r.Authenticate()).Throws(new NotAuthenticatedException());
-            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NotAuthenticatedException());
         }
     }
 }
