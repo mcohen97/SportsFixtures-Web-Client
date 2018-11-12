@@ -7,6 +7,7 @@ using System.Text;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using System;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -210,7 +211,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id = toReturn.id,
                 SportName = toReturn.sportName,
                 Name = toReturn.name,
-                Photo = images.ReadImage(toReturn.photo)
+                Photo = Convert.ToBase64String(images.ReadImage(toReturn.photo))
             };
             return output;
         }

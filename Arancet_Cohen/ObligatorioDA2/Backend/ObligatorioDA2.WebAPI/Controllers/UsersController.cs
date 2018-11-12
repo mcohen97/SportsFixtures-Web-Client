@@ -299,7 +299,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id = stored.id,
                 Name = stored.name,
                 SportName = stored.sportName,
-                Photo = images.ReadImage(stored.photo)
+                Photo = Convert.ToBase64String(images.ReadImage(stored.photo))
             };
             return built;
         }
