@@ -23,16 +23,19 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IFixtureService fixtureService;
         private IOptions<FixtureStrategies> fixtureConfig;
         private ISportRepository sports;
-        private const string DLL_EXTENSION = "*.dll";
         private ILoggerService logger;
+        private IAuthenticationService authenticator;
+        private const string DLL_EXTENSION = "*.dll";
         private EncounterModelFactory factory;
         private ErrorActionResultFactory errors;
 
-        public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo, ILoggerService loggerService) {
+        public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, ISportRepository sportsRepo,
+            ILoggerService loggerService, IAuthenticationService authService) {
             fixtureService = service;
             fixtureConfig = config;
             sports = sportsRepo;
             logger = loggerService;
+            authenticator = authService;
             factory = new EncounterModelFactory();
             errors = new ErrorActionResultFactory(this);
         }
@@ -41,7 +44,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult GetFixtureAlgorithms()
         {
-            string algorithmsPath = fixtureConfig.Value.DllPath;        
+            IActionResult result;
+            try
+            {
+                SetSession();
+                result = TryGetAlgorithms();
+            }
+            catch (ServiceException e) {
+                result = errors.GenerateError(e);
+            }
+            return result;
+        }
+
+        private IActionResult TryGetAlgorithms()
+        {
+            string algorithmsPath = fixtureConfig.Value.DllPath;
             ICollection<Type> algorithms = fixtureService.GetAlgorithms(algorithmsPath);
             ICollection<string> toReturn = algorithms.Select(t => t.ToString()).ToList();
             return Ok(toReturn);
@@ -125,6 +142,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
+                SetSession();
                 fixtureService.FixtureAlgorithm = BuildFixtureAlgorithm(new DateTime(input.Year, input.Month, input.Day), input.FixtureName);
                 result = TryCreate(input, sportName);
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_OK, username, DateTime.Now);
@@ -187,6 +205,12 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             result = Created("fixture-generator", addedModelOut);
             return result;
+        }
+
+        private void SetSession()
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authenticator.SetSession(username);
         }
     }
 }

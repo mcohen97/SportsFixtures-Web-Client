@@ -17,6 +17,8 @@ using ObligatorioDA2.Services.Interfaces.Dtos;
 using System.Linq;
 using ObligatorioDA2.Services.Mappers;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -115,7 +117,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             innerMatches = matchService;
             matches = matchService;
 
-            fixture = new FixtureService(teamsRepo.Object, sportsRepo.Object, innerMatches, matches, matchRepository.Object);
+            fixture = new FixtureService(teamsRepo.Object, sportsRepo.Object, innerMatches, matches, matchRepository.Object, auth.Object);
 
 
             logger = new Mock<ILoggerService>();
@@ -124,7 +126,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
             FileInfo dllFile = new FileInfo(@".\");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
-            controller = new FixturesController(fixture, mockSettings.Object,  sportsRepo.Object, logger.Object);
+            controller = new FixturesController(fixture, mockSettings.Object,  sportsRepo.Object, logger.Object, auth.Object);
+            controller.ControllerContext = GetFakeControllerContext();
         }
 
         [TestMethod]
@@ -370,6 +373,20 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         private ICollection<EncounterDto> GetEncounterDtos(ICollection<Encounter> encounters) {
             return encounters.Select(e => mapper.ToDto(e)).ToList();
+        }
+
+        private ControllerContext GetFakeControllerContext()
+        {
+            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", "username") };
+
+            Mock<ClaimsPrincipal> cp = new Mock<ClaimsPrincipal>();
+            cp.Setup(m => m.Claims).Returns(fakeClaims);
+            Mock<HttpContext> contextMock = new Mock<HttpContext>();
+            contextMock.Setup(ctx => ctx.User).Returns(cp.Object);
+
+            Mock<ControllerContext> controllerContextMock = new Mock<ControllerContext>();
+            controllerContextMock.Object.HttpContext = contextMock.Object;
+            return controllerContextMock.Object;
         }
     }
 }
