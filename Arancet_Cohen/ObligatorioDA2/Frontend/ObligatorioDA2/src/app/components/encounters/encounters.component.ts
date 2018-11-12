@@ -14,6 +14,7 @@ import { Token } from 'src/app/classes/token';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { TeamsService } from 'src/app/services/teams/teams.service';
 import { Team } from 'src/app/classes/team';
+import { EncounterResultDialogComponent } from './encounter-result-dialog/encounter-result-dialog.component';
 
 @Component({
   selector: 'encounters-list',
@@ -83,7 +84,8 @@ export class EncountersComponent implements OnInit {
   }
 
   public getArrayOfNames(id:number):Array<string>{
-    return this.encounters.find(t => t.id == id).teamNames();
+    var encounter = this.encounters.find(t => t.id == id);
+    return encounter.teams?Encounter.teamNames(encounter):[];
   }
 
   private handleEncounterError(error:ErrorResponse) {
@@ -182,6 +184,27 @@ export class EncountersComponent implements OnInit {
       ((newEncounter:Encounter) => {
         if(newEncounter != undefined)
           this.performAdd(newEncounter);
+      })
+    )
+  }
+
+  openEditResultDialog(aEncounter:Encounter):void{
+    this.encounterEdited = Encounter.getClone(this.encounters.find(e => e.id == aEncounter.id));
+    this.rowEdited = aEncounter;
+    const dialogRef = this.dialog.open(EncounterResultDialogComponent, {
+      width:'500px',
+      data: {
+        encounterId:this.encounterEdited.id,
+        teams:this.encounterEdited.teams,
+        isNewResult: !this.encounterEdited.hasResult,
+        title: "Set result"
+      }
+    });
+    dialogRef.afterClosed().subscribe(
+      ((result:boolean) => {
+        if(result!=undefined){
+          this.rowEdited.hasResult = result;
+        }       
       })
     )
   }

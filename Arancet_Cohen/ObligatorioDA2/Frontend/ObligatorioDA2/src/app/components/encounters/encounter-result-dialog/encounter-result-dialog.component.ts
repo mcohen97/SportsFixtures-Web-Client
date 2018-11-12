@@ -16,6 +16,8 @@ import { SportsService } from 'src/app/services/sports/sports.service';
 import { TeamsService } from 'src/app/services/teams/teams.service';
 import { Sport } from 'src/app/classes/sport';
 import { Team } from 'src/app/classes/team';
+import { Standing } from 'src/app/classes/standing';
+import { Result } from 'src/app/classes/result';
 
 @Component({
   selector: 'app-encounter-result-dialog',
@@ -27,65 +29,67 @@ export class EncounterResultDialogComponent implements OnInit {
     
   }
 
-  teams:Array<Team>;
-  sports:Array<Sport>;
+  sportName:string;
+  positions:Array<number>;
+  positionsTaken:Array<boolean>;
   encounterError = new EncounterError();
-  errorFlags = [];
-  errorStatus = 200;
-  teamsIdsControl:FormControl;
-  sportNameControl:FormControl;
-  dateControl:FormControl;
-
+  tempPreviousValue:number
+  error = "";
 
   constructor(
     public dialogRef: MatDialogRef<EncounterResultDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data:EncounterDialogData,
+    @Inject(MAT_DIALOG_DATA) public data:EncounterResultDialogComponent,
     private encountersService: EncountersService,
     private sportsService:SportsService,
-  ) { 
-    this.getSports();
-    this.resetErrors();
-    this.teamsIdsControl = new FormControl();
-    this.sportNameControl = new FormControl();
-    this.dateControl = new FormControl();
-    this.setValidators();
+    ) { 
+      this.positionsTaken = new Array<boolean>(data.teams.length+1);
+      this.positions = new Array<number>();
+      for(var i = 1; i<=data.teams.length;i++){
+        this.positions.push(i);
+        this.positionsTaken[i] = false;
+      }
   }
 
-  getTeams() {
-    var sportName = this.sportNameControl.value;
-    this.sportsService.getTeams(sportName).subscribe(
-      ((teams:Array<Team>) => this.teams = teams),
-      ((error:any) => this.handleError(error))
-    );
+  getPositionsAvailable():Array<number>{
+    var positionsAvailable = new Array<number>();
+    for (let i = 1; i <= this.positions.length; i++) {
+      if(!this.positionsTaken[i]){
+        positionsAvailable.push(i);
+      }      
+    }
+    return positionsAvailable;
   }
 
-  getSports(){
-    this.sportsService.getAllSports().subscribe(
-      ((sports:Array<Sport>) => this.sports = sports),
-      ((error:any) => this.handleError(error))
-    );
-  }
+  updateAvailablePositions(){
+    debugger;
+    for (let i = 0; i < this.positionsTaken.length; i++) {
+      this.positionsTaken[i] = false;      
+    }
+    var elems = document.getElementsByName("teamPosition");
 
-  matcher = new MyErrorStateMatcher();
+    elems.forEach(element => {
+      this.positionsTaken[Number.parseInt(element.innerText)] = true;
+    });
+    this.positions = this.getPositionsAvailable();
+  }
 
   onNoClick():void {
     this.dialogRef.close();
   }
 
   onSaveClick():void{
-    this.markControlsAsTouched();
-    this.updateControls();
-    if(this.allValid()){
-      this.data.aEncounter.sportName = this.sportNameControl.value;
-      this.data.aEncounter.teamIds = this.teamsIdsControl.value;
-      this.data.aEncounter.date = this.dateControl.value;
-      this.data.isNewEncounter ? this.addEncounter(this.data.aEncounter) : this.updateEncounter(this.data.aEncounter);
-    }
-  }
-  allValid(): boolean {
-    return  this.teamsIdsControl.valid
-      && this.sportNameControl.valid
-      && this.dateControl.valid
+    var standings = new Array<Standing>();
+    this.data.teams.forEach(team => {
+      var selectedPosition = Number.parseInt(document.getElementById(team.name).innerText);
+      standings.push(new Standing(team.id, selectedPosition));
+    });
+    var result = new Result();
+    result.team_position = standings;
+    this.encountersService.addResult(this.data.encounterId, result).subscribe(
+      ((result:Encounter) => this.dialogRef.close(true)),
+      ((error:ErrorResponse) => this.handleError(error))
+    );
+    ;
   }
 
   addEncounter(newEncounter:Encounter):void{
@@ -109,86 +113,15 @@ export class EncounterResultDialogComponent implements OnInit {
 
   handleError(error: ErrorResponse): void {
     this.encounterError = <EncounterError> error.errorObject;
-    this.errorStatus = error.errorCode;
-    this.checkErrors();
-    this.setValidators();
-    this.markControlsAsTouched();
-    this.updateControls();
-    this.resetErrors();
-  }
-
-  private updateControls() {
-    this.teamsIdsControl.updateValueAndValidity();
-    this.sportNameControl.updateValueAndValidity();
-    this.dateControl.updateValueAndValidity();
-  }
-
-  private markControlsAsTouched() {
-    this.dateControl.markAsTouched();
-    this.teamsIdsControl.markAsTouched();
-    this.sportNameControl.markAsTouched();
-  }
-
-  private checkErrors() {
-    this.errorFlags['sportNameInput'] = this.encounterError.SportName != undefined;
-    this.errorFlags['dateInput'] = this.encounterError.Date != undefined;
-    this.errorFlags['errorMessageInput'] = this.encounterError.errorMessage && this.errorStatus == 404;
-    this.errorFlags['teamsInput'] = this.encounterError.errorMessage && this.errorStatus == 400;
-  }
-
-  private resetErrors(){
-    this.errorFlags['sportNameInput'] = false;
-    this.errorFlags['dateInput'] = false;
-    this.errorFlags['errorMessageInput'] = false;
-    this.errorFlags['teamsInput'] = false;
-
-  }
-
-  private setValidators() {
-    this.teamsIdsControl.setValidators([
-      this.existError("teamsInput"),
-      Validators.required
-    ]);
-    this.sportNameControl.setValidators([
-      this.existError("sportNameInput"),
-      this.existError("errorMessageInput"),
-      Validators.required
-    ]);
-    this.dateControl.setValidators([
-      this.existError("dateInput"),
-      Validators.required,
-    ]);
-  }
-
-  private existError(keyError:string): ValidatorFn {
-    return (control:AbstractControl) : ValidationErrors | null=>{
-      if(this.errorFlags[keyError]){
-        let temp = [];
-        temp[keyError] = true;
-        return temp;
-      }
-      else
-        return null;
-    }
-  }
-
-  removeError(control:AbstractControl, keyError:string):void{
-    control.setErrors(null);
-    this.errorFlags[keyError] = false;
-    control.updateValueAndValidity();
+    this.error = error.errorMessage;
   }
 
 }
 
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null)   : boolean {
-    const isSubmitted = form && form.submitted;
-    return control && control.invalid && (control.dirty || control.touched);
-  }
-}
-
-export interface EncounterDialogData{
-  aEncounter: Encounter;
-  isNewEncounter: boolean;
+export interface EncounterResultDialogComponent{
+  encounterId:number;
+  teams:Array<Team>;
+  isTwoTeams:boolean;
+  isNewResult:boolean;
   tiitle: string;
 }

@@ -14,11 +14,12 @@ export class Encounter {
         encounter.teamIds = aEncounter.teamIds;
         encounter.commentsids = aEncounter.commentsids;
         encounter.teams = aEncounter.teams;
+        encounter.id = aEncounter.id;
         return encounter;
     }
 
-    public teamNames():Array<string>{
-        return this.teams.map(t => t.name);
+    public static teamNames(encounter:Encounter):Array<string>{
+        return encounter.teams.map(t => t.name);
     }
     
     constructor(sportName:string, hasResult:boolean, date:Date){

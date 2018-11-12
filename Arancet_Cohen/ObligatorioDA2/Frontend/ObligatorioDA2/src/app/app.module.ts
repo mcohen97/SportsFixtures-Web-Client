@@ -177,7 +177,8 @@ import { EncounterResultDialogComponent } from './components/encounters/encounte
     UserDialogComponent,
     SportDialogComponent,
     TeamDialogComponent,
-    EncounterDialogComponent
+    EncounterDialogComponent,
+    EncounterResultDialogComponent
   ],
   bootstrap: [AppComponent],
   

@@ -6,6 +6,8 @@ import { Globals } from "src/app/globals";
 import { Encounter } from "src/app/classes/encounter";
 import { ErrorResponse } from "src/app/classes/error";
 import { HttpErrorResponse } from "@angular/common/http";
+import { Standing } from "src/app/classes/standing";
+import { Result } from "src/app/classes/result";
 
 @Injectable()
 export class EncountersService {
@@ -68,6 +70,18 @@ export class EncountersService {
         myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
         const requestOptions = new RequestOptions({headers: myHeaders}); 
         return this._httpService.post(this.WEB_API_URL, aEncounter, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
+
+    addResult(encounterId:number, aResult:Result):Observable<Encounter>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.post(this.WEB_API_URL+encounterId+"/result", aResult, requestOptions) 
         .pipe( 
             map((response : Response) => response.json()),
             catchError(this.handleError)
