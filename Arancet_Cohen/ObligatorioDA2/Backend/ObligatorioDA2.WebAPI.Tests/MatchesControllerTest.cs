@@ -34,6 +34,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             mapper = new Mock<EncounterDtoMapper>();
             testEncounter = BuildFakeMatch();
             controller = new MatchesController(matchService.Object, auth.Object);
+            controller.ControllerContext = GetFakeControllerContext();
         }
 
         private EncounterDto BuildFakeMatch()
@@ -70,7 +71,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void CreateValidMatchTest() {
-            matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(),It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testEncounter);
             MatchModelIn input = BuildMatchModelIn(testEncounter);
 
@@ -78,7 +79,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             EncounterModelOut created = createdResult.Value as EncounterModelOut;
 
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
@@ -118,7 +119,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateMatchSameDayForTeamTest() {
             //Arrange.
             Exception toThrow = new TeamAlreadyHasMatchException();
-            matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(),It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Throws(toThrow);
             MatchModelIn input = BuildMatchModelIn(testEncounter);
 
@@ -311,8 +312,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CommentOnMatchTest() {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             User commentarist = GetFakeUser();
             CommentaryDto made = new CommentaryDto() { makerUsername = commentarist.UserName, text = "this is a comment" };
 
