@@ -64,7 +64,7 @@ namespace ObligatorioDA2.Services.Tests
             context.Database.EnsureDeleted();
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
             MatchService service = new MatchService(matchStorage, teamStorage, sportStorage, auth.Object);
-            fixtureService = new FixtureService(teamStorage, sportStorage,service,service, matchStorage);
+            fixtureService = new FixtureService(teamStorage, sportStorage,service,service, matchStorage, auth.Object);
         }
 
         private void SetUpRepository()

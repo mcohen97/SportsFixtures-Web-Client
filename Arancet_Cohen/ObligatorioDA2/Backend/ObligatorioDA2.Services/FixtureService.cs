@@ -20,17 +20,20 @@ namespace ObligatorioDA2.Services
         private ITeamRepository teamStorage;
         private ISportRepository sportsStorage;
         private IFixtureGenerator fixtureAlgorithm;
+        private IAuthenticationService authenticator;
         private EncounterDtoMapper mapper;
         private const string DLL_EXTENSION = "*.dll";
 
 
         public FixtureService( ITeamRepository teamRepository, ISportRepository sportsRepository, 
-            IInnerMatchService matchAddition, IMatchService aMatchService, IMatchRepository encounterRepository)
+            IInnerMatchService matchAddition, IMatchService aMatchService, IMatchRepository encounterRepository, 
+            IAuthenticationService authService)
         {
             matchAddingService = matchAddition;
             matchService = aMatchService;
             sportsStorage = sportsRepository;
             teamStorage = teamRepository;
+            authenticator = authService;
             mapper = new EncounterDtoMapper(teamStorage, encounterRepository, sportsRepository);
         }
 
@@ -51,12 +54,14 @@ namespace ObligatorioDA2.Services
 
         public ICollection<EncounterDto> AddFixture(ICollection<string> teamsNames, string sportName)
         {
+            authenticator.AuthenticateAdmin();
             ICollection<Team> teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
             return AddFixture(teamsCollection);
         }
 
         public ICollection<EncounterDto> AddFixture(string sportName)
         {
+            authenticator.AuthenticateAdmin();
             if (!sportsStorage.Exists(sportName)) {
                 throw new ServiceException("Sport not found", ErrorType.ENTITY_NOT_FOUND);
             }
@@ -66,6 +71,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<EncounterDto> AddFixture(ICollection<Team> teamsCollection)
         {
+            authenticator.AuthenticateAdmin();
             ICollection<Encounter> added = new List<Encounter>();
             try
             {
@@ -98,6 +104,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Type> GetAlgorithms(string dllPath)
         {
+            authenticator.AuthenticateAdmin();
             string[] files = Directory.GetFiles(dllPath, DLL_EXTENSION);
             IEnumerable<Type> interestingTypes = new List<Type>();
             foreach (var file in files)
