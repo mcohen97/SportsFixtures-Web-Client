@@ -33,7 +33,7 @@
 
           <ng-container matColumnDef="photo">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Photo </th>
-            <td mat-cell class = "cell" *matCellDef="let row"><img [src]="" alt=""> {{row.Photo}}</td>
+            <td mat-cell class = "cell" *matCellDef="let row"><img style='display:block; width:50px;height:50px;' src='data:image/jpeg;base64,{{row.photo}}' alt=""></td>
           </ng-container>
 
           <ng-container matColumnDef="options" sticky stickyEnd>

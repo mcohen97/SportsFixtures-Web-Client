@@ -162,13 +162,13 @@ import { EncounterResultDialogComponent } from './components/encounters/encounte
     ReactiveFormsModule
   ],
   providers: [
-    Globals,
-    AuthService,
-    UsersService,
-    SportsService,
-    TeamsService,
-    EncountersService,
-    ReConnector,
+    {provide: Globals, useClass:Globals},
+    {provide: AuthService, useClass:AuthService},
+    {provide: UsersService, useClass:UsersService},
+    {provide: SportsService, useClass:SportsService},
+    {provide: TeamsService, useClass:TeamsService},
+    {provide: EncountersService, useClass:EncountersService},
+    {provide: ReConnector, useClass:ReConnector},
     {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
 
   ],
