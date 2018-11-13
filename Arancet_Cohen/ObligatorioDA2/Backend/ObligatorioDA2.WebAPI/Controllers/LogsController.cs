@@ -15,11 +15,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class LogsController : ControllerBase
     {
         private ILoggerService logger;
+        private IAuthenticationService authenticator;
         private ErrorActionResultFactory errors;
 
-        public LogsController(ILoggerService logService)
+        public LogsController(ILoggerService logService, IAuthenticationService authService)
         {
             logger = logService;
+            authenticator = authService;
             errors = new ErrorActionResultFactory(this);
         }
 
@@ -30,6 +32,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryGet();
             }
             catch (ServiceException e)
@@ -53,5 +56,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(output);
         }
 
+        private void SetSession()
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authenticator.SetSession(username);
+        }
     }
 }

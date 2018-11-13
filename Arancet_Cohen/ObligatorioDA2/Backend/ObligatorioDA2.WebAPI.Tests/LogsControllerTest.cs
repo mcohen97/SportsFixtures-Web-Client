@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic;
@@ -11,6 +12,7 @@ using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -26,7 +28,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void Initialize()
         {
             logger = Mock.Of<ILoggerService>();
-            controller = new LogsController(logger);
+            Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
+            controller = new LogsController(logger, auth.Object);
+            controller.ControllerContext = GetFakeControllerContext();
             DateTime someDate = new DateTime(2020, 02, 20);
             string someUsername = "SomePepitoFulanito";
             someLogList = new List<LogInfoDto>()
@@ -96,6 +100,20 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(500, noData.StatusCode);
             Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
+        }
+
+        private ControllerContext GetFakeControllerContext()
+        {
+            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", "username") };
+
+            Mock<ClaimsPrincipal> cp = new Mock<ClaimsPrincipal>();
+            cp.Setup(m => m.Claims).Returns(fakeClaims);
+            Mock<HttpContext> contextMock = new Mock<HttpContext>();
+            contextMock.Setup(ctx => ctx.User).Returns(cp.Object);
+
+            Mock<ControllerContext> controllerContextMock = new Mock<ControllerContext>();
+            controllerContextMock.Object.HttpContext = contextMock.Object;
+            return controllerContextMock.Object;
         }
     }
 }
