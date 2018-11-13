@@ -36,7 +36,8 @@ namespace ObligatorioDA2.Services.Tests
             Mock.Get(logRepo).Setup(l => l.Exists(aLog.Id)).Returns(false);
             Mock.Get(logRepo).Setup(l => l.Delete(aLog.Id)).Callback(DeleteALog);
             Mock.Get(logRepo).Setup(l => l.Add(It.IsAny<LogInfo>())).Returns(aLog).Callback(AddALog);
-            logger = new LoggerService(logRepo);
+            Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
+            logger = new LoggerService(logRepo, auth.Object);
         }
 
         private void AddALog()
