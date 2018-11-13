@@ -11,5 +11,6 @@ namespace ObligatorioDA2.Services.Interfaces
         bool Exists(int id);
         void Delete(int id);
         ICollection<LogInfoDto> GetAllLogs();
+        ICollection<LogInfoDto> GetAllLogs(DateTime from, DateTime to);
     }
 }

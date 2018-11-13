@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
@@ -27,13 +28,13 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] DateTime from, [FromQuery] DateTime to)
         {
             IActionResult result;
             try
             {
                 SetSession();
-                result = TryGet();
+                result = TryGet(from, to);
             }
             catch (ServiceException e)
             {
@@ -43,9 +44,24 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private IActionResult TryGet()
+        private IActionResult TryGet(DateTime from, DateTime to)
         {
-            ICollection<LogInfoDto> logs = logger.GetAllLogs();
+            ICollection<LogInfoDto> logs;
+            if (from != new DateTime() && to != new DateTime())
+            {
+                logs = logger.GetAllLogs(from, to);
+            }
+            else if (from != new DateTime())
+            {
+                logs = logger.GetAllLogs(from, DateTime.Now);
+            }
+            else if (to != new DateTime())
+            {
+                logs = logger.GetAllLogs(DateTime.MinValue, to);
+            }
+            else {
+                logs = logger.GetAllLogs();
+            }
             IEnumerable<LogModelOut> output = logs.Select(l => new LogModelOut {
                 Id = l.id,
                 Date = l.date,

@@ -131,7 +131,7 @@ namespace ObligatorioDA2.Services.Tests
                 Message = "Logged using API",
                 Username = "SomeUsername"
             };
-            LogInfo log3 = log2 = new LogInfo()
+            LogInfo log3 = new LogInfo()
             {
                 Id = 3,
                 Date = new DateTime(2010, 5, 13),
@@ -139,9 +139,9 @@ namespace ObligatorioDA2.Services.Tests
                 Message = "Logged using API",
                 Username = "SomeUsername"
             };
-            LogInfo log4 = log2 = new LogInfo()
+            LogInfo log4 = new LogInfo()
             {
-                Id = 3,
+                Id = 4,
                 Date = DateTime.Today,
                 LogType = LogType.LOGIN,
                 Message = "Logged using API",

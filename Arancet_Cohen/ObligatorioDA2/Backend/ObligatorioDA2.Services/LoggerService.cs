@@ -33,6 +33,12 @@ namespace ObligatorioDA2.Services
             return logRepo.Exists(id);
         }
 
+
+        public ICollection<LogInfoDto> GetAllLogs(DateTime from, DateTime to)
+        {
+            return GetAllLogs().Where(l => l.date >= from && l.date <= to).ToList();
+        }
+
         public ICollection<LogInfoDto> GetAllLogs()
         {
             authenticator.AuthenticateAdmin();

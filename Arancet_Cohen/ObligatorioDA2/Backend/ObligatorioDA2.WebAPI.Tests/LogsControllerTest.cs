@@ -12,6 +12,7 @@ using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Security.Claims;
 
 namespace ObligatorioDA2.WebAPI.Tests
@@ -31,14 +32,13 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
             controller = new LogsController(logger, auth.Object);
             controller.ControllerContext = GetFakeControllerContext();
-            DateTime someDate = new DateTime(2020, 02, 20);
             string someUsername = "SomePepitoFulanito";
             someLogList = new List<LogInfoDto>()
             {
                 new LogInfoDto()
                 {
                     id = 1,
-                    date = someDate,
+                    date = new DateTime(2016, 02, 20),
                     logType = LogType.LOGIN,
                     message = LogMessage.LOGIN_OK,
                     username = someUsername
@@ -46,7 +46,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 new LogInfoDto()
                 {
                     id = 2,
-                    date = someDate,
+                    date = new DateTime(2017, 05, 13),
                     logType = LogType.LOGIN,
                     message = LogMessage.LOGIN_USER_NOT_FOUND,
                     username = someUsername+"Roberto"
@@ -54,7 +54,7 @@ namespace ObligatorioDA2.WebAPI.Tests
                 new LogInfoDto()
                 {
                     id = 3,
-                    date = someDate,
+                    date = new DateTime(2018, 01, 01),
                     logType = LogType.LOGIN,
                     message = LogMessage.LOGIN_OK,
                     username = someUsername
@@ -63,21 +63,75 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void GetLogsTest()
+        public void GetAllLogsTest()
         {
             //Arrange.
             Mock.Get(logger).Setup(l => l.GetAllLogs()).Returns(someLogList);
-
+            
             //Act.
-            IActionResult result = controller.GetAll();
+            IActionResult result = controller.GetAll(new DateTime(), new DateTime());
             OkObjectResult okResult = result as OkObjectResult;
             IEnumerable<LogModelOut> logs = okResult.Value as IEnumerable<LogModelOut>;
 
             //Assert.
-            Mock.Get(logger).Verify(s => s.GetAllLogs(), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(logs);
+            Mock.Get(logger).Verify(s => s.GetAllLogs(), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetAllLogsFromTest()
+        {
+            //Arrange.
+            Mock.Get(logger).Setup(l => l.GetAllLogs(It.IsAny<DateTime>(), It.IsAny<DateTime>())).Returns(someLogList);
+
+            //Act.
+            IActionResult result = controller.GetAll(new DateTime(2017, 04, 13), new DateTime());
+            OkObjectResult okResult = result as OkObjectResult;
+            IEnumerable<LogModelOut> logs = okResult.Value as IEnumerable<LogModelOut>;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(logs);
+            Mock.Get(logger).Verify(s => s.GetAllLogs(new DateTime(2017, 04, 13), It.Is<DateTime>(d => d >=DateTime.Today)), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetAllLogsToTest()
+        {
+            //Arrange.
+            Mock.Get(logger).Setup(l => l.GetAllLogs(It.IsAny<DateTime>(), It.IsAny<DateTime>())).Returns(someLogList);
+
+            //Act.
+            IActionResult result = controller.GetAll(new DateTime(), new DateTime(2017, 06, 13));
+            OkObjectResult okResult = result as OkObjectResult;
+            IEnumerable<LogModelOut> logs = okResult.Value as IEnumerable<LogModelOut>;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(logs);
+            Mock.Get(logger).Verify(s => s.GetAllLogs(DateTime.MinValue, new DateTime(2017, 06, 13)), Times.Once);
+        }
+
+        [TestMethod]
+        public void GetAllLogsBetweenDatesTest()
+        {
+            //Arrange.
+            Mock.Get(logger).Setup(l => l.GetAllLogs(It.IsAny<DateTime>(), It.IsAny<DateTime>())).Returns(someLogList);
+
+            //Act.
+            IActionResult result = controller.GetAll(new DateTime(2017, 04, 13), new DateTime(2017, 06, 13));
+            OkObjectResult okResult = result as OkObjectResult;
+            IEnumerable<LogModelOut> logs = okResult.Value as IEnumerable<LogModelOut>;
+
+            //Assert.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(logs);
+            Mock.Get(logger).Verify(s => s.GetAllLogs(new DateTime(2017, 04, 13), new DateTime(2017, 06, 13)), Times.Once);
         }
 
         [TestMethod]
@@ -89,7 +143,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock.Get(logger).Setup(l => l.GetAllLogs()).Throws(toThrow);
 
             //Act.
-            IActionResult result = controller.GetAll();
+            IActionResult result = controller.GetAll(new DateTime(), new DateTime());
             ObjectResult noData = result as ObjectResult;
             ErrorModelOut error = noData.Value as ErrorModelOut;
 
