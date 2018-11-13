@@ -89,6 +89,15 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        public void GetAllBetweenDatesTest() {
+            Mock.Get(logRepo).Setup(l => l.GetAll()).Returns(GetFakeLogs());
+            DateTime from = new DateTime(2000, 5, 27);
+            DateTime to = new DateTime(2018, 1, 1);
+            ICollection<LogInfoDto> logs = logger.GetAllLogs(from,to);
+            Assert.AreEqual(2, logs.Count);
+        }
+
+        [TestMethod]
         public void DeleteLogTest()
         {
             int id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
@@ -103,6 +112,42 @@ namespace ObligatorioDA2.Services.Tests
             int id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
             logger.Delete(id);
             logger.GetLog(id);
+        }
+
+        public ICollection<LogInfo> GetFakeLogs() {
+            LogInfo log1 = new LogInfo()
+            {
+                Id = 1,
+                Date = new DateTime(1997,6,27),
+                LogType = LogType.LOGIN,
+                Message = "Logged using API",
+                Username = "SomeUsername"
+            };
+            LogInfo log2 = new LogInfo()
+            {
+                Id = 2,
+                Date = new DateTime(2001, 9, 11),
+                LogType = LogType.LOGIN,
+                Message = "Logged using API",
+                Username = "SomeUsername"
+            };
+            LogInfo log3 = log2 = new LogInfo()
+            {
+                Id = 3,
+                Date = new DateTime(2010, 5, 13),
+                LogType = LogType.LOGIN,
+                Message = "Logged using API",
+                Username = "SomeUsername"
+            };
+            LogInfo log4 = log2 = new LogInfo()
+            {
+                Id = 3,
+                Date = DateTime.Today,
+                LogType = LogType.LOGIN,
+                Message = "Logged using API",
+                Username = "SomeUsername"
+            };
+            return new List<LogInfo>() { log1, log2, log3, log4 };
         }
     }
 }
