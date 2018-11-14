@@ -24,11 +24,10 @@ namespace ObligatorioDA2.BusinessLogic
 
         private void SetText(string value)
         {
-            if (value == null)
-                throw new InvalidCommentaryDataException("Text can't be null");
-
-            if (value == "")
+            if (string.IsNullOrWhiteSpace(value))
+            {
                 throw new InvalidCommentaryDataException("Text can't be empty");
+            }
 
             text = value;
         }

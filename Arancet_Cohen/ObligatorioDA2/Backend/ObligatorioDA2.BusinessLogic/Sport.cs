@@ -17,13 +17,9 @@ namespace ObligatorioDA2.BusinessLogic
         public bool IsTwoTeams { get; private set; }
         private void SetName(string value)
         {
-            if (value == null)
+            if (string.IsNullOrWhiteSpace(value))
             {
-                throw new InvalidSportDataException("Name can't be null");
-            }
-            if (value == "")
-            {
-                throw new InvalidSportDataException("Name can't be empty");
+                throw new InvalidSportDataException("Name must be a non-empty character string");
             }
             name = value;
         }
