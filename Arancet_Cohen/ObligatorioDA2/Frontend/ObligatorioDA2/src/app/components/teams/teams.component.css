@@ -42,7 +42,7 @@ td.mat-cell{
 }
   
 .table-container{
-    width: 80%;
+    width: 85%;
     height: 90%;
     padding: 20px 20px 0px 20px;
     overflow-x: auto;
@@ -88,6 +88,9 @@ td.mat-cell{
         display: none;
     }
     
+    .table-container{
+        width: 80%;
+    }
 }
 
 .loading-shade {

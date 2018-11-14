@@ -35,10 +35,11 @@ export class EncounterResultDialogComponent implements OnInit {
   encounterError = new EncounterError();
   tempPreviousValue:number
   error = "";
+  selectedWinner:number;
 
   constructor(
     public dialogRef: MatDialogRef<EncounterResultDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data:EncounterResultDialogComponent,
+    @Inject(MAT_DIALOG_DATA) public data:EncounterResultDialogData,
     private encountersService: EncountersService,
     private sportsService:SportsService,
     ) { 
@@ -79,17 +80,28 @@ export class EncounterResultDialogComponent implements OnInit {
 
   onSaveClick():void{
     var standings = new Array<Standing>();
-    this.data.teams.forEach(team => {
-      var selectedPosition = Number.parseInt(document.getElementById(team.name).innerText);
-      standings.push(new Standing(team.id, selectedPosition));
-    });
+    if(!this.data.isTwoTeams){
+      this.data.teams.forEach(team => {
+        var selectedPosition = Number.parseInt(document.getElementById(team.name).innerText);
+        standings.push(new Standing(team.id, selectedPosition));
+      });
+    }else{
+      if (this.selectedWinner != 0){
+        var winner = this.data.teams.find(t => t.id == this.selectedWinner);
+        var looser = this.data.teams.find(t => t.id != this.selectedWinner);
+        standings.push(new Standing(winner.id, 1));
+        standings.push(new Standing(looser.id, 2));
+      } else {
+        standings.push(new Standing(this.data.teams[0].id, 1));
+        standings.push(new Standing(this.data.teams[1].id, 1));
+      }
+    }
     var result = new Result();
     result.team_position = standings;
     this.encountersService.addResult(this.data.encounterId, result).subscribe(
       ((result:Encounter) => this.dialogRef.close(true)),
       ((error:ErrorResponse) => this.handleError(error))
     );
-    ;
   }
 
   addEncounter(newEncounter:Encounter):void{
@@ -118,7 +130,7 @@ export class EncounterResultDialogComponent implements OnInit {
 
 }
 
-export interface EncounterResultDialogComponent{
+export interface EncounterResultDialogData{
   encounterId:number;
   teams:Array<Team>;
   isTwoTeams:boolean;

@@ -45,3 +45,14 @@
 	outline: 1px dotted #000;
 	outline: -webkit-focus-ring-color auto 5px;
 }
+
+.select-position{
+    width: 50%;
+    margin: 10px;
+}
+
+.select-winner{
+    width:100%;
+    display: block;
+    margin-bottom: 10px;
+}

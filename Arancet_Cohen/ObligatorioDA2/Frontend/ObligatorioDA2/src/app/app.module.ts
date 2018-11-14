@@ -70,6 +70,9 @@ import { EncounterCardComponent } from './components/encounters/encounter-card/e
 import { EncounterCardDeckComponent } from './components/encounters/encounter-card-deck/encounter-card-deck.component';
 import { EncountersService } from './services/encounters/encounters.service';
 import { EncounterResultDialogComponent } from './components/encounters/encounter-result-dialog/encounter-result-dialog.component';
+import { FixturesService } from './services/fixtures/fixture.service';
+import { LogsComponent } from './components/logs/logs.component';
+import { LogsService } from './services/logs/logs.service';
 
 @NgModule({
   declarations: [
@@ -90,7 +93,7 @@ import { EncounterResultDialogComponent } from './components/encounters/encounte
     EncounterCardComponent,
     EncounterCardDeckComponent,
     EncounterResultDialogComponent,
-
+    LogsComponent,
   ],
   imports: [
     RouterModule.forRoot([
@@ -113,6 +116,10 @@ import { EncounterResultDialogComponent } from './components/encounters/encounte
       {
         path:'encounters',
         component:EncountersComponent
+      },
+      {
+        path:'logs',
+        component:LogsComponent
       },
       {
         path: '**',
@@ -168,9 +175,10 @@ import { EncounterResultDialogComponent } from './components/encounters/encounte
     {provide: SportsService, useClass:SportsService},
     {provide: TeamsService, useClass:TeamsService},
     {provide: EncountersService, useClass:EncountersService},
+    {provide: FixturesService, useClass:FixturesService},
+    {provide: LogsService, useClass:LogsService},
     {provide: ReConnector, useClass:ReConnector},
     {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
-
   ],
   entryComponents: [
     ConfirmationDialogComponent,

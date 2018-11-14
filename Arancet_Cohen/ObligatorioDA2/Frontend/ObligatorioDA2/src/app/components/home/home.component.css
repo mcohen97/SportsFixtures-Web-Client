@@ -15,9 +15,10 @@
     width: 100%;
     position: fixed;
     display:block;
-    padding-top:50px;
+    padding-top:60px;
     padding-bottom: 10px;
     left: 0;
+    background-color:transparent
 }
 
 .frontpage-sidenav-content {
@@ -27,6 +28,7 @@
     margin-left: auto;
     margin-right: auto;
     overflow:auto;
+    background-color:transparent
 }
 
 .frontpage-sidenav {
@@ -76,4 +78,8 @@
     top:0;
     left:0;
     right:0;
-}
+    background-image: url("../../../imgs/background.png");
+    background-color: #cccccc;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */}

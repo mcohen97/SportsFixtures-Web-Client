@@ -1,6 +1,6 @@
 table {
     width: 100%;
-    min-width: 250px;
+    min-width: 300px;
     table-layout: fixed
 }
 
@@ -16,10 +16,12 @@ table {
 .table-header-50px{
     color: rgb(20, 140, 60);
     width:50px;
+    z-index: 0;
 }
 .table-header-80px{
     color: rgb(20, 140, 60);
     width:80px;
+    z-index: 0;
 
 }
 
@@ -32,13 +34,17 @@ td.mat-cell{
 
 
 .cell{
-    width: auto;
+    width: 25%;
 }
 
+.cell-isadmin{
+    width:50px;
+}
+  
 .table-container{
-    width: 80%;
-    max-width: 700px;
-    padding: 20px;
+    width: 85%;
+    height: 90%;
+    padding: 20px 20px 0px 20px;
     overflow-x: auto;
     display: block;
     margin-left: auto;
@@ -79,9 +85,13 @@ td.mat-cell{
     }
 
     .add-button-fab{
+       
         display: none;
+    }   
+
+    .table-container{
+        width: 40%;
     }
-    
 }
 
 .loading-shade {

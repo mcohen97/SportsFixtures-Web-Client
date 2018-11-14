@@ -181,9 +181,8 @@ export class EncountersComponent implements OnInit {
       }
     });
     dialogRef.afterClosed().subscribe(
-      ((newEncounter:Encounter) => {
-        if(newEncounter != undefined)
-          this.performAdd(newEncounter);
+      (() => {
+        this.getEncounters();
       })
     )
   }
@@ -197,6 +196,7 @@ export class EncountersComponent implements OnInit {
         encounterId:this.encounterEdited.id,
         teams:this.encounterEdited.teams,
         isNewResult: !this.encounterEdited.hasResult,
+        isTwoTeams: this.encounterEdited.teams.length == 2,
         title: "Set result"
       }
     });

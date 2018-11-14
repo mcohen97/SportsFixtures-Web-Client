@@ -10,7 +10,7 @@ namespace ObligatorioDA2.WebAPI.Models
         public int Id { get; set; }
         public string LogType { get; set; }
         public string Message { get; set; }
-        public string Useranme { get; set; }
+        public string Username { get; set; }
         public DateTime Date { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
-<div class = "container" [class.solution-dark-theme]="true">
+<div class = "container" >
 <mat-toolbar class="mat-elevation-z8 main-toolbar">
     <button type="button" mat-icon-button (click)="sidenav.toggle()">
         <i class="material-icons" style="vertical-align: middle">
@@ -42,8 +42,8 @@
     <button type="button" routerLink="encounters" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
       Encounters
     </button>
-    <button type="button" routerLink="not-found" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
-      Calendar
+    <button type="button" routerLink="logs" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      Logs
     </button>
     
   </mat-sidenav>

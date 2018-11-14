@@ -42,14 +42,11 @@
           </ng-container>
 
           <ng-container matColumnDef="options" sticky stickyEnd>
-            <th mat-header-cell *matHeaderCellDef ></th>
+            <th mat-header-cell class = "option-button-container" *matHeaderCellDef ></th>
             <td mat-cell  *matCellDef="let row"> 
               <div class = "option-button-container">
                 <button mat-icon-button class = "option-button" (click)="openEditResultDialog(row)">
                     <mat-icon aria-label="Add" >add</mat-icon>
-                </button>
-                <button mat-icon-button class = "option-button" (click)="openEditDialog(row)">
-                    <mat-icon aria-label="Edit" >edit</mat-icon>
                 </button>
                 <button mat-icon-button class = "option-button" (click)="openDeleteDialog(row)">
                   <mat-icon aria-label="Delete" style="color:darkred" >delete</mat-icon>

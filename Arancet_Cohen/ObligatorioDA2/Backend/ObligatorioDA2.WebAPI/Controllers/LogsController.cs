@@ -48,7 +48,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Date = l.date,
                 LogType = l.logType,
                 Message = l.message,
-                Useranme = l.username
+                Username = l.username
             });
             return Ok(output);
         }
