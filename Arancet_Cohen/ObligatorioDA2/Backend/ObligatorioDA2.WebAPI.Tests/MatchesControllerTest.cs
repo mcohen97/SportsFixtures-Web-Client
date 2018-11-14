@@ -51,13 +51,56 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void GetTest()
+        public void GetByGroupTest()
         {
+            //Arrange.
+            matchService.Setup(s => s.GetAllMatches()).Returns(GetFakeEncounters());
+
+            //Act.
+            IActionResult result = controller.Get(true);
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<EncounterCalendarModelOut> matches = okResult.Value as ICollection<EncounterCalendarModelOut>;
+            EncounterCalendarModelOut cal1 = ((List<EncounterCalendarModelOut>)matches)[0];
+            EncounterCalendarModelOut cal2 = ((List<EncounterCalendarModelOut>)matches)[1];
+
+            //Assert.
+            matchService.Verify(s => s.GetAllMatches(), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(matches);
+            Assert.AreEqual(matches.Count, 2);
+            Assert.AreEqual(1, cal1.EncountersByDate.Count);
+            Assert.AreEqual(2, cal2.EncountersByDate.Count);
+        }
+
+        private ICollection<EncounterDto> GetFakeEncounters()
+        {
+            EncounterDto dto2 = new EncounterDto()
+            {
+                id = 2,
+                sportName = "Football",
+                date = new DateTime(2018,6,27),
+                teamsIds = new List<int>() { 1, 2 },
+                hasResult = false
+            };
+            EncounterDto dto3 = new EncounterDto()
+            {
+                id = 3,
+                sportName = "Basketball",
+                date = new DateTime(2018, 6, 27),
+                teamsIds = new List<int>() { 1, 2 },
+                hasResult = false
+            };
+            return new List<EncounterDto>() { testEncounter, dto2, dto3 };
+        }
+
+        [TestMethod]
+        public void GetTest() {
             //Arrange.
             matchService.Setup(s => s.GetAllMatches()).Returns(new List<EncounterDto>() { testEncounter });
 
             //Act.
-            IActionResult result = controller.Get();
+            IActionResult result = controller.Get(false);
             OkObjectResult okResult = result as OkObjectResult;
             ICollection<EncounterModelOut> matches = okResult.Value as ICollection<EncounterModelOut>;
 
