@@ -216,7 +216,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 Id = aTeam.id,
                 SportName = aTeam.sportName,
                 Name = aTeam.name,
-                Photo = images.ReadImage(aTeam.photo)
+                Photo = Convert.ToBase64String(images.ReadImage(aTeam.photo))
             };
         }
     }
