@@ -30,11 +30,48 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] bool grouped)
         {
             ICollection<EncounterDto> matches = matchService.GetAllMatches();
             ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
-            return Ok(output);
+            IActionResult result;
+            if (grouped) {
+                ICollection <EncounterCalendarModelOut> groupedBySportsAndDates = Group(output);
+                result = Ok(groupedBySportsAndDates);
+            }
+            else
+            {
+                result = Ok(output);
+            }
+            return result;
+        }
+
+        private ICollection<EncounterCalendarModelOut> Group(ICollection<EncounterModelOut> matches)
+        {
+            IEnumerable<IGrouping<string, EncounterModelOut>> groupsByMatch= matches
+                .OrderBy(m => m.SportName)
+                .GroupBy(m => m.SportName);
+            return groupsByMatch.Select(g => CreateSportCalendar(g)).ToList();
+        }
+
+        private EncounterCalendarModelOut CreateSportCalendar(IGrouping<string, EncounterModelOut> sportGroup)
+        {
+            EncounterCalendarModelOut calendar = new EncounterCalendarModelOut();
+            calendar.SportName=sportGroup.Key;
+            calendar.EncountersByDate = new List<EncountersGroupedByDate>();
+
+            IEnumerable<EncounterModelOut> sportEncounters = sportGroup;
+            IEnumerable<IGrouping<DateTime, EncounterModelOut>> encountersByDate = sportEncounters
+                .OrderBy(e => e.Date)
+                .GroupBy(e => e.Date);
+
+            foreach (IGrouping<DateTime, EncounterModelOut> dateEncounters in encountersByDate) {
+                EncountersGroupedByDate groupByDate = new EncountersGroupedByDate();
+                groupByDate.Date = dateEncounters.Key;
+                groupByDate.Encounters = dateEncounters.ToList();
+                calendar.EncountersByDate.Add(groupByDate);
+            }
+            return calendar;
         }
 
         [HttpPost]
@@ -124,10 +161,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
                 {
-                    // EncounterDto added = matchService.AddMatch(id, aMatch.TeamIds, aMatch.SportName, aMatch.Date);
-                    //EncounterModelOut output = factory.CreateModelOut(added);
-                    //result = CreatedAtRoute("GetMatchById", new { matchId = added.id }, output);
-         
                     result = TryPostMatch(id, aMatch.TeamIds, aMatch.SportName, aMatch.Date);
                 }
                 else {
