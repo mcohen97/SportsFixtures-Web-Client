@@ -14,9 +14,9 @@ namespace ObligatorioDA2.Services
         private IUserRepository users;
         private User current;
         private UserDtoMapper mapper;
-        private ILoggerService logger;
+        private ILogInfoRepository logger;
 
-        public AuthenticationService(IUserRepository aRepo, ILoggerService aLogger)
+        public AuthenticationService(IUserRepository aRepo, ILogInfoRepository aLogger)
         {
             users = aRepo;
             logger = aLogger;
@@ -29,10 +29,11 @@ namespace ObligatorioDA2.Services
 
             if (!aPassword.Equals(fetched.Password))
             {
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_WRONG_PASSWORD, aUsername, DateTime.Now);
+
+                AddLog(LogType.LOGIN, LogMessage.LOGIN_WRONG_PASSWORD, aUsername, DateTime.Now);
                 throw new WrongPasswordException();
             }
-            logger.Log(LogType.LOGIN, LogMessage.LOGIN_OK, aUsername, DateTime.Now);
+            AddLog(LogType.LOGIN, LogMessage.LOGIN_OK, aUsername, DateTime.Now);
             return mapper.ToDto(fetched);
         }
 
@@ -43,12 +44,24 @@ namespace ObligatorioDA2.Services
                 return users.Get(aUsername);
             }
             catch (UserNotFoundException e) {
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, aUsername, DateTime.Now);
+                AddLog(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, aUsername, DateTime.Now);
                 throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
             }
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
+        }
+
+        private void AddLog(string logType, string message, string actor, DateTime date)
+        {
+            LogInfo log = new LogInfo()
+            {
+                LogType = logType,
+                Message = message,
+                Username = actor,
+                Date = date
+            };
+            logger.Add(log);
         }
 
         public void SetSession(string userName)

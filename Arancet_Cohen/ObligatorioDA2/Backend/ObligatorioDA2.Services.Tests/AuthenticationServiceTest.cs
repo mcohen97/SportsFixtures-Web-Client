@@ -18,7 +18,7 @@ namespace ObligatorioDA2.Services.Tests
     {
 
         private Mock<IUserRepository> repo;
-        private Mock<ILoggerService> logger;
+        private Mock<ILogInfoRepository> logger;
         private AuthenticationService authService;
         private User admin;
         private User follower;
@@ -27,7 +27,7 @@ namespace ObligatorioDA2.Services.Tests
         public void SetUp()
         {
             repo = new Mock<IUserRepository>();
-            logger = new Mock<ILoggerService>();
+            logger = new Mock<ILogInfoRepository>();
             authService = new AuthenticationService(repo.Object, logger.Object);
             UserId id = new UserId
             {
@@ -51,7 +51,7 @@ namespace ObligatorioDA2.Services.Tests
             UserDto logged = authService.Login("aUsername", "aPassword");
 
             repo.VerifyAll();
-            logger.Verify(r => r.Log(It.IsAny<string>(), It.IsAny<string>(),"aUsername",It.Is<DateTime>(d => d>= DateTime.Today)));
+            logger.Verify(r => r.Add(It.IsAny<LogInfo>()));
             Assert.AreEqual(logged.name, "aName");
             Assert.AreEqual(logged.surname, "aSurname");
             Assert.AreEqual(logged.username, "aUsername");
