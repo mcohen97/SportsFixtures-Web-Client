@@ -29,7 +29,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Get()
         {
             IActionResult result;
@@ -51,7 +51,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         }
 
         [HttpGet("{username}", Name = "GetUserById")]
-        [Authorize]
+        [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Get(string username)
         {
             IActionResult result;
