@@ -6,6 +6,8 @@ import { Globals } from "src/app/globals";
 import { User } from "src/app/classes/user";
 import { ErrorResponse } from "src/app/classes/error";
 import { HttpErrorResponse } from "@angular/common/http";
+import { OkMessage } from "src/app/classes/okMessage";
+import { Team } from "src/app/classes/team";
 
 @Injectable()
 export class UsersService {
@@ -73,7 +75,43 @@ export class UsersService {
             catchError(this.handleError)
         ); 
     }
+
+    followTeam(teamId:number):Observable<OkMessage>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.post(this.WEB_API_URL+"followed-teams/"+teamId, undefined, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
+
+    getFollowedTeams(username:string):Observable<Array<Team>>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.get(this.WEB_API_URL+username+"/followed-teams", requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        );
+    }
     
+    unfollowTeam(teamId:number):Observable<OkMessage>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.delete(this.WEB_API_URL+"followed-teams/"+teamId, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
+
     private handleError(errorResponse: Response) { 
         var error = new ErrorResponse();
         error.errorMessage = errorResponse.statusText;

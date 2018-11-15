@@ -73,6 +73,8 @@ import { EncounterResultDialogComponent } from './components/encounters/encounte
 import { FixturesService } from './services/fixtures/fixture.service';
 import { LogsComponent } from './components/logs/logs.component';
 import { LogsService } from './services/logs/logs.service';
+import { FollowTeamDialogComponent } from './components/teams-follower/follow-team-dialog/follow-team-dialog.component';
+import { TeamsFollowerComponent } from './components/teams-follower/teams-follower.component';
 
 @NgModule({
   declarations: [
@@ -94,6 +96,8 @@ import { LogsService } from './services/logs/logs.service';
     EncounterCardDeckComponent,
     EncounterResultDialogComponent,
     LogsComponent,
+    FollowTeamDialogComponent,
+    TeamsFollowerComponent
   ],
   imports: [
     RouterModule.forRoot([
@@ -120,6 +124,10 @@ import { LogsService } from './services/logs/logs.service';
       {
         path:'logs',
         component:LogsComponent
+      },
+      {
+        path:'follower-teams',
+        component:TeamsFollowerComponent
       },
       {
         path: '**',
@@ -186,7 +194,8 @@ import { LogsService } from './services/logs/logs.service';
     SportDialogComponent,
     TeamDialogComponent,
     EncounterDialogComponent,
-    EncounterResultDialogComponent
+    EncounterResultDialogComponent,
+    FollowTeamDialogComponent
   ],
   bootstrap: [AppComponent],
   

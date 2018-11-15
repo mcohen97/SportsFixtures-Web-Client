@@ -38,4 +38,8 @@ export class HomeComponent {
   isUserLogged():boolean{
     return Globals.isUserLogged();
   }
+
+  checkRole(role:string):boolean{
+    return Globals.getRole() == role;
+  }
 }
