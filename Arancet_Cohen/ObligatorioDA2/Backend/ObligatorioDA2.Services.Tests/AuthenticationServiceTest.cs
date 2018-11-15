@@ -7,6 +7,8 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using System.Diagnostics.CodeAnalysis;
+using ObligatorioDA2.Services.Interfaces;
+using System;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -16,7 +18,8 @@ namespace ObligatorioDA2.Services.Tests
     {
 
         private Mock<IUserRepository> repo;
-        private AuthenticationService logger;
+        private Mock<ILoggerService> logger;
+        private AuthenticationService authService;
         private User admin;
         private User follower;
 
@@ -24,7 +27,8 @@ namespace ObligatorioDA2.Services.Tests
         public void SetUp()
         {
             repo = new Mock<IUserRepository>();
-            logger = new AuthenticationService(repo.Object);
+            logger = new Mock<ILoggerService>();
+            authService = new AuthenticationService(repo.Object, logger.Object);
             UserId id = new UserId
             {
                 Name = "aName",
@@ -44,9 +48,10 @@ namespace ObligatorioDA2.Services.Tests
             repo.Setup(r => r.Get("aUsername")).Returns(admin);
 
             //act
-            UserDto logged = logger.Login("aUsername", "aPassword");
+            UserDto logged = authService.Login("aUsername", "aPassword");
 
             repo.VerifyAll();
+            logger.Verify(r => r.Log(It.IsAny<string>(), It.IsAny<string>(),"aUsername",It.Is<DateTime>(d => d>= DateTime.Today)));
             Assert.AreEqual(logged.name, "aName");
             Assert.AreEqual(logged.surname, "aSurname");
             Assert.AreEqual(logged.username, "aUsername");
@@ -61,7 +66,7 @@ namespace ObligatorioDA2.Services.Tests
             //arrange.
             repo.Setup(r => r.Get("otherUsername")).Throws(new UserNotFoundException());
             //act.
-            logger.Login("otherUsername", "password");
+            authService.Login("otherUsername", "password");
         }
 
         [TestMethod]
@@ -72,7 +77,7 @@ namespace ObligatorioDA2.Services.Tests
             repo.Setup(r => r.Get("aUsername")).Returns(admin);
 
             //act
-            UserDto logged = logger.Login("aUsername", "otherPassword");
+            UserDto logged = authService.Login("aUsername", "otherPassword");
         }
 
         [TestMethod]
@@ -80,7 +85,7 @@ namespace ObligatorioDA2.Services.Tests
             //Arrange.
             repo.Setup(r => r.Get(admin.UserName)).Returns(admin);
             //Act.
-            logger.SetSession(admin.UserName);
+            authService.SetSession(admin.UserName);
             //Assert.
             repo.VerifyAll();
         }
@@ -91,13 +96,13 @@ namespace ObligatorioDA2.Services.Tests
             //Arrange.
             repo.Setup(r => r.Get(It.IsAny<string>())).Throws(new UserNotFoundException());
             //Act.
-            logger.SetSession(admin.UserName);
+            authService.SetSession(admin.UserName);
         }
 
         [TestMethod]
-        public void IsLoggedInTest() {
+        public void SetSessionTest() {
             repo.Setup(r => r.Get("aUsername")).Returns(admin);
-            logger.SetSession("aUsername");
+            authService.SetSession("aUsername");
             repo.VerifyAll();
         }
 
@@ -105,7 +110,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void IsNotLoggedInTest() {
             repo.Setup(r => r.Get("aUsername")).Throws(new UserNotFoundException());
-            logger.Authenticate();
+            authService.Authenticate();
         } 
 
         [TestMethod]
@@ -113,9 +118,9 @@ namespace ObligatorioDA2.Services.Tests
             //Arrange.
             repo.Setup(r => r.Get(admin.UserName)).Returns(admin);
             //Act.
-            logger.SetSession(admin.UserName);
+            authService.SetSession(admin.UserName);
             //Assert.
-            logger.AuthenticateAdmin();
+            authService.AuthenticateAdmin();
             repo.VerifyAll();
         }
 
@@ -126,9 +131,9 @@ namespace ObligatorioDA2.Services.Tests
             //Arrange.
             repo.Setup(r => r.Get(admin.UserName)).Returns(follower);
             //Act.
-            logger.SetSession(follower.UserName);
+            authService.SetSession(follower.UserName);
             //Assert.
-            logger.AuthenticateAdmin();
+            authService.AuthenticateAdmin();
         }
     }
 }

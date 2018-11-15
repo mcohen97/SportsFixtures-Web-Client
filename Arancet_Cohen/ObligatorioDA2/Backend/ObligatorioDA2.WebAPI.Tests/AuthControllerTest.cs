@@ -19,23 +19,20 @@ namespace ObligatorioDA2.WebAPI.Tests
     {
         private AuthenticationController controllerToTest;
         private Mock<IAuthenticationService> loginService;
-        private Mock<ILoggerService> logger;
         private UserDto testUser;
 
         [TestInitialize]
         public void StartUp() {
             loginService = new Mock<IAuthenticationService>();
-            logger = new Mock<ILoggerService>();
             testUser = new UserDto() { name ="aName",surname ="aUsername",username = "aUsername",
                 password = "aPassword",email= "anEmail@aDomain.com", isAdmin=true };
-            controllerToTest = new AuthenticationController(loginService.Object, logger.Object);
+            controllerToTest = new AuthenticationController(loginService.Object);
         }
 
         [TestMethod]
         public void LoginSuccesfullyTest() {
             //arrange
             loginService.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser);
-            logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "aUsername", It.IsAny<DateTime>())).Returns(1);
 
             //act
             LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "aPassword" };
@@ -43,9 +40,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkObjectResult okResult = result as OkObjectResult;
 
             //assert
-            logger.Verify(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "aUsername", It.IsAny<DateTime>()), Times.Once);
             Assert.IsNotNull(okResult);
-            logger.Verify();
         }
 
         [TestMethod]
@@ -54,7 +49,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Exception internalEx = new UserNotFoundException();
             Exception toThrow = new ServiceException(internalEx.Message, ErrorType.ENTITY_NOT_FOUND);
             loginService.Setup(l => l.Login("otherUsername", "aPassword")).Throws(toThrow);
-            logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "otherUsername", It.IsAny<DateTime>())).Returns(1);
 
             //Act.
             LoginModelIn credentials = new LoginModelIn() { Username = "otherUsername", Password = "aPassword" };
@@ -64,7 +58,6 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             //Assert.
             loginService.VerifyAll();
-            logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "aUsername", It.IsAny<DateTime>())).Returns(1);
             Assert.IsNotNull(badRequestResult);
             Assert.IsNotNull(error);
             Assert.AreEqual(toThrow.Message, error.ErrorMessage);
@@ -78,7 +71,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Exception toThrow = new ServiceException(internalEx.Message, ErrorType.DATA_INACCESSIBLE);
             loginService.Setup(us => us.Login(It.IsAny<string>(),It.IsAny<string>())).Throws(toThrow);
             LoginModelIn credentials = new LoginModelIn() { Username = "otherUsername", Password = "aPassword" };
-            logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "otherUsername", It.IsAny<DateTime>())).Returns(1);
 
             //Act.
             IActionResult result = controllerToTest.Authenticate(credentials);
@@ -98,7 +90,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             //arrange
             Exception toThrow = new WrongPasswordException();
             loginService.Setup(l => l.Login("aUsername", "otherPassword")).Throws(toThrow);
-            logger.Setup(l => l.Log(LogType.LOGIN, It.IsAny<string>(), "aUsername", It.IsAny<DateTime>())).Returns(1);
 
             //act
             LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "otherPassword" };

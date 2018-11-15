@@ -14,20 +14,25 @@ namespace ObligatorioDA2.Services
         private IUserRepository users;
         private User current;
         private UserDtoMapper mapper;
+        private ILoggerService logger;
 
-        public AuthenticationService(IUserRepository aRepo)
+        public AuthenticationService(IUserRepository aRepo, ILoggerService aLogger)
         {
             users = aRepo;
+            logger = aLogger;
             mapper = new UserDtoMapper();
         }
 
         public UserDto Login(string aUsername, string aPassword)
         {
-            User fetched = TryGetUser(aUsername); 
+            User fetched = TryGetUser(aUsername);
+
             if (!aPassword.Equals(fetched.Password))
             {
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_WRONG_PASSWORD, aUsername, DateTime.Now);
                 throw new WrongPasswordException();
             }
+            logger.Log(LogType.LOGIN, LogMessage.LOGIN_OK, aUsername, DateTime.Now);
             return mapper.ToDto(fetched);
         }
 
@@ -38,6 +43,7 @@ namespace ObligatorioDA2.Services
                 return users.Get(aUsername);
             }
             catch (UserNotFoundException e) {
+                logger.Log(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, aUsername, DateTime.Now);
                 throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
             }
             catch (DataInaccessibleException e) {
