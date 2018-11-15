@@ -102,7 +102,7 @@ namespace ObligatorioDA2.Services
 
         public UserDto GetUser(string username)
         {
-            authenticator.Authenticate();
+            authenticator.AuthenticateAdmin();
             User stored = TryGetUser(username);
             return userMapper.ToDto(stored);
         }
@@ -246,7 +246,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<UserDto> GetAllUsers()
         {
-            authenticator.Authenticate();
+            authenticator.AuthenticateAdmin();
             ICollection<User> allOfThem;
             try
             {
