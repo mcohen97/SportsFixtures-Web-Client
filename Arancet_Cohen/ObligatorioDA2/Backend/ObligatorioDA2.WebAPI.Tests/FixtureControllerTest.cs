@@ -31,12 +31,10 @@ namespace ObligatorioDA2.WebAPI.Tests
         private Mock<ISportRepository> sportsRepo;
         private Mock<IMatchRepository> matchesRepo;
 
-        private IMatchService matches;
         private IInnerMatchService innerMatches;
 
         private Mock<ITeamRepository> teamsRepo;
         private Mock<ILoggerService> logger;
-        private EncounterDtoMapper mapper;
         private IFixtureService fixture;
         private ICollection<Team> teamsCollection;
 
@@ -109,15 +107,12 @@ namespace ObligatorioDA2.WebAPI.Tests
             teamsRepo = new Mock<ITeamRepository>();
             teamsRepo.Setup(t => t.GetTeams(It.IsAny<string>())).Returns(teamsCollection);
             teamsRepo.Setup(t => t.GetAll()).Returns(teamsCollection);
-            Mock<IMatchRepository> matchRepository = new Mock<IMatchRepository>();
-            mapper = new EncounterDtoMapper(teamsRepo.Object,matchRepository.Object,sportsRepo.Object);
 
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
             MatchService matchService = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object, auth.Object);
             innerMatches = matchService;
-            matches = matchService;
 
-            fixture = new FixtureService(teamsRepo.Object, sportsRepo.Object, innerMatches, matches, matchRepository.Object, auth.Object);
+            fixture = new FixtureService(teamsRepo.Object, innerMatches, auth.Object);
 
 
             logger = new Mock<ILoggerService>();
@@ -372,6 +367,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         private ICollection<EncounterDto> GetEncounterDtos(ICollection<Encounter> encounters) {
+            EncounterDtoMapper mapper = new EncounterDtoMapper();
             return encounters.Select(e => mapper.ToDto(e)).ToList();
         }
 

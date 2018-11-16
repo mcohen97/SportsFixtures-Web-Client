@@ -17,6 +17,8 @@ namespace ObligatorioDA2.Services.Mappers
             teamsStorage = teamsRepo;
         }
 
+        public ResultDtoMapper(){}
+
         public ResultDto ToDto(Result aResult) {
             ResultDto dto = new ResultDto()
             {

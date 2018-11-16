@@ -9,6 +9,6 @@ namespace ObligatorioDA2.Services
     {
         Encounter AddMatch(Encounter anEncounter);
         ICollection<Encounter> GetAllMatches(string sportName);
-
+        void DeleteMatch(int anId);
     }
 }
