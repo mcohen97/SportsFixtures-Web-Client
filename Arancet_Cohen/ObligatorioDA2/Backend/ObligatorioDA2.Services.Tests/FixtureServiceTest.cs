@@ -22,8 +22,6 @@ namespace ObligatorioDA2.Services.Tests
     [ExcludeFromCodeCoverage]
     public class FixtureServiceTest
     {
-        private IFixtureGenerator oneMatchGenerator;
-        private IFixtureGenerator twoMatchsGenerator;
         private EncounterDtoMapper mapper;
         private Sport sport;
         private Team teamA;
@@ -32,13 +30,14 @@ namespace ObligatorioDA2.Services.Tests
         private Team teamD;
         private ICollection<Team> teamsCollection;
         private ICollection<string> teamsNames;
-        private DateTime initialDate;
         private IMatchRepository matchStorage;
         private ITeamRepository teamStorage;
         private ISportRepository sportStorage;
         private FixtureService fixtureService;
+        private FixtureDto testFixture;
         private DatabaseConnection context;
         private EncounterFactory factory;
+        private string algorithmPaths;
 
         [TestInitialize]
         public void Initialize()
@@ -49,19 +48,20 @@ namespace ObligatorioDA2.Services.Tests
             teamB = new Mock<Team>(2, "teamB", "photo", sport).Object;
             teamC = new Mock<Team>(3, "teamC", "photo", sport).Object;
             teamD = new Mock<Team>(4, "teamD", "photo", sport).Object;
+            testFixture = new FixtureDto() { initialDate = DateTime.Today, daysBetweenRounds = 5, roundLength = 2 };
             teamsCollection = GetTeamsList();
             teamsNames = teamsCollection.Select(tn => tn.Name).ToList();
-            initialDate = DateTime.Now;
-            oneMatchGenerator = new OneMatchFixture(initialDate, 2, 5);
-            twoMatchsGenerator = new HomeAwayFixture(initialDate, 2, 5);
             SetUpRepository();
             mapper = new EncounterDtoMapper(teamStorage, matchStorage, sportStorage);
             context.Database.EnsureDeleted();
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
+            auth.Setup(a => a.GetConnectedUser()).Returns(GetFakeUser());
             MatchService service = new MatchService(matchStorage, teamStorage, sportStorage, auth.Object);
-            fixtureService = new FixtureService(teamStorage,service, auth.Object);
+            //algorithmPaths = "..//..//..//..//ObligatorioDA2.BusinessLogic.FixtureAlgorithms//bin//Debug//";
+            algorithmPaths = @".\";
+            Mock<ILoggerService> logService = new Mock<ILoggerService>();
+            fixtureService = new FixtureService(teamStorage,service, auth.Object, logService.Object);
         }
-
 
         private void SetUpRepository()
         {
@@ -83,17 +83,19 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
         public void SetFixtureAlgorithmTest()
         {
-            fixtureService.FixtureAlgorithm = twoMatchsGenerator;
-            Assert.AreEqual(fixtureService.FixtureAlgorithm, twoMatchsGenerator);
+            testFixture.fixtureName = "Unexistent";
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
         }
 
         [TestMethod]
         public void AddFixtureOneMatchTest()
         {
             AddSportAndTeams();
-            fixtureService.FixtureAlgorithm = oneMatchGenerator;
+            testFixture.fixtureName = (typeof(OneMatchFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
             ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(teamsNames, sport.Name);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.id)));
         }
@@ -102,17 +104,20 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureTwoMatchesTest()
         {
             AddSportAndTeams();
-            fixtureService.FixtureAlgorithm = twoMatchsGenerator;
+            testFixture.fixtureName = (typeof(HomeAwayFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
             ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(teamsNames, sport.Name);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.id)));
         }
 
         [TestMethod]
         public void AddFixtureOneMatchImpairTest()
+
         {
             AddSportAndTeams();
             teamsCollection.Remove(teamD);
-            fixtureService.FixtureAlgorithm = oneMatchGenerator;
+            testFixture.fixtureName = (typeof(OneMatchFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
             ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(teamsNames, sport.Name);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.id)));
         }
@@ -122,7 +127,8 @@ namespace ObligatorioDA2.Services.Tests
         {
             AddSportAndTeams();
             teamsCollection.Remove(teamD);
-            fixtureService.FixtureAlgorithm = twoMatchsGenerator;
+            testFixture.fixtureName = (typeof(HomeAwayFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
             ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(teamsNames, sport.Name);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.id)));
         }
@@ -131,7 +137,8 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureWithNamesTest()
         {
             AddTeamsToRepo();
-            fixtureService.FixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
+            testFixture.fixtureName = (typeof(OneMatchFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
             string sportName = sport.Name;
             ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(teamsNames, sportName);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.id)));
@@ -141,7 +148,8 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureOfSport()
         {
             AddTeamsToRepo();
-            fixtureService.FixtureAlgorithm= new OneMatchFixture(DateTime.Now, 2, 5);
+            testFixture.fixtureName = (typeof(OneMatchFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
             ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(sport.Name);
             Assert.IsTrue(matchesAdded.All(m => matchStorage.Exists(m.id)));
         }
@@ -153,15 +161,16 @@ namespace ObligatorioDA2.Services.Tests
         public void AddFixtureTeamAlreadyHasMatchTest()
         {
             AddSportAndTeams();
-            fixtureService.FixtureAlgorithm = new OneMatchFixture(DateTime.Now, 2, 5);
-            Encounter aMatch = factory.CreateEncounter(new List<Team>() { teamA, teamB }, initialDate, sport);
+            testFixture.fixtureName = (typeof(OneMatchFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
+            Encounter aMatch = factory.CreateEncounter(new List<Team>() { teamA, teamB }, testFixture.initialDate, sport);
             matchStorage.Add(aMatch);
             ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture(teamsNames, sport.Name);
             Assert.IsTrue(matchStorage.IsEmpty());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TeamNotFoundException))]
+        [ExpectedException(typeof(ServiceException))]
         public void AddFixtureTeamNotFoundTest()
         {
             ICollection<string> teamsNames = teamsCollection.Select(t => t.Name).ToList();
@@ -171,8 +180,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetAvailableStrategiesTest() {
-            string path = "..//..//..//..//ObligatorioDA2.BusinessLogic//bin//Debug//";
-            ICollection<Type> algorithms = fixtureService.GetAlgorithms(path);
+            ICollection<Type> algorithms = fixtureService.GetAlgorithms(algorithmPaths);
             Assert.AreEqual(0, algorithms.Count);
         }
 
@@ -192,6 +200,18 @@ namespace ObligatorioDA2.Services.Tests
             teamStorage.Add(teamC);
             teamStorage.Add(teamD);
         }
-        
+
+        private UserDto GetFakeUser()
+        {
+            return new UserDto()
+            {
+                name = "name",
+                surname = "surname",
+                username = "username",
+                password = "password",
+                email = "mail@domain.com",
+                isAdmin = true
+            };
+        }
     }
 }

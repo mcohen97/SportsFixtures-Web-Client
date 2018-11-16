@@ -109,19 +109,19 @@ namespace ObligatorioDA2.WebAPI.Tests
             teamsRepo.Setup(t => t.GetAll()).Returns(teamsCollection);
 
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
+            auth.Setup(a => a.GetConnectedUser()).Returns(GetFakeUser());
             MatchService matchService = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object, auth.Object);
             innerMatches = matchService;
-
-            fixture = new FixtureService(teamsRepo.Object, innerMatches, auth.Object);
-
 
             logger = new Mock<ILoggerService>();
             logger.Setup(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>())).Returns(1);
 
+            fixture = new FixtureService(teamsRepo.Object, innerMatches, auth.Object, logger.Object);
+
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
             FileInfo dllFile = new FileInfo(@".\");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
-            controller = new FixturesController(fixture, mockSettings.Object,  sportsRepo.Object, logger.Object, auth.Object);
+            controller = new FixturesController(fixture, mockSettings.Object,  sportsRepo.Object, auth.Object);
             controller.ControllerContext = GetFakeControllerContext();
         }
 
@@ -131,9 +131,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
-                Day = DateTime.Now.Day,
-                Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year,
+                InitialDate = DateTime.Today,
+                RoundLength = 1,
+                DaysBetweenRounds = 7,
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(new List<Encounter>());
@@ -158,9 +158,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange
             FixtureModelIn input = new FixtureModelIn()
             {
-                Day = DateTime.Now.Day,
-                Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year,
+                InitialDate = DateTime.Today,
+                RoundLength = 1,
+                DaysBetweenRounds = 7,
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
             };
             sportsRepo.Setup(r => r.Get(testSport.Name)).Returns(testSport);
@@ -178,34 +178,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
             logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
-        }
-
-        [TestMethod]
-        public void CreateOneMatchFixtureWrongDateFixtureTest()
-        {
-            //Arrange.
-            FixtureModelIn input = new FixtureModelIn()
-            {
-                Day = 99,
-                Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year,
-                FixtureName = "OneMatchFixture"
-            };
-            matchesRepo.Setup(m => m.GetAll()).Returns(oneMatchCollection);
-            string errorMessagge = "Invalid date format";
-
-            //Act.
-            IActionResult result = controller.CreateFixture(testSport.Name, input);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
-            ErrorModelOut error = badRequest.Value as ErrorModelOut;
-
-            //Assert.
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400, badRequest.StatusCode);
-            Assert.AreEqual(error.ErrorMessage, errorMessagge);
-            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
-
         }
 
         private ICollection<string> TeamAlreadyHasMatchErrorMessagges(ICollection<EncounterDto> encounters)
@@ -252,9 +224,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
-                Day = DateTime.Now.Day,
-                Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year,
+                InitialDate = DateTime.Today,
+                RoundLength = 1,
+                DaysBetweenRounds = 7,
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(new List<Encounter>());
@@ -279,9 +251,9 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange.
             FixtureModelIn input = new FixtureModelIn()
             {
-                Day = DateTime.Now.Day,
-                Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year,
+                InitialDate = DateTime.Today,
+                RoundLength= 1,
+                DaysBetweenRounds= 7,
                 FixtureName = "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture"
             };
             matchesRepo.Setup(m => m.GetAll()).Returns(homeAwayMatchCollection);
@@ -298,33 +270,6 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(badRequest);
             Assert.AreEqual(400, badRequest.StatusCode);
             Assert.IsTrue(errorMessagges.Contains(error.ErrorMessage));
-            logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
-
-        }
-
-        [TestMethod]
-        public void CreateHomeAwayFixtureWrongDateFixtureTest()
-        {
-            //Arrange.
-            FixtureModelIn input = new FixtureModelIn()
-            {
-                Day = 99,
-                Month = DateTime.Now.Month,
-                Year = DateTime.Now.Year,
-                FixtureName = "HomeAwayFixture"
-            };
-            //matches.Setup(m => m.GetAllMatches()).Returns(GetEncounterDtos(homeAwayMatchCollection));
-
-
-            //Act.
-            IActionResult result = controller.CreateFixture(testSport.Name, input);
-            BadRequestObjectResult badRequest = result as BadRequestObjectResult;
-            ErrorModelOut error = badRequest.Value as ErrorModelOut;
-
-            //Assert.
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(badRequest);
-            Assert.AreEqual(400, badRequest.StatusCode);
             logger.Verify(l => l.Log(LogType.FIXTURE, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
 
         }
@@ -373,7 +318,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         private ControllerContext GetFakeControllerContext()
         {
-            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", "username") };
+            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", GetFakeUser().username) };
 
             Mock<ClaimsPrincipal> cp = new Mock<ClaimsPrincipal>();
             cp.Setup(m => m.Claims).Returns(fakeClaims);
@@ -383,6 +328,18 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<ControllerContext> controllerContextMock = new Mock<ControllerContext>();
             controllerContextMock.Object.HttpContext = contextMock.Object;
             return controllerContextMock.Object;
+        }
+
+        private UserDto GetFakeUser() {
+            return new UserDto()
+            {
+                name = "name",
+                surname = "surname",
+                username = "username",
+                password = "password",
+                email = "mail@domain.com",
+                isAdmin = true
+            };
         }
     }
 }
