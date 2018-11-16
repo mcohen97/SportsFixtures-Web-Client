@@ -45,12 +45,10 @@ namespace ObligatorioDA2.BusinessLogic
 
         private void SetName(string value)
         {
-            if (value == null)
-                throw new InvalidTeamDataException("Name can't be null");
-
-            if (value == "")
-                throw new InvalidTeamDataException("Name can't be empty");
-
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new InvalidTeamDataException("Name must be a non-empty character string");
+            }
             name = value;
         }
 

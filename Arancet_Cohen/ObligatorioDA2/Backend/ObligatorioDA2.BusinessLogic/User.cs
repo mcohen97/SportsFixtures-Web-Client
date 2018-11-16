@@ -49,7 +49,7 @@ namespace ObligatorioDA2.BusinessLogic
 
         private void SetName(string aName)
         {
-            if (String.IsNullOrWhiteSpace(aName))
+            if (string.IsNullOrWhiteSpace(aName))
             {
                 throw new InvalidUserDataException("Name can't be empty");
             }
@@ -58,7 +58,7 @@ namespace ObligatorioDA2.BusinessLogic
 
         private void SetSurname(string aSurname)
         {
-            if (String.IsNullOrWhiteSpace(aSurname))
+            if (string.IsNullOrWhiteSpace(aSurname))
             {
                 throw new InvalidUserDataException("Surname can't be empty");
             }

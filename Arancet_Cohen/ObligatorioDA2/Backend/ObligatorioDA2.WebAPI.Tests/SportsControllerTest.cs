@@ -13,6 +13,8 @@ using System.Linq;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Exceptions;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -51,6 +53,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             controllerToTest = new SportsController(sportsService.Object, teamsRepo.Object, dummyService, 
                 tableGenerator.Object, mockService.Object, mockImgService.Object);
+            controllerToTest.ControllerContext = GetFakeControllerContext();
         }
 
         [TestMethod]
@@ -388,6 +391,20 @@ namespace ObligatorioDA2.WebAPI.Tests
                 new Tuple<TeamDto, int>(teamC,3)
             };
             return tuples;
+        }
+
+        private ControllerContext GetFakeControllerContext()
+        {
+            ICollection<Claim> fakeClaims = new List<Claim>() { new Claim("Username", "username") };
+
+            Mock<ClaimsPrincipal> cp = new Mock<ClaimsPrincipal>();
+            cp.Setup(m => m.Claims).Returns(fakeClaims);
+            Mock<HttpContext> contextMock = new Mock<HttpContext>();
+            contextMock.Setup(ctx => ctx.User).Returns(cp.Object);
+
+            Mock<ControllerContext> controllerContextMock = new Mock<ControllerContext>();
+            controllerContextMock.Object.HttpContext = contextMock.Object;
+            return controllerContextMock.Object;
         }
     }
 }

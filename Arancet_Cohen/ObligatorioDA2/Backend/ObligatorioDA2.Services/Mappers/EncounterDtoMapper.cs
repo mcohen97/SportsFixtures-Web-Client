@@ -25,6 +25,11 @@ namespace ObligatorioDA2.Services.Mappers
             resultMapper = new ResultDtoMapper(teamsRepo);
             factory = new EncounterFactory();
         }
+
+        public EncounterDtoMapper() {
+            factory = new EncounterFactory();
+            resultMapper = new ResultDtoMapper();
+        }
         public EncounterDto ToDto(Encounter encounterDto) {
             EncounterDto dto = new EncounterDto()
             {

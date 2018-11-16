@@ -13,24 +13,35 @@ namespace ObligatorioDA2.Services
     public class LoggerService : ILoggerService
     {
         private ILogInfoRepository logRepo;
+        private IAuthenticationService authenticator;
 
-        public LoggerService(ILogInfoRepository logRepo)
+        public LoggerService(ILogInfoRepository logRepo, IAuthenticationService authService)
         {
             this.logRepo = logRepo;
+            authenticator = authService;
         }
 
         public void Delete(int id)
         {
+            authenticator.AuthenticateAdmin();
             logRepo.Delete(id);
         }
 
         public bool Exists(int id)
         {
+            authenticator.AuthenticateAdmin();
             return logRepo.Exists(id);
+        }
+
+
+        public ICollection<LogInfoDto> GetAllLogs(DateTime from, DateTime to)
+        {
+            return GetAllLogs().Where(l => l.date >= from && l.date <= to).ToList();
         }
 
         public ICollection<LogInfoDto> GetAllLogs()
         {
+            authenticator.AuthenticateAdmin();
             return logRepo.GetAll()
                 .Select(l => CreateDto(l))
                 .ToList();
@@ -38,6 +49,7 @@ namespace ObligatorioDA2.Services
 
         public LogInfoDto GetLog(int id)
         {
+            authenticator.AuthenticateAdmin();
             LogInfo stored = logRepo.Get(id);
             return CreateDto(stored);
         }

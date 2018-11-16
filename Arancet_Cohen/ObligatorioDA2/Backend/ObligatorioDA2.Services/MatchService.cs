@@ -19,21 +19,25 @@ namespace ObligatorioDA2.Services
         private ITeamRepository teamsStorage;
         private ISportRepository sportsStorage;
         private IUserRepository usersStorage;
+        private IAuthenticationService authenticator;
         private EncounterFactory factory;
         private EncounterDtoMapper encounterConverter;
         private CommentaryDtoMapper commentConverter;
 
-        public MatchService(IMatchRepository matchesRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository)
+        public MatchService(IMatchRepository matchesRepository, ITeamRepository teamsRepository,
+            ISportRepository sportsRepository, IAuthenticationService authService)
         {
             factory = new EncounterFactory();
             matchesStorage = matchesRepository;
             teamsStorage = teamsRepository;
             sportsStorage = sportsRepository;
+            authenticator = authService;
             encounterConverter = new EncounterDtoMapper(teamsStorage, matchesStorage,sportsStorage);
         }
 
-        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository, ISportRepository sportsRepository, IUserRepository usersRepository)
-            : this(matchsRepository, teamsRepository, sportsRepository)
+        public MatchService(IMatchRepository matchsRepository, ITeamRepository teamsRepository,
+            ISportRepository sportsRepository, IUserRepository usersRepository, IAuthenticationService authService)
+            : this(matchsRepository, teamsRepository, sportsRepository, authService)
         {
             usersStorage = usersRepository;
             commentConverter = new CommentaryDtoMapper(usersStorage);

@@ -11,9 +11,6 @@ using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
-using System.Linq;
-using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Mappers;
 using System.Diagnostics.CodeAnalysis;
@@ -25,6 +22,7 @@ namespace ObligatorioDA2.WebAPI.Tests
     public class MatchesControllerTest{
 
         private Mock<IMatchService> matchService;
+        private Mock<IAuthenticationService> auth;
         private Mock<EncounterDtoMapper> mapper;
         private MatchesController controller;
         private EncounterDto testEncounter;
@@ -32,9 +30,11 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestInitialize]
         public void SetUp() {
             matchService = new Mock<IMatchService>();
+            auth = new Mock<IAuthenticationService>();
             mapper = new Mock<EncounterDtoMapper>();
             testEncounter = BuildFakeMatch();
-            controller = new MatchesController(matchService.Object);
+            controller = new MatchesController(matchService.Object, auth.Object);
+            controller.ControllerContext = GetFakeControllerContext();
         }
 
         private EncounterDto BuildFakeMatch()
@@ -51,13 +51,56 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void GetTest()
+        public void GetByGroupTest()
         {
+            //Arrange.
+            matchService.Setup(s => s.GetAllMatches()).Returns(GetFakeEncounters());
+
+            //Act.
+            IActionResult result = controller.Get(true);
+            OkObjectResult okResult = result as OkObjectResult;
+            ICollection<EncounterCalendarModelOut> matches = okResult.Value as ICollection<EncounterCalendarModelOut>;
+            EncounterCalendarModelOut cal1 = ((List<EncounterCalendarModelOut>)matches)[0];
+            EncounterCalendarModelOut cal2 = ((List<EncounterCalendarModelOut>)matches)[1];
+
+            //Assert.
+            matchService.Verify(s => s.GetAllMatches(), Times.Once);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(matches);
+            Assert.AreEqual(matches.Count, 2);
+            Assert.AreEqual(1, cal1.EncountersByDate.Count);
+            Assert.AreEqual(2, cal2.EncountersByDate.Count);
+        }
+
+        private ICollection<EncounterDto> GetFakeEncounters()
+        {
+            EncounterDto dto2 = new EncounterDto()
+            {
+                id = 2,
+                sportName = "Football",
+                date = new DateTime(2018,6,27),
+                teamsIds = new List<int>() { 1, 2 },
+                hasResult = false
+            };
+            EncounterDto dto3 = new EncounterDto()
+            {
+                id = 3,
+                sportName = "Basketball",
+                date = new DateTime(2018, 6, 27),
+                teamsIds = new List<int>() { 1, 2 },
+                hasResult = false
+            };
+            return new List<EncounterDto>() { testEncounter, dto2, dto3 };
+        }
+
+        [TestMethod]
+        public void GetTest() {
             //Arrange.
             matchService.Setup(s => s.GetAllMatches()).Returns(new List<EncounterDto>() { testEncounter });
 
             //Act.
-            IActionResult result = controller.Get();
+            IActionResult result = controller.Get(false);
             OkObjectResult okResult = result as OkObjectResult;
             ICollection<EncounterModelOut> matches = okResult.Value as ICollection<EncounterModelOut>;
 
@@ -71,7 +114,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
         [TestMethod]
         public void CreateValidMatchTest() {
-            matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(),It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Returns(testEncounter);
             MatchModelIn input = BuildMatchModelIn(testEncounter);
 
@@ -79,7 +122,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             CreatedAtRouteResult createdResult = result as CreatedAtRouteResult;
             EncounterModelOut created = createdResult.Value as EncounterModelOut;
 
-            matchService.Verify(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
+            matchService.Verify(ms => ms.AddMatch(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>()), Times.Once);
             Assert.IsNotNull(result);
             Assert.IsNotNull(createdResult);
@@ -119,7 +162,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void CreateMatchSameDayForTeamTest() {
             //Arrange.
             Exception toThrow = new TeamAlreadyHasMatchException();
-            matchService.Setup(ms => ms.AddMatch(It.IsAny<ICollection<int>>(),
+            matchService.Setup(ms => ms.AddMatch(It.IsAny<int>(),It.IsAny<ICollection<int>>(),
                 It.IsAny<string>(), It.IsAny<DateTime>())).Throws(toThrow);
             MatchModelIn input = BuildMatchModelIn(testEncounter);
 
@@ -312,8 +355,6 @@ namespace ObligatorioDA2.WebAPI.Tests
         [TestMethod]
         public void CommentOnMatchTest() {
             //Arrange.
-            ControllerContext fakeContext = GetFakeControllerContext();
-            controller.ControllerContext = fakeContext;
             User commentarist = GetFakeUser();
             CommentaryDto made = new CommentaryDto() { makerUsername = commentarist.UserName, text = "this is a comment" };
 

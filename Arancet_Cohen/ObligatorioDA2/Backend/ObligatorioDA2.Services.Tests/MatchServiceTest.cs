@@ -12,6 +12,7 @@ using ObligatorioDA2.Services.Exceptions;
 using System.Linq;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using System.Diagnostics.CodeAnalysis;
+using Moq;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -24,6 +25,7 @@ namespace ObligatorioDA2.Services.Tests
         private ISportRepository sportsRepo;
         private ITeamRepository teamsRepo;
         private IUserRepository usersRepo;
+        Mock<IAuthenticationService> auth;
         private Sport sport;
         private Team teamA;
         private Team teamB;
@@ -64,7 +66,8 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo = new SportRepository(context);
             teamsRepo = new TeamRepository(context);
             usersRepo = new UserRepository(context);
-            serviceToTest = new MatchService(matchesRepo, teamsRepo, sportsRepo, usersRepo);
+            auth = new Mock<IAuthenticationService>();
+            serviceToTest = new MatchService(matchesRepo, teamsRepo, sportsRepo, usersRepo,auth.Object);
         }
 
         [TestMethod]

@@ -69,7 +69,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetUserTest()
         {
-            GrantFollowerPermissions();
+            GrantAdminPermissions();
             UserDto retrieved = service.GetUser("JohnDoe");
 
             users.Verify(r => r.Get("JohnDoe"), Times.Once);
@@ -80,14 +80,14 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(ServiceException))]
         public void GetNotExistsTest()
         {
-            GrantFollowerPermissions();
+            GrantAdminPermissions();
             UserDto retrieved = service.GetUser("JohnLennon");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void GetNoDataAccessTest() {
-            GrantFollowerPermissions();
+            GrantAdminPermissions();
             users.Setup(r => r.Get(It.IsAny<string>())).Throws(new DataInaccessibleException());
             UserDto retrieved = service.GetUser("username");
         }
@@ -145,6 +145,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void AddUserNoAuthenticationTest() {
+            LogOut();
             service.AddUser(dto);
         }
 
@@ -203,6 +204,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void ModifyNoAuthenticationTest()
         {
+            LogOut();
             service.ModifyUser(dto);
         }
 
@@ -243,6 +245,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void DeleteNoAuthenticationTest()
         {
+            LogOut();
             service.DeleteUser("username");
         }
 
@@ -434,7 +437,7 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         public void GetAllUsersTest()
         {
-            GrantFollowerPermissions();
+            GrantAdminPermissions();
             ICollection<User> fakeUsers = new List<User>() { testUser, testUser, testUser };
             users.Setup(r => r.GetAll()).Returns(fakeUsers);
 
@@ -446,25 +449,22 @@ namespace ObligatorioDA2.Services.Tests
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void GetAllUsersNoDataAccessTest() {
-            GrantFollowerPermissions();
+            GrantAdminPermissions();
             users.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
             service.GetAllUsers();
         }
 
-        private void GrantAdminPermissions()
-        {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
-            authentication.Setup(r => r.HasAdminPermissions()).Returns(true);
-        }
+        private void GrantAdminPermissions(){}
+
         private void GrantFollowerPermissions()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(true);
-            authentication.Setup(r => r.HasAdminPermissions()).Returns(false);
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NoPermissionsException());
         }
 
         private void LogOut()
         {
-            authentication.Setup(r => r.IsLoggedIn()).Returns(false);
+            authentication.Setup(r => r.Authenticate()).Throws(new NotAuthenticatedException());
+            authentication.Setup(r => r.AuthenticateAdmin()).Throws(new NotAuthenticatedException());
         }
     }
 }

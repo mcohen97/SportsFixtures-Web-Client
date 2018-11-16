@@ -12,11 +12,14 @@ namespace ObligatorioDA2.BusinessLogic
         private DateTime date;
         private string username;
 
-        public int Id { get => id; set => id = value; }
-        public string Message { get => message; set => message = value; }
-        public string LogType { get => logType; set => logType = value; }
-        public DateTime Date { get => date; set => date = value; }
-        public string Username { get => username; set => username = value; }
+        public int Id { get { return id; } set { id = value; } }
+        public string Message { get { return message; } set { SetMessage(value); } }
+
+        public string LogType { get { return logType; } set { SetLogType(value); } }
+
+        public DateTime Date { get { return date; } set { SetDate(date = value); } }
+
+        public string Username { get { return username; } set { SetUsername(username = value); } }
 
         public LogInfo() { }
 
@@ -27,7 +30,28 @@ namespace ObligatorioDA2.BusinessLogic
             Date = date;
         }
 
-       // override object.Equals
+        private void SetMessage(string value)
+        {
+            message = value;
+        }
+
+
+        private void SetLogType(string value)
+        {
+            logType = value;
+        }
+
+        private void SetDate(DateTime dateTime)
+        {
+            date = dateTime;
+        }
+
+        private void SetUsername(string value)
+        {
+            username = value;
+        }
+
+        // override object.Equals
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())

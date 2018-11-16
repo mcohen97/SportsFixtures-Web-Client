@@ -7,8 +7,8 @@ namespace ObligatorioDA2.Services.Interfaces
     {
         UserDto Login(string username, string password);
         void SetSession(string userName);
-        bool HasAdminPermissions();
-
-        bool IsLoggedIn();
+        void AuthenticateAdmin();
+        void Authenticate();
+        UserDto GetConnectedUser();
     }
 }

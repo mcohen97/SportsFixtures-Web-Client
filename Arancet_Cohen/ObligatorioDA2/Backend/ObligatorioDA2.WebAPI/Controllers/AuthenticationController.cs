@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using ObligatorioDA2.BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ObligatorioDA2.Services.Interfaces;
@@ -19,12 +18,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private IAuthenticationService loginService;
-        private ILoggerService logger;
 
-        public AuthenticationController(IAuthenticationService aService, ILoggerService aLogger)
+        public AuthenticationController(IAuthenticationService aService)
         {
             loginService = aService;
-            logger = aLogger;
         }
 
         [HttpPost]
@@ -37,7 +34,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             }
             else {
                 result = BadRequest(ModelState);
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_BAD_MODEL_IN, user.Username, DateTime.Now);
             }
             return result;
         }
@@ -50,18 +46,15 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 UserDto logged = loginService.Login(user.Username, user.Password);
                 string tokenString = GenerateJSONWebToken(logged);
                 result = Ok(new { Token = tokenString });
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_OK, user.Username, DateTime.Now);
             }
             catch (WrongPasswordException e2)
             {
                 ErrorModelOut error = new ErrorModelOut() { ErrorMessage = e2.Message };
                 result = BadRequest(error);
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_WRONG_PASSWORD, user.Username, DateTime.Now);
             }
             catch (ServiceException e)
             {
                 result = GenerateResponse(e);
-                LogError(e, user.Username);
             }
 
             return result;
@@ -80,15 +73,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
                 errorResult = StatusCode((int)HttpStatusCode.InternalServerError, error);
             }
             return errorResult;
-        }
-
-        private void LogError(ServiceException e, string username)
-        {
-            //if there is data access, log
-            if (e.Error.Equals(ErrorType.ENTITY_NOT_FOUND))
-            {
-                logger.Log(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, username, DateTime.Now);
-            }
         }
 
         private string GenerateJSONWebToken(UserDto userInfo)
