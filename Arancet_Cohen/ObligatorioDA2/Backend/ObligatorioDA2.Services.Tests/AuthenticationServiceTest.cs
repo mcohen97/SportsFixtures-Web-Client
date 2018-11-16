@@ -135,5 +135,24 @@ namespace ObligatorioDA2.Services.Tests
             //Assert.
             authService.AuthenticateAdmin();
         }
+
+        [TestMethod]
+        public void GetCurrentUserTest() {
+            //Arrange.
+            repo.Setup(r => r.Get("aUsername")).Returns(admin);
+            authService.SetSession("aUsername");
+            //Act.
+            UserDto current = authService.GetConnectedUser();
+            //Assert.
+            Assert.AreEqual("aUsername",current.name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void GetCurrentUserWithNoSessionTest()
+        {
+            //Act.
+            UserDto current = authService.GetConnectedUser();
+        }
     }
 }
