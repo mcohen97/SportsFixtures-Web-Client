@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
-
 namespace ObligatorioDA2.Services.Exceptions
 {
     [Serializable]
