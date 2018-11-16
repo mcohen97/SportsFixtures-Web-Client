@@ -121,7 +121,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Mock<IOptions<FixtureStrategies>> mockSettings = new Mock<IOptions<FixtureStrategies>>();
             FileInfo dllFile = new FileInfo(@".\");
             mockSettings.Setup(m => m.Value).Returns(new FixtureStrategies() { DllPath = dllFile.FullName });
-            controller = new FixturesController(fixture, mockSettings.Object,  sportsRepo.Object, auth.Object);
+            controller = new FixturesController(fixture, mockSettings.Object, auth.Object);
             controller.ControllerContext = GetFakeControllerContext();
         }
 
