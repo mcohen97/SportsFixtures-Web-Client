@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ObligatorioDA2.WebAPI
+namespace ObligatorioDA2.WebAPI.Controllers
 {
     public class FixtureStrategies
     {

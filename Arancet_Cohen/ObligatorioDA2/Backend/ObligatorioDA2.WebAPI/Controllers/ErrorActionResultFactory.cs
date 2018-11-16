@@ -1,11 +1,10 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 
 
-namespace ObligatorioDA2.WebAPI
+namespace ObligatorioDA2.WebAPI.Controllers
 {
     public class ErrorActionResultFactory
     {
