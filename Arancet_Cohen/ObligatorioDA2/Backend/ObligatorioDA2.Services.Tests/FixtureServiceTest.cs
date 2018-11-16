@@ -57,7 +57,6 @@ namespace ObligatorioDA2.Services.Tests
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
             auth.Setup(a => a.GetConnectedUser()).Returns(GetFakeUser());
             MatchService service = new MatchService(matchStorage, teamStorage, sportStorage, auth.Object);
-            //algorithmPaths = "..//..//..//..//ObligatorioDA2.BusinessLogic.FixtureAlgorithms//bin//Debug//";
             algorithmPaths = @".\";
             Mock<ILoggerService> logService = new Mock<ILoggerService>();
             fixtureService = new FixtureService(teamStorage,service, auth.Object, logService.Object);
