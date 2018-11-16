@@ -12,7 +12,7 @@ using ObligatorioDA2.Data.Repositories;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Services.Interfaces;
-using ObligatorioDA2.Services.Mappers;
+using ObligatorioDA2.WebAPI.Controllers;
 
 namespace ObligatorioDA2.WebAPI
 {
