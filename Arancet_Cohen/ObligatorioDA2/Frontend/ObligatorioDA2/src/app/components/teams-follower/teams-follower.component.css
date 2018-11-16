@@ -22,7 +22,11 @@ table {
     color: rgb(20, 140, 60);
     width:80px;
     z-index: 0;
-
+}
+.table-header-40px{
+    color: rgb(20, 140, 60);
+    width:40px;
+    z-index: 0;
 }
 
 td.mat-cell{
@@ -44,8 +48,7 @@ td.mat-cell{
 .table-container{
     width: 85%;
     height: 90%;
-    padding: 20px 20px 0px 20px;
-    overflow-x: auto;
+    padding: 0px 20px 20px 20px;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -76,7 +79,7 @@ td.mat-cell{
 }
 
 .option-button-container{
-    width: 80px;
+    width: 40px;
 }
 
 @media only screen and (min-width: 768px) {

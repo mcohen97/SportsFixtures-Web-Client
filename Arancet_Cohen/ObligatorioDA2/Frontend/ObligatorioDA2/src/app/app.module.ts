@@ -75,6 +75,8 @@ import { LogsComponent } from './components/logs/logs.component';
 import { LogsService } from './services/logs/logs.service';
 import { FollowTeamDialogComponent } from './components/teams-follower/follow-team-dialog/follow-team-dialog.component';
 import { TeamsFollowerComponent } from './components/teams-follower/teams-follower.component';
+import { CalendarComponent } from './components/calendar/calendar.component';
+import { EventCardComponent } from './components/calendar/event-card/event-card.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +99,9 @@ import { TeamsFollowerComponent } from './components/teams-follower/teams-follow
     EncounterResultDialogComponent,
     LogsComponent,
     FollowTeamDialogComponent,
-    TeamsFollowerComponent
+    TeamsFollowerComponent,
+    CalendarComponent,
+    EventCardComponent
   ],
   imports: [
     RouterModule.forRoot([

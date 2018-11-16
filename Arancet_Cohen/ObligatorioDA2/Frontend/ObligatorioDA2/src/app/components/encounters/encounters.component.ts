@@ -15,6 +15,9 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { TeamsService } from 'src/app/services/teams/teams.service';
 import { Team } from 'src/app/classes/team';
 import { EncounterResultDialogComponent } from './encounter-result-dialog/encounter-result-dialog.component';
+import { FormControl } from '@angular/forms';
+import { SportsService } from 'src/app/services/sports/sports.service';
+import { Sport } from 'src/app/classes/sport';
 
 @Component({
   selector: 'encounters-list',
@@ -32,8 +35,13 @@ export class EncountersComponent implements OnInit {
   isLoading = false;
   teams:Array<Team>;
   encounters:Array<Encounter>;
+  teamFilter:FormControl;
+  sportFilter:FormControl;
+  sports: Array<Sport>;
 
-  constructor(private teamsService:TeamsService, private router: Router, private domSanitizer: DomSanitizer, private auth:AuthService ,private dialog:MatDialog, private encountersService:EncountersService) {
+  constructor(private sportsService:SportsService, private teamsService:TeamsService, private router: Router, private domSanitizer: DomSanitizer, private auth:AuthService ,private dialog:MatDialog, private encountersService:EncountersService) {
+    this.teamFilter = new FormControl();
+    this.sportFilter = new FormControl();
     this.getEncounters();
   }
   
@@ -47,6 +55,7 @@ export class EncountersComponent implements OnInit {
       ((data:Array<Encounter>) => {
         this.encounters = data;
         this.getTeamsNames();
+        this.getSports();
       }),
       ((error:any) => this.handleEncounterError(error))
     )
@@ -57,6 +66,13 @@ export class EncountersComponent implements OnInit {
       ((teams:Array<Team>) => this.teams = teams),
       ((error:any) => {console.log(error)}),
       (()=>this.assignNamesToEncounters())
+    )
+  }
+
+  private getSports(){
+    this.sportsService.getAllSports().subscribe(
+      ((sports:Array<Sport>) => this.sports = sports),
+      ((error:any) => {console.log(error)})
     )
   }
 
@@ -103,6 +119,31 @@ export class EncountersComponent implements OnInit {
   
   applyFilter(filterValue:string){
     this.dataSource.filter = filterValue.trim().toLowerCase();
+    if(this.dataSource.paginator){
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  applyTeamFilter(filterValue:string){
+    this.noFilter();
+    this.dataSource.filterPredicate = ((t,filter) => t.teams.some(t => t.id == Number.parseInt(filter)));
+    this.dataSource.filter = filterValue;
+    if(this.dataSource.paginator){
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  applySportFilter(filterValue:string){
+    this.noFilter();
+    this.dataSource.filterPredicate = ((t,filter) => t.sportName == filter);
+    this.dataSource.filter = filterValue;
+    if(this.dataSource.paginator){
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  noFilter(){
+    this.dataSource.filter = "";
     if(this.dataSource.paginator){
       this.dataSource.paginator.firstPage();
     }

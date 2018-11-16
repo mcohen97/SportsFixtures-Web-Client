@@ -1,0 +1,22 @@
+<mat-card class="example-card">
+    <mat-card-header>
+      <mat-card-title>Events on date: {{encounter.date}}</mat-card-title>
+      <mat-card-subtitle></mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image src="">
+    <img mat-card-image src="">
+    <mat-card-content>
+      <div *ngFor = "let encounter of encounters" class = "encounter-entry">
+        Teams:
+        <div *ngFor = "let team of encounter.teams" class = "encounter-teams">
+          {{team.name}} 
+        </div>
+      </div>
+      <img mat-card-image src="">
+      <img mat-card-image src="">
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button>Edit</button>
+      <button mat-button>Delete</button>
+    </mat-card-actions>
+  </mat-card>

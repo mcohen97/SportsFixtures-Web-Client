@@ -14,7 +14,7 @@ import { Globals } from 'src/app/globals';
 })
 export class HomeComponent {
   @ViewChild('sidenav') sidenav:MatSidenav;
-  title = 'Fix Sports';
+  title = 'Sporture';
 
   constructor(){
   }
