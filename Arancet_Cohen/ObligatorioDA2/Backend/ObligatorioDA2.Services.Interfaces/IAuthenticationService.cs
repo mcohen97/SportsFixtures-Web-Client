@@ -9,5 +9,6 @@ namespace ObligatorioDA2.Services.Interfaces
         void SetSession(string userName);
         void AuthenticateAdmin();
         void Authenticate();
+        UserDto GetConnectedUser();
     }
 }

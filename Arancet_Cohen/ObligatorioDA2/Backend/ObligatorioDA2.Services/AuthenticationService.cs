@@ -41,14 +41,12 @@ namespace ObligatorioDA2.Services
         {
             try
             {
-                return users.Get(aUsername);
+                return GetExistentUser(aUsername);
             }
-            catch (UserNotFoundException e) {
+            catch (UserNotFoundException e)
+            {
                 AddLog(LogType.LOGIN, LogMessage.LOGIN_USER_NOT_FOUND, aUsername, DateTime.Now);
                 throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
-            }
-            catch (DataInaccessibleException e) {
-                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
         }
 
@@ -68,11 +66,31 @@ namespace ObligatorioDA2.Services
         {
             try
             {
-                current = users.Get(userName);
+                current = GetExistentUser(userName);
             }
-            catch (UserNotFoundException e) {
+            catch (UserNotFoundException e)
+            {
                 throw new ServiceException(e.Message, ErrorType.NOT_AUTHENTICATED);
             }
+        }
+
+        private User GetExistentUser(string aUsername)
+        {
+            try
+            {
+                return users.Get(aUsername);
+            }
+            catch (DataInaccessibleException e)
+            {
+                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
+            }
+        }
+        public UserDto GetConnectedUser()
+        {
+            if (!IsLoggedIn()) {
+                throw new NotAuthenticatedException();
+            }
+            return mapper.ToDto(current);
         }
 
         public void AuthenticateAdmin()
@@ -104,5 +122,6 @@ namespace ObligatorioDA2.Services
         {
             return (current != null);
         }
+
     }
 }
