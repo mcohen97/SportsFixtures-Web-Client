@@ -2,13 +2,10 @@
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using ObligatorioDA2.Services;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using System.Diagnostics.CodeAnalysis;
-using ObligatorioDA2.Services.Interfaces;
-using System;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -144,7 +141,7 @@ namespace ObligatorioDA2.Services.Tests
             //Act.
             UserDto current = authService.GetConnectedUser();
             //Assert.
-            Assert.AreEqual("aUsername",current.name);
+            Assert.AreEqual("aUsername",current.username);
         }
 
         [TestMethod]
