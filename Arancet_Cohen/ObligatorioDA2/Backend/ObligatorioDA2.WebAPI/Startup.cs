@@ -51,6 +51,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ILogInfoRepository, LogInfoRepository>();
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<ILogInService, AuthenticationService>();
             services.AddScoped<IInnerMatchService, MatchService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMatchRepository, MatchRepository>();

@@ -17,9 +17,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private IAuthenticationService loginService;
+        private ILogInService loginService;
 
-        public AuthenticationController(IAuthenticationService aService)
+        public AuthenticationController(ILogInService aService)
         {
             loginService = aService;
         }
