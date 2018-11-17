@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ObligatorioDA2.Services.Interfaces;
@@ -17,9 +17,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private IAuthenticationService loginService;
+        private ILogInService loginService;
 
-        public AuthenticationController(IAuthenticationService aService)
+        public AuthenticationController(ILogInService aService)
         {
             loginService = aService;
         }

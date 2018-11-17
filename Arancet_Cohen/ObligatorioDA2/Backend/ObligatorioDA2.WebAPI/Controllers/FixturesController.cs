@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.Services.Interfaces;
 using Microsoft.Extensions.Options;
-using ObligatorioDA2.Data.Repositories.Interfaces;
 using ObligatorioDA2.WebAPI.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,17 +17,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
     {
         private IFixtureService fixtureService;
         private IOptions<FixtureStrategies> fixtureConfig;
-        private ISportRepository sports;
         private IAuthenticationService authenticator;
         private const string DLL_EXTENSION = "*.dll";
         private EncounterModelFactory factory;
         private ErrorActionResultFactory errors;
 
-        public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config, 
-            ISportRepository sportsRepo, IAuthenticationService authService) {
+        public FixturesController(IFixtureService service, IOptions<FixtureStrategies> config,  IAuthenticationService authService) {
             fixtureService = service;
             fixtureConfig = config;
-            sports = sportsRepo;
             authenticator = authService;
             factory = new EncounterModelFactory();
             errors = new ErrorActionResultFactory(this);

@@ -5,11 +5,12 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
+using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Data.DomainMappers;
 using ObligatorioDA2.Data.Entities;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 
-namespace ObligatorioDA2.Data.DataAccess
+namespace ObligatorioDA2.Data.Repositories
 {
     public class LogInfoRepository : ILogInfoRepository
     {

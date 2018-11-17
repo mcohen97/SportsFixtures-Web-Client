@@ -12,7 +12,7 @@ using ObligatorioDA2.Data.Repositories;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Services.Interfaces;
-using ObligatorioDA2.Services.Mappers;
+using ObligatorioDA2.WebAPI.Controllers;
 
 namespace ObligatorioDA2.WebAPI
 {
@@ -51,6 +51,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ILogInfoRepository, LogInfoRepository>();
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<ILogInService, AuthenticationService>();
             services.AddScoped<IInnerMatchService, MatchService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMatchRepository, MatchRepository>();

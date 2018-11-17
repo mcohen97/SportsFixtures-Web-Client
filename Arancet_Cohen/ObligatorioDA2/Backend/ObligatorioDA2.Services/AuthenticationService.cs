@@ -9,7 +9,7 @@ using ObligatorioDA2.Services.Mappers;
 
 namespace ObligatorioDA2.Services
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService : IAuthenticationService, ILogInService
     {
         private IUserRepository users;
         private User current;
