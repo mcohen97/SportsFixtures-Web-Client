@@ -1,9 +1,10 @@
 ﻿using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ObligatorioDA2.WebAPI.Models
+namespace ObligatorioDA2.WebAPI.Controllers
 {
     public class EncounterModelFactory
     {
