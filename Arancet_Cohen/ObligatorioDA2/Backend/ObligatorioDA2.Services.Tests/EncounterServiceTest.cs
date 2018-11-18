@@ -18,10 +18,10 @@ namespace ObligatorioDA2.Services.Tests
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class MatchServiceTest
+    public class EncounterServiceTest
     {
-        private IMatchService serviceToTest;
-        private IMatchRepository matchesRepo;
+        private IEncounterService serviceToTest;
+        private IEncounterRepository matchesRepo;
         private ISportRepository sportsRepo;
         private ITeamRepository teamsRepo;
         private IUserRepository usersRepo;
@@ -67,7 +67,7 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo = new TeamRepository(context);
             usersRepo = new UserRepository(context);
             auth = new Mock<IAuthenticationService>();
-            serviceToTest = new MatchService(matchesRepo, teamsRepo, sportsRepo, usersRepo,auth.Object);
+            serviceToTest = new EncounterService(matchesRepo, teamsRepo, sportsRepo, usersRepo,auth.Object);
         }
 
         [TestMethod]
@@ -76,17 +76,17 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            serviceToTest.AddMatch(matchAvsBDto);
-            Assert.AreEqual(serviceToTest.GetAllMatches().Count, 1);
+            serviceToTest.AddEncounter(matchAvsBDto);
+            Assert.AreEqual(serviceToTest.GetAllEncounter().Count, 1);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void AddAlreadyExistentTest()
         {
-            serviceToTest.AddMatch(matchAvsBDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
             EncounterDto sameMatch = new EncounterDto() { id = matchAvsBDto.id, teamsIds = matchAvsBDto.teamsIds, date = matchAvsBDto.date, sportName = matchAvsBDto.sportName };
-            serviceToTest.AddMatch(sameMatch);
+            serviceToTest.AddEncounter(sameMatch);
         }
 
         [TestMethod]
@@ -96,8 +96,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
-            serviceToTest.AddMatch(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
-            Assert.AreEqual(serviceToTest.GetAllMatches().Count, 1);
+            serviceToTest.AddEncounter(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
+            Assert.AreEqual(serviceToTest.GetAllEncounter().Count, 1);
         }
 
         [TestMethod]
@@ -108,9 +108,9 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
-            EncounterDto added = serviceToTest.AddMatch(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
+            EncounterDto added = serviceToTest.AddEncounter(teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
             EncounterDto sameMatch = new EncounterDto() { id = added.id, teamsIds = teamsIds, date = matchAvsB.Date.AddDays(1), sportName = sport.Name };
-            serviceToTest.AddMatch(sameMatch);
+            serviceToTest.AddEncounter(sameMatch);
         }
 
         [TestMethod]
@@ -120,7 +120,7 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             ICollection<int> teamsIds = matchAvsB.GetParticipants().Select(t => t.Id).ToList();
-            EncounterDto stored = serviceToTest.AddMatch(3, teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
+            EncounterDto stored = serviceToTest.AddEncounter(3, teamsIds, matchAvsB.Sport.Name, matchAvsB.Date);
             Assert.AreEqual(stored.date, matchAvsB.Date);
         }
 
@@ -128,7 +128,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(ServiceException))]
         public void GetUnexistentMatchTest()
         {
-            serviceToTest.GetMatch(9);
+            serviceToTest.GetEncounter(9);
         }
 
         [TestMethod]
@@ -137,8 +137,8 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            serviceToTest.AddMatch(matchAvsBDto);
-            EncounterDto retrieved = serviceToTest.GetMatch(matchAvsB.Id);
+            serviceToTest.AddEncounter(matchAvsBDto);
+            EncounterDto retrieved = serviceToTest.GetEncounter(matchAvsB.Id);
             Assert.AreEqual(retrieved.id, matchAvsB.Id);
 
         }
@@ -150,8 +150,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
 
-            serviceToTest.AddMatch(matchAvsBDto);
-            serviceToTest.AddMatch(matchBvsCDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
+            serviceToTest.AddEncounter(matchBvsCDto);
             ICollection<EncounterDto> matches = serviceToTest.GetAllEncounterDtos(sport.Name);
             Assert.AreEqual(matches.Count, 2);
         }
@@ -170,9 +170,9 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
 
-            serviceToTest.AddMatch(matchAvsBDto);
-            serviceToTest.AddMatch(matchAvsCDto);
-            serviceToTest.AddMatch(matchBvsCDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
+            serviceToTest.AddEncounter(matchAvsCDto);
+            serviceToTest.AddEncounter(matchBvsCDto);
             ICollection<EncounterDto> matches = serviceToTest.GetAllEncounterDtos(teamA.Id);
             Assert.AreEqual(2, matches.Count);
         }
@@ -188,7 +188,7 @@ namespace ObligatorioDA2.Services.Tests
         [ExpectedException(typeof(ServiceException))]
         public void DeleteMatchTest()
         {
-            serviceToTest.DeleteMatch(3);
+            serviceToTest.DeleteEncounter(3);
         }
 
         [TestMethod]
@@ -197,11 +197,11 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
-            serviceToTest.AddMatch(matchAvsBDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
             EncounterDto modifiedAvsB = new EncounterDto() { id = 1, teamsIds = new List<int>() { teamB.Id, teamA.Id }, date = matchAvsB.Date.AddDays(1), sportName = sport.Name };
             SetUpRepository();
-            serviceToTest.ModifyMatch(modifiedAvsB);
-            EncounterDto modified = serviceToTest.GetMatch(matchAvsB.Id);
+            serviceToTest.ModifyEncounter(modifiedAvsB);
+            EncounterDto modified = serviceToTest.GetEncounter(matchAvsB.Id);
 
             Assert.AreEqual(modifiedAvsB.teamsIds.Count, modified.teamsIds.Count);
             Assert.AreEqual(modifiedAvsB.date, modified.date);
@@ -214,7 +214,7 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamC);
-            serviceToTest.ModifyMatch(matchAvsCDto);
+            serviceToTest.ModifyEncounter(matchAvsCDto);
         }
 
         [TestMethod]
@@ -223,11 +223,11 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            serviceToTest.AddMatch(matchAvsBDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
             SetUpRepository();
             Encounter modifiedAvsB = new Match(1, new List<Team>() { teamB, teamA }, matchAvsB.Date.AddDays(1), sport);
-            serviceToTest.ModifyMatch(modifiedAvsB.Id, new List<int>() { teamB.Id, teamA.Id }, modifiedAvsB.Date, sport.Name);
-            EncounterDto stored = serviceToTest.GetMatch(matchAvsB.Id);
+            serviceToTest.ModifyEncounter(modifiedAvsB.Id, new List<int>() { teamB.Id, teamA.Id }, modifiedAvsB.Date, sport.Name);
+            EncounterDto stored = serviceToTest.GetEncounter(matchAvsB.Id);
             Assert.AreEqual(modifiedAvsB.Date, stored.date);
         }
 
@@ -239,15 +239,15 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
-            serviceToTest.ModifyMatch(5,new List<int>() { teamC.Id, teamA.Id }, matchAvsB.Date, sport.Name);
+            serviceToTest.ModifyEncounter(5,new List<int>() { teamC.Id, teamA.Id }, matchAvsB.Date, sport.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void ModifyNoTeamWithIdTest()
         {
-            serviceToTest.AddMatch(matchAvsBDto);
-            serviceToTest.ModifyMatch(matchAvsB.Id,new List<int>() { teamC.Id, teamA.Id }, matchAvsB.Date, sport.Name);
+            serviceToTest.AddEncounter(matchAvsBDto);
+            serviceToTest.ModifyEncounter(matchAvsB.Id,new List<int>() { teamC.Id, teamA.Id }, matchAvsB.Date, sport.Name);
         }
 
         [TestMethod]
@@ -257,9 +257,9 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
-            serviceToTest.AddMatch(matchAvsCDto);
-            serviceToTest.AddMatch(matchAvsBDto);
-            Assert.AreEqual(serviceToTest.GetAllMatches().Count, 2);
+            serviceToTest.AddEncounter(matchAvsCDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
+            Assert.AreEqual(serviceToTest.GetAllEncounter().Count, 2);
         }
 
         [TestMethod]
@@ -268,7 +268,7 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            serviceToTest.AddMatch(matchAvsBDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
             Assert.IsTrue(serviceToTest.Exists(matchAvsB.Id));
         }
 
@@ -278,12 +278,12 @@ namespace ObligatorioDA2.Services.Tests
             sportsRepo.Add(sport);
             teamsRepo.Add(teamA);
             teamsRepo.Add(teamB);
-            serviceToTest.AddMatch(matchAvsBDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
             Assert.IsFalse(serviceToTest.Exists(matchAvsC.Id));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(TeamAlreadyHasMatchException))]
+        [ExpectedException(typeof(TeamAlreadyHasEncounterException))]
         public void AwayTeamWithTwoMatchesSameDateTest()
         {
             sportsRepo.Add(sport);
@@ -291,8 +291,8 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             teamsRepo.Add(teamC);
             matchAvsBDto.date = matchBvsCDto.date;
-            serviceToTest.AddMatch(matchBvsCDto);
-            serviceToTest.AddMatch(matchAvsBDto);
+            serviceToTest.AddEncounter(matchBvsCDto);
+            serviceToTest.AddEncounter(matchAvsBDto);
 
         }
 
@@ -306,7 +306,7 @@ namespace ObligatorioDA2.Services.Tests
             usersRepo.Add(commentarist);
             Encounter added = matchesRepo.Add(matchAvsB);
             SetUpRepository();
-            serviceToTest.CommentOnMatch(added.Id, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnEncounter(added.Id, commentarist.UserName, "a Comment");
         }
 
         [TestMethod]
@@ -316,7 +316,7 @@ namespace ObligatorioDA2.Services.Tests
             UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
             User commentarist = new User(identity, true);
             usersRepo.Add(commentarist);
-            serviceToTest.CommentOnMatch(3, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnEncounter(3, commentarist.UserName, "a Comment");
         }
 
         [TestMethod]
@@ -324,7 +324,7 @@ namespace ObligatorioDA2.Services.Tests
         public void CommentNoUserWithIdTest()
         {
             Encounter added = matchesRepo.Add(matchAvsB);
-            serviceToTest.CommentOnMatch(added.Id, "usernae", "a Comment");
+            serviceToTest.CommentOnEncounter(added.Id, "usernae", "a Comment");
         }
 
         [TestMethod]
@@ -339,10 +339,10 @@ namespace ObligatorioDA2.Services.Tests
             Encounter added1 = matchesRepo.Add(matchAvsB);
             Encounter added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
-            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
-            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "another Comment");
-            serviceToTest.CommentOnMatch(added2.Id, commentarist.UserName, "a Comment");
-            ICollection<CommentaryDto> comments = serviceToTest.GetMatchCommentaries(added1.Id);
+            serviceToTest.CommentOnEncounter(added1.Id, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnEncounter(added1.Id, commentarist.UserName, "another Comment");
+            serviceToTest.CommentOnEncounter(added2.Id, commentarist.UserName, "a Comment");
+            ICollection<CommentaryDto> comments = serviceToTest.GetEncounterCommentaries(added1.Id);
             Assert.AreEqual(comments.Count, 2);
         }
 
@@ -358,9 +358,9 @@ namespace ObligatorioDA2.Services.Tests
             Encounter added1 = matchesRepo.Add(matchAvsB);
             Encounter added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
-            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
-            serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "another Comment");
-            serviceToTest.CommentOnMatch(added2.Id, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnEncounter(added1.Id, commentarist.UserName, "a Comment");
+            serviceToTest.CommentOnEncounter(added1.Id, commentarist.UserName, "another Comment");
+            serviceToTest.CommentOnEncounter(added2.Id, commentarist.UserName, "a Comment");
             ICollection<CommentaryDto> comments = serviceToTest.GetAllCommentaries();
             Assert.AreEqual(comments.Count, 3);
 
@@ -378,7 +378,7 @@ namespace ObligatorioDA2.Services.Tests
             Encounter added1 = matchesRepo.Add(matchAvsB);
             Encounter added2 = matchesRepo.Add(matchAvsC);
             SetUpRepository();
-            CommentaryDto comment = serviceToTest.CommentOnMatch(added1.Id, commentarist.UserName, "a Comment");
+            CommentaryDto comment = serviceToTest.CommentOnEncounter(added1.Id, commentarist.UserName, "a Comment");
             CommentaryDto retrieved = serviceToTest.GetComment(comment.commentId);
             Assert.AreEqual(comment.text, retrieved.text);
         }
@@ -398,7 +398,7 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             matchesRepo.Add(matchAvsB);
             serviceToTest.SetResult(matchAvsB.Id,result);
-            EncounterDto retrieved = serviceToTest.GetMatch(matchAvsB.Id);
+            EncounterDto retrieved = serviceToTest.GetEncounter(matchAvsB.Id);
             ResultDto retrievedResult = retrieved.result;
             Assert.AreEqual(result.teams_positions.Count, retrievedResult.teams_positions.Count);
         }

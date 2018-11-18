@@ -5,10 +5,10 @@ using ObligatorioDA2.BusinessLogic;
 
 namespace ObligatorioDA2.Data.Repositories.Interfaces
 {
-    public interface IMatchRepository : IRepository<Encounter, int>
+    public interface IEncounterRepository : IRepository<Encounter, int>
     {
 
-        Commentary CommentOnMatch(int idMatch, Commentary aComment);
+        Commentary CommentOnEncounter(int idMatch, Commentary aComment);
         Commentary GetComment(int id);
         ICollection<Commentary> GetComments();
     }

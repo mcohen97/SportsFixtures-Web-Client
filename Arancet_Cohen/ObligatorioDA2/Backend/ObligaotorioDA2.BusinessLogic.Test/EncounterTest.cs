@@ -159,21 +159,21 @@ namespace ObligatorioDA2.BusinessLogic.Test
         //Exceptions.
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void SetNullTeamsTest()
         {
             match = new Match(3, null, date, sport);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void RepeatedTeamsTest()
         {
             match = new Match(3, new List<Team>() { teamA, teamA }, date, sport);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void DifferentSportTeamsTest()
         {
             sport = new Sport("Basketball", true);
@@ -182,27 +182,27 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void LessThanTwoTeamsTest() {
             match = new Match(3, new List<Team>() {}, date, sport);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void TooManyTeamsAllowedBySport() {
             sport = new Sport("Basketball", true);
             match = new Match(3, new List<Team>() { teamA, teamB,  teamC}, date, sport);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void CompetitionWithTwoTeamSportTest() {
             sport = new Sport("Basketball", true);
             match = new Competition(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void MatchWithMoreThanTwoTeamSportTest()
         {
             sport = new Sport("Golf", false);
@@ -210,14 +210,14 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void SetNullSportTest()
         {
             match = new Match(3,new List<Team>() { teamA, teamB }, date, null);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void AddAlreadyExistentCommentaryTest()
         {
             match.AddCommentary(commentary1.Object);
@@ -251,13 +251,13 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void SetNullResultTest() {
             match.Result=null;
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void TeamInResultNotInMatchTest() {
             Result fakeResult = GetFakeResult();
             match = new Match(3, new List<Team>() { teamA, teamC }, date, sport);
@@ -265,7 +265,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void PositionsTeamsCountMismatchTest() {
             Result fakeResult = GetFakeResult();
             fakeResult.Add(teamC, 5);
@@ -273,7 +273,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void NonConsecutivePositionsTest()
         {
             Result draw = new Result();
@@ -283,7 +283,7 @@ namespace ObligatorioDA2.BusinessLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidMatchDataException))]
+        [ExpectedException(typeof(InvalidEncounterDataException))]
         public void SharedPositionsInCompetitionTest()
         {
             sport = new Sport("Archery", false);

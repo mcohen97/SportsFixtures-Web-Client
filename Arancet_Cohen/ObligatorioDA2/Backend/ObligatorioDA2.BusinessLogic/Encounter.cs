@@ -39,7 +39,7 @@ namespace ObligatorioDA2.BusinessLogic
         {
             if (value == null)
             {
-                throw new InvalidMatchDataException();
+                throw new InvalidEncounterDataException();
             }
             played = value;
         }
@@ -54,23 +54,23 @@ namespace ObligatorioDA2.BusinessLogic
         {
             if (teams == null)
             {
-                throw new InvalidMatchDataException("A match can't be null");
+                throw new InvalidEncounterDataException("A match can't be null");
             }
             if (teams.Count < 2)
             {
-                throw new InvalidMatchDataException("A match can't have less than 2 teams");
+                throw new InvalidEncounterDataException("A match can't have less than 2 teams");
             }
             if (RepeatedMatches(teams))
             {
-                throw new InvalidMatchDataException("A match can't have repeated teams");
+                throw new InvalidEncounterDataException("A match can't have repeated teams");
             }
             if (!ValidTeamsForSport(teams))
             {
-                throw new InvalidMatchDataException("The sport does not allow more than two teams");
+                throw new InvalidEncounterDataException("The sport does not allow more than two teams");
             }
             if (!TeamsPlaySport(teams, Sport))
             {
-                throw new InvalidMatchDataException("The teams must play the specified sport");
+                throw new InvalidEncounterDataException("The teams must play the specified sport");
             }
             participants = teams;
         }
@@ -100,7 +100,7 @@ namespace ObligatorioDA2.BusinessLogic
         public void AddCommentary(Commentary commentary)
         {
             if (HasCommentary(commentary))
-                throw new InvalidMatchDataException("Commentary already exists in this match");
+                throw new InvalidEncounterDataException("Commentary already exists in this match");
             commentaries.Add(commentary);
         }
 
@@ -131,14 +131,14 @@ namespace ObligatorioDA2.BusinessLogic
         private void SetResult(Result aResult)
         {
             if (aResult == null) {
-                throw new InvalidMatchDataException("Result can't be null");
+                throw new InvalidEncounterDataException("Result can't be null");
             }
             if (!ResultContainsTheTeams(aResult)) {
-                throw new InvalidMatchDataException("The result must contain all the encounter," +
+                throw new InvalidEncounterDataException("The result must contain all the encounter," +
                     " teams and only them");
             }
             if (!ConsecutivePositions(aResult)) {
-                throw new InvalidMatchDataException("The result can't have gap positions");
+                throw new InvalidEncounterDataException("The result can't have gap positions");
             }
             SpecificResultValidation(aResult);
 

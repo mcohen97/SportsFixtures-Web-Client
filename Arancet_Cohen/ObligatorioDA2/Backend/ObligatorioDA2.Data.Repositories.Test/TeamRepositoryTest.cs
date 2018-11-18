@@ -21,7 +21,7 @@ namespace DataRepositoriesTest
         private ITeamRepository teamsStorage;
         private ISportRepository sportsStorage;
         private IUserRepository usersStorage;
-        private IMatchRepository matchesStorage;
+        private IEncounterRepository matchesStorage;
 
 
         [TestInitialize]

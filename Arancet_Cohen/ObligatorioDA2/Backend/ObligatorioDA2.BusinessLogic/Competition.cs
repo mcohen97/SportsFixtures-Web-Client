@@ -25,7 +25,7 @@ namespace ObligatorioDA2.BusinessLogic
             ICollection<int> positions = aResult.GetPositions()
                 .Select(p => p.Item2).ToList();
             if (RepeatedPosition(positions)) {
-                throw new InvalidMatchDataException("A result can't have repeated positions");
+                throw new InvalidEncounterDataException("A result can't have repeated positions");
             }
         }
 
