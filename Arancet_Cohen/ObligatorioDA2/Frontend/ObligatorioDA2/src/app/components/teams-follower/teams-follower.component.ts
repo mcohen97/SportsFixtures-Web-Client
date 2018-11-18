@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { Token } from 'src/app/classes/token';
 import { OkMessage } from 'src/app/classes/okMessage';
 import { UsersService } from 'src/app/services/users/users.service';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   selector: 'teams-follower-list',
@@ -28,10 +29,10 @@ export class TeamsFollowerComponent implements OnInit {
   teamEdited: Team;
   rowEdited: Team;
   isLoading = false;
-  auth: any;
   teamsFollowed:Array<Team>;
 
   constructor(
+    private auth:AuthService,
     private router: Router, 
     private domSanitizer: DomSanitizer, 
     private dialog:MatDialog,

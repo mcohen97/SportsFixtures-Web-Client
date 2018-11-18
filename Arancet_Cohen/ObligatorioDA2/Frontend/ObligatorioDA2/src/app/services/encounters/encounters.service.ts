@@ -28,6 +28,19 @@ export class EncountersService {
         ); 
     }
 
+    getAllEncountersOfSport(sportName:string):Observable<Array<Encounter>>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.get(this.WEB_API_URL+"sport/"+sportName, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
+
+
     getAllEncounters():Observable<Array<Encounter>>{
         const myHeaders = new Headers(); 
         myHeaders.append('Accept', 'application/json');
@@ -82,6 +95,18 @@ export class EncountersService {
         myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
         const requestOptions = new RequestOptions({headers: myHeaders}); 
         return this._httpService.post(this.WEB_API_URL+encounterId+"/result", aResult, requestOptions) 
+        .pipe( 
+            map((response : Response) => response.json()),
+            catchError(this.handleError)
+        ); 
+    }
+
+    getEncountersOfTeam(teamId:number):Observable<Array<Encounter>>{
+        const myHeaders = new Headers(); 
+        myHeaders.append('Accept', 'application/json');
+        myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+        const requestOptions = new RequestOptions({headers: myHeaders}); 
+        return this._httpService.get(this.WEB_API_URL+"team/"+teamId, requestOptions) 
         .pipe( 
             map((response : Response) => response.json()),
             catchError(this.handleError)

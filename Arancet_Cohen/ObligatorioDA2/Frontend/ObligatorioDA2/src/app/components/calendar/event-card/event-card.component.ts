@@ -1,20 +1,26 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Team } from 'src/app/classes/team';
 import { Encounter } from 'src/app/classes/encounter';
+import { EventEncounters } from 'src/app/classes/event-encounter';
+import { MatDialog } from '@angular/material';
 
 @Component({
-  selector: 'app-event-card',
+  selector: 'event-card',
   templateUrl: './event-card.component.html',
   styleUrls: ['./event-card.component.css']
 })
 export class EventCardComponent implements OnInit {
 
-  @Input() encounters: Array<Encounter>;
-  @Input() date: Date;
+  @Input() event: EventEncounters;
+  @Input() date:Date;
+  @Input() encounterCount:number;
 
-  constructor() { }
+  constructor(private dialog:MatDialog) { 
+  }
 
   ngOnInit() {
+   
+
   }
 
 }

@@ -46,8 +46,11 @@ export class Globals {
 
   static getRole():string{
     var role = "";
-    if(this.isUserLogged())
-      role = Globals.getDecodedAccessToken()["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    if(this.isUserLogged()){
+      var decoded =  Globals.getDecodedAccessToken();
+      if(decoded)
+        role = Globals.getDecodedAccessToken()["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];  
+    }
     return role;
   }
 

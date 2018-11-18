@@ -20,4 +20,8 @@ export class Team {
         this.photo = Team.NO_PHOTO_DIR;
     }
 
+    public toString = () : string => {
+        return this.name;
+    }
+
 }

@@ -5,70 +5,58 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { Globals } from "src/app/globals";
 import { ErrorResponse } from "src/app/classes/error";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Sport } from "src/app/classes/sport";
+import { Comment } from "src/app/classes/comment";
 import { Team } from "src/app/classes/team";
 
 @Injectable()
-export class SportsService {
-  private WEB_API_URL : string = 'https://localhost:5001/api/sports/'; 
+export class CommentsService {
+  private WEB_API_URL : string = 'https://localhost:5001/api/matches/'; 
  
   constructor(private _httpService: Http) {  } 
 
 
-  getSport(name:string): Observable<Sport>{
+  getComment(id:number): Observable<Comment>{
       const myHeaders = new Headers(); 
       myHeaders.append('Accept', 'application/json');
       myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
       const requestOptions = new RequestOptions({headers: myHeaders}); 
-      return this._httpService.get(this.WEB_API_URL+name, requestOptions) 
+      return this._httpService.get(this.WEB_API_URL+"comments/"+id, requestOptions) 
       .pipe( 
           map((response : Response) => response.json()),
           catchError(this.handleError)
       ); 
   }
 
-  getTeams(sportName:string): Observable<Array<Team>>{
+  getEncounterComments(encounterId:number): Observable<Array<Comment>>{
     const myHeaders = new Headers(); 
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
     const requestOptions = new RequestOptions({headers: myHeaders}); 
-    return this._httpService.get(this.WEB_API_URL+sportName+"/teams", requestOptions) 
+    return this._httpService.get(this.WEB_API_URL+encounterId+"/comments", requestOptions) 
     .pipe( 
         map((response : Response) => response.json()),
         catchError(this.handleError)
     ); 
 }
 
-  getAllSports():Observable<Array<Sport>>{
+  getAllComments():Observable<Array<Comment>>{
       const myHeaders = new Headers(); 
       myHeaders.append('Accept', 'application/json');
       myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
       const requestOptions = new RequestOptions({headers: myHeaders}); 
-      return this._httpService.get(this.WEB_API_URL, requestOptions) 
+      return this._httpService.get(this.WEB_API_URL+"/comments", requestOptions) 
       .pipe( 
           map((response : Response) => response.json()),
           catchError(this.handleError)
       ); 
   }
 
-  deleteSport(name:string):Observable<Sport>{
+  addComment(aComment:Comment, matchId:number):Observable<Comment>{
       const myHeaders = new Headers(); 
       myHeaders.append('Accept', 'application/json');
       myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
       const requestOptions = new RequestOptions({headers: myHeaders}); 
-      return this._httpService.delete(this.WEB_API_URL+name, requestOptions) 
-      .pipe( 
-          map((response : Response) => response.json()),
-          catchError(this.handleError)
-      ); 
-  }
-
-  addSport(aSport:Sport):Observable<Sport>{
-      const myHeaders = new Headers(); 
-      myHeaders.append('Accept', 'application/json');
-      myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
-      const requestOptions = new RequestOptions({headers: myHeaders}); 
-      return this._httpService.post(this.WEB_API_URL, aSport, requestOptions) 
+      return this._httpService.post(this.WEB_API_URL+matchId+"/"+"comments", aComment, requestOptions) 
       .pipe( 
           map((response : Response) => response.json()),
           catchError(this.handleError)

@@ -1,4 +1,5 @@
 import { Team } from "./team";
+import { Standing } from "./standing";
 
 export class Encounter {
     id: number;
@@ -7,7 +8,8 @@ export class Encounter {
     date: Date;
     teamIds: Array<number>;
     commentsids: Array<number>;
-    teams:Array<Team>;
+    teams: Array<Team>;
+    team_Position: Array<Standing>;
 
     public static getClone(aEncounter:Encounter): Encounter{
         var encounter = new Encounter(aEncounter.sportName, aEncounter.hasResult, aEncounter.date);
@@ -15,6 +17,7 @@ export class Encounter {
         encounter.commentsids = aEncounter.commentsids;
         encounter.teams = aEncounter.teams;
         encounter.id = aEncounter.id;
+        encounter.team_Position = aEncounter.team_Position;
         return encounter;
     }
 
@@ -30,6 +33,7 @@ export class Encounter {
         this.teamIds = new Array<number>();
         this.commentsids = new Array<number>();
         this.teams = new Array<Team>();
+        this.team_Position = new Array<Standing>();
     }
 
 }

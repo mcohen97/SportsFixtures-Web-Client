@@ -77,6 +77,11 @@ import { FollowTeamDialogComponent } from './components/teams-follower/follow-te
 import { TeamsFollowerComponent } from './components/teams-follower/teams-follower.component';
 import { CalendarComponent } from './components/calendar/calendar.component';
 import { EventCardComponent } from './components/calendar/event-card/event-card.component';
+import { EventDeckComponent } from './components/calendar/event-deck/event-deck.component';
+import { CommentDialogComponent } from './components/comments/comment-dialog/comment-dialog.component';
+import { CommentsComponent } from './components/comments/comments.component';
+import { CommentsService } from './services/comments/comments.service';
+import { CommentsTableComponent } from './components/comments/comments-table/comments-table.component';
 
 @NgModule({
   declarations: [
@@ -101,7 +106,11 @@ import { EventCardComponent } from './components/calendar/event-card/event-card.
     FollowTeamDialogComponent,
     TeamsFollowerComponent,
     CalendarComponent,
-    EventCardComponent
+    EventCardComponent,
+    EventDeckComponent,
+    CommentDialogComponent,
+    CommentsComponent,
+    CommentsTableComponent
   ],
   imports: [
     RouterModule.forRoot([
@@ -132,6 +141,14 @@ import { EventCardComponent } from './components/calendar/event-card/event-card.
       {
         path:'follower-teams',
         component:TeamsFollowerComponent
+      },
+      {
+        path:'calendar',
+        component:CalendarComponent
+      },
+      {
+        path:'comments',
+        component:CommentsComponent
       },
       {
         path: '**',
@@ -189,6 +206,7 @@ import { EventCardComponent } from './components/calendar/event-card/event-card.
     {provide: EncountersService, useClass:EncountersService},
     {provide: FixturesService, useClass:FixturesService},
     {provide: LogsService, useClass:LogsService},
+    {provide: CommentsService, useClass:CommentsService},
     {provide: ReConnector, useClass:ReConnector},
     {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
   ],
@@ -199,7 +217,8 @@ import { EventCardComponent } from './components/calendar/event-card/event-card.
     TeamDialogComponent,
     EncounterDialogComponent,
     EncounterResultDialogComponent,
-    FollowTeamDialogComponent
+    FollowTeamDialogComponent,
+    CommentDialogComponent
   ],
   bootstrap: [AppComponent],
   

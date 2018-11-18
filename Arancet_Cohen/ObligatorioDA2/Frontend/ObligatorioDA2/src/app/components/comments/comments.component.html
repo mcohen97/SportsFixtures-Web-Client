@@ -1,0 +1,35 @@
+<div class = "table-container">  
+  <div class = "error-message">
+    {{errorMessage}}
+  </div>
+  <mat-expansion-panel  class="mat-elevation-z8" style="margin: 10px auto 10px auto; width: 90%">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Followed teams encounters
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-form-field>
+      <mat-select (selectionChange)="showEncounters($event.value)" placeholder="Select a team">
+        <mat-option [value] = "">--</mat-option>
+        <mat-option *ngFor = "let team of teamsFollowed" [value] = "team.id">{{team.name + ' (' + team.sportName + ')'}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-expansion-panel>
+  <div class="loading-shade" *ngIf="isLoading">
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+  </div>
+  <div class="loading-shade" *ngIf="isLoading">
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+  </div>
+  <mat-expansion-panel *ngFor = "let encounter of encountersShown" class="mat-elevation-z8" style="margin: 10px auto 10px auto; width: 90%">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{cleanDate(encounter)}}
+      </mat-panel-title>
+      <mat-panel-description *ngIf = "encounter.teams">
+        Teams: {{encounter.teams.toString()}}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <comments-table [encounter] = "encounter"></comments-table>
+  </mat-expansion-panel>
+</div>
