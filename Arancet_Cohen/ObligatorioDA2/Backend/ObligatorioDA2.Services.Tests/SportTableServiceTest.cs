@@ -20,13 +20,13 @@ namespace ObligatorioDA2.Services.Tests
         private ISportTableService serviceToTest;
         private Mock<ISportRepository> sportsStorage;
         private Mock<ITeamRepository> teamsStorage;
-        private Mock<IInnerMatchService> matchesService;
+        private Mock<IInnerEncounterService> matchesService;
 
         [TestInitialize]
         public void SetUp() {
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
-            matchesService = new Mock<IInnerMatchService>();
+            matchesService = new Mock<IInnerEncounterService>();
             serviceToTest = new SportTableService(sportsStorage.Object, teamsStorage.Object, matchesService.Object);
             SetUpSports();
             SetUpTeams();
@@ -49,14 +49,14 @@ namespace ObligatorioDA2.Services.Tests
             Team teamB = new Team(2,"teamB", "photoB", twoTeamSport);
             Team teamC = new Team(3,"teamC", "photoC", twoTeamSport);
             ICollection<Encounter> matches = CreateMatches(teamA, teamB, teamC,twoTeamSport);
-            matchesService.Setup(r => r.GetAllMatches("Soccer")).Returns(matches);
+            matchesService.Setup(r => r.GetAllEncounters("Soccer")).Returns(matches);
 
             Sport multipleTeamSport = new Sport("Archery", false);
             Team athleteD = new Team(4,"athleteD", "photoD", multipleTeamSport);
             Team athleteE = new Team(5,"athleteE", "photoE", multipleTeamSport);
             Team athleteF = new Team(6,"athleteF", "photoF", multipleTeamSport);
             ICollection<Encounter> competitions = CreateCompetitions(athleteD, athleteE,athleteF,multipleTeamSport);
-            matchesService.Setup(r => r.GetAllMatches("Archery")).Returns(competitions);
+            matchesService.Setup(r => r.GetAllEncounters("Archery")).Returns(competitions);
 
             teamsStorage.Setup(r => r.GetTeams("Soccer")).Returns(new List<Team>() { teamA, teamB, teamC });
             teamsStorage.Setup(r => r.GetTeams("Archery")).Returns(new List<Team>() { athleteD, athleteE, athleteF });

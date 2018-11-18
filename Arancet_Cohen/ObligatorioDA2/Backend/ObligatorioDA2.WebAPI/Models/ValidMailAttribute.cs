@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Mail;
 
 
 namespace ObligatorioDA2.WebAPI.Models
 {
+    [ExcludeFromCodeCoverage]
     public class ValidMailAttribute: ValidationAttribute
     {
         

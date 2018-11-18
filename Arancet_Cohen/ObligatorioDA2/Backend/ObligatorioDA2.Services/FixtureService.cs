@@ -16,7 +16,7 @@ namespace ObligatorioDA2.Services
 {
     public class FixtureService : IFixtureService
     {
-        private IInnerMatchService matchService;
+        private IInnerEncounterService matchService;
         private ITeamRepository teamStorage;
         private IFixtureGenerator fixtureAlgorithm;
         private IAuthenticationService authenticator;
@@ -25,7 +25,7 @@ namespace ObligatorioDA2.Services
         private const string DLL_EXTENSION = "*.dll";
 
 
-        public FixtureService( ITeamRepository teamRepository,IInnerMatchService matchAddition,
+        public FixtureService( ITeamRepository teamRepository,IInnerEncounterService matchAddition,
             IAuthenticationService authService, ILoggerService loggerService)
         {
             matchService = matchAddition;
@@ -35,11 +35,11 @@ namespace ObligatorioDA2.Services
             mapper = new EncounterDtoMapper();
         }
 
-        private IFixtureGenerator FixtureAlgorithm { get { return fixtureAlgorithm; } set { SetFixtureAlgorithm(value); } }
+        public IFixtureGenerator FixtureAlgorithm { get { return fixtureAlgorithm; } private set { SetFixtureAlgorithm(value); } }
 
         private void SetFixtureAlgorithm(IFixtureGenerator algorithm)
         {
-            fixtureAlgorithm = algorithm ?? throw new ArgumentNullException();
+            fixtureAlgorithm = algorithm;
         }
 
         public void SetFixtureAlgorithm(FixtureDto aFixture, string algorithmsPath) {
@@ -55,7 +55,7 @@ namespace ObligatorioDA2.Services
             }
             if (aFixture.initialDate.Equals(new DateTime())) {
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG, GetConnectedUserName(), DateTime.Now);
-                throw new ServiceException("Fixture name can't be empty", ErrorType.INVALID_DATA);
+                throw new ServiceException("Fixture date can't be empty", ErrorType.INVALID_DATA);
             }
         }
 
@@ -63,7 +63,7 @@ namespace ObligatorioDA2.Services
         {
             foreach (Encounter match in added)
             {
-                matchService.DeleteMatch(match.Id);
+                matchService.DeleteEncounter(match.Id);
             }
         }
 
@@ -105,7 +105,7 @@ namespace ObligatorioDA2.Services
                 AddMatches(ref added, generatedMatches);
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_OK, GetConnectedUserName(), DateTime.Now);
             }
-            catch (TeamAlreadyHasMatchException e)
+            catch (TeamAlreadyHasEncounterException e)
             {
                 RollBack(added);
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG + " " + e.Message, GetConnectedUserName(), DateTime.Now);
@@ -124,7 +124,7 @@ namespace ObligatorioDA2.Services
         {
             foreach (Encounter match in generated)
             {
-                Encounter matchAdded = matchService.AddMatch(match);
+                Encounter matchAdded = matchService.AddEncounter(match);
                 added.Add(matchAdded);
             }
             return added;
@@ -170,12 +170,11 @@ namespace ObligatorioDA2.Services
 
         private IFixtureGenerator BuildFixtureAlgorithm(FixtureDto dto, string algorithmsPath)
         {
-            DateTime date = dto.initialDate == null || dto.initialDate == new DateTime() ? DateTime.Today : dto.initialDate;
             int roundLength = dto.roundLength == 0 ? 1 : dto.roundLength;
             int daysBetweenRounds = dto.daysBetweenRounds == 0 ? 7 : dto.daysBetweenRounds;
 
             Type algortihmType = GetAlgorithmType(algorithmsPath, dto.fixtureName);
-            object fromDll = Activator.CreateInstance(algortihmType, new object[] { date, roundLength, daysBetweenRounds });
+            object fromDll = Activator.CreateInstance(algortihmType, new object[] { dto.initialDate, roundLength, daysBetweenRounds });
             IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
             return algorithm;
         }

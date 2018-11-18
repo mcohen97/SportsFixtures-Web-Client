@@ -95,6 +95,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.AreEqual(resultTeam.Name, team.name);
+            Assert.AreEqual(resultTeam.SportName, team.sportName);
+            Assert.AreEqual(resultTeam.Photo, team.photo);
         }
 
         [TestMethod]
@@ -325,6 +327,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.AreEqual(okResult.StatusCode, 200);
             Assert.IsNotNull(okMessage);
+            Assert.IsNotNull("The Team was deleted successfully",okMessage.OkMessage);
         }
 
         [TestMethod]

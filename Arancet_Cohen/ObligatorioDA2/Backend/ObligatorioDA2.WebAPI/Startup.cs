@@ -13,9 +13,11 @@ using ObligatorioDA2.Services;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.WebAPI.Controllers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -52,9 +54,9 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ILogInService, AuthenticationService>();
-            services.AddScoped<IInnerMatchService, MatchService>();
-            services.AddScoped<IMatchService, MatchService>();
-            services.AddScoped<IMatchRepository, MatchRepository>();
+            services.AddScoped<IInnerEncounterService, EncounterService>();
+            services.AddScoped<IEncounterService, EncounterService>();
+            services.AddScoped<IEncounterRepository, MatchRepository>();
             services.AddScoped<ISportRepository, SportRepository>();
             services.AddScoped<ISportService, SportService>();
             services.AddScoped<IUserService, UserService>();

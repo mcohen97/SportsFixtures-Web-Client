@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
 {
-    public class MatchNotFoundException: EntityNotFoundException
+    public class EncounterNotFoundException: EntityNotFoundException
     {
-        public MatchNotFoundException():base("Match not found")
+        public EncounterNotFoundException():base("Match not found")
         {
 
         }

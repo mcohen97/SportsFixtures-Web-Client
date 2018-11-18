@@ -12,7 +12,7 @@ using System;
 
 namespace ObligatorioDA2.Data.Repositories
 {
-    public class MatchRepository : IMatchRepository
+    public class MatchRepository : IEncounterRepository
     {
         private DatabaseConnection context;
         private MatchMapper matchConverter;
@@ -52,7 +52,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
             else
             {
-                throw new MatchAlreadyExistsException();
+                throw new EncounterAlreadyExistsException();
             }
             return added;
         }
@@ -149,7 +149,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
             else
             {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
         }
 
@@ -184,7 +184,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
             else
             {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
             return toReturn;
         }
@@ -286,7 +286,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
             else
             {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
         }
 
@@ -335,7 +335,7 @@ namespace ObligatorioDA2.Data.Repositories
             return context.Matches.Any(m => m.Id == anId);
         }
 
-        public Commentary CommentOnMatch(int idMatch, Commentary aComment)
+        public Commentary CommentOnEncounter(int idMatch, Commentary aComment)
         {
             Commentary made;
             try
@@ -353,7 +353,7 @@ namespace ObligatorioDA2.Data.Repositories
         {
             if (!context.Matches.Any(m => m.Id == idMatch))
             {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
             return CommentOnExistingMatch(idMatch, aComment);
         }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.Data.DataAccess;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Test
 {
+    [ExcludeFromCodeCoverage]
     [Route("api/[controller]")]
     public class TestController : Controller
     {

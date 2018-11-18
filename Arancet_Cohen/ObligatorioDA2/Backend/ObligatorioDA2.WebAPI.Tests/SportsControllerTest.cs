@@ -36,7 +36,7 @@ namespace ObligatorioDA2.WebAPI.Tests
         {
             sportsService = new Mock<ISportService>();
             teamsRepo = new Mock<ITeamService>();
-            Mock<IMatchRepository> matchesRepo = new Mock<IMatchRepository>();
+            Mock<IEncounterRepository> matchesRepo = new Mock<IEncounterRepository>();
             Mock<IAuthenticationService> mockService = new Mock<IAuthenticationService>();
             Mock<IImageService> mockImgService = new Mock<IImageService>();
 
@@ -61,7 +61,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             //Arrange.
             SportModelIn input= new SportModelIn()
             {
-                Name = "Tennis"
+                Name = "Tennis",
+                IsTwoTeams= true
             };
 
             //Act.
@@ -154,6 +155,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Value);
             Assert.AreEqual(modelOut.Name, "Tennis");
+            Assert.IsTrue(modelOut.IsTwoTeams);
             Assert.AreEqual(okResult.StatusCode, 200);
         }
 

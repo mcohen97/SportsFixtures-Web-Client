@@ -72,12 +72,18 @@ namespace ObligatorioDA2.WebAPI.Tests
             IActionResult result = controller.GetAll(new DateTime(), new DateTime());
             OkObjectResult okResult = result as OkObjectResult;
             IEnumerable<LogModelOut> logs = okResult.Value as IEnumerable<LogModelOut>;
+            LogModelOut first = logs.First(l => l.Id == 1);
 
             //Assert.
             Assert.IsNotNull(result);
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(logs);
             Mock.Get(logger).Verify(s => s.GetAllLogs(), Times.Once);
+            Assert.AreEqual(someLogList.Count, logs.ToList().Count);
+            Assert.AreEqual(LogType.LOGIN,first.LogType);
+            Assert.AreEqual(LogMessage.LOGIN_OK,first.Message);
+            Assert.AreEqual("SomePepitoFulanito",first.Useranme);
+            Assert.AreEqual(new DateTime(2016, 02, 20),first.Date);
         }
 
         [TestMethod]
