@@ -16,7 +16,7 @@ namespace ObligatorioDA2.Services
 {
     public class FixtureService : IFixtureService
     {
-        private IInnerMatchService matchService;
+        private IInnerEncounterService matchService;
         private ITeamRepository teamStorage;
         private IFixtureGenerator fixtureAlgorithm;
         private IAuthenticationService authenticator;
@@ -25,7 +25,7 @@ namespace ObligatorioDA2.Services
         private const string DLL_EXTENSION = "*.dll";
 
 
-        public FixtureService( ITeamRepository teamRepository,IInnerMatchService matchAddition,
+        public FixtureService( ITeamRepository teamRepository,IInnerEncounterService matchAddition,
             IAuthenticationService authService, ILoggerService loggerService)
         {
             matchService = matchAddition;
@@ -63,7 +63,7 @@ namespace ObligatorioDA2.Services
         {
             foreach (Encounter match in added)
             {
-                matchService.DeleteMatch(match.Id);
+                matchService.DeleteEncounter(match.Id);
             }
         }
 
@@ -105,7 +105,7 @@ namespace ObligatorioDA2.Services
                 AddMatches(ref added, generatedMatches);
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_OK, GetConnectedUserName(), DateTime.Now);
             }
-            catch (TeamAlreadyHasMatchException e)
+            catch (TeamAlreadyHasEncounterException e)
             {
                 RollBack(added);
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG + " " + e.Message, GetConnectedUserName(), DateTime.Now);
@@ -124,7 +124,7 @@ namespace ObligatorioDA2.Services
         {
             foreach (Encounter match in generated)
             {
-                Encounter matchAdded = matchService.AddMatch(match);
+                Encounter matchAdded = matchService.AddEncounter(match);
                 added.Add(matchAdded);
             }
             return added;

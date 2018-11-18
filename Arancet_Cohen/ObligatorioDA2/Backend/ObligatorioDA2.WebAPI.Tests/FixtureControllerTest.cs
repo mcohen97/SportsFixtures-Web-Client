@@ -29,9 +29,9 @@ namespace ObligatorioDA2.WebAPI.Tests
         private FixturesController controller;
         private Sport testSport;
         private Mock<ISportRepository> sportsRepo;
-        private Mock<IMatchRepository> matchesRepo;
+        private Mock<IEncounterRepository> matchesRepo;
 
-        private IInnerMatchService innerMatches;
+        private IInnerEncounterService innerMatches;
 
         private Mock<ITeamRepository> teamsRepo;
         private Mock<ILoggerService> logger;
@@ -101,7 +101,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             sportsRepo.Setup(r => r.Exists(testSport.Name)).Returns(true);
             sportsRepo.Setup(r => r.GetAll()).Returns(new List<Sport>() { testSport });
 
-            matchesRepo = new Mock<IMatchRepository>();
+            matchesRepo = new Mock<IEncounterRepository>();
             matchesRepo.Setup(m => m.Add(It.IsAny<Match>())).Returns((Match mat) => { return mat; });
 
             teamsRepo = new Mock<ITeamRepository>();
@@ -110,7 +110,7 @@ namespace ObligatorioDA2.WebAPI.Tests
 
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
             auth.Setup(a => a.GetConnectedUser()).Returns(GetFakeUser());
-            MatchService matchService = new MatchService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object, auth.Object);
+            EncounterService matchService = new EncounterService(matchesRepo.Object, teamsRepo.Object, sportsRepo.Object, auth.Object);
             innerMatches = matchService;
 
             logger = new Mock<ILoggerService>();
@@ -186,7 +186,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             foreach (EncounterDto encounter in encounters)
             {
                 foreach (int teamId in encounter.teamsIds) {
-                    errorMessagges.Add(GetTeam(teamId).Name + " already has a match on date " + new DateTime(encounter.date.Year, encounter.date.Month, encounter.date.Day));
+                    errorMessagges.Add(GetTeam(teamId).Name + " already has an encounter on date " + new DateTime(encounter.date.Year, encounter.date.Month, encounter.date.Day));
                 }
             }
             return errorMessagges;

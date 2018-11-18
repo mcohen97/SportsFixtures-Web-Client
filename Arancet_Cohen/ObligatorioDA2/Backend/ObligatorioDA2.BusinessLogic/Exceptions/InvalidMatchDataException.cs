@@ -3,10 +3,10 @@ using System;
 namespace ObligatorioDA2.BusinessLogic.Exceptions
 {
     [System.Serializable]
-    public class InvalidMatchDataException : InvalidDataException
+    public class InvalidEncounterDataException : InvalidDataException
     {
-        public InvalidMatchDataException() { }
-        public InvalidMatchDataException(string message) : base(message) { }
+        public InvalidEncounterDataException() { }
+        public InvalidEncounterDataException(string message) : base(message) { }
 
     }
 }

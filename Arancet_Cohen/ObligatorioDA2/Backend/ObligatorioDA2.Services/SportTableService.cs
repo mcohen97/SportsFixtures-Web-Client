@@ -16,10 +16,10 @@ namespace ObligatorioDA2.Services
     {
         private ISportRepository sportsStorage;
         private ITeamRepository teamsStorage;
-        private IInnerMatchService matchesService;
+        private IInnerEncounterService matchesService;
         private TeamDtoMapper mapper;
 
-        public SportTableService(ISportRepository sportsRepo, ITeamRepository teamsRepo, IInnerMatchService service)
+        public SportTableService(ISportRepository sportsRepo, ITeamRepository teamsRepo, IInnerEncounterService service)
         {
             sportsStorage = sportsRepo;
             teamsStorage = teamsRepo;
@@ -42,7 +42,7 @@ namespace ObligatorioDA2.Services
         private ICollection<Tuple<TeamDto, int>> CalculateExistingSportTable(Sport aSport)
         {
             ICollection<Team> sportTeams = teamsStorage.GetTeams(aSport.Name);
-            ICollection<Encounter> teamsEncounters = matchesService.GetAllMatches(aSport.Name);
+            ICollection<Encounter> teamsEncounters = matchesService.GetAllEncounters(aSport.Name);
             ICollection<Tuple<Team, int>> positions;
             if (aSport.IsTwoTeams)
             {

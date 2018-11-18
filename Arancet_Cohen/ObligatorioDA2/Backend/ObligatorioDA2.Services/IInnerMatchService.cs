@@ -5,10 +5,10 @@ using System.Text;
 
 namespace ObligatorioDA2.Services
 {
-    public interface IInnerMatchService
+    public interface IInnerEncounterService
     {
-        Encounter AddMatch(Encounter anEncounter);
-        ICollection<Encounter> GetAllMatches(string sportName);
-        void DeleteMatch(int anId);
+        Encounter AddEncounter(Encounter anEncounter);
+        ICollection<Encounter> GetAllEncounters(string sportName);
+        void DeleteEncounter(int anId);
     }
 }

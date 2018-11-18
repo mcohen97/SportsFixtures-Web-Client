@@ -30,7 +30,7 @@ namespace ObligatorioDA2.Services.Tests
         private Team teamD;
         private ICollection<Team> teamsCollection;
         private ICollection<string> teamsNames;
-        private IMatchRepository matchStorage;
+        private IEncounterRepository matchStorage;
         private ITeamRepository teamStorage;
         private ISportRepository sportStorage;
         private FixtureService fixtureService;
@@ -56,7 +56,7 @@ namespace ObligatorioDA2.Services.Tests
             context.Database.EnsureDeleted();
             Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
             auth.Setup(a => a.GetConnectedUser()).Returns(GetFakeUser());
-            MatchService service = new MatchService(matchStorage, teamStorage, sportStorage, auth.Object);
+            EncounterService service = new EncounterService(matchStorage, teamStorage, sportStorage, auth.Object);
             algorithmPaths = @".\";
             Mock<ILoggerService> logService = new Mock<ILoggerService>();
             fixtureService = new FixtureService(teamStorage,service, auth.Object, logService.Object);
