@@ -35,11 +35,11 @@ namespace ObligatorioDA2.Services
             mapper = new EncounterDtoMapper();
         }
 
-        private IFixtureGenerator FixtureAlgorithm { get { return fixtureAlgorithm; } set { SetFixtureAlgorithm(value); } }
+        public IFixtureGenerator FixtureAlgorithm { get { return fixtureAlgorithm; } private set { SetFixtureAlgorithm(value); } }
 
         private void SetFixtureAlgorithm(IFixtureGenerator algorithm)
         {
-            fixtureAlgorithm = algorithm ?? throw new ArgumentNullException();
+            fixtureAlgorithm = algorithm;
         }
 
         public void SetFixtureAlgorithm(FixtureDto aFixture, string algorithmsPath) {
@@ -55,7 +55,7 @@ namespace ObligatorioDA2.Services
             }
             if (aFixture.initialDate.Equals(new DateTime())) {
                 logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG, GetConnectedUserName(), DateTime.Now);
-                throw new ServiceException("Fixture name can't be empty", ErrorType.INVALID_DATA);
+                throw new ServiceException("Fixture date can't be empty", ErrorType.INVALID_DATA);
             }
         }
 
@@ -170,12 +170,11 @@ namespace ObligatorioDA2.Services
 
         private IFixtureGenerator BuildFixtureAlgorithm(FixtureDto dto, string algorithmsPath)
         {
-            DateTime date = dto.initialDate == null || dto.initialDate == new DateTime() ? DateTime.Today : dto.initialDate;
             int roundLength = dto.roundLength == 0 ? 1 : dto.roundLength;
             int daysBetweenRounds = dto.daysBetweenRounds == 0 ? 7 : dto.daysBetweenRounds;
 
             Type algortihmType = GetAlgorithmType(algorithmsPath, dto.fixtureName);
-            object fromDll = Activator.CreateInstance(algortihmType, new object[] { date, roundLength, daysBetweenRounds });
+            object fromDll = Activator.CreateInstance(algortihmType, new object[] { dto.initialDate, roundLength, daysBetweenRounds });
             IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
             return algorithm;
         }

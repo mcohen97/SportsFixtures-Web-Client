@@ -14,6 +14,7 @@ using System.Security.Claims;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Mappers;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace ObligatorioDA2.WebAPI.Tests
 {
@@ -61,6 +62,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             OkObjectResult okResult = result as OkObjectResult;
             ICollection<EncounterCalendarModelOut> matches = okResult.Value as ICollection<EncounterCalendarModelOut>;
             EncounterCalendarModelOut cal1 = ((List<EncounterCalendarModelOut>)matches)[0];
+            EncountersGroupedByDate cal1Date = cal1.EncountersByDate.ToList()[0];
             EncounterCalendarModelOut cal2 = ((List<EncounterCalendarModelOut>)matches)[1];
 
             //Assert.
@@ -70,7 +72,11 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(matches);
             Assert.AreEqual(matches.Count, 2);
             Assert.AreEqual(1, cal1.EncountersByDate.Count);
+            Assert.AreEqual("Basketball", cal1.SportName);
             Assert.AreEqual(2, cal2.EncountersByDate.Count);
+            Assert.AreEqual("Football", cal2.SportName);
+            Assert.AreEqual(new DateTime(2018, 6, 27), cal1Date.Date);
+            Assert.AreEqual(1, cal1Date.Encounters.Count);
         }
 
         private ICollection<EncounterDto> GetFakeEncounters()
@@ -110,6 +116,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(matches);
             Assert.AreEqual(matches.Count, 1);
+            Assert.AreEqual(matches.ToList()[0].TeamsIds.Count, 2);
         }
 
         [TestMethod]
@@ -195,6 +202,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(200, foundResult.StatusCode);
             Assert.IsNotNull(match);
             Assert.AreEqual(1, match.Id);
+            Assert.IsFalse(match.CommentsIds.Any());
         }
 
         [TestMethod]
@@ -377,6 +385,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual("GetCommentById", createdResult.RouteName);
             Assert.IsNotNull(comment);
             Assert.AreEqual(comment.Text, input.Text);
+            Assert.AreEqual("username", comment.MakerUsername);
         }
 
         [TestMethod]

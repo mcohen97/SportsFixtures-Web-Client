@@ -50,6 +50,14 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetTeamNoDataAccess()
+        {
+            teams.Setup(r => r.Get(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            testService.GetTeam(1);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void GetTeamNotLoggedTest() {
             teams.Setup(r => r.Get(1)).Returns(testTeam);
@@ -104,6 +112,15 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddTeamNoDataAccess() {
+            GrantAdminPermissions();
+            sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
+            teams.Setup(r => r.Add(testTeam)).Throws(new DataInaccessibleException());
+            testService.AddTeam(testDto);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void AddTeamNotLoggedException() {
             LogOut();
@@ -128,6 +145,23 @@ namespace ObligatorioDA2.Services.Tests
             teams.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
             sports.Verify(r => r.Get(testSport.Name), Times.Once);
             Assert.AreEqual(testDto.name, modified.name);
+        }
+
+        [TestMethod]
+        public void ModifyTeamSomeFieldsTest()
+        {
+            GrantAdminPermissions();
+            sports.Setup(r => r.Get(testSport.Name)).Returns(testSport);
+            teams.Setup(r => r.Get(It.IsAny<int>())).Returns(testTeam);
+            string oldName = testDto.name;
+            string oldPhoto = testDto.photo;
+            testDto.name = "";
+            testDto.photo = "";
+            TeamDto modified = testService.Modify(testDto);
+            teams.Verify(r => r.Modify(It.IsAny<Team>()), Times.Once);
+            sports.Verify(r => r.Get(testSport.Name), Times.Once);
+            Assert.AreEqual(oldName, modified.name);
+            Assert.AreEqual(oldPhoto, modified.photo);
         }
 
         [TestMethod]

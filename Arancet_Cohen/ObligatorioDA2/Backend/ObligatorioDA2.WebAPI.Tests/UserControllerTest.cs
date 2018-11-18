@@ -31,7 +31,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             service = new Mock<IUserService>();
             auth = new Mock<IAuthenticationService>();
             controller = new UsersController(service.Object,auth.Object ,new ImageService("aPath"));
-            input = new UserModelIn() { Name = "name", Surname = "surname", Username = "username", Password = "password", Email = "mail@gmail.com" };
+            input = new UserModelIn() { Name = "name", Surname = "surname", Username = "username", Password = "password", Email = "mail@gmail.com", IsAdmin=false };
             controller.ControllerContext = GetFakeControllerContext();
         }
 
@@ -54,6 +54,10 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.IsNotNull(modelOut);
             Assert.AreEqual(modelOut.Username, fake.username);
+            Assert.AreEqual(modelOut.Email, fake.email);
+            Assert.AreEqual(modelOut.Name, fake.name);
+            Assert.AreEqual(modelOut.Surname, fake.surname);
+            Assert.IsFalse(modelOut.IsAdmin);
         }
 
         [TestMethod]
@@ -128,7 +132,8 @@ namespace ObligatorioDA2.WebAPI.Tests
             {
                 Name = "name",
                 Surname = "surname",
-                Password = "password"
+                Password = "password",
+                IsAdmin = true
             };
             //We need to force the error in de ModelState.
             controller.ModelState.AddModelError("", "Error");
@@ -200,7 +205,8 @@ namespace ObligatorioDA2.WebAPI.Tests
                 Name = "name1",
                 Surname = "surname1",
                 Password = "password1",
-                Email = "mail@domain.com"
+                Email = "mail@domain.com",
+                IsAdmin = true
             };
             service.Setup(us => us.ModifyUser(It.IsAny<UserDto>())).Returns(GetFakeUser());
 

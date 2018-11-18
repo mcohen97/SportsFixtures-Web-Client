@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ObligatorioDA2.Services.Exceptions;
-using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.BusinessLogic.FixtureAlgorithms;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using ObligatorioDA2.Services.Interfaces;
@@ -48,7 +47,8 @@ namespace ObligatorioDA2.Services.Tests
             teamB = new Mock<Team>(2, "teamB", "photo", sport).Object;
             teamC = new Mock<Team>(3, "teamC", "photo", sport).Object;
             teamD = new Mock<Team>(4, "teamD", "photo", sport).Object;
-            testFixture = new FixtureDto() { initialDate = DateTime.Today, daysBetweenRounds = 5, roundLength = 2 };
+            testFixture = new FixtureDto() { fixtureName= "ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture"
+                ,initialDate = DateTime.Today, daysBetweenRounds = 5, roundLength = 2 };
             teamsCollection = GetTeamsList();
             teamsNames = teamsCollection.Select(tn => tn.Name).ToList();
             SetUpRepository();
@@ -87,6 +87,14 @@ namespace ObligatorioDA2.Services.Tests
         {
             testFixture.fixtureName = "Unexistent";
             fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
+        }
+
+        [TestMethod]
+        public void SetFixtureAlgorithmDefaultValues() {
+            testFixture.daysBetweenRounds = 0;
+            testFixture.roundLength = 0;
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
+            Assert.IsNotNull(fixtureService.FixtureAlgorithm);
         }
 
         [TestMethod]
@@ -156,6 +164,22 @@ namespace ObligatorioDA2.Services.Tests
         //Exceptions
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddFixtureOfNoExistentSport()
+        {
+            ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture("Golf");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddFixtureInvalidDate()
+        {
+            testFixture.initialDate = new DateTime();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
+            ICollection<EncounterDto> matchesAdded = fixtureService.AddFixture("Golf");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(WrongFixtureException))]
         public void AddFixtureTeamAlreadyHasMatchTest()
         {
@@ -178,8 +202,26 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(WrongFixtureException))]
+        public void AddFixtureTooFewTeamsTest() {
+            sportStorage.Add(sport);
+            teamStorage.Add(teamA);
+            testFixture.fixtureName = (typeof(OneMatchFixture)).ToString();
+            fixtureService.SetFixtureAlgorithm(testFixture, algorithmPaths);
+            fixtureService.AddFixture(sport.Name);
+        }
+
+        [TestMethod]
         public void GetAvailableStrategiesTest() {
             ICollection<Type> algorithms = fixtureService.GetAlgorithms(algorithmPaths);
+            Assert.AreEqual(0, algorithms.Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetAvailableStrategiesInvalidPathTest()
+        {
+            ICollection<Type> algorithms = fixtureService.GetAlgorithms("wrong path");
             Assert.AreEqual(0, algorithms.Count);
         }
 

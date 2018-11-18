@@ -13,9 +13,11 @@ using ObligatorioDA2.Services;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.WebAPI.Controllers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)

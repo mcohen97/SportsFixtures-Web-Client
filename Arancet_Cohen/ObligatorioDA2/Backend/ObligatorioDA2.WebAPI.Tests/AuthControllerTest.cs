@@ -29,8 +29,24 @@ namespace ObligatorioDA2.WebAPI.Tests
         }
 
         [TestMethod]
-        public void LoginSuccesfullyTest() {
+        public void LoginAdminSuccesfullyTest() {
             //arrange
+            loginService.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser);
+
+            //act
+            LoginModelIn credentials = new LoginModelIn() { Username = "aUsername", Password = "aPassword" };
+            IActionResult result = controllerToTest.Authenticate(credentials);
+            OkObjectResult okResult = result as OkObjectResult;
+
+            //assert
+            Assert.IsNotNull(okResult);
+        }
+
+        [TestMethod]
+        public void LoginFollowerSuccesfullyTest()
+        {
+            //arrange
+            testUser.isAdmin = false;
             loginService.Setup(l => l.Login("aUsername", "aPassword")).Returns(testUser);
 
             //act

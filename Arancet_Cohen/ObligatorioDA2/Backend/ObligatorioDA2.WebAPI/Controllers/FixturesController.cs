@@ -54,13 +54,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return Ok(toReturn);
         }
 
-        private string GetTypeString(Type t)
-        {
-            string fullName = t.ToString();
-            string[] tokens = fullName.Split(".");
-            return tokens[tokens.Length - 1];
-        }
-
         [HttpPost("{sportName}")]
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult CreateFixture(string sportName, FixtureModelIn input)
