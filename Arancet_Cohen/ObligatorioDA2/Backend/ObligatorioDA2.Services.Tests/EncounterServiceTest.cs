@@ -13,6 +13,7 @@ using System.Linq;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using System.Diagnostics.CodeAnalysis;
 using Moq;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.Services.Tests
 {
@@ -82,11 +83,37 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
+        public void AddInvalidFormatTest() {
+            sportsRepo.Add(sport);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            matchAvsBDto.teamsIds = new List<int>() { teamA.Id };
+            serviceToTest.AddEncounter(matchAvsBDto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
         public void AddAlreadyExistentTest()
         {
             serviceToTest.AddEncounter(matchAvsBDto);
             EncounterDto sameMatch = new EncounterDto() { id = matchAvsBDto.id, teamsIds = matchAvsBDto.teamsIds, date = matchAvsBDto.date, sportName = matchAvsBDto.sportName };
             serviceToTest.AddEncounter(sameMatch);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddNoDataAccessTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
+            fakeRepo.Setup(r => r.Add(It.IsAny<Encounter>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+
+            sportsRepo.Add(sport);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+
+            serviceToTest.AddEncounter(matchAvsBDto);
         }
 
         [TestMethod]
@@ -132,6 +159,16 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetEncounterNoDataAccessTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.Get(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+            serviceToTest.GetEncounter(9);
+        }
+
+        [TestMethod]
         public void GetExistentMatchTest()
         {
             sportsRepo.Add(sport);
@@ -156,10 +193,24 @@ namespace ObligatorioDA2.Services.Tests
             Assert.AreEqual(matches.Count, 2);
         }
 
+
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
         public void GetMatchesOfNotExistingSportTest()
         {
+            serviceToTest.GetAllEncounterDtos(sport.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetMatchesOfSportNoDataAccessTest()
+        {
+            sportsRepo.Add(sport);
+
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+
             serviceToTest.GetAllEncounterDtos(sport.Name);
         }
 
@@ -186,8 +237,19 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
-        public void DeleteMatchTest()
+        public void DeleteUnexistentMatchTest()
         {
+            serviceToTest.DeleteEncounter(3);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void DeleteMatchNoDataAccessTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.Delete(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+
             serviceToTest.DeleteEncounter(3);
         }
 
@@ -251,6 +313,22 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void ModifyNoDataAccessTest()
+        {
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            teamsRepo.Add(teamC);
+
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+
+            EncounterDto modifiedAvsB = new EncounterDto() { id = 1, teamsIds = new List<int>() { teamB.Id, teamA.Id }, date = matchAvsB.Date.AddDays(1), sportName = sport.Name };
+            serviceToTest.ModifyEncounter(modifiedAvsB);
+        }
+
+        [TestMethod]
         public void GetAllMatchesTest()
         {
             sportsRepo.Add(sport);
@@ -260,6 +338,15 @@ namespace ObligatorioDA2.Services.Tests
             serviceToTest.AddEncounter(matchAvsCDto);
             serviceToTest.AddEncounter(matchAvsBDto);
             Assert.AreEqual(serviceToTest.GetAllEncounter().Count, 2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetAllEncountersNoDataAccessTest() {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.GetAll()).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+            serviceToTest.GetAllEncounter();
         }
 
         [TestMethod]
@@ -280,6 +367,16 @@ namespace ObligatorioDA2.Services.Tests
             teamsRepo.Add(teamB);
             serviceToTest.AddEncounter(matchAvsBDto);
             Assert.IsFalse(serviceToTest.Exists(matchAvsC.Id));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void ExistsNoDataAccessTest() {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.Exists(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+
+            serviceToTest.Exists(3);
         }
 
         [TestMethod]
@@ -306,6 +403,22 @@ namespace ObligatorioDA2.Services.Tests
             usersRepo.Add(commentarist);
             Encounter added = matchesRepo.Add(matchAvsB);
             SetUpRepository();
+            serviceToTest.CommentOnEncounter(added.Id, commentarist.UserName, "a Comment");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void CommentNoMatchNoDataAccessTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.CommentOnEncounter(It.IsAny<int>(), It.IsAny<Commentary>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+            UserId identity = new UserId() { Name = "name", Surname = "surname", UserName = "username", Password = "password", Email = "mail@mail.com" };
+            User commentarist = new User(identity, true);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            usersRepo.Add(commentarist);
+            Encounter added = matchesRepo.Add(matchAvsB);
             serviceToTest.CommentOnEncounter(added.Id, commentarist.UserName, "a Comment");
         }
 
@@ -385,9 +498,47 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ServiceException))]
+        public void GetCommentNoDataAccess() {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.GetComment(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+            serviceToTest.GetComment(3);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetAllCommentsNoDataAccessTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.GetComments()).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+            serviceToTest.GetAllCommentaries();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
         public void GetNotExistingCommentTest()
         {
             serviceToTest.GetComment(3);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetCommentsOfEncounterNoDataAccessTest() {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.Get(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+            serviceToTest.GetEncounterCommentaries(8);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void GetCommentsOfUnexistentEncounterTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.Get(It.IsAny<int>())).Throws(new EncounterNotFoundException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+            serviceToTest.GetEncounterCommentaries(8);
         }
 
         [TestMethod]
@@ -402,6 +553,52 @@ namespace ObligatorioDA2.Services.Tests
             ResultDto retrievedResult = retrieved.result;
             Assert.AreEqual(result.teams_positions.Count, retrievedResult.teams_positions.Count);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void SetResultUnexistentMatchTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.Get(It.IsAny<int>())).Throws(new EncounterNotFoundException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+
+            ICollection<Tuple<int, int>> standings = GetFakeResult();
+            ResultDto result = new ResultDto() { teams_positions = standings };
+            serviceToTest.SetResult(matchAvsB.Id, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void SetResultNoDataAccessTest()
+        {
+            Mock<IEncounterRepository> fakeRepo = new Mock<IEncounterRepository>();
+            fakeRepo.Setup(r => r.Get(It.IsAny<int>())).Throws(new DataInaccessibleException());
+            serviceToTest = new EncounterService(fakeRepo.Object, teamsRepo, sportsRepo, usersRepo, auth.Object);
+
+            sportsRepo.Add(sport);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+
+            ICollection<Tuple<int, int>> standings = GetFakeResult();
+            ResultDto result = new ResultDto() { teams_positions = standings };
+            serviceToTest.SetResult(matchAvsB.Id, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void SetInvalidResultTest()
+        {
+            sportsRepo.Add(sport);
+            teamsRepo.Add(teamA);
+            teamsRepo.Add(teamB);
+            matchesRepo.Add(matchAvsB);
+
+            ICollection<Tuple<int, int>> standings = new List<Tuple<int, int>>() {new Tuple<int, int>(teamA.Id,1),
+                                                                                new Tuple<int, int>(teamB.Id,5) };
+            ResultDto result = new ResultDto() { teams_positions = standings };
+            serviceToTest.SetResult(matchAvsB.Id, result);
+        }
+
 
         private ICollection<Tuple<int,int>> GetFakeResult()
         {
