@@ -23,13 +23,6 @@ namespace ObligatorioDA2.BusinessLogic
 
         public LogInfo() { }
 
-        public LogInfo(string message, string type, DateTime date)
-        {
-            Message = message;
-            LogType = type;
-            Date = date;
-        }
-
         private void SetMessage(string value)
         {
             message = value;
