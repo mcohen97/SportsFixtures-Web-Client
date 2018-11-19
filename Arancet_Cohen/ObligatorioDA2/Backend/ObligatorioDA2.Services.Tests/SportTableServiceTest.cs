@@ -7,6 +7,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using Match = ObligatorioDA2.BusinessLogic.Match;
@@ -143,6 +144,13 @@ namespace ObligatorioDA2.Services.Tests
             Assert.AreEqual(4,positions[0].Item2);
             Assert.AreEqual(3,positions[1].Item2);
             Assert.AreEqual(1,positions[2].Item2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void CalculateTableOfNoExistingSportTest() {
+            sportsStorage.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
+            serviceToTest.GetScoreTable("Soccer");
         }
     }
 }
