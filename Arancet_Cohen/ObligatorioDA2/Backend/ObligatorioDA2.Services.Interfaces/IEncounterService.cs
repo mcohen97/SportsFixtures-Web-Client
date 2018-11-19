@@ -18,9 +18,9 @@ namespace ObligatorioDA2.Services.Interfaces
 
         void DeleteEncounter(int anId);
 
-        void ModifyEncounter(EncounterDto aMatch);
+        EncounterDto ModifyEncounter(EncounterDto aMatch);
 
-        void ModifyEncounter(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName);
+        EncounterDto ModifyEncounter(int idMatch, ICollection<int> teamsIds, DateTime date, string sportName);
 
         ICollection<EncounterDto> GetAllEncounterDtos(string sportName);
 

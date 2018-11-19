@@ -87,13 +87,13 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public void ModifyEncounter(int idEncounter, ICollection<int> teamsIds, DateTime date, string sportName)
+        public EncounterDto ModifyEncounter(int idEncounter, ICollection<int> teamsIds, DateTime date, string sportName)
         {
             EncounterDto toModify = new EncounterDto() { id = idEncounter, sportName = sportName, date = date, teamsIds = teamsIds };
-            ModifyEncounter(toModify);
+            return ModifyEncounter(toModify);
         }
 
-        public void ModifyEncounter(EncounterDto anEncounter)
+        public EncounterDto ModifyEncounter(EncounterDto anEncounter)
         {
             Encounter toAdd = encounterConverter.ToEncounter(anEncounter);
             try
@@ -108,6 +108,7 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
+            return encounterConverter.ToDto(toAdd);
         }
 
         private void ValidateDate(Encounter anEncounter) {

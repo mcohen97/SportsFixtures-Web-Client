@@ -153,8 +153,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 SetSession();
-                matchService.ModifyEncounter(id, aMatch.TeamIds, aMatch.Date, aMatch.SportName);
-                EncounterModelOut output = BuildModelout(id, aMatch);
+                EncounterDto modified =matchService.ModifyEncounter(id, aMatch.TeamIds, aMatch.Date, aMatch.SportName);
+                modified.id = id;
+                EncounterModelOut output = factory.CreateModelOut(modified);
                 result = Ok(output);
             }
             catch (ServiceException e)
