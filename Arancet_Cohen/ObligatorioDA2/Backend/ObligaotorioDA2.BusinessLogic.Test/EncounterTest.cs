@@ -287,6 +287,9 @@ namespace ObligatorioDA2.BusinessLogic.Test
         public void SharedPositionsInCompetitionTest()
         {
             sport = new Sport("Archery", false);
+            teamA = new Team(1, "TeamA", "Photo/A", sport);
+            teamB = new Team(2, "TeamB", "Photo/B", sport);
+            teamC = new Team(2, "TeamC", "Photo/C", sport);
             match = new Competition(3, new List<Team>() { teamA, teamB, teamC }, date, sport);
             Result fakeResult = GetFakeResult();
             fakeResult.Add(teamC, 1);
