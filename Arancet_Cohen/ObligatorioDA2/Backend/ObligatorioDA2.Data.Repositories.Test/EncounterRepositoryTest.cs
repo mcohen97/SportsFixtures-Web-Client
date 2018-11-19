@@ -82,6 +82,14 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
+        public void ClearNoDataAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            matchesStorage.Clear();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
         public void EmptyNoDataAccessTest()
         {
             CreateDisconnectedDatabase();
