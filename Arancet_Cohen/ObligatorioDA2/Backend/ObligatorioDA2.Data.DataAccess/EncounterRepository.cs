@@ -12,17 +12,17 @@ using System;
 
 namespace ObligatorioDA2.Data.Repositories
 {
-    public class MatchRepository : IEncounterRepository
+    public class EncounterRepository : IEncounterRepository
     {
         private DatabaseConnection context;
-        private MatchMapper matchConverter;
+        private EncounterMapper matchConverter;
         private TeamMapper teamConverter;
         private CommentMapper commentConverter;
         private EncounterFactory factory;
-        public MatchRepository(DatabaseConnection aContext)
+        public EncounterRepository(DatabaseConnection aContext)
         {
             context = aContext;
-            matchConverter = new MatchMapper();
+            matchConverter = new EncounterMapper();
             commentConverter = new CommentMapper();
             teamConverter = new TeamMapper();
             factory = new EncounterFactory();

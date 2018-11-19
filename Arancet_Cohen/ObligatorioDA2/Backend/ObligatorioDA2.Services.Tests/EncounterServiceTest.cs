@@ -63,7 +63,7 @@ namespace ObligatorioDA2.Services.Tests
                .UseInMemoryDatabase(databaseName: "MatchService")
                .Options;
             context = new DatabaseConnection(options);
-            matchesRepo = new MatchRepository(context);
+            matchesRepo = new EncounterRepository(context);
             sportsRepo = new SportRepository(context);
             teamsRepo = new TeamRepository(context);
             usersRepo = new UserRepository(context);

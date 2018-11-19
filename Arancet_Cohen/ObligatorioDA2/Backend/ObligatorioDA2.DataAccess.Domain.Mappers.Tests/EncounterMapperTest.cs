@@ -11,9 +11,9 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class MatchMapperTest
+    public class EncounterMapperTest
     {
-        private MatchMapper testMapper;
+        private EncounterMapper testMapper;
         private MatchEntity entity;
         private ICollection<MatchTeam> playingTeams;
         private EncounterFactory factory;
@@ -25,7 +25,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void SetUp()
         {
             factory = new EncounterFactory();
-            testMapper = new MatchMapper();
+            testMapper = new EncounterMapper();
             SportEntity testSport = new SportEntity() { Name = "Soccer", IsTwoTeams = true };
             TeamEntity homeTest = new TeamEntity { TeamNumber = 3, SportEntityName = "Soccer", Sport =testSport,Name = "Nacional", Photo = "aPath" };
             TeamEntity awayTest = new TeamEntity { TeamNumber = 4, SportEntityName = "Soccer", Sport = testSport,Name = "Torque", Photo = "aPath" };

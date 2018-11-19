@@ -68,7 +68,7 @@ namespace ObligatorioDA2.Services.Tests
                 .UseInMemoryDatabase(databaseName: "FixtureService")
                 .Options;
             context = new DatabaseConnection(options);
-            matchStorage = new MatchRepository(context);
+            matchStorage = new EncounterRepository(context);
             teamStorage = new TeamRepository(context);
             sportStorage = new SportRepository(context);
         }

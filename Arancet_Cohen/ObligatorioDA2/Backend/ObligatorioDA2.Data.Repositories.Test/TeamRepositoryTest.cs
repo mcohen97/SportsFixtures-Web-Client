@@ -39,7 +39,7 @@ namespace DataRepositoriesTest
             sportsStorage = new SportRepository(context);
             teamsStorage = new TeamRepository(context);
             usersStorage = new UserRepository(context);
-            matchesStorage = new MatchRepository(context);
+            matchesStorage = new EncounterRepository(context);
         }
 
         private void CreateDisconnectedDatabase()

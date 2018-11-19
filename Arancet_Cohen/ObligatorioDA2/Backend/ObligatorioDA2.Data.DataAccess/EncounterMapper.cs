@@ -7,14 +7,14 @@ using ObligatorioDA2.Data.Entities;
 
 namespace ObligatorioDA2.Data.DomainMappers
 {
-    public class MatchMapper
+    public class EncounterMapper
     {
         private TeamMapper teamConverter;
         private CommentMapper commentConverter;
         private SportMapper sportConverter;
         private EncounterFactory factory;
 
-        public MatchMapper()
+        public EncounterMapper()
         {
             teamConverter = new TeamMapper();
             commentConverter = new CommentMapper();
