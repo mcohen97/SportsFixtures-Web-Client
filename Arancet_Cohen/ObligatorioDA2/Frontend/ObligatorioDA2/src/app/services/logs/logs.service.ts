@@ -10,7 +10,7 @@ import { Team } from "src/app/classes/team";
 
 @Injectable()
 export class LogsService {
-  private WEB_API_URL : string = 'https://localhost:5001/api/logs/'; 
+  private WEB_API_URL : string = Globals.WEB_API_URL+'logs/'; 
  
   constructor(private _httpService: Http) {  } 
 

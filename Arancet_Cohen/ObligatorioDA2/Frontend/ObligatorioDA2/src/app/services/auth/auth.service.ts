@@ -5,10 +5,11 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from "rxjs";  
 import { map, tap, catchError } from 'rxjs/operators'; 
 import { ErrorResponse } from "src/app/classes/error";
+import { Globals } from "src/app/globals";
 
 @Injectable()
 export class AuthService {
-    private WEB_API_URL : string = 'https://localhost:5001/api/authentication'; 
+    private WEB_API_URL : string = Globals.WEB_API_URL+"authentication"; 
  
     constructor(private _httpService: Http) {  } 
 

@@ -2,6 +2,9 @@
     <div class = "error-message">
       {{errorMessage}}
     </div>
+    <div class="loading-shade" *ngIf="isLoading">
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
+    </div>
     <mat-expansion-panel class="mat-elevation-z8" style="margin: 10px auto 10px auto;">
         <mat-expansion-panel-header>
             <mat-panel-title>
@@ -16,15 +19,14 @@
                             (monthSelected)="chosenMonthHandler($event, dp)">
             </mat-datepicker>
         </mat-form-field>
-    </mat-expansion-panel>  
-    <div *ngIf = "dataRetrieved" class="mat-elevation-z8" style="background-color:white">
-        <div class="loading-shade" *ngIf="isLoading">
-            <mat-spinner *ngIf="isLoading"></mat-spinner>
-        </div>
-
-        <div *ngFor = "let sport of sports"  style="width:100%; max-height: 50vh">      
-            <h2 style="color:rgb(20, 140, 60); margin-bottom: 0px;">{{sport.name}}  </h2>
-            <event-deck [encounters] = "getEncounters(sport.name)" [date] = actualMonth [sport] = "sport.name"></event-deck>
-        </div>
+    </mat-expansion-panel> 
+    <div *ngIf = "dataRetrieved">
+        <div *ngFor = "let sport of sports"  class="mat-elevation-z8" style="background-color:white; padding-top: 10px; margin-top:15px">
+            <div  style="width:100%; max-height: 50vh">      
+                <h2 style="color:rgb(20, 140, 60); margin-bottom: 0px;">{{sport.name}}  </h2>
+                <event-deck [encounters] = "getEncounters(sport.name)" [date] = actualMonth [sport] = "sport.name"></event-deck>
+            </div>
+        </div> 
     </div> 
+    
 </div>

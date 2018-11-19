@@ -16,8 +16,8 @@
     <mat-select [errorStateMatcher]="matcher" [formControl] = "teamsIdsControl" placeholder="Teams in encounter" (focus) = "removeError(teamsIdsControl, 'teamsInput')" multiple>
         <mat-option *ngFor = "let team of teams" [value] = team.id>{{team.name}}</mat-option>
     </mat-select>
-    <mat-error *ngIf="teamsIdsControl.hasError('teamsInput') || teamsIdsControl.hasError('lessThanTwoTeams')">{{genericError.errorMessage}}</mat-error>
-    <mat-error *ngIf="teamsIdsControl.hasError('required') && !teamsIdsControl.hasError('teamsInput') && !teamsIdsControl.hasError('lessThanTwoTeams')">This field is required</mat-error>
+    <mat-error *ngIf="teamsIdsControl.hasError('teamsInput') || teamsIdsControl.hasError('wrongTeams')">{{genericError.errorMessage}}</mat-error>
+    <mat-error *ngIf="teamsIdsControl.hasError('required') && !teamsIdsControl.hasError('teamsInput') && !teamsIdsControl.hasError('wrongTeams')">This field is required</mat-error>
   </mat-form-field>
   <mat-form-field class = "dialog-input">
       <input matInput [errorStateMatcher]="matcher" [formControl] = "dateControl" [matDatepicker] = "datePicker" placeholder="Date" (focus) = "removeError(dateControl, 'dateInput')">

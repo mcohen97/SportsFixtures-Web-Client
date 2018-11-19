@@ -27,6 +27,7 @@ export class TeamDialogComponent {
   sportNameControl:FormControl;
   photoControl:FormControl;
   files: any;
+  selectedImage:any;
 
 
   constructor(
@@ -38,6 +39,10 @@ export class TeamDialogComponent {
     this.nameControl = new FormControl();
     this.sportNameControl = new FormControl();
     this.photoControl = new FormControl();
+    if(!data.isNewTeam){
+      this.nameControl.disable();
+      this.sportNameControl.disable();
+    }
     this.setValidators();
   }
 
@@ -53,9 +58,10 @@ export class TeamDialogComponent {
     if(this.allValid())
       this.data.isNewTeam ? this.addTeam(this.data.aTeam) : this.updateTeam(this.data.aTeam);
   }
+  
   allValid(): boolean {
-    return  this.nameControl.valid
-      && this.sportNameControl.valid
+    return  (this.nameControl.valid || this.nameControl.disabled)
+      && (this.sportNameControl.valid || this.sportNameControl.disabled)
       && this.photoControl.valid
   }
 
@@ -170,6 +176,7 @@ export class TeamDialogComponent {
     var files = evt.target.files;
     var file = files[0];
 
+
   if (files && file) {
       var reader = new FileReader();
 
@@ -183,7 +190,6 @@ export class TeamDialogComponent {
   _handleReaderLoaded(readerEvt) {
     var binaryString = readerEvt.target.result;
     this.data.aTeam.photo = btoa(binaryString);
-    console.log(this.data.aTeam.photo);
   }
 
 }

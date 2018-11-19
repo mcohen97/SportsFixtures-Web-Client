@@ -2,9 +2,30 @@
   <div class = "error-message">
     {{errorMessage}}
   </div>
-<mat-form-field>
-  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
-</mat-form-field>
+
+<mat-expansion-panel class="mat-elevation-z8" style="margin: 10px auto 10px auto;">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Filters
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <mat-form-field>
+      <input matInput (dateInput)="applyDateFilter()" [matDatepicker]="fromDateDp" placeholder="From Date" [formControl]="fromDateControl">
+      <mat-datepicker-toggle matSuffix [for]="fromDateDp"></mat-datepicker-toggle>
+      <mat-datepicker #fromDateDp>
+    </mat-datepicker>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput (dateInput)="applyDateFilter()" [matDatepicker]="toDateDp" placeholder="To Date" [formControl]="toDateControl">
+    <mat-datepicker-toggle matSuffix [for]="toDateDp"></mat-datepicker-toggle>
+    <mat-datepicker #toDateDp>
+    </mat-datepicker>
+  </mat-form-field>
+    <mat-form-field>
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+    </mat-form-field>
+  </mat-expansion-panel>
+
 <div class="mat-elevation-z8" style="max-height: 90%">
     <div class="loading-shade" *ngIf="isLoading">
       <mat-spinner *ngIf="isLoading"></mat-spinner>

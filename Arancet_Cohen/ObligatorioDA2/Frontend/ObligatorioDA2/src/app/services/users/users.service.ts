@@ -11,7 +11,7 @@ import { Team } from "src/app/classes/team";
 
 @Injectable()
 export class UsersService {
-    private WEB_API_URL : string = 'https://localhost:5001/api/users/'; 
+    private WEB_API_URL : string = Globals.WEB_API_URL+'users/'; 
  
     constructor(private _httpService: Http) {  } 
 

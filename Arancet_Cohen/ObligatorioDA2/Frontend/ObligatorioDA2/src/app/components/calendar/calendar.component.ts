@@ -22,6 +22,8 @@ export class CalendarComponent implements OnInit {
   ngOnInit() {
     this.dataRetrieved = false;
     this.actualMonth = new Date(Date.now());
+    this.isLoading = true;
+    this.encounters = new Array<Encounter>();
     this.getAllSports();
   }
   errorMessage:string;
@@ -32,6 +34,8 @@ export class CalendarComponent implements OnInit {
   dataRetrieved:boolean;
   dateControl:FormControl;
   sports: Array<Sport>;
+  encounters:Array<Encounter>;
+  isLoading:boolean;
   
   constructor(private sportService:SportsService, private encountersService:EncountersService, private teamsService:TeamsService) {
     this.dateControl = new FormControl();
@@ -39,29 +43,62 @@ export class CalendarComponent implements OnInit {
 
   getAllSports(){
     this.sportService.getAllSports().subscribe(
-      ((sports:Array<Sport>) => this.sports = sports),
-      ((error:ErrorResponse) => this.handleError(error)),
-      (() => {
+      ((sports:Array<Sport>) => {
+        /*this.sports = sports;
         this.sports.forEach(sport =>{
           this.getEncountersOfSport(sport.name);
-        })
-      })
+        })*/
+        this.sports = sports;
+        this.getAllEncounters();
+      }),
+      ((error:ErrorResponse) => this.handleError(error)),
     )
+  }
+
+  getAllEncounters(){
+    this.encountersService.getAllEncounters().subscribe(
+      ((encounters:Array<Encounter>) => {
+        this.encounters = encounters
+        this.getTeams();
+      }),
+      ((error:any) => this.handleError(error))
+    )
+  }
+
+  getTeams(){
+    this.teamsService.getAllTeams().subscribe(
+      ((teams:Array<Team>) =>{
+        this.encounters.forEach(encounter => {
+          encounter.teamIds.forEach(id => {
+            if(!encounter.teams)
+              encounter.teams = new Array<Team>();
+            encounter.teams.push(teams.find(t => t.id == id));
+          });
+        });
+        this.dataRetrieved = true;
+        this.isLoading = false;
+      }),
+      ((error:any) => this.handleError(error))
+    );
   }
   
   getEncountersOfSport(sportName:string){
     this.encountersService.getAllEncountersOfSport(sportName).subscribe(
-      ((encounters:Array<Encounter>) => this.setEncountersBySport(sportName, encounters)),
+      ((encounters:Array<Encounter>) => {
+        this.setEncountersBySport(sportName, encounters);
+        this.getTeamsNames(sportName);
+      }),
       ((error:any) => this.handleError(error)),
-      (() => this.getTeamsNames(sportName))
     )
   }
 
   private getTeamsNames(sportName:string){
     this.sportService.getTeams(sportName).subscribe(
-      ((teams:Array<Team>) => this.teams = teams),
+      ((teams:Array<Team>) => {
+        this.teams = teams;
+        this.assignNamesToEncounters(sportName);
+      }),
       ((error:any) => {console.log(error)}),
-      (()=>this.assignNamesToEncounters(sportName))
     )
   }
 
@@ -73,6 +110,7 @@ export class CalendarComponent implements OnInit {
       });
     });
     this.dataRetrieved = true;
+    this.isLoading = false;
   }
    
 
@@ -93,6 +131,7 @@ export class CalendarComponent implements OnInit {
   }*/
 
   handleError(error:ErrorResponse){
+    this.isLoading=false;
     this.errorMessage = error.errorMessage;
   }
 
@@ -101,9 +140,10 @@ export class CalendarComponent implements OnInit {
   }
 
   getEncounters(sportName:string):Array<Encounter>{
-    return this.encountersBySport[sportName];
-    ;
+    return this.encounters.filter(e => e.sportName == sportName);
   }
+
+
 
   chosenMonthHandler(value:Date, datepicker: MatDatepicker<Date>) {
     this.actualMonth = value;

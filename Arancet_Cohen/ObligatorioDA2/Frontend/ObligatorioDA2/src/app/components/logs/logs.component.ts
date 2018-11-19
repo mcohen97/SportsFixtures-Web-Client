@@ -9,6 +9,7 @@ import { ReConnector } from 'src/app/services/auth/reconnector';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Token } from 'src/app/classes/token';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-logs',
@@ -21,12 +22,17 @@ export class LogsComponent implements OnInit {
   dataSource:MatTableDataSource<Log>;
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
-  fromDate:Date;
-  toDate:Date;
   errorMessage: string;
   isLoading = false;
+  fromDateControl:FormControl;
+  toDateControl:FormControl;
+  logs:Array<Log>;
+  filterValue:string;
 
   constructor(private router:Router, private auth:AuthService, private reconnector:ReConnector ,private dialog:MatDialog, private logsService:LogsService) {
+    this.fromDateControl = new FormControl();
+    this.toDateControl = new FormControl();
+    this.filterValue = "";
     this.getLogs();
   }
 
@@ -36,7 +42,10 @@ export class LogsComponent implements OnInit {
   public getLogs():void{
     this.isLoading = true;
     this.logsService.getAllLogs().subscribe(
-      ((data:Array<Log>) => this.updateTableData(data)),
+      ((data:Array<Log>) => {
+        this.updateTableData(data)
+        this.logs = data;
+      }),
       ((error:ErrorResponse) => this.handleLogError(error))
     )
   }
@@ -62,10 +71,16 @@ export class LogsComponent implements OnInit {
   }
   
   applyFilter(filterValue:string){
+    this.filterValue = filterValue;
     this.dataSource.filter = filterValue.trim().toLowerCase();
     if(this.dataSource.paginator){
       this.dataSource.paginator.firstPage();
     }
   }
 
+  applyDateFilter(){
+    var result = this.logs.filter((l:Log) => ((new Date(l.date)) >= this.fromDateControl.value || !this.fromDateControl.value) && ((new Date(l.date)) <= this.toDateControl.value || !this.toDateControl.value))
+    this.updateTableData(result);
+    this.applyFilter(this.filterValue);
+  }
 }

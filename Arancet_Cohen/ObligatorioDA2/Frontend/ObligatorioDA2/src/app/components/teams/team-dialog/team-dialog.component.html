@@ -13,8 +13,9 @@
     <mat-error *ngIf="sportNameControl.hasError('required') && !sportNameControl.hasError('sportNameInput')">This field is required</mat-error>
   </mat-form-field>
   <div class = "dialog-input">
+    <img onError="this.src='assets/imgs/no_img.png';" style='display:block; margin:10px auto 0px auto; width:70px;height:70px;' src='data:image/jpeg;base64,{{data.aTeam.photo}}' alt="">
     <input id="file" class = "upload" [formControl] = "photoControl" type = "file" placeholder="Photo" (focus) = "removeError(photoControl, 'photoInput')" accept="image/*" (change)="handleFileSelect($event)">
-    <label for="file">Choose a photo</label>
+    <label for="file">Choose an image</label>
     <mat-error *ngIf="photoControl.hasError('photoInput')">{{teamError.Photo.toString()}}</mat-error>
   </div>
 </div>

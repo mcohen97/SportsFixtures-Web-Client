@@ -11,7 +11,7 @@ import { TablePosition } from "src/app/classes/table-position";
 
 @Injectable()
 export class SportsService {
-  private WEB_API_URL : string = 'https://localhost:5001/api/sports/'; 
+  private WEB_API_URL : string = Globals.WEB_API_URL+'sports/'; 
  
   constructor(private _httpService: Http) {  } 
 

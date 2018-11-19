@@ -192,8 +192,8 @@ export class EncounterDialogComponent implements OnInit{
         this.errorFlags['teamsInput'] = this.genericError.errorMessage != "Sport not found"
       }
       if(this.genericError.errorCode == 400) {
-        this.errorFlags['teamAlreadyHasMatch'] = this.genericError.errorMessage != "A match can't have less than 2 teams";
-        this.errorFlags['lessThanTwoTeams'] = this.genericError.errorMessage == "A match can't have less than 2 teams";
+        this.errorFlags['wrongTeams'] = this.genericError.errorMessage == "A match can't have less than 2 teams" || this.genericError.errorMessage == "The sport does not allow more than two teams";
+        this.errorFlags['teamAlreadyHasMatch'] = !this.errorFlags['wrongTeams'];
       } 
     } else if (this.genericError.errorCode == 404){
       this.errorFlags['fixtureNotFound'] = this.methodControl.value != "single";
@@ -216,7 +216,7 @@ export class EncounterDialogComponent implements OnInit{
   private setValidators() {
     this.teamsIdsControl.setValidators([     
       this.existError("teamsInput"),
-      this.existError("lessThanTwoTeams"),
+      this.existError("wrongTeams"),
       Validators.required
     ]);
     this.sportNameControl.setValidators([

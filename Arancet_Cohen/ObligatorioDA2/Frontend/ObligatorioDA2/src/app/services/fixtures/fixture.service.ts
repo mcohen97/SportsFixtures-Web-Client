@@ -12,7 +12,7 @@ import { Fixture } from "src/app/classes/fixture";
 
 @Injectable()
 export class FixturesService {
-    private WEB_API_URL : string = 'https://localhost:5001/api/fixtures/'; 
+    private WEB_API_URL : string = Globals.WEB_API_URL+'fixtures/'; 
  
     constructor(private _httpService: Http) {  } 
 

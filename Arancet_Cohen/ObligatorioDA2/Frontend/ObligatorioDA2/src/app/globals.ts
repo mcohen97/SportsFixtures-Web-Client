@@ -8,7 +8,7 @@ import { StringifyOptions } from 'querystring';
 @Injectable()
 export class Globals {
 
-  WEB_API_URL : string = 'https://localhost:5001/api';
+  public static WEB_API_URL : string = 'https://localhost:5001/api/';
  
 
   static setToken(token:string){

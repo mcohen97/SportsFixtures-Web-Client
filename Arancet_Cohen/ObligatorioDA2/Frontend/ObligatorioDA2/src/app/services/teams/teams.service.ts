@@ -11,7 +11,7 @@ import { TeamError } from "src/app/classes/teamError";
 @Injectable()
 export class TeamsService {
 
-  private WEB_API_URL : string = 'https://localhost:5001/api/teams/'; 
+  private WEB_API_URL : string = Globals.WEB_API_URL+'teams/'; 
  
   constructor(private _httpService: Http) {  } 
 

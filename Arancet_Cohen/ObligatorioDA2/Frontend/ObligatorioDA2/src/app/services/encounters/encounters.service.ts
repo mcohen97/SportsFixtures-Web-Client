@@ -11,7 +11,7 @@ import { Result } from "src/app/classes/result";
 
 @Injectable()
 export class EncountersService {
-    private WEB_API_URL : string = 'https://localhost:5001/api/matches/'; 
+    private WEB_API_URL : string =  Globals.WEB_API_URL+'matches/'; 
  
     constructor(private _httpService: Http) {  } 
 

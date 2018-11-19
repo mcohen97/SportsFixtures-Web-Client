@@ -10,7 +10,7 @@ import { Team } from "src/app/classes/team";
 
 @Injectable()
 export class CommentsService {
-  private WEB_API_URL : string = 'https://localhost:5001/api/matches/'; 
+  private WEB_API_URL : string = Globals.WEB_API_URL+'matches/'; 
  
   constructor(private _httpService: Http) {  } 
 
