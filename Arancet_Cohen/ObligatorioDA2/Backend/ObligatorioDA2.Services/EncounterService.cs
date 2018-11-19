@@ -73,9 +73,9 @@ namespace ObligatorioDA2.Services
         }
 
         public Encounter AddEncounter(Encounter toAdd) {
-            ValidateDate(toAdd);
             try
             {
+                ValidateDate(toAdd);
                 return encountersStorage.Add(toAdd);
             }
             catch (EncounterAlreadyExistsException e)
@@ -96,9 +96,9 @@ namespace ObligatorioDA2.Services
         public void ModifyEncounter(EncounterDto anEncounter)
         {
             Encounter toAdd = encounterConverter.ToEncounter(anEncounter);
-            ValidateDate(toAdd);
             try
             {
+                ValidateDate(toAdd);
                 encountersStorage.Modify(toAdd);
             }
             catch (EncounterNotFoundException e)
@@ -188,10 +188,6 @@ namespace ObligatorioDA2.Services
             try
             {
                 return GetAllEncounters(sportName).Select(e => encounterConverter.ToDto(e)).ToList();
-            }
-            catch (SportNotFoundException e)
-            {
-                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
             }
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);

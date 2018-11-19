@@ -3,6 +3,7 @@ using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using System;
@@ -61,6 +62,16 @@ namespace ObligatorioDA2.Services.Tests
         {
             aLog.Id = logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
             Assert.IsTrue(logger.Exists(aLog.Id));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void AddLogNoDataAccessTest() {
+            Mock<ILogInfoRepository> fakeRepo = new Mock<ILogInfoRepository>();
+            fakeRepo.Setup(r => r.Add(It.IsAny<LogInfo>())).Throws(new DataInaccessibleException());
+            Mock<IAuthenticationService> auth = new Mock<IAuthenticationService>();
+            logger = new LoggerService(fakeRepo.Object, auth.Object);
+            logger.Log(aLog.LogType, aLog.Message, aLog.Username, aLog.Date);
         }
 
         [TestMethod]
