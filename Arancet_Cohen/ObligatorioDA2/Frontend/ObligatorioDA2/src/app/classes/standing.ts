@@ -1,7 +1,7 @@
 export class Standing {
     teamId: number;
     position: number;
-
+    
     public static getClone(aStanding:Standing): Standing{   
         return new Standing(aStanding.teamId, aStanding.position);
     }

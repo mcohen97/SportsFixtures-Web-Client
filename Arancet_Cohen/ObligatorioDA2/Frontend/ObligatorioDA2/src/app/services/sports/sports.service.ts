@@ -7,6 +7,7 @@ import { ErrorResponse } from "src/app/classes/error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Sport } from "src/app/classes/sport";
 import { Team } from "src/app/classes/team";
+import { TablePosition } from "src/app/classes/table-position";
 
 @Injectable()
 export class SportsService {
@@ -73,6 +74,18 @@ export class SportsService {
           map((response : Response) => response.json()),
           catchError(this.handleError)
       ); 
+  }
+
+  getSportTable(sportName:string):Observable<Array<TablePosition>>{
+    const myHeaders = new Headers(); 
+    myHeaders.append('Accept', 'application/json');
+    myHeaders.append('Authorization', 'Bearer '+ Globals.getToken());
+    const requestOptions = new RequestOptions({headers: myHeaders}); 
+    return this._httpService.get(this.WEB_API_URL+sportName+"/table", requestOptions) 
+    .pipe( 
+        map((response : Response) => response.json()),
+        catchError(this.handleError)
+    ); 
   }
   
   private handleError(errorResponse: Response) { 

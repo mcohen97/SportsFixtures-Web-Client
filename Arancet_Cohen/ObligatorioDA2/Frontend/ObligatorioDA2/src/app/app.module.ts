@@ -82,6 +82,8 @@ import { CommentDialogComponent } from './components/comments/comment-dialog/com
 import { CommentsComponent } from './components/comments/comments.component';
 import { CommentsService } from './services/comments/comments.service';
 import { CommentsTableComponent } from './components/comments/comments-table/comments-table.component';
+import { SportTableComponent } from './components/sport-table/sport-table.component';
+import { TablePosition } from './classes/table-position';
 
 @NgModule({
   declarations: [
@@ -110,7 +112,8 @@ import { CommentsTableComponent } from './components/comments/comments-table/com
     EventDeckComponent,
     CommentDialogComponent,
     CommentsComponent,
-    CommentsTableComponent
+    CommentsTableComponent,
+    SportTableComponent
   ],
   imports: [
     RouterModule.forRoot([
@@ -149,6 +152,10 @@ import { CommentsTableComponent } from './components/comments/comments-table/com
       {
         path:'comments',
         component:CommentsComponent
+      },
+      {
+        path:'positions',
+        component:SportTableComponent
       },
       {
         path: '**',

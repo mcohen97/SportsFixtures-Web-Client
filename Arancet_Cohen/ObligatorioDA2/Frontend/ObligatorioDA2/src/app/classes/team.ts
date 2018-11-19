@@ -3,6 +3,7 @@ export class Team {
     name: string;
     sportName:string
     photo:string;
+    points:number;
 
     public static NO_PHOTO_DIR = "";
 
