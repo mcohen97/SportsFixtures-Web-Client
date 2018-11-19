@@ -12,8 +12,5 @@ namespace ObligatorioDA2.Services.Mappers
             return new SportDto() { name = aSport.Name, isTwoTeams = aSport.IsTwoTeams };
         }
 
-        public Sport ToSport(SportDto dto) {
-            return new Sport(dto.name, dto.isTwoTeams);
-        }
     }
 }

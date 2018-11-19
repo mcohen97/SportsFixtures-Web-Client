@@ -21,16 +21,5 @@ namespace ObligatorioDA2.Services.Mappers
             return data;
         }
 
-        public User toUser(UserDto dto) {
-            UserId identity = new UserId()
-            {
-                Name = dto.name,
-                Surname = dto.surname,
-                UserName = dto.username,
-                Password = dto.password,
-                Email = dto.email
-            };
-            return new User(identity, dto.isAdmin);
-        }
     }
 }

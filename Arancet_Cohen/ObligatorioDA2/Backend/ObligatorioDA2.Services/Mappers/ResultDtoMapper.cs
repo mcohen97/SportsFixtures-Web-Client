@@ -28,27 +28,6 @@ namespace ObligatorioDA2.Services.Mappers
             return dto;
         }
 
-        public Result ToResult(ResultDto dto) {
-            Result conversion = new Result();
-            foreach (Tuple<int, int> t in dto.teams_positions) {
-                Team stored = TryGetTeam(t.Item1);
-            }
-            return conversion;
-        }
-
-        private Team TryGetTeam(int id)
-        {
-            try
-            {
-                return teamsStorage.Get(id);
-            }
-            catch (TeamNotFoundException e)
-            {
-                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
-            }
-            catch (DataInaccessibleException e) {
-                throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
-            }
-        }
+      
     }
 }
