@@ -57,6 +57,8 @@ namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests
             Assert.AreEqual(entity.LogType, converted.LogType);
             Assert.AreEqual(entity.Username, converted.Username);
             Assert.AreEqual(entity.Date, converted.Date);
+            Assert.IsFalse(converted.Equals(null));
+            Assert.IsFalse(converted.Equals(new object()));
         }
     }
 }

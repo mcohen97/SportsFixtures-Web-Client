@@ -25,20 +25,6 @@ namespace ObligatorioDA2.Data.Repositories
 
         public LogInfo Add(LogInfo log)
         {
-            LogInfo added;
-            try
-            {
-                added = TryAdd(log);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-            return added;
-        }
-
-        private LogInfo TryAdd(LogInfo log)
-        {
             if (Exists(log.Id))
                 throw new LogAlreadyExistsException();
 
@@ -47,6 +33,7 @@ namespace ObligatorioDA2.Data.Repositories
             context.SaveChanges();
             return mapper.ToLogInfo(entity);
         }
+
 
         public void Clear()
         {
@@ -71,21 +58,9 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Delete(int id)
         {
-            try
-            {
-                TryDelete(id);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-        }
-
-        private void TryDelete(int id)
-        {
             if (!Exists(id))
                 throw new LogNotFoundException();
-            
+
             LogInfoEntity logInDb = context.Logs.First(l => l.Id == id);
             context.Logs.Remove(logInDb);
             context.SaveChanges();
@@ -111,20 +86,6 @@ namespace ObligatorioDA2.Data.Repositories
         }
 
         public LogInfo Get(int id)
-        {
-            LogInfo toGet;
-            try
-            {
-                toGet = TryGet(id);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-            return toGet;
-        }
-
-        private LogInfo TryGet(int id)
         {
             if (!Exists(id))
                 throw new LogNotFoundException();
@@ -174,18 +135,6 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Modify(LogInfo entity)
         {
-            try
-            {
-                TryModify(entity);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-        }
-
-        private void TryModify(LogInfo entity)
-        {
             if (!Exists(entity.Id))
                 throw new LogNotFoundException();
 
@@ -193,5 +142,6 @@ namespace ObligatorioDA2.Data.Repositories
             context.Entry(modified).State = EntityState.Modified;
             context.SaveChanges();
         }
+
     }
 }
