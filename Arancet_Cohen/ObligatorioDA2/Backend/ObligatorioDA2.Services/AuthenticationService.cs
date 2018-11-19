@@ -109,13 +109,12 @@ namespace ObligatorioDA2.Services
         public void Authenticate()
         {
             if (!IsLoggedIn())
-            {
                 throw new NotAuthenticatedException();
-            }
+            
         }
         private bool HasAdminPermissions()
         {
-            return (current != null) && current.IsAdmin;
+            return current.IsAdmin;
         }
 
         private bool IsLoggedIn()

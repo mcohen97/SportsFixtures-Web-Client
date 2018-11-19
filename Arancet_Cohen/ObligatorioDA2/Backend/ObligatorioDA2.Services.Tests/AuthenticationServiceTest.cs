@@ -104,6 +104,13 @@ namespace ObligatorioDA2.Services.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void SetSessionNoDataAccessTest() {
+            repo.Setup(r => r.Get(It.IsAny<string>())).Throws(new DataInaccessibleException());
+            authService.SetSession("aUsername");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(NotAuthenticatedException))]
         public void IsNotLoggedInTest() {
             repo.Setup(r => r.Get("aUsername")).Throws(new UserNotFoundException());
@@ -130,6 +137,12 @@ namespace ObligatorioDA2.Services.Tests
             //Act.
             authService.SetSession(follower.UserName);
             //Assert.
+            authService.AuthenticateAdmin();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotAuthenticatedException))]
+        public void AuthenticateAdminNotLoggedTest() {
             authService.AuthenticateAdmin();
         }
 
