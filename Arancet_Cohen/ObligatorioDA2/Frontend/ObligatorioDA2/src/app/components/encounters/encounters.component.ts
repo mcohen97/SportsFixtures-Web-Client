@@ -126,6 +126,8 @@ export class EncountersComponent implements OnInit {
 
   applyTeamFilter(filterValue:string){
     this.noFilter();
+    this.sportFilter.setValue("0");
+    this.sportFilter.updateValueAndValidity();
     this.dataSource.filterPredicate = ((t,filter) => t.teams.some(t => t.id == Number.parseInt(filter)));
     this.dataSource.filter = filterValue;
     if(this.dataSource.paginator){
@@ -135,6 +137,8 @@ export class EncountersComponent implements OnInit {
 
   applySportFilter(filterValue:string){
     this.noFilter();
+    this.teamFilter.setValue("0");
+    this.teamFilter.updateValueAndValidity();
     this.dataSource.filterPredicate = ((t,filter) => t.sportName == filter);
     this.dataSource.filter = filterValue;
     if(this.dataSource.paginator){

@@ -1,5 +1,4 @@
 ﻿
-
 namespace ObligatorioDA2.WebAPI.Models
 {
     public class ErrorModelOut

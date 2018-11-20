@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +40,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody]SportModelIn modelIn)
         {
-            SetSession();
             IActionResult result;
             if (ModelState.IsValid)
             {
@@ -58,6 +56,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         {
             IActionResult result;
             try {
+                SetSession();
                 result = TryAddSport(modelIn);
             }
             catch (ServiceException e) {
@@ -84,10 +83,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryGetAll();
             }
             catch (ServiceException e) {
@@ -107,10 +106,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(string name)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryGet(name);
             }
             catch (ServiceException e)
@@ -131,10 +130,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(string name)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryDelete(name);
             }
             catch (ServiceException e)
@@ -156,9 +155,9 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult GetTeams(string name)
         {
-            SetSession();
             IActionResult result;
-            try { 
+            try {
+                SetSession();
                 ICollection<TeamDto> sportTeams = teams.GetSportTeams(name);
                 ICollection<TeamModelOut> output = sportTeams.Select(t => CreateModelOut(t)).ToList();
                 result = Ok(output);
@@ -173,10 +172,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult CalculateSportTable(string sportName)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryCalculateTable(sportName);
 
             }

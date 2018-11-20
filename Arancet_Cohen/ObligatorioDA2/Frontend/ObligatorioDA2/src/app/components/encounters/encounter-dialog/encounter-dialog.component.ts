@@ -61,6 +61,15 @@ export class EncounterDialogComponent implements OnInit{
     this.selectedDate = new Date(Date.now());
     this.dateControl = new FormControl(this.selectedDate);
     this.methodControl = new FormControl();
+    if(!this.data.isNewEncounter){
+      this.methodControl.setValue("single");
+      this.methodControl.disable();
+      this.sportNameControl.setValue(this.data.aEncounter.sportName);
+      this.sportSelected();
+      this.sportNameControl.disable();
+      this.teamsIdsControl.setValue(this.data.aEncounter.teams.map(t => t.id));
+    }
+      
     this.setValidators();
   }
 
@@ -113,11 +122,12 @@ export class EncounterDialogComponent implements OnInit{
       }    
     }
   }
+
   allValid(): boolean {
     return  (this.teamsIdsControl.valid || this.teamsIdsControl.disabled)
-      && this.sportNameControl.valid
+      && (this.sportNameControl.valid || this.sportNameControl.disabled)
       && this.dateControl.valid
-      && this.methodControl.valid
+      && (this.methodControl.valid || this.methodControl.disabled)
   }
 
   addEncounter(newEncounter:Encounter):void{

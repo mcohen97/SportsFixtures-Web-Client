@@ -34,10 +34,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get()
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryGet();
             }
             catch (ServiceException e) {
@@ -57,10 +57,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get(int id)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 TeamDto fetched = teamService.GetTeam(id);
                 TeamModelOut output = BuildTeamModelOut(fetched);
                 result = Ok(output);
@@ -77,10 +77,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Post([FromBody] TeamModelIn team)
         {
-            SetSession();
             IActionResult result;
             if (ModelState.IsValid)
             {
+                SetSession();
                 result = AddValidTeam(team);
             }
             else
@@ -92,11 +92,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult AddValidTeam(TeamModelIn team)
         {
-            SetSession();
             IActionResult result;
             try
             {
-
+                SetSession();
                 result = TryAddTeam(team);
             }
             catch (ServiceException e)
@@ -135,7 +134,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Put(int teamId, [FromBody] TeamModelIn value)
         {
-            SetSession();
             IActionResult result;
             if (ModelState.IsValid)
             {
@@ -153,6 +151,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try
             {
+                SetSession();
                 result = TryPut(teamId, team);
             }
             catch (ServiceException e)
@@ -172,10 +171,11 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryPut(int teamId, TeamModelIn team)
         {
             string imgData = team.Photo;
-            team.Photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
             team.Id = teamId;
 
             TeamDto dto = BuildTransferObject(team);
+            dto.photo = team.Name + "_" + team.SportName + IMG_EXTENSION;
+
             TeamDto modified = teamService.Modify(dto);
             //if team could be added without exception thrown, then save its image.
             images.SaveImage(team.Photo, imgData);
@@ -188,10 +188,10 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize(Roles = AuthenticationConstants.ADMIN_ROLE)]
         public IActionResult Delete(int id)
         {
-            SetSession();
             IActionResult result;
             try
             {
+                SetSession();
                 teamService.DeleteTeam(id);
                 OkModelOut message = new OkModelOut { OkMessage = "The team was deleted succesfully" };
                 result = Ok(message);

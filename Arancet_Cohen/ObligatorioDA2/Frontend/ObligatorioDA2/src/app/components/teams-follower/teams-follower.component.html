@@ -1,8 +1,4 @@
 <div class = "table-container">
-    <button mat-raised-button class = "add-button-raised" color = "primary" (click)="openFollowDialog()">
-      <mat-icon aria-label="Add">add</mat-icon>
-      Follow team
-    </button>
     <div class = "error-message">
       {{errorMessage}}
     </div>
@@ -39,9 +35,14 @@
           <ng-container matColumnDef="options" sticky stickyEnd>
             <th mat-header-cell *matHeaderCellDef class ="table-header-40px"></th>
             <td mat-cell  *matCellDef="let row"> 
-              <div class = "option-button-container">
-                <button mat-icon-button class = "option-button" (click)="openDeleteDialog(row)">
-                  <mat-icon aria-label="Delete" style="color:darkred" >delete</mat-icon>
+              <div *ngIf = "!row.followed" class = "option-button-container">
+                  <button mat-icon-button class = "option-button" (click)="followTeam(row)">
+                    <mat-icon aria-label="Follow" style="color:darkblue" >add</mat-icon>
+                  </button>
+              </div>
+              <div *ngIf = "row.followed" class = "option-button-container">
+                <button mat-icon-button class = "option-button" (click)="unfollowTeam(row)">
+                  <mat-icon aria-label="Unfollow" style="color:darkred" >remove</mat-icon>
                 </button>
               </div>
             </td>
@@ -58,6 +59,3 @@
     </div>
   </div> 
 </div>
-<button mat-fab class = "add-button-fab" color = "primary" (click)="openFollowDialog()">
-    <mat-icon aria-label="Add">add</mat-icon>
-</button>

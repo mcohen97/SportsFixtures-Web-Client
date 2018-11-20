@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ObligatorioDA2.Data.Repositories.Interfaces
+namespace ObligatorioDA2.Services.Interfaces
 {
     public interface ISportTableService
     {

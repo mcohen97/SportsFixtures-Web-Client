@@ -10,87 +10,121 @@ using System.Reflection;
 using System.IO;
 using ObligatorioDA2.Services.Mappers;
 using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 
 namespace ObligatorioDA2.Services
 {
     public class FixtureService : IFixtureService
     {
-        private IInnerMatchService matchAddingService;
-        private IMatchService matchService;
+        private IInnerEncounterService matchService;
         private ITeamRepository teamStorage;
-        private ISportRepository sportsStorage;
         private IFixtureGenerator fixtureAlgorithm;
+        private IAuthenticationService authenticator;
+        private ILoggerService logger;
         private EncounterDtoMapper mapper;
         private const string DLL_EXTENSION = "*.dll";
 
 
-        public FixtureService( ITeamRepository teamRepository, ISportRepository sportsRepository, 
-            IInnerMatchService matchAddition, IMatchService aMatchService, IMatchRepository encounterRepository)
+        public FixtureService( ITeamRepository teamRepository,IInnerEncounterService matchAddition,
+            IAuthenticationService authService, ILoggerService loggerService)
         {
-            matchAddingService = matchAddition;
-            matchService = aMatchService;
-            sportsStorage = sportsRepository;
+            matchService = matchAddition;
             teamStorage = teamRepository;
-            mapper = new EncounterDtoMapper(teamStorage, encounterRepository, sportsRepository);
+            authenticator = authService;
+            logger = loggerService;
+            mapper = new EncounterDtoMapper();
         }
 
-        public IFixtureGenerator FixtureAlgorithm { get => fixtureAlgorithm; set => SetFixtureAlgorithm(value); }
+        public IFixtureGenerator FixtureAlgorithm { get { return fixtureAlgorithm; } private set { SetFixtureAlgorithm(value); } }
 
         private void SetFixtureAlgorithm(IFixtureGenerator algorithm)
         {
-            fixtureAlgorithm = algorithm ?? throw new ArgumentNullException();
+            fixtureAlgorithm = algorithm;
+        }
+
+        public void SetFixtureAlgorithm(FixtureDto aFixture, string algorithmsPath) {
+            ValidateFixture(aFixture);
+            FixtureAlgorithm=BuildFixtureAlgorithm(aFixture, algorithmsPath);
+        }
+
+        private void ValidateFixture(FixtureDto aFixture)
+        {
+            if (string.IsNullOrEmpty(aFixture.fixtureName)) {
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG, GetConnectedUserName(), DateTime.Now);
+                throw new ServiceException("Fixture name can't be empty", ErrorType.INVALID_DATA);
+            }
+            if (aFixture.initialDate.Equals(new DateTime())) {
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG, GetConnectedUserName(), DateTime.Now);
+                throw new ServiceException("Fixture date can't be empty", ErrorType.INVALID_DATA);
+            }
         }
 
         private void RollBack(ICollection<Encounter> added)
         {
             foreach (Encounter match in added)
             {
-                matchService.DeleteMatch(match.Id);
+                matchService.DeleteEncounter(match.Id);
             }
         }
 
         public ICollection<EncounterDto> AddFixture(ICollection<string> teamsNames, string sportName)
         {
-            ICollection<Team> teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
+            authenticator.AuthenticateAdmin();
+            ICollection<Team> teamsCollection;
+            try
+            {
+                teamsCollection = teamsNames.Select(name => teamStorage.Get(sportName, name)).ToList();
+            }
+            catch (TeamNotFoundException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
             return AddFixture(teamsCollection);
         }
 
         public ICollection<EncounterDto> AddFixture(string sportName)
         {
-            if (!sportsStorage.Exists(sportName)) {
-                throw new ServiceException("Sport not found", ErrorType.ENTITY_NOT_FOUND);
+            authenticator.AuthenticateAdmin();
+            ICollection<Team> teamsCollection;
+            try
+            {
+                teamsCollection = teamStorage.GetTeams(sportName);
             }
-            ICollection<Team> teamsCollection = teamStorage.GetAll().Where(t => t.Sport.Name.Equals(sportName)).ToList();
+            catch (SportNotFoundException e) {
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_SPORT_NOT_FOUND, GetConnectedUserName(), DateTime.Now);
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
             return AddFixture(teamsCollection);
         }
 
-        public ICollection<EncounterDto> AddFixture(ICollection<Team> teamsCollection)
+        private ICollection<EncounterDto> AddFixture(ICollection<Team> teamsCollection)
         {
             ICollection<Encounter> added = new List<Encounter>();
             try
             {
                 ICollection<Encounter> generatedMatches = fixtureAlgorithm.GenerateFixture(teamsCollection);
                 AddMatches(ref added, generatedMatches);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_OK, GetConnectedUserName(), DateTime.Now);
             }
-            catch (TeamAlreadyHasMatchException e)
+            catch (TeamAlreadyHasEncounterException e)
             {
                 RollBack(added);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG + " " + e.Message, GetConnectedUserName(), DateTime.Now);
                 throw new WrongFixtureException(e.Message);
             }
             catch (InvalidTeamCountException e)
             {
                 RollBack(added);
+                logger.Log(LogType.FIXTURE, LogMessage.FIXTURE_WRONG + " " + e.Message, GetConnectedUserName(), DateTime.Now);
                 throw new WrongFixtureException(e.Message);
             }
-
             return added.Select(e => mapper.ToDto(e)).ToList();
-
         }
+
         private ICollection<Encounter> AddMatches(ref ICollection<Encounter> added, ICollection<Encounter> generated)
         {
             foreach (Encounter match in generated)
             {
-                Encounter matchAdded = matchAddingService.AddMatch(match);
+                Encounter matchAdded = matchService.AddEncounter(match);
                 added.Add(matchAdded);
             }
             return added;
@@ -98,7 +132,8 @@ namespace ObligatorioDA2.Services
 
         public ICollection<Type> GetAlgorithms(string dllPath)
         {
-            string[] files = Directory.GetFiles(dllPath, DLL_EXTENSION);
+            authenticator.AuthenticateAdmin();
+            string[] files = GetFilesInPath(dllPath);
             IEnumerable<Type> interestingTypes = new List<Type>();
             foreach (var file in files)
             {
@@ -111,12 +146,61 @@ namespace ObligatorioDA2.Services
                 {
                     continue;  // Can't load as .NET assembly, so ignore
                 }
-
                 interestingTypes =
                     types.Where(t => t.IsClass &&
                                      t.GetInterfaces().Contains(typeof(IFixtureGenerator)));
             }
             return interestingTypes.ToList();
+        }
+
+        private string[] GetFilesInPath(string dllPath)
+        {
+            try
+            {
+                return Directory.GetFiles(dllPath, DLL_EXTENSION);
+            }
+            catch (IOException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+        }
+
+        private string GetConnectedUserName() {
+            return authenticator.GetConnectedUser().username;
+        }
+
+        private IFixtureGenerator BuildFixtureAlgorithm(FixtureDto dto, string algorithmsPath)
+        {
+            int roundLength = dto.roundLength == 0 ? 1 : dto.roundLength;
+            int daysBetweenRounds = dto.daysBetweenRounds == 0 ? 7 : dto.daysBetweenRounds;
+
+            Type algortihmType = GetAlgorithmType(algorithmsPath, dto.fixtureName);
+            object fromDll = Activator.CreateInstance(algortihmType, new object[] { dto.initialDate, roundLength, daysBetweenRounds });
+            IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
+            return algorithm;
+        }
+
+        private Type GetAlgorithmType(string algorithmsPath, string fixtureName)
+        {
+            bool found = false;
+            string[] files = Directory.GetFiles(algorithmsPath, DLL_EXTENSION);
+            var x = Directory.GetCurrentDirectory();
+            Type first2comply = null;
+
+            for (int i = 0; i < files.Length && !found; i++)
+            {
+                Assembly actual = Assembly.LoadFrom(files[i]);
+                first2comply = actual.GetType(fixtureName);
+                if (first2comply != null && first2comply.GetInterfaces().Contains(typeof(IFixtureGenerator)))
+                {
+                    found = true;
+                }
+            }
+
+            if (first2comply == null)
+            {
+                throw new ServiceException("Fixture not found", ErrorType.ENTITY_NOT_FOUND);
+            }
+            return first2comply;
         }
     }
 }

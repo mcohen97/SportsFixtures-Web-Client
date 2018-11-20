@@ -28,8 +28,8 @@ table {
 td.mat-cell{
     text-align: left;
     font-size: 12px;
-
-    overflow: hidden;
+    overflow: auto;
+    padding-right: 3px;
 }
 
 

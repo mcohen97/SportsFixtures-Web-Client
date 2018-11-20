@@ -16,9 +16,9 @@ namespace DataRepositoriesTest
 {
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class MatchRepositoryTest
+    public class EncounterRepositoryTest
     {
-        private IMatchRepository matchesStorage;
+        private IEncounterRepository matchesStorage;
         private ISportRepository sportsStorage;
         private ITeamRepository teamsStorage;
         private IUserRepository usersRepo;
@@ -82,6 +82,14 @@ namespace DataRepositoriesTest
 
         [TestMethod]
         [ExpectedException(typeof(DataInaccessibleException))]
+        public void ClearNoDataAccessTest()
+        {
+            CreateDisconnectedDatabase();
+            matchesStorage.Clear();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DataInaccessibleException))]
         public void EmptyNoDataAccessTest()
         {
             CreateDisconnectedDatabase();
@@ -96,7 +104,7 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MatchAlreadyExistsException))]
+        [ExpectedException(typeof(EncounterAlreadyExistsException))]
         public void AddRepeatedMatchTest()
         {
             matchesStorage.Add(match);
@@ -143,7 +151,7 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MatchNotFoundException))]
+        [ExpectedException(typeof(EncounterNotFoundException))]
         public void GetMatchNotFoundTest()
         {
             matchesStorage.Add(match);
@@ -168,7 +176,7 @@ namespace DataRepositoriesTest
             Match match = new Match(3, new List<Team>() { home.Object, away.Object }, DateTime.Now, sport);
 
             matchesStorage.Add(match);
-            matchesStorage.CommentOnMatch(3, dummy);
+            matchesStorage.CommentOnEncounter(3, dummy);
 
             ICollection<Commentary> allComments = matchesStorage.GetComments();
             Assert.AreEqual(1, allComments.Count);
@@ -191,7 +199,7 @@ namespace DataRepositoriesTest
             Match match = new Match(3, new List<Team>() { home.Object, away.Object }, DateTime.Now, sport);
 
             matchesStorage.Add(match);
-            Commentary added = matchesStorage.CommentOnMatch(3, dummy);
+            Commentary added = matchesStorage.CommentOnEncounter(3, dummy);
             Commentary retrieved = matchesStorage.GetComment(added.Id);
             Assert.AreEqual(dummy.Text, retrieved.Text);
         }
@@ -279,7 +287,7 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MatchNotFoundException))]
+        [ExpectedException(typeof(EncounterNotFoundException))]
         public void ModifyUnexistentItemTest()
         {
             Mock<Team> home = new Mock<Team>(3, "Manchester United", "aPath", sport);
@@ -348,7 +356,7 @@ namespace DataRepositoriesTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MatchNotFoundException))]
+        [ExpectedException(typeof(EncounterNotFoundException))]
         public void DeleteUnexistentTest()
         {
             matchesStorage.Delete(match.Id);

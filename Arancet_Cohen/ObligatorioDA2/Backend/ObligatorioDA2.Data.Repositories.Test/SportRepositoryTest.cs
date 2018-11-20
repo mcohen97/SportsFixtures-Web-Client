@@ -5,13 +5,13 @@ using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Match = ObligatorioDA2.BusinessLogic.Match;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System;
 
 namespace DataRepositoriesTest
 {
@@ -20,22 +20,23 @@ namespace DataRepositoriesTest
     public class SportRepositoryTest
     {
         private ISportRepository sportStorage;
-        private Mock<Sport> sportA;
-        private Mock<Sport> sportB;
- 
+        private Sport sportA;
+        private Sport sportB;
+        DatabaseConnection context;
+
 
         [TestInitialize]
         public void TestInitialize()
         {
-            DatabaseConnection context = CreateContext();
+            context = CreateContext();
             CreateSports();
             ClearDataBase(context);
         }
 
         private void CreateSports()
         {
-            sportA = new Mock<Sport>("SportA",true);
-            sportB = new Mock<Sport>("SportB",false);
+            sportA = new Sport("SportA",true);
+            sportB = new Sport("SportB",false);
         }
 
         private DatabaseConnection CreateContext()
@@ -86,7 +87,7 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void AddSportTest()
         {
-            sportStorage.Add(sportA.Object);
+            sportStorage.Add(sportA);
             Assert.AreEqual(1, sportStorage.GetAll().Count);
         }
 
@@ -94,8 +95,8 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportAlreadyExistsException))]
         public void AddAlreadyExistentTeamTest()
         {
-            sportStorage.Add(sportA.Object);
-            sportStorage.Add(sportA.Object);
+            sportStorage.Add(sportA);
+            sportStorage.Add(sportA);
         }
 
         [TestMethod]
@@ -103,16 +104,16 @@ namespace DataRepositoriesTest
         public void AddSportNoAccessTest()
         {
             CreateDisconnectedDatabase();
-            sportStorage.Add(sportA.Object);
+            sportStorage.Add(sportA);
         }
 
         [TestMethod]
         public void GetSportTest()
         {
             ISportRepository specific = (ISportRepository)sportStorage;
-            sportStorage.Add(sportA.Object);
+            sportStorage.Add(sportA);
             Sport sportInDb = specific.Get("SportA");
-            Assert.AreEqual(sportA.Object.Name, sportInDb.Name);
+            Assert.AreEqual(sportA.Name, sportInDb.Name);
         }
 
         [TestMethod]
@@ -133,8 +134,8 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void ExistsTeamTest()
         {
-            sportStorage.Add(sportA.Object);
-            bool result = sportStorage.Exists(sportA.Object.Name);
+            sportStorage.Add(sportA);
+            bool result = sportStorage.Exists(sportA.Name);
             Assert.IsTrue(result);
         }
 
@@ -142,8 +143,8 @@ namespace DataRepositoriesTest
         public void DoesNotExistTest()
         {
 
-            sportStorage.Add(sportA.Object);
-            bool result = sportStorage.Exists(sportB.Object.Name);
+            sportStorage.Add(sportA);
+            bool result = sportStorage.Exists(sportB.Name);
             Assert.IsFalse(result);
         }
 
@@ -158,9 +159,24 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void DeleteTest()
         {
-            sportStorage.Add(sportA.Object);
-            sportStorage.Delete(sportA.Object.Name);
+            sportStorage.Add(sportA);
+            sportStorage.Delete(sportA.Name);
             Assert.IsTrue(sportStorage.IsEmpty());
+        }
+
+        [TestMethod]
+        public void DeleteSportCascadeTest() {
+            sportStorage.Add(sportA);
+            ITeamRepository teams = new TeamRepository(context);
+            Team teamA = new Team("TeamA", "photoA", sportA);
+            Team teamB = new Team("TeamB", "photoB", sportA);
+            teams.Add(teamA);
+            teams.Add(teamB);
+            IEncounterRepository encounters = new MatchRepository(context);
+            Encounter aVsB = new Match(new List<Team>() { teamA, teamB }, DateTime.Today, sportA);
+            encounters.Add(aVsB);
+            sportStorage.Delete(sportA.Name);
+            Assert.IsTrue(teams.IsEmpty());
         }
 
 
@@ -168,8 +184,8 @@ namespace DataRepositoriesTest
         [ExpectedException(typeof(SportNotFoundException))]
         public void DeleteNotExistentTest()
         {
-            sportStorage.Add(sportA.Object);
-            sportStorage.Delete(sportB.Object.Name);
+            sportStorage.Add(sportA);
+            sportStorage.Delete(sportB.Name);
         }
 
         [TestMethod]
@@ -183,19 +199,20 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void ModifySportTest()
         {
-            sportStorage.Add(sportA.Object);
-            sportA.Name = "SportAcus";
+            sportStorage.Add(sportA);
+            sportA = new Sport(sportA.Name, false);
             CreateContext();
-            sportStorage.Modify(sportA.Object);
-            Sport editedSport = sportStorage.Get(sportA.Object.Name);
-            Assert.AreEqual(sportA.Object.Name, editedSport.Name);
+            sportStorage.Modify(sportA);
+            Sport editedSport = sportStorage.Get(sportA.Name);
+            Assert.AreEqual(sportA.Name, editedSport.Name);
+            Assert.IsFalse(sportA.IsTwoTeams);
         }
 
         [TestMethod]
         [ExpectedException(typeof(SportNotFoundException))]
         public void ModifyNotExistentTest()
         {
-            sportStorage.Modify(sportA.Object);
+            sportStorage.Modify(sportA);
         }
 
         [TestMethod]
@@ -203,14 +220,14 @@ namespace DataRepositoriesTest
         public void ModifyNoAccessTest()
         {
             CreateDisconnectedDatabase();
-            sportStorage.Modify(sportA.Object);
+            sportStorage.Modify(sportA);
         }
 
         [TestMethod]
         public void ClearTest()
         {
-            sportStorage.Add(sportA.Object);
-            sportStorage.Add(sportB.Object);
+            sportStorage.Add(sportA);
+            sportStorage.Add(sportB);
             sportStorage.Clear();
             Assert.IsTrue(sportStorage.IsEmpty());
         }
@@ -226,8 +243,8 @@ namespace DataRepositoriesTest
         [TestMethod]
         public void GetAllTest()
         {
-            sportStorage.Add(sportA.Object);
-            sportStorage.Add(sportB.Object);
+            sportStorage.Add(sportA);
+            sportStorage.Add(sportB);
             ICollection<Sport> sports = sportStorage.GetAll();
             Assert.AreEqual(2, sports.Count);
         }

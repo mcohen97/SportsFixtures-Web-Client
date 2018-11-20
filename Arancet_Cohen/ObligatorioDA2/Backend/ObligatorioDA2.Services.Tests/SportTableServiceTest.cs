@@ -7,6 +7,8 @@ using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Services.Exceptions;
+using ObligatorioDA2.Services.Interfaces;
 using ObligatorioDA2.Services.Interfaces.Dtos;
 using Match = ObligatorioDA2.BusinessLogic.Match;
 
@@ -19,13 +21,13 @@ namespace ObligatorioDA2.Services.Tests
         private ISportTableService serviceToTest;
         private Mock<ISportRepository> sportsStorage;
         private Mock<ITeamRepository> teamsStorage;
-        private Mock<IInnerMatchService> matchesService;
+        private Mock<IInnerEncounterService> matchesService;
 
         [TestInitialize]
         public void SetUp() {
             sportsStorage = new Mock<ISportRepository>();
             teamsStorage = new Mock<ITeamRepository>();
-            matchesService = new Mock<IInnerMatchService>();
+            matchesService = new Mock<IInnerEncounterService>();
             serviceToTest = new SportTableService(sportsStorage.Object, teamsStorage.Object, matchesService.Object);
             SetUpSports();
             SetUpTeams();
@@ -48,14 +50,14 @@ namespace ObligatorioDA2.Services.Tests
             Team teamB = new Team(2,"teamB", "photoB", twoTeamSport);
             Team teamC = new Team(3,"teamC", "photoC", twoTeamSport);
             ICollection<Encounter> matches = CreateMatches(teamA, teamB, teamC,twoTeamSport);
-            matchesService.Setup(r => r.GetAllMatches("Soccer")).Returns(matches);
+            matchesService.Setup(r => r.GetAllEncounters("Soccer")).Returns(matches);
 
             Sport multipleTeamSport = new Sport("Archery", false);
             Team athleteD = new Team(4,"athleteD", "photoD", multipleTeamSport);
             Team athleteE = new Team(5,"athleteE", "photoE", multipleTeamSport);
             Team athleteF = new Team(6,"athleteF", "photoF", multipleTeamSport);
             ICollection<Encounter> competitions = CreateCompetitions(athleteD, athleteE,athleteF,multipleTeamSport);
-            matchesService.Setup(r => r.GetAllMatches("Archery")).Returns(competitions);
+            matchesService.Setup(r => r.GetAllEncounters("Archery")).Returns(competitions);
 
             teamsStorage.Setup(r => r.GetTeams("Soccer")).Returns(new List<Team>() { teamA, teamB, teamC });
             teamsStorage.Setup(r => r.GetTeams("Archery")).Returns(new List<Team>() { athleteD, athleteE, athleteF });
@@ -142,6 +144,13 @@ namespace ObligatorioDA2.Services.Tests
             Assert.AreEqual(4,positions[0].Item2);
             Assert.AreEqual(3,positions[1].Item2);
             Assert.AreEqual(1,positions[2].Item2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ServiceException))]
+        public void CalculateTableOfNoExistingSportTest() {
+            sportsStorage.Setup(r => r.Get(It.IsAny<string>())).Throws(new SportNotFoundException());
+            serviceToTest.GetScoreTable("Soccer");
         }
     }
 }

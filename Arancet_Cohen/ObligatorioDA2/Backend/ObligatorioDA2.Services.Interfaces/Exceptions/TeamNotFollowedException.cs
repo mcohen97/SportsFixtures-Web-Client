@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ObligatorioDA2.Services.Exceptions
+﻿namespace ObligatorioDA2.Services.Exceptions
 {
     public class TeamNotFollowedException:ServiceException
     {

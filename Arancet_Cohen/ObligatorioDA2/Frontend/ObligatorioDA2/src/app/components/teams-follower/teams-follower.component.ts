@@ -21,7 +21,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
   styleUrls: ['./teams-follower.component.css']
 })
 export class TeamsFollowerComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'name', 'sportName', 'photo','options'];
+  displayedColumns: string[] = ['id', 'name', 'sportName', 'photo', 'options'];
   dataSource:MatTableDataSource<Team>;
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
@@ -30,32 +30,53 @@ export class TeamsFollowerComponent implements OnInit {
   rowEdited: Team;
   isLoading = false;
   teamsFollowed:Array<Team>;
+  teams:Array<Team>;
 
   constructor(
     private auth:AuthService,
     private router: Router, 
     private domSanitizer: DomSanitizer, 
     private dialog:MatDialog,
-    private usersService:UsersService 
+    private usersService:UsersService ,
+    private teamsService:TeamsService
   ){
     this.teamsFollowed = new Array<Team>(); 
-    this.getTeams();
+    this.getFollowedTeams();
   }
   
   ngOnInit() {
 
   }
 
-  public getTeams():void{
+  public getFollowedTeams():void{
     this.isLoading = true;
     this.usersService.getFollowedTeams(Globals.getUsername()).subscribe(
-      ((data:Array<Team>) => this.updateTableData(data)),
+      ((data:Array<Team>) => {
+        this.teamsFollowed = data;
+        this.getTeams();
+      }),
       ((error:any) => this.handleTeamError(error))
     )
   }
 
+  public getTeams():void{
+    this.isLoading = true;
+    this.teamsService.getAllTeams().subscribe(
+      ((teams:Array<Team>) => {
+        this.teams = teams;
+        this.setFollowed();
+        this.updateTableData(this.teams);
+      })
+    )
+  }
+
+  private setFollowed():void{
+    this.teams.forEach(team => {
+      team.followed = this.teamsFollowed.some(t => t.id == team.id);
+    });
+  }
+
   private updateTableData(teams:Array<Team>){
-    this.teamsFollowed = teams;
     this.dataSource = new MatTableDataSource(teams);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -133,6 +154,24 @@ export class TeamsFollowerComponent implements OnInit {
           this.getTeams();
       })
     )
+  }
+
+  followTeam(team:Team):void{
+    this.usersService.followTeam(team.id).subscribe(
+      ((ok:OkMessage) => this.updateFollowButton(team)),
+      ((error:any) => this.handleTeamError(error))
+    )
+  }
+
+  unfollowTeam(team:Team):void{
+    this.usersService.unfollowTeam(team.id).subscribe(
+      ((ok:OkMessage) => this.updateFollowButton(team)),
+      ((error:any) => this.handleTeamError(error))
+    )
+  }
+
+  updateFollowButton(team:Team){
+    team.followed = !team.followed;
   }
 
 }

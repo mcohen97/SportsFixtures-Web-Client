@@ -169,7 +169,7 @@
 			"response": []
 		},
 		{
-			"name": "LoginAdmin",
+			"name": "Login admin",
 			"event": [
 				{
 					"listen": "test",
@@ -706,7 +706,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"name\":\"newName\",\n\"surname\": \"newSurname\",\n\"username\": \"not existent\",\n\"password\": \"password\",\n\"email\": \"anEmail@hotmail.com\",\n\"isadmin\":false\n}"
+					"raw": "{\n\"name\":\"newName\",\n\"surname\": \"newSurname\",\n\"username\": \"notExistent\",\n\"password\": \"password\",\n\"email\": \"anEmail@hotmail.com\",\n\"isadmin\":true\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}/api/users/notExistent",
@@ -1792,11 +1792,13 @@
 							"var jsonData = pm.response.json();",
 							"",
 							"pm.test(\"Has team data\",function(){",
-							"  pm.expect(jsonData.sportName).to.eql('football');",
-							"  pm.expect(jsonData.name).to.eql('torque');",
+							"  //pm.expect(jsonData.sportName).to.eql('football');",
+							"  //pm.expect(jsonData.name).to.eql('torque');",
 							"  pm.expect(jsonData.photo).to.eql('anotherPhoto');",
 							"  pm.expect(jsonData.id).to.eql(2);",
-							"});"
+							"});",
+							"",
+							"console.log(jsonData);"
 						],
 						"type": "text/javascript"
 					}
@@ -2577,8 +2579,10 @@
 							"var jsonData = pm.response.json();",
 							"",
 							"pm.test(\"Has error message\",function(){",
-							"  pm.expect(jsonData.errorMessage).to.eql('nacional already has a match on date 11/22/2018 12:00:00 AM');",
-							"});"
+							"  pm.expect(jsonData.errorMessage).to.include(\"nacional already has a match on date 22/11/2018\");",
+							"});",
+							"",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -2897,7 +2901,7 @@
 							"",
 							"var jsonData = pm.response.json();",
 							"",
-							"pm.test(\"returned 2 sports\",function(){",
+							"pm.test(\"returned 3 encounters\",function(){",
 							"    pm.expect(jsonData.length).to.eql(3);",
 							"});"
 						],
@@ -2926,6 +2930,57 @@
 						"api",
 						"matches",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all encounters Calendar",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fd764b58-40c6-46fb-9167-428f51c34d7c",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"console.log(jsonData);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches?grouped=true",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches"
+					],
+					"query": [
+						{
+							"key": "grouped",
+							"value": "true"
+						}
 					]
 				}
 			},
@@ -3260,9 +3315,9 @@
 							"var jsonData = pm.response.json();",
 							"",
 							"pm.test(\"Has error message\",function(){",
-							"  pm.expect(jsonData.errorMessage).to.eql('progreso already has a match on date 11/25/2018 12:00:00 AM');",
+							"  pm.expect(jsonData.errorMessage).to.include('progreso already has a match on date 25/11/2018');",
 							"});",
-							""
+							"console.log(jsonData.errorMessage);"
 						],
 						"type": "text/javascript"
 					}
@@ -4134,7 +4189,13 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": ""
@@ -4179,7 +4240,13 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": ""
@@ -4243,13 +4310,19 @@
 						"api",
 						"matches",
 						"comments"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": ""
+						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get matches by sport",
+			"name": "Get encounters by sport",
 			"event": [
 				{
 					"listen": "test",
@@ -4348,7 +4421,7 @@
 			"response": []
 		},
 		{
-			"name": "Get matches by team",
+			"name": "Get encounters by team",
 			"event": [
 				{
 					"listen": "test",
@@ -4398,7 +4471,7 @@
 			"response": []
 		},
 		{
-			"name": "Get matches of no existent team",
+			"name": "Get encounters of no existent team",
 			"event": [
 				{
 					"listen": "test",
@@ -4712,7 +4785,9 @@
 							"",
 							"pm.test(\"returned 3 matches\",function(){",
 							"    pm.expect(jsonData.length).to.eql(3);",
-							"});"
+							"});",
+							"",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -4735,7 +4810,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"day\": 26,\n\"month\": 12,\n\"year\":2018,\n\"fixtureName\":\"ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture\"\n}"
+					"raw": "{\n\"initialDate\": \"2018/12/26\",\n\"fixtureName\":\"ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}api/fixtures/football",
@@ -4838,7 +4913,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"day\": 26,\n\"month\": 12,\n\"year\":2018,\n\"fixtureName\":\"ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture\"\n}"
+					"raw": "{\n\"initialDate\": \"2018/12/26\",\n\"fixtureName\":\"ObligatorioDA2.BusinessLogic.FixtureAlgorithms.OneMatchFixture\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}api/fixtures/rugby",
@@ -4893,7 +4968,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"day\": 26,\n\"month\": 12,\n\"year\":2018,\n\"fixtureName\":\"algorithm\"\n}"
+					"raw": "{\n\"initialDate\": \"2018/12/26\",\n\"fixtureName\":\"algorithm\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}api/fixtures/football",
@@ -4924,7 +4999,9 @@
 							"",
 							"pm.test(\"returned 6 matches\",function(){",
 							"    pm.expect(jsonData.length).to.eql(6);",
-							"});"
+							"});",
+							"",
+							"console.log(jsonData);"
 						],
 						"type": "text/javascript"
 					}
@@ -4947,7 +5024,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"day\": 1,\n\"month\": 2,\n\"year\":2019,\n\"fixtureName\":\"ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture\"\n}"
+					"raw": "{\n\"initialDate\": \"2019/02/01\",\n\"fixtureName\":\"ObligatorioDA2.BusinessLogic.FixtureAlgorithms.HomeAwayFixture\"\n}"
 				},
 				"url": {
 					"raw": "{{Domain}}api/fixtures/football",
@@ -5199,6 +5276,62 @@
 			"response": []
 		},
 		{
+			"name": "Set result with not existing teams",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "967e44b1-18d4-4009-b800-03ba26af2878",
+						"exec": [
+							"pm.test(\"Status code is 404\",function(){",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Has error message\",function(){",
+							"    pm.expect(jsonData.errorMessage).to.eql(\"Team not found\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"team_position\": [{\"teamId\":1,\"position\":1},{\"teamId\":18,\"position\":1}]\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/1/result",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"1",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Set result with missing positions",
 			"event": [
 				{
@@ -5371,6 +5504,62 @@
 						"api",
 						"matches",
 						"2",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set not existent competition result",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ddf1a0a2-d814-4f3a-b7e8-615238917488",
+						"exec": [
+							"pm.test(\"Status code is 404\",function(){",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Has error message\",function(){",
+							"    pm.expect(jsonData.errorMessage).to.eql(\"Match not found\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"team_position\": [{\"teamId\":5,\"position\":1},{\"teamId\":6,\"position\":3},{\"teamId\":7,\"position\":2}]\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/15/result",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"15",
 						"result"
 					]
 				}
@@ -5600,6 +5789,75 @@
 			"response": []
 		},
 		{
+			"name": "Change competition result",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ddf1a0a2-d814-4f3a-b7e8-615238917488",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"returned match with the result\",function(){",
+							"    pm.expect(jsonData.id).to.eql(2);",
+							"    pm.expect(jsonData.sportName).to.eql('formula1');",
+							"    pm.expect(jsonData.teamsIds.length).to.eql(3);",
+							"    pm.expect(jsonData.hasResult).to.eql(true);",
+							"    pm.expect(jsonData.team_Position.length).to.eql(3);",
+							"    pm.expect(jsonData.team_Position[0].teamId).to.eql(6);",
+							"    pm.expect(jsonData.team_Position[0].points).to.eql(1);",
+							"    pm.expect(jsonData.team_Position[1].teamId).to.eql(7);",
+							"    pm.expect(jsonData.team_Position[1].points).to.eql(2);",
+							"    pm.expect(jsonData.team_Position[2].teamId).to.eql(5);",
+							"    pm.expect(jsonData.team_Position[2].points).to.eql(3);",
+							"",
+							"});",
+							"",
+							"console.log(jsonData);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"team_position\": [{\"teamId\":5,\"position\":3},{\"teamId\":6,\"position\":1},{\"teamId\":7,\"position\":2}]\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/2/result",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"2",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Verify logs",
 			"event": [
 				{
@@ -5613,9 +5871,11 @@
 							"",
 							"var jsonData = pm.response.json();",
 							"",
-							"pm.test(\"returned 5 logs\",function(){",
-							"    pm.expect(jsonData.length).to.eql(5);",
-							"});"
+							"pm.test(\"returned 9 logs\",function(){",
+							"    pm.expect(jsonData.length).to.eql(9);",
+							"});",
+							"",
+							"console.log(jsonData);"
 						],
 						"type": "text/javascript"
 					}
@@ -5641,6 +5901,756 @@
 					],
 					"path": [
 						"logs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get logs until date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa5d169f-1ba2-4a3c-85b9-46f3419965a9",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"returned 5 logs\",function(){",
+							"    var top = new Date('2005-07-26').getTime();",
+							"    var responseDate = new Date(Date.parse(jsonData[0].date)).getTime()",
+							"    pm.expect(jsonData.length).to.eql(1);",
+							"    pm.expect(top).to.be.above(responseDate);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}api/logs?to=2001/09/11",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"logs"
+					],
+					"query": [
+						{
+							"key": "to",
+							"value": "2001/09/11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify from date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa5d169f-1ba2-4a3c-85b9-46f3419965a9",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"returned 6 logs\",function(){",
+							"    pm.expect(jsonData.length).to.eql(6);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}api/logs?from=2018/01/01",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"logs"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "2018/01/01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify logs between dates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa5d169f-1ba2-4a3c-85b9-46f3419965a9",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"returned 5 logs\",function(){",
+							"    pm.expect(jsonData.length).to.eql(2);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}api/logs?from=2002/01/01&to=2018/01/01",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"logs"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "2002/01/01"
+						},
+						{
+							"key": "to",
+							"value": "2018/01/01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete sport cascade",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d1a57296-4d38-4879-93d9-86376de25cf4",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Has ok message message\",function(){",
+							"  pm.expect(jsonData).to.have.property('okMessage');",
+							"  pm.expect(jsonData.okMessage).to.eql('The sport has been deleted successfully');",
+							"});",
+							"console.log(jsonData.okMessage);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/sports/football",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"sports",
+						"football"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check football teams were deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2e6375c0-77be-4f1d-a6f5-f0112055e4b1",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"returned 5 teams\",function(){",
+							"    pm.expect(jsonData.length).to.eql(3);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}api/teams",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check football encounters were deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7fb5ee6e-f8d8-4933-8cc2-fa4b225da7a1",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"only race left\",function(){",
+							"    pm.expect(jsonData.length).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check football matches' comments were deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6cbbc1b4-8489-41b6-820e-d5f818cd2b3a",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"only comment on race left\",function(){",
+							"    pm.expect(jsonData.length).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/comments",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check no football teams are followed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2cda95e7-4f23-488c-adb3-f51312f17127",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"football teams not followed\",function(){",
+							"    pm.expect(jsonData.length).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/users/admin/followed-teams",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"admin",
+						"followed-teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login user to be deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b73a6425-d216-43b6-ba30-551512f5ef01",
+						"exec": [
+							"var jsonResponse = JSON.parse(responseBody);",
+							"pm.globals.set(\"Token\",jsonResponse.token);",
+							"console.log(jsonResponse);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"notExistent\",\n\t\"password\":\"password\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}api/authentication",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"authentication"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User to be deleted follows team",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2cda95e7-4f23-488c-adb3-f51312f17127",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/users/followed-teams/5",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"followed-teams",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a1d1b956-f2a1-4586-8b42-b24154f4af53",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/users/notExistent",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"notExistent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login admin again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a9cf794f-43f7-4d7f-ae20-dc8652e44568",
+						"exec": [
+							"",
+							"var jsonResponse = JSON.parse(responseBody);",
+							"pm.globals.set(\"Token\",jsonResponse.token);",
+							"console.log(jsonResponse);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"admin\",\n\t\"password\":\"admin\"\n}"
+				},
+				"url": {
+					"raw": "{{Domain}}api/authentication",
+					"host": [
+						"{{Domain}}api"
+					],
+					"path": [
+						"authentication"
+					]
+				},
+				"description": "Logs into the app"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete team cascade",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0eaeeaae-2adb-4bbe-b9a3-c212a65e7a93",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Has error message\",function(){",
+							"  pm.expect(jsonData).to.have.property('okMessage');",
+							"  pm.expect(jsonData.okMessage).to.eql('The team was deleted succesfully');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/teams/5",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"teams",
+						"5"
+					]
+				},
+				"description": "Deletes a team"
+			},
+			"response": []
+		},
+		{
+			"name": "Check race was deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6cbbc1b4-8489-41b6-820e-d5f818cd2b3a",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"only comment on race left\",function(){",
+							"    pm.expect(jsonData.length).to.eql(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/matches/",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"matches",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check no racing teams are followed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2cda95e7-4f23-488c-adb3-f51312f17127",
+						"exec": [
+							"pm.test(\"Status code is 200\",function(){",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"football teams not followed\",function(){",
+							"    pm.expect(jsonData.length).to.eql(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{Token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Domain}}/api/users/admin/followed-teams",
+					"host": [
+						"{{Domain}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"admin",
+						"followed-teams"
 					]
 				}
 			},
@@ -5671,13 +6681,13 @@
 	],
 	"variable": [
 		{
-			"id": "03b15efe-0502-4ac2-ab6f-0116807cacde",
+			"id": "f79e52e4-bccd-4821-bb1e-87e1e0845716",
 			"key": "Domain",
 			"value": "https://localhost:44328/",
 			"type": "string"
 		},
 		{
-			"id": "ee8bfbd0-e0aa-4de7-9a09-d54536e28ca6",
+			"id": "5e64cd06-524c-4843-8aa0-b0064887b955",
 			"key": "Token\n",
 			"value": "",
 			"type": "string"

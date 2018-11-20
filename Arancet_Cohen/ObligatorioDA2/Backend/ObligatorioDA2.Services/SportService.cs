@@ -29,7 +29,7 @@ namespace ObligatorioDA2.Services
 
         public ICollection<SportDto> GetAllSports()
         {
-            Authenticate();
+            authenticator.Authenticate();
             ICollection<Sport> allOfThem;
             try
             {
@@ -45,7 +45,7 @@ namespace ObligatorioDA2.Services
 
         public SportDto GetSport(string name)
         {
-            Authenticate();
+            authenticator.Authenticate();
             Sport fromStorage;
             try
             {
@@ -63,7 +63,7 @@ namespace ObligatorioDA2.Services
 
         public SportDto AddSport(SportDto dto)
         {
-            AuthenticateAdmin();
+            authenticator.AuthenticateAdmin();
             Sport toAdd = TryCreate(dto);
             try {
                 sports.Add(toAdd);
@@ -91,7 +91,7 @@ namespace ObligatorioDA2.Services
 
         public void DeleteSport(string name)
         {
-            AuthenticateAdmin();
+            authenticator.AuthenticateAdmin();
             try {
                 sports.Delete(name);
             }
@@ -103,26 +103,7 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        private void AuthenticateAdmin()
-        {
-            if (!authenticator.IsLoggedIn())
-            {
-                throw new NotAuthenticatedException();
-            }
 
-            if (!authenticator.HasAdminPermissions())
-            {
-                throw new NoPermissionsException();
-            }
-        }
-
-        private void Authenticate()
-        {
-            if (!authenticator.IsLoggedIn())
-            {
-                throw new NotAuthenticatedException();
-            }
-        }
 
 
     }

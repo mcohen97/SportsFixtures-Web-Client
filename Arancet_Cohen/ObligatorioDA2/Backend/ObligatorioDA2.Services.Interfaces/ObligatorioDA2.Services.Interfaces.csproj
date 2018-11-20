@@ -4,8 +4,4 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
-  </ItemGroup>
-
 </Project>

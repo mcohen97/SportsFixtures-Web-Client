@@ -10,17 +10,5 @@ namespace ObligatorioDA2.BusinessLogic.Data.Exceptions
         public LogAlreadyExistsException()
         {
         }
-
-        public LogAlreadyExistsException(string message) : base("Log already exists")
-        {
-        }
-
-        public LogAlreadyExistsException(string message, Exception inner) : base("Log already exists", inner)
-        {
-        }
-
-        protected LogAlreadyExistsException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

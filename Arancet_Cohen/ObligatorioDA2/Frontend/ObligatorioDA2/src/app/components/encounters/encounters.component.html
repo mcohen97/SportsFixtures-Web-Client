@@ -14,14 +14,14 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     <mat-form-field>
-      <mat-select (selectionChange)="applyTeamFilter($event.value)" placeholder="Filter by team">
-        <mat-option [value] = "">--</mat-option>
+      <mat-select [formControl] = "teamFilter" (selectionChange)="applyTeamFilter($event.value)" placeholder="Filter by team">
+        <mat-option [value] = "0">--</mat-option>
         <mat-option *ngFor = "let team of teams" [value] = "team.id">{{team.name + ' (' + team.sportName + ')'}}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field>
-      <mat-select (selectionChange)="applySportFilter($event.value)" placeholder="Filter by sport">
-        <mat-option [value] = "">--</mat-option>
+      <mat-select [formControl] = "sportFilter" (selectionChange)="applySportFilter($event.value)" placeholder="Filter by sport">
+        <mat-option [value] = "0">--</mat-option>
         <mat-option *ngFor = "let sport of sports" [value] = "sport.name">{{sport.name}}</mat-option>
       </mat-select>
     </mat-form-field>
@@ -65,6 +65,9 @@
               <div class = "option-button-container">
                 <button mat-icon-button class = "option-button" (click)="openEditResultDialog(row)">
                     <mat-icon aria-label="Add" >add</mat-icon>
+                </button>
+                <button mat-icon-button class = "option-button" (click)="openEditDialog(row)">
+                    <mat-icon aria-label="Edit" >edit</mat-icon>
                 </button>
                 <button mat-icon-button class = "option-button" (click)="openDeleteDialog(row)">
                   <mat-icon aria-label="Delete" style="color:darkred" >delete</mat-icon>

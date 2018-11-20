@@ -12,7 +12,7 @@ using System;
 
 namespace ObligatorioDA2.Data.Repositories
 {
-    public class MatchRepository : IMatchRepository
+    public class MatchRepository : IEncounterRepository
     {
         private DatabaseConnection context;
         private MatchMapper matchConverter;
@@ -32,27 +32,13 @@ namespace ObligatorioDA2.Data.Repositories
         public Encounter Add(Encounter aMatch)
         {
             Encounter added;
-            try
-            {
-                added = TryAdd(aMatch);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-            return added;
-        }
-
-        private Encounter TryAdd(Encounter aMatch)
-        {
-            Encounter added;
             if (!Exists(aMatch.Id))
             {
                 added = AddNew(aMatch);
             }
             else
             {
-                throw new MatchAlreadyExistsException();
+                throw new EncounterAlreadyExistsException();
             }
             return added;
         }
@@ -62,7 +48,6 @@ namespace ObligatorioDA2.Data.Repositories
             MatchEntity toAdd = matchConverter.ToEntity(aMatch);
             context.Entry(toAdd).State = EntityState.Added;
             AddComments(toAdd, aMatch.GetAllCommentaries());
-            //context.MatchTeams.AddRange(playingTeams);
 
             //We also need to ask if it is an Sql database, so that we can execute the sql scripts.
             if (aMatch.Id > 0 && context.Database.IsSqlServer())
@@ -149,7 +134,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
             else
             {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
         }
 
@@ -184,7 +169,7 @@ namespace ObligatorioDA2.Data.Repositories
             }
             else
             {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
             return toReturn;
         }
@@ -237,11 +222,6 @@ namespace ObligatorioDA2.Data.Repositories
                     .Where(mt => mt.MatchId == match.Id).AsNoTracking();
                 Encounter built = matchConverter.ToEncounter(match, matchPlayers.ToList());
 
-                /*context.Entry(match).State = EntityState.Detached;
-                foreach (MatchTeam mt in matchPlayers) {
-                    context.Entry(mt).State = EntityState.Detached;
-                }*/
-
                 allOfThem.Add(built);
             }
             return allOfThem;
@@ -268,25 +248,13 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Modify(Encounter aMatch)
         {
-            try
-            {
-                TryModify(aMatch);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-        }
-
-        private void TryModify(Encounter aMatch)
-        {
             if (Exists(aMatch.Id))
             {
                 ModifyExistent(aMatch);
             }
             else
             {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
         }
 
@@ -335,25 +303,11 @@ namespace ObligatorioDA2.Data.Repositories
             return context.Matches.Any(m => m.Id == anId);
         }
 
-        public Commentary CommentOnMatch(int idMatch, Commentary aComment)
+        public Commentary CommentOnEncounter(int idMatch, Commentary aComment)
         {
-            Commentary made;
-            try
+            if (!Exists(idMatch))
             {
-                made = TryComment(idMatch, aComment);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-            return made;
-        }
-
-        private Commentary TryComment(int idMatch, Commentary aComment)
-        {
-            if (!context.Matches.Any(m => m.Id == idMatch))
-            {
-                throw new MatchNotFoundException();
+                throw new EncounterNotFoundException();
             }
             return CommentOnExistingMatch(idMatch, aComment);
         }

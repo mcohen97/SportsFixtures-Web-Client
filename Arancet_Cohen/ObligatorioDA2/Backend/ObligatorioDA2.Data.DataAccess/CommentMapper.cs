@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.Entities;
 

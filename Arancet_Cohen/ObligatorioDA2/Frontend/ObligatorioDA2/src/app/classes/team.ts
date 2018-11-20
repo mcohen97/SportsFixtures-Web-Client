@@ -4,13 +4,13 @@ export class Team {
     sportName:string
     photo:string;
     points:number;
-
-    public static NO_PHOTO_DIR = "";
+    followed:boolean //Used for followed teams table only
 
     public static getClone(aTeam:Team): Team{
         var newTeam = new Team(aTeam.name, aTeam.sportName);
         newTeam.id = aTeam.id;
         newTeam.photo = aTeam.photo;
+        newTeam.followed = aTeam.followed;
         return newTeam;
     }
     
@@ -18,7 +18,8 @@ export class Team {
         this.id = 0;
         this.name = name;
         this.sportName = sportName;
-        this.photo = Team.NO_PHOTO_DIR;
+        this.photo = "";
+        this.followed = false;
     }
 
     public toString = () : string => {

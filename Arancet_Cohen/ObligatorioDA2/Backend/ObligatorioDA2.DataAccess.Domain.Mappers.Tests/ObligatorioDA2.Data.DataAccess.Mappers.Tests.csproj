@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.DataAccess.Entities\ObligatorioDA2.Data.DataAccess.Entities.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Services\ObligatorioDA2.Services.csproj" />
   </ItemGroup>
 

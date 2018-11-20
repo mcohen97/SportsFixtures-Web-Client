@@ -7,7 +7,6 @@ using ObligatorioDA2.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ObligatorioDA2.Data.Repositories.Interfaces;
-using System;
 using System.Data.Common;
 
 namespace ObligatorioDA2.Data.Repositories
@@ -24,20 +23,6 @@ namespace ObligatorioDA2.Data.Repositories
         }
 
         public Sport Add(Sport sport)
-        {
-            Sport added;
-            try
-            {
-                added = TryAdd(sport);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-            return added;
-        }
-
-        private Sport TryAdd(Sport sport)
         {
             if (Exists(sport.Name))
                 throw new SportAlreadyExistsException();
@@ -71,18 +56,6 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Delete(string name)
         {
-            try
-            {
-                TryDelete(name);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-        }
-
-        private void TryDelete(string name)
-        {
             if (!Exists(name))
             {
                 throw new SportNotFoundException();
@@ -93,6 +66,7 @@ namespace ObligatorioDA2.Data.Repositories
             context.SaveChanges();
         }
 
+
         private void DeleteTeamsMatches(string sportName)
         {
             IQueryable<TeamEntity> teams = context.Teams.Where(t => t.SportEntityName.Equals(sportName));
@@ -100,8 +74,12 @@ namespace ObligatorioDA2.Data.Repositories
             foreach (TeamEntity deleted in teams)
             {
                 IQueryable<MatchTeam> teamsMatches = context.MatchTeams.Include(mt => mt.Team)
-                     .Where(mt => mt.Team.Sport.Name.Equals(sportName));
-                IQueryable<MatchEntity> played = context.Matches.Where(m => teamsMatches.Any(mt => mt.MatchId == m.Id));
+                     .Where(mt => mt.Team.SportEntityName.Equals(sportName));
+
+                IQueryable<MatchEntity> played = context.Matches
+                    .Include(m => m.Commentaries)
+                    .Where(m => teamsMatches.Any(mt => mt.MatchId == m.Id));
+
                 context.MatchTeams.RemoveRange(teamsMatches);
                 context.Matches.RemoveRange(played);
                 IQueryable<UserTeam> followings = context.UserTeams.Where(t => t.Team.TeamNumber == deleted.TeamNumber);
@@ -174,18 +152,6 @@ namespace ObligatorioDA2.Data.Repositories
 
         public void Modify(Sport entity)
         {
-            try
-            {
-                TryModify(entity);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-        }
-
-        private void TryModify(Sport entity)
-        {
             if (!Exists(entity.Name))
                 throw new SportNotFoundException();
 
@@ -194,21 +160,8 @@ namespace ObligatorioDA2.Data.Repositories
             context.SaveChanges();
         }
 
-        public Sport Get(string name)
-        {
-            Sport toGet;
-            try
-            {
-                toGet = TryGet(name);
-            }
-            catch (DbException)
-            {
-                throw new DataInaccessibleException();
-            }
-            return toGet;
-        }
 
-        private Sport TryGet(string name)
+        public Sport Get(string name)
         {
             if (!Exists(name))
             {

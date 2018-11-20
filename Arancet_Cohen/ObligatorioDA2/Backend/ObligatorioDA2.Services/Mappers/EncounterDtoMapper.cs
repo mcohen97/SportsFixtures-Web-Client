@@ -15,15 +15,20 @@ namespace ObligatorioDA2.Services.Mappers
     {
         private ResultDtoMapper resultMapper;
         private ITeamRepository teamsStorage;
-        private IMatchRepository encountersStorage;
+        private IEncounterRepository encountersStorage;
         private ISportRepository sportsStorage;
         private EncounterFactory factory;
-        public EncounterDtoMapper(ITeamRepository teamsRepo, IMatchRepository encountersRepo, ISportRepository sportsRepository) {
+        public EncounterDtoMapper(ITeamRepository teamsRepo, IEncounterRepository encountersRepo, ISportRepository sportsRepository) {
             teamsStorage = teamsRepo;
             encountersStorage = encountersRepo;
             sportsStorage = sportsRepository;
             resultMapper = new ResultDtoMapper(teamsRepo);
             factory = new EncounterFactory();
+        }
+
+        public EncounterDtoMapper() {
+            factory = new EncounterFactory();
+            resultMapper = new ResultDtoMapper();
         }
         public EncounterDto ToDto(Encounter encounterDto) {
             EncounterDto dto = new EncounterDto()
