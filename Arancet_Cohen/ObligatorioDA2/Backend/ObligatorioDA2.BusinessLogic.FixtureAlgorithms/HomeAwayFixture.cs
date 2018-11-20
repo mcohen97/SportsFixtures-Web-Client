@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
 {
-    public class HomeAwayFixture : IFixtureGenerator
+    public class HomeAwayFixture : FixtureGenerator
     {
         private DateTime initialDate;
         private int roundLength;
         private int daysBetweenRounds;
         private EncounterFactory factory;
 
-        public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds)
+        public HomeAwayFixture(DateTime initialDate, int roundLength, int daysBetweenRounds):base(initialDate,roundLength,daysBetweenRounds)
         {
             this.initialDate = initialDate;
             this.roundLength = roundLength;
@@ -23,7 +23,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
         public int RoundLength { get => roundLength; set => SetRoundLength(value); }
         public int DaysBetweenRounds { get => daysBetweenRounds; set => SetDaysBetweenRounds(value); }
 
-        public ICollection<Encounter> GenerateFixture(ICollection<Team> teams)
+        public override ICollection<Encounter> GenerateFixture(ICollection<Team> teams)
         {
             if (teams.Count < 2)
                 throw new InvalidTeamCountException("Can not generate any fixture with less than 2 teams");

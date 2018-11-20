@@ -3,12 +3,17 @@ using System.Collections.Generic;
 
 namespace ObligatorioDA2.BusinessLogic
 {
-    public interface IFixtureGenerator
+    public abstract class FixtureGenerator
     {
-        DateTime InitialDate { get; set; }
-        int RoundLength { get; set; }
-        int DaysBetweenRounds { get; set; }
+        public DateTime InitialDate { get; set; }
+        public int RoundLength { get; set; }
+        public int DaysBetweenRounds { get; set; }
 
-        ICollection<Encounter> GenerateFixture(ICollection<Team> teams);
+        public FixtureGenerator(DateTime initialDate, int roundLength, int daysBetweenRounds) {
+            InitialDate = initialDate;
+            RoundLength = roundLength;
+            DaysBetweenRounds = daysBetweenRounds;
+        }
+        public abstract ICollection<Encounter> GenerateFixture(ICollection<Team> teams);
     }
 }

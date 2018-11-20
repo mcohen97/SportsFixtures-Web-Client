@@ -18,7 +18,7 @@ namespace ObligatorioDA2.Services
     {
         private IInnerEncounterService matchService;
         private ITeamRepository teamStorage;
-        private IFixtureGenerator fixtureAlgorithm;
+        private FixtureGenerator fixtureAlgorithm;
         private IAuthenticationService authenticator;
         private ILoggerService logger;
         private EncounterDtoMapper mapper;
@@ -35,9 +35,9 @@ namespace ObligatorioDA2.Services
             mapper = new EncounterDtoMapper();
         }
 
-        public IFixtureGenerator FixtureAlgorithm { get { return fixtureAlgorithm; } private set { SetFixtureAlgorithm(value); } }
+        public FixtureGenerator FixtureAlgorithm { get { return fixtureAlgorithm; } private set { SetFixtureAlgorithm(value); } }
 
-        private void SetFixtureAlgorithm(IFixtureGenerator algorithm)
+        private void SetFixtureAlgorithm(FixtureGenerator algorithm)
         {
             fixtureAlgorithm = algorithm;
         }
@@ -148,7 +148,7 @@ namespace ObligatorioDA2.Services
                 }
                 interestingTypes= interestingTypes.Concat(
                                     types.Where(t => t.IsClass &&
-                                    t.GetInterfaces().Contains(typeof(IFixtureGenerator))));
+                                    (t.IsSubclassOf(typeof(FixtureGenerator)) || t == (typeof(FixtureGenerator)))));
             }
             return interestingTypes.ToList();
         }
@@ -168,7 +168,7 @@ namespace ObligatorioDA2.Services
             return authenticator.GetConnectedUser().username;
         }
 
-        private IFixtureGenerator BuildFixtureAlgorithm(FixtureDto dto, string algorithmsPath)
+        private FixtureGenerator BuildFixtureAlgorithm(FixtureDto dto, string algorithmsPath)
         {
             int roundLength = dto.roundLength == 0 ? 1 : dto.roundLength;
             int daysBetweenRounds = dto.daysBetweenRounds == 0 ? 7 : dto.daysBetweenRounds;
@@ -177,7 +177,7 @@ namespace ObligatorioDA2.Services
             {
                 Type algortihmType = GetAlgorithmType(algorithmsPath, dto.fixtureName);
                 object fromDll = Activator.CreateInstance(algortihmType, new object[] { dto.initialDate, roundLength, daysBetweenRounds });
-                IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
+                FixtureGenerator algorithm = fromDll as FixtureGenerator;
                 return algorithm;
             }
             catch (IOException e) {
@@ -199,7 +199,7 @@ namespace ObligatorioDA2.Services
             {
                 Assembly actual = Assembly.LoadFrom(files[i]);
                 first2comply = actual.GetType(fixtureName);
-                if (first2comply != null && first2comply.GetInterfaces().Contains(typeof(IFixtureGenerator)))
+                if (first2comply != null && (first2comply.IsSubclassOf(typeof(FixtureGenerator)) || first2comply == typeof(FixtureGenerator)))
                 {
                     found = true;
                 }

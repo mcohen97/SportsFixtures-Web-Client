@@ -17,8 +17,8 @@ namespace ObligatorioDA2.BusinessLogic.Test
     {
 
         private ICollection<Team> teams;
-        private IFixtureGenerator oneMatchFixture;
-        private IFixtureGenerator homeAwayFixture;
+        private FixtureGenerator oneMatchFixture;
+        private FixtureGenerator homeAwayFixture;
         private DateTime initialDate;
         private DateTime finalDate;
         private int roundLength;
