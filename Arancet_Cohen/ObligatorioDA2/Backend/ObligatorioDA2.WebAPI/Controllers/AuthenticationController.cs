@@ -5,12 +5,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using System.Net;
 using Microsoft.AspNetCore.Cors;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {

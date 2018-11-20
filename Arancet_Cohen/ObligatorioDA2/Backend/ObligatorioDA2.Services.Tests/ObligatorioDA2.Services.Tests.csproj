@@ -18,7 +18,7 @@
     <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.FixtureAlgorithms\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj" />
-    <ProjectReference Include="..\ObligatorioDA2.Services.Interfaces\ObligatorioDA2.Services.Interfaces.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Services.Contracts\ObligatorioDA2.Services.Contracts.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Services\ObligatorioDA2.Services.csproj" />
   </ItemGroup>
 

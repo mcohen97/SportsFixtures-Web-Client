@@ -4,7 +4,7 @@ using Moq;
 using ObligatorioDA2.Data.DataAccess;
 using System.Collections.Generic;
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;

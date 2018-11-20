@@ -1,13 +1,13 @@
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Data.Repositories.Interfaces;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
+using ObligatorioDA2.Services.Contracts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Services.Tests

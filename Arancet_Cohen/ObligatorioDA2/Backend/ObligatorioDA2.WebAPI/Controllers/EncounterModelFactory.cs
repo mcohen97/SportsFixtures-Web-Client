@@ -1,4 +1,4 @@
-﻿using ObligatorioDA2.Services.Interfaces.Dtos;
+﻿using ObligatorioDA2.Services.Contracts.Dtos;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;

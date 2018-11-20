@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ObligatorioDA2.Data.DataAccess;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using ObligatorioDA2.BusinessLogic;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.Data.Entities;

@@ -1,5 +1,5 @@
 ﻿
-namespace ObligatorioDA2.Services.Interfaces.Dtos
+namespace ObligatorioDA2.Services.Contracts.Dtos
 {
     public class TeamDto
     {

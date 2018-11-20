@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using Microsoft.Extensions.Options;
 using ObligatorioDA2.WebAPI.Models;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System;
 using ObligatorioDA2.Services.Exceptions;
 using Microsoft.AspNetCore.Authorization;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {

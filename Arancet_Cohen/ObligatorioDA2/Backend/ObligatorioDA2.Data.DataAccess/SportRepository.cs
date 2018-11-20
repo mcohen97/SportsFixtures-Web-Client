@@ -6,7 +6,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using System.Data.Common;
 
 namespace ObligatorioDA2.Data.Repositories
