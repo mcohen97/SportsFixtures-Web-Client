@@ -178,7 +178,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             {
                 Id = id,
                 SportName = aMatch.SportName,
-                TeamsIds = aMatch.TeamIds,
+                TeamIds = aMatch.TeamIds,
                 HasResult = false,
                 Date = aMatch.Date
             };

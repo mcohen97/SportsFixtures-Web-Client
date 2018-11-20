@@ -82,7 +82,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.AreEqual(someLogList.Count, logs.ToList().Count);
             Assert.AreEqual(LogType.LOGIN,first.LogType);
             Assert.AreEqual(LogMessage.LOGIN_OK,first.Message);
-            Assert.AreEqual("SomePepitoFulanito",first.Useranme);
+            Assert.AreEqual("SomePepitoFulanito",first.Username);
             Assert.AreEqual(new DateTime(2016, 02, 20),first.Date);
         }
 

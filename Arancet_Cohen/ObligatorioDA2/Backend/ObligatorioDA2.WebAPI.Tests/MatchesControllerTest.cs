@@ -116,7 +116,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(matches);
             Assert.AreEqual(matches.Count, 1);
-            Assert.AreEqual(matches.ToList()[0].TeamsIds.Count, 2);
+            Assert.AreEqual(matches.ToList()[0].TeamIds.Count, 2);
         }
 
         [TestMethod]
