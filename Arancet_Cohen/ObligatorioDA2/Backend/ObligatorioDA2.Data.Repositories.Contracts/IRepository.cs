@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ObligatorioDA2.Data.Repositories.Interfaces
+namespace ObligatorioDA2.Data.Repositories.Contracts
 {
     public interface IRepository<T, K>
     {

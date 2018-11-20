@@ -1,5 +1,5 @@
 ﻿
-namespace ObligatorioDA2.Services.Interfaces
+namespace ObligatorioDA2.Services.Contracts
 {
     public interface IImageService
     {

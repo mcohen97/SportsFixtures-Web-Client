@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ObligatorioDA2.Services.Interfaces.Dtos
+namespace ObligatorioDA2.Services.Contracts.Dtos
 {
     public class EncounterDto
     {

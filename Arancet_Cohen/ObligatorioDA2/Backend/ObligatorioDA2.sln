@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic", "ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj", "{4751425F-3D67-4ECC-98B6-28C53922B463}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Interfaces", "ObligatorioDA2.Data.Repositories.Interfaces\ObligatorioDA2.Data.Repositories.Interfaces.csproj", "{282C9F52-1ECC-4454-9D2A-3B62225522CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Contracts", "ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj", "{282C9F52-1ECC-4454-9D2A-3B62225522CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Test", "ObligatorioDA2.Data.Repositories.Test\ObligatorioDA2.Data.Repositories.Test.csproj", "{36C514E0-705D-46CC-998F-C430C9DD8309}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.DataAcc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Services", "ObligatorioDA2.Services\ObligatorioDA2.Services.csproj", "{6EE2693F-DEB5-4857-8521-F22CF37C177C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Services.Interfaces", "ObligatorioDA2.Services.Interfaces\ObligatorioDA2.Services.Interfaces.csproj", "{E238B082-0246-4E83-A67F-43F0E4CAE8A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Services.Contracts", "ObligatorioDA2.Services.Contracts\ObligatorioDA2.Services.Contracts.csproj", "{E238B082-0246-4E83-A67F-43F0E4CAE8A5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Services.Tests", "ObligatorioDA2.Services.Tests\ObligatorioDA2.Services.Tests.csproj", "{3F7B997A-8A8D-4C77-A903-D5E3396CD75B}"
 EndProject
@@ -87,5 +87,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71F6AD5F-177E-40F4-A9E0-F46EE1A7FDDE}
+	EndGlobalSection
+	GlobalSection(NDepend) = preSolution
+		Project = ".\ObligatorioDA2.ndproj"
 	EndGlobalSection
 EndGlobal

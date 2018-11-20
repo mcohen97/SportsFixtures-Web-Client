@@ -5,7 +5,7 @@ using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Data.Entities;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;

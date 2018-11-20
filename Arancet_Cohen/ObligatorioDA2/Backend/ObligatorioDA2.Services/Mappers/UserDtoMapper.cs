@@ -1,5 +1,5 @@
 ﻿using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 
 namespace ObligatorioDA2.Services.Mappers
 {

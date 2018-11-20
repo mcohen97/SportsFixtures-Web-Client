@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using ObligatorioDA2.Data.Repositories;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Data.DataAccess;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.WebAPI.Controllers;
 using System.Diagnostics.CodeAnalysis;
 

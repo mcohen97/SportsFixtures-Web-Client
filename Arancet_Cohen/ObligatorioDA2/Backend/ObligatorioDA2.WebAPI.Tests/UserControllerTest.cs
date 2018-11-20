@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.Services;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
