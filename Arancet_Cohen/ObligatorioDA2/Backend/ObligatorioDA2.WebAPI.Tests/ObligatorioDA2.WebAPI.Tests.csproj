@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ObligatorioDA2.BusinessLogic.FixtureAlgorithms\ObligatorioDA2.BusinessLogic.FixtureAlgorithms.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Services\ObligatorioDA2.Services.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.WebAPI\ObligatorioDA2.WebAPI.csproj" />
   </ItemGroup>

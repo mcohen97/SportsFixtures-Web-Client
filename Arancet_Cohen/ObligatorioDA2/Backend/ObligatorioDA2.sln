@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogic", "ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj", "{4751425F-3D67-4ECC-98B6-28C53922B463}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Interfaces", "ObligatorioDA2.Data.Repositories.Interfaces\ObligatorioDA2.Data.Repositories.Interfaces.csproj", "{282C9F52-1ECC-4454-9D2A-3B62225522CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Contracts", "ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj", "{282C9F52-1ECC-4454-9D2A-3B62225522CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.Repositories.Test", "ObligatorioDA2.Data.Repositories.Test\ObligatorioDA2.Data.Repositories.Test.csproj", "{36C514E0-705D-46CC-998F-C430C9DD8309}"
 EndProject
