@@ -116,7 +116,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(matches);
             Assert.AreEqual(matches.Count, 1);
-            Assert.AreEqual(matches.ToList()[0].TeamsIds.Count, 2);
+            Assert.AreEqual(matches.ToList()[0].TeamIds.Count, 2);
         }
 
         [TestMethod]
@@ -229,6 +229,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutModifyMatchTest() {
             //Arrange.
             MatchModelIn input = BuildMatchModelIn(testEncounter);
+            matchService.Setup(ms => ms.ModifyEncounter(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
+                It.IsAny<DateTime>(), It.IsAny<string>())).Returns(testEncounter);
 
             //Act.
             IActionResult result = controller.Put(1, input);

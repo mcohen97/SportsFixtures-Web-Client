@@ -41,7 +41,7 @@ namespace DataRepositoriesTest
                 .UseInMemoryDatabase(databaseName: "MatchRepositoryTest")
                 .Options;
             context = new DatabaseConnection(options);
-            matchesStorage = new MatchRepository(context);
+            matchesStorage = new EncounterRepository(context);
             sportsStorage = new SportRepository(context);
             teamsStorage = new TeamRepository(context);
             usersRepo = new UserRepository(context);
@@ -57,7 +57,7 @@ namespace DataRepositoriesTest
             Mock<DbException> toThrow = new Mock<DbException>();
             contextMock.Setup(c => c.Matches).Throws(toThrow.Object);
             contextMock.Setup(c => c.Comments).Throws(toThrow.Object);
-            matchesStorage = new MatchRepository(contextMock.Object);
+            matchesStorage = new EncounterRepository(contextMock.Object);
         }
 
         private Match BuildFakeMatch()

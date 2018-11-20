@@ -71,7 +71,7 @@ namespace ObligatorioDA2.WebAPI.Tests
             Assert.IsNotNull(match);
             Assert.IsTrue(match.HasResult);
             Assert.IsTrue(match.HasWinner);
-            Assert.AreEqual(match.WinnerId,match.TeamsIds.ToList()[0]);
+            Assert.AreEqual(match.WinnerId,match.TeamIds.ToList()[0]);
         }
     }
 }

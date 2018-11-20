@@ -68,7 +68,7 @@ namespace ObligatorioDA2.Services.Tests
                 .UseInMemoryDatabase(databaseName: "FixtureService")
                 .Options;
             context = new DatabaseConnection(options);
-            matchStorage = new MatchRepository(context);
+            matchStorage = new EncounterRepository(context);
             teamStorage = new TeamRepository(context);
             sportStorage = new SportRepository(context);
         }
@@ -213,7 +213,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetAvailableStrategiesTest() {
-            ICollection<Type> algorithms = fixtureService.GetAlgorithms(algorithmPaths);
+            ICollection<Type> algorithms = fixtureService.GetAlgorithms(@"..\");
             Assert.AreEqual(0, algorithms.Count);
         }
 

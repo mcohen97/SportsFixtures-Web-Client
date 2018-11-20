@@ -146,9 +146,9 @@ namespace ObligatorioDA2.Services
                 {
                     continue;  // Can't load as .NET assembly, so ignore
                 }
-                interestingTypes =
-                    types.Where(t => t.IsClass &&
-                                     t.GetInterfaces().Contains(typeof(IFixtureGenerator)));
+                interestingTypes= interestingTypes.Concat(
+                                    types.Where(t => t.IsClass &&
+                                    t.GetInterfaces().Contains(typeof(IFixtureGenerator))));
             }
             return interestingTypes.ToList();
         }
@@ -173,10 +173,19 @@ namespace ObligatorioDA2.Services
             int roundLength = dto.roundLength == 0 ? 1 : dto.roundLength;
             int daysBetweenRounds = dto.daysBetweenRounds == 0 ? 7 : dto.daysBetweenRounds;
 
-            Type algortihmType = GetAlgorithmType(algorithmsPath, dto.fixtureName);
-            object fromDll = Activator.CreateInstance(algortihmType, new object[] { dto.initialDate, roundLength, daysBetweenRounds });
-            IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
-            return algorithm;
+            try
+            {
+                Type algortihmType = GetAlgorithmType(algorithmsPath, dto.fixtureName);
+                object fromDll = Activator.CreateInstance(algortihmType, new object[] { dto.initialDate, roundLength, daysBetweenRounds });
+                IFixtureGenerator algorithm = fromDll as IFixtureGenerator;
+                return algorithm;
+            }
+            catch (IOException e) {
+                throw new ServiceException(e.Message, ErrorType.ENTITY_NOT_FOUND);
+            }
+            catch (MissingMemberException e) {
+                throw new ServiceException(e.Message, ErrorType.INVALID_DATA);
+            }
         }
 
         private Type GetAlgorithmType(string algorithmsPath, string fixtureName)
