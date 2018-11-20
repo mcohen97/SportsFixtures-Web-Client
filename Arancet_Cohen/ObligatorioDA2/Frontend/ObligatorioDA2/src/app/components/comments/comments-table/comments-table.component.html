@@ -19,7 +19,7 @@
           </tr>
         </table>
       </div>
-    <div class = "paginator-container">
+    <div *ngIf = "dataSource && dataSource.data.length > 4" class = "paginator-container">
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
   </div>

@@ -18,7 +18,6 @@
       </button>
       <mat-menu #menu="matMenu">
           <button mat-menu-item *ngIf = "!isUserLogged()" routerLink="login" (click)="sidenav.close()">Log in</button>
-          <button mat-menu-item *ngIf = "isUserLogged()" routerLink="users" (click)="sidenav.close()">Profile</button>
           <button mat-menu-item *ngIf = "isUserLogged()" routerLink="login" (click)="logOut()">Log out</button>
       </mat-menu>
     </span>
@@ -48,7 +47,7 @@
       </button>
     </div>
     <div *ngIf = "checkRole('Follower')">
-      <button type="button" routerLink="" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="welcome" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
         Home
       </button>
       <button type="button" routerLink="comments" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>

@@ -75,6 +75,9 @@ export class CommentsComponent implements OnInit {
           this.errorMessage = "Cant get data due to authentication problems";
         })
       )
+    }else{
+      this.errorMessage = "There was an error, refresh the page and try again"
+      this.isLoading = false;
     }
   }
 
@@ -102,8 +105,11 @@ export class CommentsComponent implements OnInit {
   }
 
   showEncounters(teamId:number){
-    this.selectedTeamId = teamId;
-    this.getEncountersOfTeam(teamId);
+    if(teamId != 0){
+      this.selectedTeamId = teamId;
+      this.getEncountersOfTeam(teamId);
+    }
+
   }
 
   getEncountersOfTeam(teamId:number){

@@ -51,6 +51,12 @@ td.mat-cell{
     margin-top: 10px;
 }
 
+mat-header-cell {
+    display:flex;
+    justify-content:center;
+  }
+  
+
 .paginaitor-container{
     width: 100%;
 }

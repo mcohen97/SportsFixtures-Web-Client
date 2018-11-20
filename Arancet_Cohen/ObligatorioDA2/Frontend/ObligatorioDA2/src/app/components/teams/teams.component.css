@@ -92,6 +92,12 @@ td.mat-cell{
     }
 }
 
+mat-header-cell {
+    display:flex;
+    justify-content:center;
+  }
+  
+
 .loading-shade {
     position: absolute;
     top: 0;

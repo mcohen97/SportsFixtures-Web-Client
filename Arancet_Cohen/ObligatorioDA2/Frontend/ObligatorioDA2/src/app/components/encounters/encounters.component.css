@@ -32,6 +32,11 @@ td.mat-cell{
     padding-right: 3px;
 }
 
+mat-header-cell {
+    display:flex;
+    justify-content:center;
+  }
+
 
 .cell{
     width: 25%;

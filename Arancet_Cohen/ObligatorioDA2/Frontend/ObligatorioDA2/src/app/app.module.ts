@@ -84,6 +84,8 @@ import { CommentsService } from './services/comments/comments.service';
 import { CommentsTableComponent } from './components/comments/comments-table/comments-table.component';
 import { SportTableComponent } from './components/sport-table/sport-table.component';
 import { TablePosition } from './classes/table-position';
+import { WelcomeComponent } from './components/welcome/welcome.component';
+import { CanActivateViaAuthGuard } from './services/auth/routeAuth';
 
 @NgModule({
   declarations: [
@@ -113,33 +115,36 @@ import { TablePosition } from './classes/table-position';
     CommentDialogComponent,
     CommentsComponent,
     CommentsTableComponent,
-    SportTableComponent
+    SportTableComponent,
+    WelcomeComponent
   ],
   imports: [
     RouterModule.forRoot([
+      {path: '', canActivate:[CanActivateViaAuthGuard], children: [
+        {
+          path:'users',
+          component:UsersComponent,
+        },
+        {
+          path:'sports',
+          component:SportsComponent,
+        },
+        {
+          path:'teams',
+          component:TeamsComponent,
+        },
+        {
+          path:'encounters',
+          component:EncountersComponent,
+        },
+        {
+          path:'logs',
+          component:LogsComponent,
+        },
+      ]},
       {
         path: 'login',
         component: LoginComponent
-      },
-      {
-        path:'users',
-        component:UsersComponent
-      },
-      {
-        path:'sports',
-        component:SportsComponent
-      },
-      {
-        path:'teams',
-        component:TeamsComponent
-      },
-      {
-        path:'encounters',
-        component:EncountersComponent
-      },
-      {
-        path:'logs',
-        component:LogsComponent
       },
       {
         path:'follower-teams',
@@ -156,6 +161,10 @@ import { TablePosition } from './classes/table-position';
       {
         path:'positions',
         component:SportTableComponent
+      },
+      {
+        path:'welcome',
+        component:WelcomeComponent
       },
       {
         path: '**',
@@ -215,7 +224,8 @@ import { TablePosition } from './classes/table-position';
     {provide: LogsService, useClass:LogsService},
     {provide: CommentsService, useClass:CommentsService},
     {provide: ReConnector, useClass:ReConnector},
-    {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
+    {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher},
+    {provide: CanActivateViaAuthGuard, useClass: CanActivateViaAuthGuard}
   ],
   entryComponents: [
     ConfirmationDialogComponent,
