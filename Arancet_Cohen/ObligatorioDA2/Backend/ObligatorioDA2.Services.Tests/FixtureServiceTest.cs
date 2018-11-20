@@ -213,7 +213,7 @@ namespace ObligatorioDA2.Services.Tests
 
         [TestMethod]
         public void GetAvailableStrategiesTest() {
-            ICollection<Type> algorithms = fixtureService.GetAlgorithms(algorithmPaths);
+            ICollection<Type> algorithms = fixtureService.GetAlgorithms(@"..\");
             Assert.AreEqual(0, algorithms.Count);
         }
 
