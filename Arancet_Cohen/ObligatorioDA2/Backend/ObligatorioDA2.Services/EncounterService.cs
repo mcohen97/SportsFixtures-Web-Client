@@ -95,11 +95,16 @@ namespace ObligatorioDA2.Services
 
         public EncounterDto ModifyEncounter(EncounterDto anEncounter)
         {
-            Encounter toAdd = encounterConverter.ToEncounter(anEncounter);
+            Encounter toAdd;
             try
             {
+                toAdd = encounterConverter.ToEncounter(anEncounter);
                 ValidateDate(toAdd);
                 encountersStorage.Modify(toAdd);
+            }
+            catch (InvalidEncounterDataException e) {
+                throw new ServiceException(e.Message, ErrorType.INVALID_DATA);
+
             }
             catch (EncounterNotFoundException e)
             {
