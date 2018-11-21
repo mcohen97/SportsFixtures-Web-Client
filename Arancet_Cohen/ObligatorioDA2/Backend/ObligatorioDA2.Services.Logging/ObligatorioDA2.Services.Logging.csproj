@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Services.Contracts\ObligatorioDA2.Services.Contracts.csproj" />

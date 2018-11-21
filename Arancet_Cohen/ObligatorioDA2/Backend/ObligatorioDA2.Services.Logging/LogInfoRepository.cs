@@ -5,19 +5,16 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.Data.DataAccess;
-using ObligatorioDA2.Data.DomainMappers;
-using ObligatorioDA2.Data.Entities;
 using ObligatorioDA2.Data.Repositories.Contracts;
 
-namespace ObligatorioDA2.Data.Repositories
+namespace ObligatorioDA2.Services.Logging
 {
     public class LogInfoRepository : ILogInfoRepository
     {
-        private DatabaseConnection context;
+        private LoggingContext context;
         private LogInfoMapper mapper;
 
-        public LogInfoRepository(DatabaseConnection context)
+        public LogInfoRepository(LoggingContext context)
         {
             this.context = context;
             mapper = new LogInfoMapper();

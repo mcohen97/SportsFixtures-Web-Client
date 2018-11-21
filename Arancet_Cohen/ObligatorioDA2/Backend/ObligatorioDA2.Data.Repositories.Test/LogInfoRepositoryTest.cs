@@ -4,8 +4,8 @@ using Moq;
 using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.DataAccess;
-using ObligatorioDA2.Data.Entities;
 using ObligatorioDA2.Data.Repositories.Contracts;
+using ObligatorioDA2.Services.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -24,7 +24,7 @@ namespace ObligatorioDA2.Data.Repositories.Test
         [TestInitialize]
         public void Initialize()
         {
-            DatabaseConnection context = CreateContext();
+            LoggingContext context = CreateContext();
             CreateLogs();
             ClearDataBase(context);
         }
@@ -49,28 +49,28 @@ namespace ObligatorioDA2.Data.Repositories.Test
             };
         }
 
-        private DatabaseConnection CreateContext()
+        private LoggingContext CreateContext()
         {
-            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
-                            .UseInMemoryDatabase(databaseName: "SportRepository")
+            DbContextOptions<LoggingContext> options = new DbContextOptionsBuilder<LoggingContext>()
+                            .UseInMemoryDatabase(databaseName: "LoggingRepository")
                             .Options;
-            DatabaseConnection context = new DatabaseConnection(options);
+            LoggingContext context = new LoggingContext(options);
             repo = new LogInfoRepository(context);
             return context;
         }
 
         private void CreateDisconnectedDatabase()
         {
-            DbContextOptions<DatabaseConnection> options = new DbContextOptionsBuilder<DatabaseConnection>()
+            DbContextOptions<LoggingContext> options = new DbContextOptionsBuilder<LoggingContext>()
                 .UseInMemoryDatabase(databaseName: "UserRepositoryTest")
                 .Options;
-            Mock<DatabaseConnection> contextMock = new Mock<DatabaseConnection>(options);
+            Mock<LoggingContext> contextMock = new Mock<LoggingContext>(options);
             Mock<DbException> toThrow = new Mock<DbException>();
             contextMock.Setup(c => c.Logs).Throws(toThrow.Object);
             repo = new LogInfoRepository(contextMock.Object);
         }
 
-        private void ClearDataBase(DatabaseConnection context)
+        private void ClearDataBase(LoggingContext context)
         {
             foreach (LogInfoEntity log in context.Logs)
             {

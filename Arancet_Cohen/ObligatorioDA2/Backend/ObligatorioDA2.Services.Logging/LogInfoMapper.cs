@@ -1,8 +1,8 @@
 ﻿using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Data.Entities;
+using ObligatorioDA2.Services.Logging;
 using System;
 
-namespace ObligatorioDA2.Data.DomainMappers
+namespace ObligatorioDA2.Services.Logging
 {
     public class LogInfoMapper
     {

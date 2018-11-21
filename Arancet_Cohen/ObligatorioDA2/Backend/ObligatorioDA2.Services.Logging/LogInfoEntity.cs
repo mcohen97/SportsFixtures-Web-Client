@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatorioDA2.Data.Entities
+namespace ObligatorioDA2.Services.Logging
 {
     public class LogInfoEntity
     {
