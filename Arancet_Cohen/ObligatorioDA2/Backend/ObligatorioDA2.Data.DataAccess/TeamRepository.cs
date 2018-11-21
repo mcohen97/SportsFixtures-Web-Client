@@ -115,13 +115,13 @@ namespace ObligatorioDA2.Data.Repositories
 
         private void DeleteMatches(TeamEntity toDelete)
         {
-            IQueryable<MatchTeam> matchTeams = context.MatchTeams
+            IQueryable<EncounterTeam> matchTeams = context.MatchTeams
                 .Include(mt=> mt.Match).ThenInclude(m=>m.Commentaries)
                 .Where(mt=> mt.TeamNumber == toDelete.TeamNumber);
             context.MatchTeams.RemoveRange(matchTeams);
-            IQueryable<MatchEntity> matches = matchTeams.Select(mt => mt.Match);
+            IQueryable<EncounterEntity> matches = matchTeams.Select(mt => mt.Match);
             context.Matches.RemoveRange(matches);
-            foreach (MatchEntity match in matches)
+            foreach (EncounterEntity match in matches)
             {
                 context.Comments.RemoveRange(match.Commentaries);
             }

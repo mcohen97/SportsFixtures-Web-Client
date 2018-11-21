@@ -11,10 +11,6 @@
     <ProjectReference Include="..\ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
