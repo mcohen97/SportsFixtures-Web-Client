@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.DataAccess", "ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj", "{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.Services.Logging", "ObligatorioDA2.Services.Logging\ObligatorioDA2.Services.Logging.csproj", "{D69FE40F-8B45-4EAE-96D4-54DBAF9F274F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D69FE40F-8B45-4EAE-96D4-54DBAF9F274F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D69FE40F-8B45-4EAE-96D4-54DBAF9F274F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D69FE40F-8B45-4EAE-96D4-54DBAF9F274F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D69FE40F-8B45-4EAE-96D4-54DBAF9F274F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
