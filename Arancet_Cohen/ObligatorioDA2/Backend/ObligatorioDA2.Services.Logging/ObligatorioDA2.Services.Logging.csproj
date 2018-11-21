@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ObligatorioDA2.BusinessLogic\ObligatorioDA2.BusinessLogic.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Services.Contracts\ObligatorioDA2.Services.Contracts.csproj" />
   </ItemGroup>
