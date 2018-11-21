@@ -21,10 +21,10 @@ namespace ObligatorioDA2.Data.DomainMappers
             sportConverter = new SportMapper();
             factory = new EncounterFactory();
         }
-        public MatchEntity ToEntity(Encounter aMatch)
+        public EncounterEntity ToEntity(Encounter aMatch)
         {
             SportEntity sportEntity = sportConverter.ToEntity(aMatch.Sport);
-            MatchEntity conversion = new MatchEntity()
+            EncounterEntity conversion = new EncounterEntity()
             {
                 Id = aMatch.Id,
                 Date = aMatch.Date,
@@ -41,7 +41,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             return commentaries.Select(c => commentConverter.ToEntity(c)).ToList();
         }
 
-        public Encounter ToEncounter(MatchEntity aMatch, ICollection<MatchTeam> playingTeams)
+        public Encounter ToEncounter(EncounterEntity aMatch, ICollection<EncounterTeam> playingTeams)
         {
             ICollection<Commentary> comments = aMatch.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
             ICollection<Team> teams = playingTeams.Select(tm => teamConverter.ToTeam(tm.Team)).ToList();
@@ -55,23 +55,23 @@ namespace ObligatorioDA2.Data.DomainMappers
             return created;
         }
 
-        private Result ToResults(ICollection<MatchTeam> playingTeams)
+        private Result ToResults(ICollection<EncounterTeam> playingTeams)
         {
             Result matchResult = new Result();
-            foreach (MatchTeam mt in playingTeams) {
+            foreach (EncounterTeam mt in playingTeams) {
                 Team converted = teamConverter.ToTeam(mt.Team);
                 matchResult.Add(converted, mt.Position);
             }
             return matchResult;
         }
 
-        public ICollection<MatchTeam> ConvertParticipants(Encounter aMatch)
+        public ICollection<EncounterTeam> ConvertParticipants(Encounter aMatch)
         {
-            MatchEntity matchEntity = ToEntity(aMatch);
-            ICollection<MatchTeam> conversions = new List<MatchTeam>();
+            EncounterEntity matchEntity = ToEntity(aMatch);
+            ICollection<EncounterTeam> conversions = new List<EncounterTeam>();
             foreach (Team participant in aMatch.GetParticipants()) {
                 TeamEntity team = teamConverter.ToEntity(participant);
-                MatchTeam participantConversion = new MatchTeam()
+                EncounterTeam participantConversion = new EncounterTeam()
                 {
                     Match = matchEntity,
                     MatchId = matchEntity.Id,
@@ -86,7 +86,7 @@ namespace ObligatorioDA2.Data.DomainMappers
             return conversions;
         }
 
-        private void ResultsToEntity(ICollection<MatchTeam> conversions, Result result)
+        private void ResultsToEntity(ICollection<EncounterTeam> conversions, Result result)
         {
             foreach (Tuple<Team, int> standing in result.GetPositions()) {
                 conversions.First(mt => mt.TeamNumber == standing.Item1.Id).Position = standing.Item2;

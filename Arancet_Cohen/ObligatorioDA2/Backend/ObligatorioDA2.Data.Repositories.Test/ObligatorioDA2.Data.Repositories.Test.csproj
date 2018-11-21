@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj" />
     <ProjectReference Include="..\ObligatorioDA2.Data.Repositories.Contracts\ObligatorioDA2.Data.Repositories.Contracts.csproj" />
+    <ProjectReference Include="..\ObligatorioDA2.Services.Logging\ObligatorioDA2.Services.Logging.csproj" />
   </ItemGroup>
 
 </Project>

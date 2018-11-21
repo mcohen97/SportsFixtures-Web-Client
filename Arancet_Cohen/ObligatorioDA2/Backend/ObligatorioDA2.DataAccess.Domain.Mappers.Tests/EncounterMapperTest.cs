@@ -14,8 +14,8 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
     public class EncounterMapperTest
     {
         private EncounterMapper testMapper;
-        private MatchEntity entity;
-        private ICollection<MatchTeam> playingTeams;
+        private EncounterEntity entity;
+        private ICollection<EncounterTeam> playingTeams;
         private EncounterFactory factory;
         private Encounter match;
         Team homeMock;
@@ -29,7 +29,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
             SportEntity testSport = new SportEntity() { Name = "Soccer", IsTwoTeams = true };
             TeamEntity homeTest = new TeamEntity { TeamNumber = 3, SportEntityName = "Soccer", Sport =testSport,Name = "Nacional", Photo = "aPath" };
             TeamEntity awayTest = new TeamEntity { TeamNumber = 4, SportEntityName = "Soccer", Sport = testSport,Name = "Torque", Photo = "aPath" };
-            entity = new MatchEntity()
+            entity = new EncounterEntity()
             {
                 Id = 3,
                 Date = DateTime.Now,
@@ -37,9 +37,9 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
                 HasResult = false,
                 Commentaries = new List<CommentEntity>()
             };
-            MatchTeam homeRel = new MatchTeam() { Team = homeTest, TeamNumber = 3, Match = entity, MatchId = 3 };
-            MatchTeam awayRel = new MatchTeam() { Team = awayTest, TeamNumber = 4, Match = entity, MatchId = 3 };
-            playingTeams = new List<MatchTeam>() { homeRel, awayRel };
+            EncounterTeam homeRel = new EncounterTeam() { Team = homeTest, TeamNumber = 3, Match = entity, MatchId = 3 };
+            EncounterTeam awayRel = new EncounterTeam() { Team = awayTest, TeamNumber = 4, Match = entity, MatchId = 3 };
+            playingTeams = new List<EncounterTeam>() { homeRel, awayRel };
             homeMock = new Team(3, "Nacional", "aPath", new Sport("Soccer",true));
             awayMock = new Team(4, "Torque", "aPath", new Sport("Soccer",true));
             Sport sport = new Sport("Soccer",true);
@@ -49,14 +49,14 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         [TestMethod]
         public void GetMatchTeamsTest()
         {
-            ICollection<MatchTeam> teams = testMapper.ConvertParticipants(match);
+            ICollection<EncounterTeam> teams = testMapper.ConvertParticipants(match);
             Assert.AreEqual(teams.Count, match.GetParticipants().Count);
         }
 
         [TestMethod]
         public void MatchToEntityDateTest()
         {
-            MatchEntity converted = testMapper.ToEntity(match);
+            EncounterEntity converted = testMapper.ToEntity(match);
             Assert.AreEqual(converted.Date.ToString(), entity.Date.ToString());
         }
 
@@ -73,13 +73,13 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
             };
             Mock<User> user = new Mock<User>(identity, false);
             match.AddCommentary(new Commentary("test comment", user.Object));
-            MatchEntity converted = testMapper.ToEntity(match);
+            EncounterEntity converted = testMapper.ToEntity(match);
             Assert.AreEqual(converted.Commentaries.Count, 1);
         }
 
         [TestMethod]
         public void MatchToEntityNoResultTest() {
-            MatchEntity converted = testMapper.ToEntity(match);
+            EncounterEntity converted = testMapper.ToEntity(match);
             Assert.IsFalse(converted.HasResult);
         }
 
@@ -88,7 +88,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         {
             Result matchResult = GetFakeResult();
             match.Result=matchResult;
-            MatchEntity converted = testMapper.ToEntity(match);
+            EncounterEntity converted = testMapper.ToEntity(match);
             Assert.IsTrue(converted.HasResult);
         }
 
@@ -97,7 +97,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         {
             Result matchResult = GetFakeResult();
             match.Result=matchResult;
-            ICollection<MatchTeam> teams = testMapper.ConvertParticipants(match);
+            ICollection<EncounterTeam> teams = testMapper.ConvertParticipants(match);
             Assert.IsTrue(teams.Any(t => t.Position == 1));
             Assert.IsTrue(teams.Any(t => t.Position == 2));
         }
@@ -154,7 +154,7 @@ namespace ObligatorioDA2.Data.DomainMappers.Mappers.Tests
         public void EntityToMatchWithResultTest() {
             entity.HasResult = true;
             int position = 1;
-            foreach (MatchTeam team in playingTeams) {
+            foreach (EncounterTeam team in playingTeams) {
                 team.Position = position;
                 position++;
             }

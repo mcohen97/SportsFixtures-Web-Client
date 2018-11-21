@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatorioDA2.Data.Entities
 {
-    public class MatchEntity
+    public class EncounterEntity
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
