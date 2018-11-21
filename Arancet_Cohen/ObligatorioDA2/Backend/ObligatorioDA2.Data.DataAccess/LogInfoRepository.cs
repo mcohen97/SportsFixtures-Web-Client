@@ -8,7 +8,7 @@ using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Data.DataAccess;
 using ObligatorioDA2.Data.DomainMappers;
 using ObligatorioDA2.Data.Entities;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 
 namespace ObligatorioDA2.Data.Repositories
 {

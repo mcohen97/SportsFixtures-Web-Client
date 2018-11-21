@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
 using System.Text;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.Services.Exceptions;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 using System;
 
 namespace ObligatorioDA2.WebAPI.Controllers
@@ -17,7 +17,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
     {
         private ITeamService teamService;
         private IImageService images;
-        IAuthenticationService authentication;
+        private IAuthenticationService authenticator;
         private ErrorActionResultFactory errors;
         private const string IMG_EXTENSION = ".jpg";
 
@@ -26,7 +26,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             teamService = aService;
             errors = new ErrorActionResultFactory(this);
             images = imageManager;
-            authentication = authService;
+            authenticator = authService;
 
         }
 
@@ -218,7 +218,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private void SetSession() {
             string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-            authentication.SetSession(username);
+            authenticator.SetSession(username);
         }
     }
 }

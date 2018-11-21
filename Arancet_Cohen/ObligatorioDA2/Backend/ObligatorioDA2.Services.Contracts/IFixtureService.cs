@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 
-namespace ObligatorioDA2.Services.Interfaces
+namespace ObligatorioDA2.Services.Contracts
 {
     public interface IFixtureService
     {

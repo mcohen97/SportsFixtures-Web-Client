@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.Services.Exceptions;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
 {
@@ -15,14 +15,14 @@ namespace ObligatorioDA2.WebAPI.Controllers
     [ApiController]
     public class MatchesController : ControllerBase
     {
-        private IEncounterService matchService;
+        private IEncounterService encounterService;
         private EncounterModelFactory factory;
         private ErrorActionResultFactory errors;
         private IAuthenticationService authenticator;
 
         public MatchesController(IEncounterService aService, IAuthenticationService authService)
         {
-            matchService = aService;
+            encounterService = aService;
             factory = new EncounterModelFactory();
             errors = new ErrorActionResultFactory(this);
             authenticator = authService;
@@ -32,7 +32,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         [Authorize]
         public IActionResult Get([FromQuery] bool grouped)
         {
-            ICollection<EncounterDto> matches = matchService.GetAllEncounter();
+            ICollection<EncounterDto> matches = encounterService.GetAllEncounter();
             ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
             IActionResult result;
             if (grouped) {
@@ -95,7 +95,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 SetSession();
-                EncounterDto added = matchService.AddEncounter(id,teamIds, sportName, date);
+                EncounterDto added = encounterService.AddEncounter(id,teamIds, sportName, date);
                 EncounterModelOut output = factory.CreateModelOut(added);
                 result = CreatedAtRoute("GetMatchById",new {matchId = added.id }, output);
             }
@@ -126,7 +126,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetMatch(int matchId)
         {
-            EncounterDto stored = matchService.GetEncounter(matchId);
+            EncounterDto stored = encounterService.GetEncounter(matchId);
             EncounterModelOut modelOut = factory.CreateModelOut(stored);
             IActionResult result = Ok(modelOut);
             return result;
@@ -153,7 +153,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 SetSession();
-                EncounterDto modified =matchService.ModifyEncounter(id, aMatch.TeamIds, aMatch.Date, aMatch.SportName);
+                EncounterDto modified =encounterService.ModifyEncounter(id, aMatch.TeamIds, aMatch.Date, aMatch.SportName);
                 modified.id = id;
                 EncounterModelOut output = factory.CreateModelOut(modified);
                 result = Ok(output);
@@ -202,7 +202,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryToDelete(int id)
         {
-            matchService.DeleteEncounter(id);
+            encounterService.DeleteEncounter(id);
             OkModelOut okMessage = new OkModelOut() { OkMessage = "The match was deleted successfully" };
             return Ok(okMessage);
         }
@@ -239,7 +239,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IActionResult TryAddComment(int matchId,CommentModelIn input)
         {
             string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-            CommentaryDto created = matchService.CommentOnEncounter(matchId, username, input.Text);
+            CommentaryDto created = encounterService.CommentOnEncounter(matchId, username, input.Text);
             CommentModelOut output = new CommentModelOut
             {
                 Id = created.commentId,
@@ -256,7 +256,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             IActionResult result;
             try {
                 SetSession();
-                ICollection<EncounterDto> matches = matchService.GetAllEncounterDtos(sportName);
+                ICollection<EncounterDto> matches = encounterService.GetAllEncounterDtos(sportName);
                 ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
                 result = Ok(output);
             }
@@ -275,7 +275,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
             try
             {
                 SetSession();
-                ICollection<EncounterDto> matches = matchService.GetAllEncounterDtos(teamId);
+                ICollection<EncounterDto> matches = encounterService.GetAllEncounterDtos(teamId);
                 ICollection<EncounterModelOut> output = matches.Select(m => factory.CreateModelOut(m)).ToList();
                 result = Ok(output);
             }
@@ -303,7 +303,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetMatchComments(int matchId)
         {
-            ICollection<CommentaryDto> matchComments = matchService.GetEncounterCommentaries(matchId);
+            ICollection<CommentaryDto> matchComments = encounterService.GetEncounterCommentaries(matchId);
             ICollection<CommentModelOut> output = matchComments.Select(c => BuildCommentModelOut(c)).ToList();
             return Ok(output);
         }
@@ -326,7 +326,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetAllComments()
         {
-            ICollection<CommentaryDto> allComments = matchService.GetAllCommentaries();
+            ICollection<CommentaryDto> allComments = encounterService.GetAllCommentaries();
             ICollection<CommentModelOut> output = allComments.Select(c => BuildCommentModelOut(c)).ToList();
             return Ok(output);
         }
@@ -359,7 +359,7 @@ namespace ObligatorioDA2.WebAPI.Controllers
 
         private IActionResult TryGetComment(int id)
         {
-            CommentaryDto comment = matchService.GetComment(id);
+            CommentaryDto comment = encounterService.GetComment(id);
             CommentModelOut output = new CommentModelOut
             {
                 Id = comment.commentId,
@@ -384,21 +384,21 @@ namespace ObligatorioDA2.WebAPI.Controllers
             return result;
         }
 
-        private void SetSession()
-        {
-            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
-            authenticator.SetSession(username);
-        }
-
         private IActionResult TrySetResult(int matchId, ResultModel resultModel)
         {
             ICollection<Tuple<int, int>> team_positions = resultModel.Team_Position
                 .Select(tp => new Tuple<int, int>(tp.TeamId, tp.Position)).ToList();
             ResultDto encounterResult = new ResultDto() { teams_positions = team_positions };
-            matchService.SetResult(matchId, encounterResult);
-            EncounterDto matchWithResult = matchService.GetEncounter(matchId);
+            encounterService.SetResult(matchId, encounterResult);
+            EncounterDto matchWithResult = encounterService.GetEncounter(matchId);
             EncounterModelOut result = factory.CreateModelOut(matchWithResult);
             return Ok(result);
+        }
+
+        private void SetSession()
+        {
+            string username = HttpContext.User.Claims.First(c => c.Type.Equals(AuthenticationConstants.USERNAME_CLAIM)).Value;
+            authenticator.SetSession(username);
         }
     }
 }

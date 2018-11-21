@@ -6,7 +6,7 @@ using ObligatorioDA2.Data.DomainMappers;
 using ObligatorioDA2.Data.Entities;
 using System.Collections.Generic;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using System.Data.Common;
 using System;
 
