@@ -18,7 +18,6 @@ namespace ObligatorioDA2.WebAPI.Controllers
         private IFixtureService fixtureService;
         private IOptions<FixtureStrategies> fixtureConfig;
         private IAuthenticationService authenticator;
-        private const string DLL_EXTENSION = "*.dll";
         private EncounterModelFactory factory;
         private ErrorActionResultFactory errors;
 

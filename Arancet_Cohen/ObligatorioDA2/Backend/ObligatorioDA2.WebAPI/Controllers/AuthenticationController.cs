@@ -9,7 +9,6 @@ using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.Services.Exceptions;
 using ObligatorioDA2.WebAPI.Models;
 using System.Net;
-using Microsoft.AspNetCore.Cors;
 using ObligatorioDA2.Services.Contracts.Dtos;
 
 namespace ObligatorioDA2.WebAPI.Controllers
