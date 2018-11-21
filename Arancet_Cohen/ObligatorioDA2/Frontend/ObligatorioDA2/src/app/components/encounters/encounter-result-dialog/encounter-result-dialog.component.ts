@@ -83,17 +83,26 @@ export class EncounterResultDialogComponent implements OnInit {
     if(!this.data.isTwoTeams){
       this.data.teams.forEach(team => {
         var selectedPosition = Number.parseInt(document.getElementById(team.name).innerText);
-        standings.push(new Standing(team.id, selectedPosition));
+        var standing  = new Standing();
+        standing.teamId = team.id;
+        standing.position = selectedPosition;
+        standings.push(standing);
       });
     }else{
       if (this.selectedWinner != 0){
         var winner = this.data.teams.find(t => t.id == this.selectedWinner);
         var looser = this.data.teams.find(t => t.id != this.selectedWinner);
-        standings.push(new Standing(winner.id, 1));
-        standings.push(new Standing(looser.id, 2));
+        var winnerStd = new Standing();
+        winnerStd.teamId = winner.id;
+        winnerStd.position = 1;
+        var looserStd = new Standing();
+        looserStd.teamId = looser.id;
+        looserStd.position = 2;
+        standings.push(winnerStd);
+        standings.push(looserStd);
       } else {
-        standings.push(new Standing(this.data.teams[0].id, 1));
-        standings.push(new Standing(this.data.teams[1].id, 1));
+        standings.push(Standing.newStanding(this.data.teams[0].id, 1));
+        standings.push(Standing.newStanding(this.data.teams[1].id, 1));
       }
     }
     var result = new Result();

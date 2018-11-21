@@ -10,6 +10,8 @@ export class Encounter {
     commentsids: Array<number>;
     teams: Array<Team>;
     team_Position: Array<Standing>;
+    winnerId:number;
+    hasWinner:boolean;
 
     public static getClone(aEncounter:Encounter): Encounter{
         var encounter = new Encounter(aEncounter.sportName, aEncounter.hasResult, aEncounter.date);
@@ -18,6 +20,8 @@ export class Encounter {
         encounter.teams = aEncounter.teams;
         encounter.id = aEncounter.id;
         encounter.team_Position = aEncounter.team_Position;
+        encounter.winnerId = aEncounter.winnerId;
+        encounter.hasWinner = aEncounter.hasWinner;
         return encounter;
     }
 
@@ -34,6 +38,8 @@ export class Encounter {
         this.commentsids = new Array<number>();
         this.teams = new Array<Team>();
         this.team_Position = new Array<Standing>();
+        this.winnerId = 0;
+        this.hasWinner = false;
     }
 
 }

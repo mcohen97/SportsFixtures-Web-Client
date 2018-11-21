@@ -11,6 +11,7 @@ import { Token } from 'src/app/classes/token';
 import { CommentDialogComponent } from '../comment-dialog/comment-dialog.component';
 import { Encounter } from 'src/app/classes/encounter';
 import { CommentsService } from 'src/app/services/comments/comments.service';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'comments-table',
@@ -24,6 +25,7 @@ export class CommentsTableComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.commentControl = new FormControl();
     this.getComments(this.encounter);
   }
 
@@ -32,6 +34,7 @@ export class CommentsTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
   @Input() encounter:Encounter;
+  commentControl:FormControl;
 
   getComments(encounter:Encounter){
     this.commentsService.getEncounterComments(encounter.id).subscribe(
@@ -81,6 +84,17 @@ export class CommentsTableComponent implements OnInit {
     )
   }
 
+  comment(){
+    var text = this.commentControl.value;
+    if(text && text != ""){
+      var newComment = new Comment(text);
+      newComment.makerUsername = Globals.getUsername();
+      this.addComment(newComment, this.encounter.id);
+    }
+      
+  }
+
+
   performAdd(newComment:Comment):void{
     this.dataSource.data.push(newComment);
     this.dataSource._updateChangeSubscription();
@@ -88,4 +102,12 @@ export class CommentsTableComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
+  addComment(newComment:Comment, matchId:number):void{
+    this.commentsService.addComment(newComment, matchId).subscribe(
+      ((result:Comment) => {
+        this.getComments(this.encounter);
+      }),
+      ((error:ErrorResponse) => this.handleError(error))
+    );
+  }
 }

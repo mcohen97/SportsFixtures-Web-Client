@@ -103,3 +103,16 @@ td.mat-cell{
     align-items: center;
     justify-content: center;
   }
+
+  .square {
+    position: relative;
+    width: 40%;
+    vertical-align: middle;
+    max-width: 200px;
+  }
+  
+  .square:after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+  }
