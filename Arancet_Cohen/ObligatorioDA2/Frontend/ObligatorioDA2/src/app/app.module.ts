@@ -51,7 +51,6 @@ import {HomeComponent}from'./components/home/home.component';
 import { Http, HttpModule } from '@angular/http';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { Globals } from './globals';
-import { UserInfoComponent } from './components/user-info/user-info.component';
 import { UsersService } from './services/users/users.service';
 import { UsersComponent } from './components/users/users.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -93,7 +92,6 @@ import { CanActivateViaAuthGuard } from './services/auth/routeAuth';
     LoginComponent,
     HomeComponent,
     NotFoundComponent,
-    UserInfoComponent,
     UsersComponent,
     ConfirmationDialogComponent,
     UserDialogComponent,

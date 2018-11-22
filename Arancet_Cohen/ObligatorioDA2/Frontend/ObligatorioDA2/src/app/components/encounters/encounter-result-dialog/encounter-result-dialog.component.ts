@@ -144,5 +144,5 @@ export interface EncounterResultDialogData{
   teams:Array<Team>;
   isTwoTeams:boolean;
   isNewResult:boolean;
-  tiitle: string;
+  title: string;
 }
