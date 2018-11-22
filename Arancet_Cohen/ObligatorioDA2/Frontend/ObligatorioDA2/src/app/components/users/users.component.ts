@@ -30,15 +30,18 @@ export class UsersComponent implements OnInit {
   isLoading = false;
 
   constructor(private router:Router, private auth: AuthService, private reconnector:ReConnector ,private dialog:MatDialog, private globals:Globals, private usersService:UsersService) {
+    this.isLoading = true;
     this.getUsers();
+    var ref = setInterval(()=> {
+      this.getUsers(); },3000); 
+    Globals.addInterval(ref);
   }
   
   ngOnInit() {
-
+  
   }
 
   public getUsers():void{
-    this.isLoading = true;
     this.usersService.getAllUsers().subscribe(
       ((data:Array<User>) => this.updateTableData(data)),
       ((error:ErrorResponse) => this.handleUserError(error))
@@ -46,10 +49,14 @@ export class UsersComponent implements OnInit {
   }
 
   private updateTableData(users:Array<User>){
-    this.dataSource = new MatTableDataSource(users);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.isLoading = false;
+    if(!this.dataSource){
+      this.dataSource = new MatTableDataSource(users);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.isLoading = false;
+    }
+    else
+      this.dataSource.data = users;
   }
 
   private handleUserError(error:ErrorResponse) {

@@ -1,15 +1,23 @@
 import { Injectable, OnInit } from '@angular/core';
-import * as jwt_decode from "jwt-decode";
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-import { User } from './classes/user';
-import { StringifyOptions } from 'querystring';
 
 @Injectable()
 export class Globals {
 
   public static WEB_API_URL : string = 'https://localhost:5001/api/';
- 
+  
+  private static refs = [];
+
+  static addInterval(ref:any){
+    this.refs.push(ref);
+  }
+
+  static endAllIntervals(){
+    this.refs.forEach(ref => {
+      clearInterval(ref);
+    });
+  }
 
   static setToken(token:string){
     localStorage.setItem("token", token);
@@ -38,6 +46,8 @@ export class Globals {
 
   static logOut():void{
     localStorage.setItem("token", "");
+    localStorage.setItem("username", "");
+    localStorage.setItem("password", "");
   }
 
   static setRole(role:string){

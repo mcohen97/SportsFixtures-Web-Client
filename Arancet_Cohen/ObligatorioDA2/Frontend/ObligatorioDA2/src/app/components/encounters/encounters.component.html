@@ -54,9 +54,9 @@
             <td mat-cell class = "cell" *matCellDef="let row"> {{row.date.substring(0, 10)}} </td>
           </ng-container>
 
-          <ng-container matColumnDef="hasResult">
+          <ng-container matColumnDef="result">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class ="table-header"> Has Result </th>
-            <td mat-cell class = "cell" *matCellDef="let row"><img [src]="" alt=""> {{row.hasResult}}</td>
+            <td mat-cell class = "cell" *matCellDef="let row"><img [src]="" alt=""> {{resultOf(row)}}</td>
           </ng-container>
 
           <ng-container matColumnDef="options" sticky stickyEnd>

@@ -25,7 +25,7 @@ import { Sport } from 'src/app/classes/sport';
   styleUrls: ['./encounters.component.css']
 })
 export class EncountersComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'sportName', 'teamIds', 'date', 'hasResult', 'options'];
+  displayedColumns: string[] = ['id', 'sportName', 'teamIds', 'date', 'result', 'options'];
   dataSource:MatTableDataSource<Encounter>;
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
@@ -248,7 +248,7 @@ export class EncountersComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       ((result:boolean) => {
         if(result!=undefined){
-          this.rowEdited.hasResult = result;
+          this.getEncounters();
         }       
       })
     )
@@ -256,6 +256,22 @@ export class EncountersComponent implements OnInit {
 
   performAdd(newEncounter:Encounter):void{
     this.getEncounters();
+  }
+
+  resultOf(encounter:Encounter):string{
+    var result = "";
+    if(encounter.hasResult){
+      if(encounter.winnerId && encounter.winnerId != 0)
+        result = "Winner: " + this.teams.find(t => t.id == encounter.winnerId).name;
+      if(encounter.team_Position && encounter.team_Position.length != 0){
+        encounter.team_Position.forEach(standing => {
+          result += this.teams.find(t => t.id == standing.teamId).name + " - " + standing.points + ", ";
+        });
+      };
+    }
+    else
+      result = "No result yet";
+    return result;
   }
 }
 

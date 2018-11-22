@@ -204,5 +204,5 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 export interface TeamDialogData{
   aTeam: Team;
   isNewTeam: boolean;
-  tiitle: string;
+  title: string;
 }

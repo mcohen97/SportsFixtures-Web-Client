@@ -42,6 +42,10 @@ export class TeamsFollowerComponent implements OnInit {
   ){
     this.teamsFollowed = new Array<Team>(); 
     this.getFollowedTeams();
+    this.isLoading = true;
+    var ref = setInterval(()=> {
+      this.getFollowedTeams(); },3000); 
+    Globals.addInterval(ref);
   }
   
   ngOnInit() {
@@ -49,7 +53,6 @@ export class TeamsFollowerComponent implements OnInit {
   }
 
   public getFollowedTeams():void{
-    this.isLoading = true;
     this.usersService.getFollowedTeams(Globals.getUsername()).subscribe(
       ((data:Array<Team>) => {
         this.teamsFollowed = data;
@@ -60,13 +63,13 @@ export class TeamsFollowerComponent implements OnInit {
   }
 
   public getTeams():void{
-    this.isLoading = true;
     this.teamsService.getAllTeams().subscribe(
       ((teams:Array<Team>) => {
         this.teams = teams;
         this.setFollowed();
         this.updateTableData(this.teams);
-      })
+      }),
+      ((error:any) => this.handleTeamError(error))
     )
   }
 
@@ -90,7 +93,7 @@ export class TeamsFollowerComponent implements OnInit {
         ((error:any) => this.router.navigate['login']),
         (()=> {
           this.isLoading = false;
-          this.getTeams();
+          this.getFollowedTeams();
         })
       )
     }

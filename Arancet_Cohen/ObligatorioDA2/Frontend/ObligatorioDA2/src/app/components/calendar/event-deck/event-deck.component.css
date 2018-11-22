@@ -3,7 +3,7 @@
     height: 100%;
     display: block;
     height: 250px;
-    overflow-x: scroll;
+    overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     text-align:center;

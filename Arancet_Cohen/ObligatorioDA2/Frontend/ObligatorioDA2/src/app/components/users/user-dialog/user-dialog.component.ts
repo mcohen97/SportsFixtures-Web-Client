@@ -260,5 +260,5 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 export interface UserDialogData{
   aUser: User;
   isNewUser: boolean;
-  tiitle: string;
+  title: string;
 }

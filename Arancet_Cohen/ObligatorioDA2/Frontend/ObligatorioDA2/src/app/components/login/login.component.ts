@@ -8,6 +8,7 @@ import { UsersService } from 'src/app/services/users/users.service';
 import { User } from 'src/app/classes/user';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorResponse } from 'src/app/classes/error';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'login-component',
@@ -21,7 +22,7 @@ export class LoginComponent {
     errorLogin:boolean;
     isLoading = false;
 
-    constructor(private auth: AuthService){
+    constructor(private auth: AuthService, private router:Router){
         this.errorMessage = "";
         this.errorLogin = false;
     }
@@ -46,6 +47,7 @@ export class LoginComponent {
         Globals.setLoggedUser(username, password);
         console.log("logueado con exito: " + Globals.getToken());
         this.isLoading = false;
+        this.router.navigate(["welcome"]);
     }
 
     private handleError(error:ErrorResponse) {

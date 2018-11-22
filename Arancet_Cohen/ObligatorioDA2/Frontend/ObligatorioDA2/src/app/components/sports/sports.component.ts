@@ -28,14 +28,17 @@ export class SportsComponent implements OnInit {
   isLoading = false;
 
   constructor(private router:Router, private auth:AuthService, private reconnector:ReConnector ,private dialog:MatDialog, private sportsService:SportsService) {
+    this.isLoading = true;
     this.getSports();
+    var ref = setInterval(()=> {
+      this.getSports(); },3000);
+    Globals.addInterval(ref);
   }
 
   ngOnInit() {
   }
 
   public getSports():void{
-    this.isLoading = true;
     this.sportsService.getAllSports().subscribe(
       ((data:Array<Sport>) => this.updateTableData(data)),
       ((error:ErrorResponse) => this.handleSportError(error))
@@ -43,10 +46,15 @@ export class SportsComponent implements OnInit {
   }
 
   private updateTableData(sports:Array<Sport>){
-    this.dataSource = new MatTableDataSource(sports);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.isLoading = false;
+    if(!this.dataSource){
+      this.dataSource = new MatTableDataSource(sports);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.isLoading = false;
+    }
+    else{
+      this.dataSource.data = sports;
+    }
   }
 
   private handleSportError(error:ErrorResponse) {

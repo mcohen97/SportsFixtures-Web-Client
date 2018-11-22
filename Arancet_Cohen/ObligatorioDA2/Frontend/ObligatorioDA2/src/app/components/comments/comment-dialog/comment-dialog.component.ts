@@ -126,5 +126,5 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 
 export interface CommentDialogData{
   encounterId: number;
-  tiitle: string;
+  title: string;
 }
