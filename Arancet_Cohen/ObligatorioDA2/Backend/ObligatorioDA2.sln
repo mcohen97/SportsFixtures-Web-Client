@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.BusinessLogi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Data.DataAccess", "ObligatorioDA2.Data.DataAccess\ObligatorioDA2.Data.DataAccess.csproj", "{26F44F66-3F0B-4435-9F72-2C9475B1A4E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObligatorioDA2.Services.Logging", "ObligatorioDA2.Services.Logging\ObligatorioDA2.Services.Logging.csproj", "{05463B30-C8FC-45A7-9982-7F4EC49D7CFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObligatorioDA2.Services.Logging", "ObligatorioDA2.Services.Logging\ObligatorioDA2.Services.Logging.csproj", "{05463B30-C8FC-45A7-9982-7F4EC49D7CFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
