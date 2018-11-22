@@ -1,6 +1,6 @@
 ﻿using ObligatorioDA2.BusinessLogic;
 using ObligatorioDA2.Data.DataAccess;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -172,7 +172,7 @@ namespace DataRepositoriesTest
             Team teamB = new Team("TeamB", "photoB", sportA);
             teams.Add(teamA);
             teams.Add(teamB);
-            IEncounterRepository encounters = new MatchRepository(context);
+            IEncounterRepository encounters = new EncounterRepository(context);
             Encounter aVsB = new Match(new List<Team>() { teamA, teamB }, DateTime.Today, sportA);
             encounters.Add(aVsB);
             sportStorage.Delete(sportA.Name);

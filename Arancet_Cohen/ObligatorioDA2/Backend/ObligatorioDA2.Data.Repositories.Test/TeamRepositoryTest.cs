@@ -4,7 +4,7 @@ using Moq;
 using ObligatorioDA2.Data.DataAccess;
 using System.Collections.Generic;
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using ObligatorioDA2.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
@@ -39,7 +39,7 @@ namespace DataRepositoriesTest
             sportsStorage = new SportRepository(context);
             teamsStorage = new TeamRepository(context);
             usersStorage = new UserRepository(context);
-            matchesStorage = new MatchRepository(context);
+            matchesStorage = new EncounterRepository(context);
         }
 
         private void CreateDisconnectedDatabase()

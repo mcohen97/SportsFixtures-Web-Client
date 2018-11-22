@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ObligatorioDA2.BusinessLogic;
+using ObligatorioDA2.Services.Logging;
 using System;
-using ObligatorioDA2.Data.Entities;
-using ObligatorioDA2.Data.DomainMappers;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.Data.DataAccess.Mappers.Tests

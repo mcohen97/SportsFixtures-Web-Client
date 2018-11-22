@@ -1,6 +1,6 @@
 ﻿using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Data.Repositories.Interfaces;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Data.Repositories.Contracts;
+using ObligatorioDA2.Services.Contracts.Dtos;
 using System;
 using System.Linq;
 

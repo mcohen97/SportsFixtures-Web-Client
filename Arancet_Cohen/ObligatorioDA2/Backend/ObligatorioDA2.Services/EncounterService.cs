@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using ObligatorioDA2.BusinessLogic;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using System.Linq;
 using ObligatorioDA2.Services.Exceptions;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 using ObligatorioDA2.Services.Mappers;
 using ObligatorioDA2.BusinessLogic.Exceptions;
 
@@ -87,19 +86,24 @@ namespace ObligatorioDA2.Services
             }
         }
 
-        public void ModifyEncounter(int idEncounter, ICollection<int> teamsIds, DateTime date, string sportName)
+        public EncounterDto ModifyEncounter(int idEncounter, ICollection<int> teamsIds, DateTime date, string sportName)
         {
             EncounterDto toModify = new EncounterDto() { id = idEncounter, sportName = sportName, date = date, teamsIds = teamsIds };
-            ModifyEncounter(toModify);
+            return ModifyEncounter(toModify);
         }
 
-        public void ModifyEncounter(EncounterDto anEncounter)
+        public EncounterDto ModifyEncounter(EncounterDto anEncounter)
         {
-            Encounter toAdd = encounterConverter.ToEncounter(anEncounter);
+            Encounter toAdd;
             try
             {
+                toAdd = encounterConverter.ToEncounter(anEncounter);
                 ValidateDate(toAdd);
                 encountersStorage.Modify(toAdd);
+            }
+            catch (InvalidEncounterDataException e) {
+                throw new ServiceException(e.Message, ErrorType.INVALID_DATA);
+
             }
             catch (EncounterNotFoundException e)
             {
@@ -108,6 +112,7 @@ namespace ObligatorioDA2.Services
             catch (DataInaccessibleException e) {
                 throw new ServiceException(e.Message, ErrorType.DATA_INACCESSIBLE);
             }
+            return encounterConverter.ToDto(toAdd);
         }
 
         private void ValidateDate(Encounter anEncounter) {

@@ -5,13 +5,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.WebAPI.Controllers;
 using ObligatorioDA2.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 using ObligatorioDA2.Services.Mappers;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -229,6 +229,8 @@ namespace ObligatorioDA2.WebAPI.Tests
         public void PutModifyMatchTest() {
             //Arrange.
             MatchModelIn input = BuildMatchModelIn(testEncounter);
+            matchService.Setup(ms => ms.ModifyEncounter(It.IsAny<int>(), It.IsAny<ICollection<int>>(),
+                It.IsAny<DateTime>(), It.IsAny<string>())).Returns(testEncounter);
 
             //Act.
             IActionResult result = controller.Put(1, input);

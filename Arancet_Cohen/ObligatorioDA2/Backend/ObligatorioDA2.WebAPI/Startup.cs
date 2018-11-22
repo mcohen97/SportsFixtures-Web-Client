@@ -7,13 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using ObligatorioDA2.Data.Repositories.Interfaces;
+using ObligatorioDA2.Data.Repositories.Contracts;
 using ObligatorioDA2.Data.Repositories;
 using ObligatorioDA2.Services;
 using ObligatorioDA2.Data.DataAccess;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using ObligatorioDA2.WebAPI.Controllers;
 using System.Diagnostics.CodeAnalysis;
+using ObligatorioDA2.Services.Logging;
 
 namespace ObligatorioDA2.WebAPI
 {
@@ -55,6 +56,8 @@ namespace ObligatorioDA2.WebAPI
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<DatabaseConnection>(options => options.UseSqlServer(Configuration.GetConnectionString("ObligatorioDA2")));
+            services.AddDbContext<LoggingContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LogDB")));
+
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITeamRepository ,TeamRepository>();
             services.AddScoped<ILogInfoRepository, LogInfoRepository>();
@@ -63,7 +66,7 @@ namespace ObligatorioDA2.WebAPI
             services.AddScoped<ILogInService, AuthenticationService>();
             services.AddScoped<IInnerEncounterService, EncounterService>();
             services.AddScoped<IEncounterService, EncounterService>();
-            services.AddScoped<IEncounterRepository, MatchRepository>();
+            services.AddScoped<IEncounterRepository, EncounterRepository>();
             services.AddScoped<ISportRepository, SportRepository>();
             services.AddScoped<ISportService, SportService>();
             services.AddScoped<IUserService, UserService>();

@@ -41,8 +41,8 @@ namespace ObligatorioDA2.BusinessLogic
             favourites = new List<Team>();
         }
 
-        public User(UserId anIdentity, bool isAdmin, ICollection<Team> someTeams)
-            : this(anIdentity, isAdmin)
+        public User(UserId identification, bool isAdmin, ICollection<Team> someTeams)
+            : this(identification, isAdmin)
         {
             favourites = someTeams;
         }

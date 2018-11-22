@@ -25,41 +25,22 @@ namespace ObligatorioDA2.Data.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("MakerUserName");
+                    b.Property<int?>("EncounterEntityId");
 
-                    b.Property<int?>("MatchEntityId");
+                    b.Property<string>("MakerUserName");
 
                     b.Property<string>("Text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MakerUserName");
+                    b.HasIndex("EncounterEntityId");
 
-                    b.HasIndex("MatchEntityId");
+                    b.HasIndex("MakerUserName");
 
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("ObligatorioDA2.Data.Entities.LogInfoEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<string>("LogType");
-
-                    b.Property<string>("Messagge");
-
-                    b.Property<string>("Username");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Logs");
-                });
-
-            modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchEntity", b =>
+            modelBuilder.Entity("ObligatorioDA2.Data.Entities.EncounterEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +59,7 @@ namespace ObligatorioDA2.Data.DataAccess.Migrations
                     b.ToTable("Matches");
                 });
 
-            modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchTeam", b =>
+            modelBuilder.Entity("ObligatorioDA2.Data.Entities.EncounterTeam", b =>
                 {
                     b.Property<int>("MatchId");
 
@@ -167,25 +148,25 @@ namespace ObligatorioDA2.Data.DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.CommentEntity", b =>
                 {
+                    b.HasOne("ObligatorioDA2.Data.Entities.EncounterEntity")
+                        .WithMany("Commentaries")
+                        .HasForeignKey("EncounterEntityId");
+
                     b.HasOne("ObligatorioDA2.Data.Entities.UserEntity", "Maker")
                         .WithMany()
                         .HasForeignKey("MakerUserName");
-
-                    b.HasOne("ObligatorioDA2.Data.Entities.MatchEntity")
-                        .WithMany("Commentaries")
-                        .HasForeignKey("MatchEntityId");
                 });
 
-            modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchEntity", b =>
+            modelBuilder.Entity("ObligatorioDA2.Data.Entities.EncounterEntity", b =>
                 {
                     b.HasOne("ObligatorioDA2.Data.Entities.SportEntity", "SportEntity")
                         .WithMany()
                         .HasForeignKey("SportEntityName");
                 });
 
-            modelBuilder.Entity("ObligatorioDA2.Data.Entities.MatchTeam", b =>
+            modelBuilder.Entity("ObligatorioDA2.Data.Entities.EncounterTeam", b =>
                 {
-                    b.HasOne("ObligatorioDA2.Data.Entities.MatchEntity", "Match")
+                    b.HasOne("ObligatorioDA2.Data.Entities.EncounterEntity", "Match")
                         .WithMany()
                         .HasForeignKey("MatchId")
                         .OnDelete(DeleteBehavior.Cascade);

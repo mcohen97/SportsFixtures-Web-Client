@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObligatorioDA2.Services.Interfaces;
+using ObligatorioDA2.Services.Contracts;
 using Moq;
 using ObligatorioDA2.WebAPI.Models;
 using ObligatorioDA2.WebAPI.Controllers;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using ObligatorioDA2.BusinessLogic.Data.Exceptions;
 using ObligatorioDA2.Services.Exceptions;
 using System;
-using ObligatorioDA2.Services.Interfaces.Dtos;
+using ObligatorioDA2.Services.Contracts.Dtos;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ObligatorioDA2.WebAPI.Tests
