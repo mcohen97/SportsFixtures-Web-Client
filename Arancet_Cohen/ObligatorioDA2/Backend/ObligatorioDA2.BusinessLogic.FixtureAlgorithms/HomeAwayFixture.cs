@@ -19,9 +19,7 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
             this.daysBetweenRounds = daysBetweenRounds;
             this.factory = new EncounterFactory();
         }
-        public DateTime InitialDate { get => initialDate; set => SetInitialDate(value); }
-        public int RoundLength { get => roundLength; set => SetRoundLength(value); }
-        public int DaysBetweenRounds { get => daysBetweenRounds; set => SetDaysBetweenRounds(value); }
+
 
         public override ICollection<Encounter> GenerateFixture(ICollection<Team> teams)
         {
@@ -175,21 +173,6 @@ namespace ObligatorioDA2.BusinessLogic.FixtureAlgorithms
                         actualRound[i, j] = enumerator.Current;
             }
             return actualRound;
-        }
-
-        private void SetInitialDate(DateTime value)
-        {
-            initialDate = value;
-        }
-
-        private void SetRoundLength(int value)
-        {
-            roundLength = value;
-        }
-
-        private void SetDaysBetweenRounds(int value)
-        {
-            daysBetweenRounds = value;
         }
     }
 }
