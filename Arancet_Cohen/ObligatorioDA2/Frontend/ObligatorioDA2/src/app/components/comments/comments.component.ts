@@ -83,7 +83,6 @@ export class CommentsComponent implements OnInit {
         ((error:any) => this.router.navigate['login']),
         (()=> {
           this.isLoading = false;
-          this.errorMessage = "Cant get data due to authentication problems";
         })
       )
     }else{
@@ -116,6 +115,7 @@ export class CommentsComponent implements OnInit {
   }
 
   showEncounters(teamId:number){
+    this.encounterShown = undefined;
     if(teamId != 0){
       this.selectedTeamId = teamId;
       this.getEncountersOfTeam(teamId);

@@ -29,6 +29,7 @@ export class TeamsComponent implements OnInit {
   auth: any;
 
   constructor(private router: Router, private domSanitizer: DomSanitizer, private reconnector:ReConnector ,private dialog:MatDialog, private teamsService:TeamsService) {
+    this.isLoading = true;
     this.getTeams();
   }
   
@@ -37,7 +38,6 @@ export class TeamsComponent implements OnInit {
   }
 
   public getTeams():void{
-    this.isLoading = true;
     this.teamsService.getAllTeams().subscribe(
       ((data:Array<Team>) => this.updateTableData(data)),
       ((error:any) => this.handleTeamError(error))

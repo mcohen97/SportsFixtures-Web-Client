@@ -33,14 +33,18 @@ export class LogsComponent implements OnInit {
     this.fromDateControl = new FormControl();
     this.toDateControl = new FormControl();
     this.filterValue = "";
+    this.isLoading = true;
     this.getLogs();
+    var ref = setInterval(()=> {
+      this.getLogs();
+    },3000);
+    Globals.addInterval(ref);
   }
 
   ngOnInit() {
   }
 
   public getLogs():void{
-    this.isLoading = true;
     this.logsService.getAllLogs().subscribe(
       ((data:Array<Log>) => {
         this.updateTableData(data)
@@ -51,10 +55,14 @@ export class LogsComponent implements OnInit {
   }
 
   private updateTableData(logs:Array<Log>){
-    this.dataSource = new MatTableDataSource(logs);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.isLoading = false;
+    if(!this.dataSource){
+      this.dataSource = new MatTableDataSource(logs);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.isLoading = false;
+    }
+    else
+      this.dataSource.data = logs;
   }
 
   private handleLogError(error:ErrorResponse) {

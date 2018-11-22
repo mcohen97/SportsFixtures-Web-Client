@@ -1,5 +1,5 @@
 
-  <div class="mat-elevation-z8" style="max-height: 90%; margin-top: 20px;">
+  <div  style="max-height: 90%; margin-top: 20px;">
       <div style="width:100%; max-height: 50vh; overflow-x:auto; overflow-y:auto">      
         <table mat-table [dataSource]="dataSource" matSort>
           <ng-container matColumnDef="makerUsername">
@@ -17,14 +17,10 @@
           </tr>
         </table>
       </div>
-    <div *ngIf = "dataSource && dataSource.data.length > 4" class = "paginator-container">
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-    </div>
   </div>
   <mat-form-field style="margin-top: 20px;" >
       <textarea [formControl] = "commentControl" matInput placeholder="Leave a comment"></textarea>
   </mat-form-field>
   <button mat-raised-button class = "add-button-raised" color = "primary" (click)="comment()">
-    <mat-icon aria-label="Add">add</mat-icon>
-    Add comment
+    <mat-icon aria-label="Add">comment</mat-icon>
   </button> 

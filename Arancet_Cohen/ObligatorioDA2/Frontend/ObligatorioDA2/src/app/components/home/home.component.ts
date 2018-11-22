@@ -37,6 +37,7 @@ export class HomeComponent {
 
   logOut(){
     Globals.logOut();
+    Globals.endAllIntervals();
     this.getLogged();
   }
 
@@ -46,5 +47,10 @@ export class HomeComponent {
 
   checkRole(role:string):boolean{
     return Globals.getRole() == role;
+  }
+
+  menuButtonClick(){
+    this.sidenav.toggle();
+    Globals.endAllIntervals();
   }
 }
