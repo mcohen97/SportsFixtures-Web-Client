@@ -55,7 +55,7 @@ namespace DataRepositoriesTest
                 .Options;
             Mock<DatabaseConnection> contextMock = new Mock<DatabaseConnection>(options);
             Mock<DbException> toThrow = new Mock<DbException>();
-            contextMock.Setup(c => c.Matches).Throws(toThrow.Object);
+            contextMock.Setup(c => c.Encounters).Throws(toThrow.Object);
             contextMock.Setup(c => c.Comments).Throws(toThrow.Object);
             matchesStorage = new EncounterRepository(contextMock.Object);
         }

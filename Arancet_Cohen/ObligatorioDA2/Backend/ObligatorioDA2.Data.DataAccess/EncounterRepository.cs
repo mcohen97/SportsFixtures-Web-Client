@@ -107,9 +107,9 @@ namespace ObligatorioDA2.Data.Repositories
 
         private void TryClear()
         {
-            foreach (EncounterEntity match in context.Matches)
+            foreach (EncounterEntity match in context.Encounters)
             {
-                context.Matches.Remove(match);
+                context.Encounters.Remove(match);
             }
             context.SaveChanges();
         }
@@ -140,8 +140,8 @@ namespace ObligatorioDA2.Data.Repositories
 
         private void DeleteExistent(int anId)
         {
-            EncounterEntity retrieved = context.Matches.Include(m => m.Commentaries).First(m => m.Id == anId);
-            context.Matches.Remove(retrieved);
+            EncounterEntity retrieved = context.Encounters.Include(m => m.Commentaries).First(m => m.Id == anId);
+            context.Encounters.Remove(retrieved);
             context.Comments.RemoveRange(retrieved.Commentaries);
             context.SaveChanges();
         }
@@ -176,14 +176,14 @@ namespace ObligatorioDA2.Data.Repositories
 
         private Encounter GetExistentMatch(int anId)
         {
-            EncounterEntity entity = context.Matches
+            EncounterEntity entity = context.Encounters
                 .Include(m => m.SportEntity)
                 .Include(m => m.Commentaries).ThenInclude(c => c.Maker)
                 .First(me => me.Id == anId);
 
-            ICollection<EncounterTeam> match_teams = context.MatchTeams.Include(mt=> mt.Team)
+            ICollection<EncounterTeam> match_teams = context.EncounterTeams.Include(mt=> mt.Team)
                                                                    .ThenInclude(t => t.Sport)                                                                             
-                                                                   .Where(mt => mt.MatchId == anId)
+                                                                   .Where(mt => mt.EncounterId == anId)
                                                                    .ToList();
             Encounter conversion = matchConverter.ToEncounter(entity,match_teams);
 
@@ -211,15 +211,15 @@ namespace ObligatorioDA2.Data.Repositories
         private ICollection<Encounter> TryGetAll()
         {
             ICollection<Encounter> allOfThem = new List<Encounter>();
-            IQueryable<EncounterEntity> entities = context.Matches
+            IQueryable<EncounterEntity> entities = context.Encounters
                                             .Include(m => m.SportEntity)
                                             .Include(m => m.Commentaries).ThenInclude(c => c.Maker).AsNoTracking();
 
             foreach (EncounterEntity match in entities) {
-                IQueryable<EncounterTeam> matchPlayers = context.MatchTeams
+                IQueryable<EncounterTeam> matchPlayers = context.EncounterTeams
                     .Include(mt => mt.Team).ThenInclude(t=>t.Sport)
-                    .Include(mt => mt.Match).ThenInclude(m=> m.SportEntity)
-                    .Where(mt => mt.MatchId == match.Id).AsNoTracking();
+                    .Include(mt => mt.Encounter).ThenInclude(m=> m.SportEntity)
+                    .Where(mt => mt.EncounterId == match.Id).AsNoTracking();
                 Encounter built = matchConverter.ToEncounter(match, matchPlayers.ToList());
 
                 allOfThem.Add(built);
@@ -243,7 +243,7 @@ namespace ObligatorioDA2.Data.Repositories
 
         private bool AskIfEmpty()
         {
-            return !context.Matches.Any();
+            return !context.Encounters.Any();
         }
 
         public void Modify(Encounter aMatch)
@@ -261,9 +261,9 @@ namespace ObligatorioDA2.Data.Repositories
         public void ModifyExistent(Encounter aMatch)
         {
             EncounterEntity converted = matchConverter.ToEntity(aMatch);
-            if (context.Matches.Any(m => m.Id == aMatch.Id))
+            if (context.Encounters.Any(m => m.Id == aMatch.Id))
             {
-                EncounterEntity old = context.Matches.First(m => m.Id == aMatch.Id);
+                EncounterEntity old = context.Encounters.First(m => m.Id == aMatch.Id);
                 context.Entry(old).State = EntityState.Detached;
             }
             context.Entry(converted).State = EntityState.Modified;
@@ -277,16 +277,16 @@ namespace ObligatorioDA2.Data.Repositories
         private void RemoveMissingParticipants(Encounter aMatch)
         {
             ICollection<Team> participants = aMatch.GetParticipants();
-            IQueryable<EncounterTeam> missing = context.MatchTeams
-                .Where(mt =>mt.MatchId== aMatch.Id && !participants.Any(p => p.Id == mt.TeamNumber));
-            context.MatchTeams.RemoveRange(missing);
+            IQueryable<EncounterTeam> missing = context.EncounterTeams
+                .Where(mt =>mt.EncounterId== aMatch.Id && !participants.Any(p => p.Id == mt.TeamNumber));
+            context.EncounterTeams.RemoveRange(missing);
         }
 
         private void AddNewParticipants(ICollection<EncounterTeam> playingTeams)
         {
             foreach (EncounterTeam p in playingTeams) {
-                bool alreadyPlays = context.MatchTeams
-                .Any(mt => mt.MatchId == p.MatchId && mt.TeamNumber == p.TeamNumber);
+                bool alreadyPlays = context.EncounterTeams
+                .Any(mt => mt.EncounterId == p.EncounterId && mt.TeamNumber == p.TeamNumber);
                 context.Entry(p).State = EntityState.Detached;
                 if (!alreadyPlays)
                 {
@@ -300,7 +300,7 @@ namespace ObligatorioDA2.Data.Repositories
 
         private bool AnyWithId(int anId)
         {
-            return context.Matches.Any(m => m.Id == anId);
+            return context.Encounters.Any(m => m.Id == anId);
         }
 
         public Commentary CommentOnEncounter(int idMatch, Commentary aComment)
@@ -315,7 +315,7 @@ namespace ObligatorioDA2.Data.Repositories
         private Commentary CommentOnExistingMatch(int idMatch, Commentary aComment)
         {
             CommentEntity comment = commentConverter.ToEntity(aComment);
-            EncounterEntity commented = context.Matches.Include(m => m.Commentaries).First(m => m.Id == idMatch);
+            EncounterEntity commented = context.Encounters.Include(m => m.Commentaries).First(m => m.Id == idMatch);
             commented.Commentaries.Add(comment);
             context.Attach(comment).State = EntityState.Added;
             context.SaveChanges();
@@ -338,7 +338,7 @@ namespace ObligatorioDA2.Data.Repositories
 
         private bool AskIfExists(int id)
         {
-            return context.Matches.Any(m => m.Id == id);
+            return context.Encounters.Any(m => m.Id == id);
         }
 
         public ICollection<Commentary> GetComments()

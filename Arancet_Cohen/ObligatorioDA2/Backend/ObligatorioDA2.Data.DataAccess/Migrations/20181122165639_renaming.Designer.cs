@@ -12,8 +12,8 @@ namespace ObligatorioDA2.Data.DataAccess.Migrations
 {
     [ExcludeFromCodeCoverage]
     [DbContext(typeof(DatabaseConnection))]
-    [Migration("20181121142729_movingContext")]
-    partial class movingContext
+    [Migration("20181122165639_renaming")]
+    partial class renaming
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,22 +60,22 @@ namespace ObligatorioDA2.Data.DataAccess.Migrations
 
                     b.HasIndex("SportEntityName");
 
-                    b.ToTable("Matches");
+                    b.ToTable("Encounters");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.EncounterTeam", b =>
                 {
-                    b.Property<int>("MatchId");
+                    b.Property<int>("EncounterId");
 
                     b.Property<int>("TeamNumber");
 
                     b.Property<int>("Position");
 
-                    b.HasKey("MatchId", "TeamNumber");
+                    b.HasKey("EncounterId", "TeamNumber");
 
                     b.HasIndex("TeamNumber");
 
-                    b.ToTable("MatchTeams");
+                    b.ToTable("EncounterTeams");
                 });
 
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.SportEntity", b =>
@@ -170,9 +170,9 @@ namespace ObligatorioDA2.Data.DataAccess.Migrations
 
             modelBuilder.Entity("ObligatorioDA2.Data.Entities.EncounterTeam", b =>
                 {
-                    b.HasOne("ObligatorioDA2.Data.Entities.EncounterEntity", "Match")
+                    b.HasOne("ObligatorioDA2.Data.Entities.EncounterEntity", "Encounter")
                         .WithMany()
-                        .HasForeignKey("MatchId")
+                        .HasForeignKey("EncounterId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ObligatorioDA2.Data.Entities.TeamEntity", "Team")

@@ -73,15 +73,15 @@ namespace ObligatorioDA2.Data.Repositories
             context.Teams.RemoveRange(teams);
             foreach (TeamEntity deleted in teams)
             {
-                IQueryable<EncounterTeam> teamsMatches = context.MatchTeams.Include(mt => mt.Team)
+                IQueryable<EncounterTeam> teamsMatches = context.EncounterTeams.Include(mt => mt.Team)
                      .Where(mt => mt.Team.SportEntityName.Equals(sportName));
 
-                IQueryable<EncounterEntity> played = context.Matches
+                IQueryable<EncounterEntity> played = context.Encounters
                     .Include(m => m.Commentaries)
-                    .Where(m => teamsMatches.Any(mt => mt.MatchId == m.Id));
+                    .Where(m => teamsMatches.Any(mt => mt.EncounterId == m.Id));
 
-                context.MatchTeams.RemoveRange(teamsMatches);
-                context.Matches.RemoveRange(played);
+                context.EncounterTeams.RemoveRange(teamsMatches);
+                context.Encounters.RemoveRange(played);
                 IQueryable<UserTeam> followings = context.UserTeams.Where(t => t.Team.TeamNumber == deleted.TeamNumber);
                 context.UserTeams.RemoveRange(followings);
                 foreach (EncounterEntity match in played)

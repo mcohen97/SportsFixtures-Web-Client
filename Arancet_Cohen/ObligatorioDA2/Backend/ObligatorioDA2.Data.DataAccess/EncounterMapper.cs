@@ -21,16 +21,16 @@ namespace ObligatorioDA2.Data.DomainMappers
             sportConverter = new SportMapper();
             factory = new EncounterFactory();
         }
-        public EncounterEntity ToEntity(Encounter aMatch)
+        public EncounterEntity ToEntity(Encounter anEncounter)
         {
-            SportEntity sportEntity = sportConverter.ToEntity(aMatch.Sport);
+            SportEntity sportEntity = sportConverter.ToEntity(anEncounter.Sport);
             EncounterEntity conversion = new EncounterEntity()
             {
-                Id = aMatch.Id,
-                Date = aMatch.Date,
-                Commentaries = TransformCommentaries(aMatch.GetAllCommentaries()),
+                Id = anEncounter.Id,
+                Date = anEncounter.Date,
+                Commentaries = TransformCommentaries(anEncounter.GetAllCommentaries()),
                 SportEntity = sportEntity,
-                HasResult = aMatch.HasResult()
+                HasResult = anEncounter.HasResult()
             };
             return conversion;
         }
@@ -41,14 +41,14 @@ namespace ObligatorioDA2.Data.DomainMappers
             return commentaries.Select(c => commentConverter.ToEntity(c)).ToList();
         }
 
-        public Encounter ToEncounter(EncounterEntity aMatch, ICollection<EncounterTeam> playingTeams)
+        public Encounter ToEncounter(EncounterEntity anEncounter, ICollection<EncounterTeam> playingTeams)
         {
-            ICollection<Commentary> comments = aMatch.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
+            ICollection<Commentary> comments = anEncounter.Commentaries.Select(ce => commentConverter.ToComment(ce)).ToList();
             ICollection<Team> teams = playingTeams.Select(tm => teamConverter.ToTeam(tm.Team)).ToList();
-            DateTime date = aMatch.Date;
-            Sport sport = sportConverter.ToSport(aMatch.SportEntity);
-            Encounter created = factory.CreateEncounter(aMatch.Id,teams,date, sport, comments);
-            if (aMatch.HasResult) {
+            DateTime date = anEncounter.Date;
+            Sport sport = sportConverter.ToSport(anEncounter.SportEntity);
+            Encounter created = factory.CreateEncounter(anEncounter.Id,teams,date, sport, comments);
+            if (anEncounter.HasResult) {
                 Result matchResult = ToResults(playingTeams);
                 created.Result=matchResult;
             }
@@ -65,23 +65,23 @@ namespace ObligatorioDA2.Data.DomainMappers
             return matchResult;
         }
 
-        public ICollection<EncounterTeam> ConvertParticipants(Encounter aMatch)
+        public ICollection<EncounterTeam> ConvertParticipants(Encounter anEncounter)
         {
-            EncounterEntity matchEntity = ToEntity(aMatch);
+            EncounterEntity matchEntity = ToEntity(anEncounter);
             ICollection<EncounterTeam> conversions = new List<EncounterTeam>();
-            foreach (Team participant in aMatch.GetParticipants()) {
+            foreach (Team participant in anEncounter.GetParticipants()) {
                 TeamEntity team = teamConverter.ToEntity(participant);
                 EncounterTeam participantConversion = new EncounterTeam()
                 {
-                    Match = matchEntity,
-                    MatchId = matchEntity.Id,
+                    Encounter = matchEntity,
+                    EncounterId = matchEntity.Id,
                     Team = team,
                     TeamNumber = team.TeamNumber
                 };
                 conversions.Add(participantConversion);
             }
-            if (aMatch.HasResult()) {
-                ResultsToEntity(conversions, aMatch.Result);
+            if (anEncounter.HasResult()) {
+                ResultsToEntity(conversions, anEncounter.Result);
             }
             return conversions;
         }
