@@ -6,8 +6,8 @@ namespace ObligatorioDA2.Data.Entities
     {
         public TeamEntity Team { get; set; }
         public int TeamNumber { get; set; }
-        public EncounterEntity Match { get; set; }
-        public int MatchId { get; set; }
+        public EncounterEntity Encounter { get; set; }
+        public int EncounterId { get; set; }
         public int Position { get; set; }
     }
 }
