@@ -1,19 +1,15 @@
 export class Fixture{
     fixtureName:string;
-    day:number;
-    month:number;
-    year:number;
     sportName:string;
+    initialDate:Date;
     
-    constructor(fixtureName:string, day:number, month:number, year:number, sportName:string){
+    constructor(fixtureName:string, date:Date , sportName:string){
         this.fixtureName = fixtureName;
-        this.day = day;
-        this.month = month;
-        this.year = year;
+        this.initialDate = date;
         this.sportName = sportName;
     }
 
     public static Clone(aFixture:Fixture){
-        return new Fixture(aFixture.fixtureName, aFixture.day, aFixture.month, aFixture.year, aFixture.sportName);
+        return new Fixture(aFixture.fixtureName, aFixture.initialDate, aFixture.sportName);
     }
 }

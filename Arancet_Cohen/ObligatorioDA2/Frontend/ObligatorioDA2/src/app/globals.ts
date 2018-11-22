@@ -5,7 +5,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 @Injectable()
 export class Globals {
 
-  public static WEB_API_URL : string = 'https://localhost:5001/api/';
+  public static WEB_API_URL : string = 'https://localhost:44328/api/';
   
   private static refs = [];
 

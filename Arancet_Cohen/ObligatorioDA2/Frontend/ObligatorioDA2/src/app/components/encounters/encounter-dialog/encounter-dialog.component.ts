@@ -117,7 +117,7 @@ export class EncounterDialogComponent implements OnInit{
         this.data.isNewEncounter ? this.addEncounter(this.data.aEncounter) : this.updateEncounter(this.data.aEncounter);
       }else{
         var date = new Date(this.dateControl.value);
-        var fixture = new Fixture(this.methodControl.value, date.getDate(), date.getMonth()+1, date.getFullYear(), this.sportNameControl.value);
+        var fixture = new Fixture(this.methodControl.value, date, this.sportNameControl.value);
         this.addFixture(fixture);
       }    
     }
