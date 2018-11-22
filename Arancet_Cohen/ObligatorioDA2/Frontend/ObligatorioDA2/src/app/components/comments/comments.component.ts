@@ -32,11 +32,12 @@ export class CommentsComponent implements OnInit {
   errorMessage: string;
   isLoading = false;
   teamsFollowed : Array<Team>;
-  encountersShown: Array<Encounter>;
+  encountersOfSelectedTeam: Array<Encounter>;
+  encounterShown: Encounter;
   selectedTeamId:number;
-  encountersByTeamId = [];
   commentsByEncounterId = [];
   teamFilter: FormControl;
+  teams: Team[];
 
   constructor(private teamsService:TeamsService, private encountersService:EncountersService, private auth:AuthService, private usersService: UsersService, private router: Router, private domSanitizer: DomSanitizer, private reconnector:ReConnector ,private dialog:MatDialog, private commentsService:CommentsService) {
     this.isLoading = true;
@@ -51,18 +52,28 @@ export class CommentsComponent implements OnInit {
     this.isLoading = true;
     var username = Globals.getUsername();
     this.usersService.getFollowedTeams(username).subscribe(
-      ((teams:Array<Team>) => this.loadTeams(teams)),
+      ((teams:Array<Team>) => {
+        this.loadTeams(teams);
+        this.getAllTeams()
+      }),
       ((error:any) => this.handleError(error)),
       (() => this.isLoading = false)  
     )
   }
 
-  loadTeams(teams: Array<Team>): void {
-    this.teamsFollowed = teams;
+  public getAllTeams():void{
+    this.isLoading = true;
+    this.teamsService.getAllTeams().subscribe(
+      ((teams:Array<Team>) => {
+        this.teams = teams;
+      }),
+      ((error:any) => this.handleError(error)),
+      (() => this.isLoading = false)
+    )
   }
 
-  loadComments(comments: Comment[], encounterId: number): void {
-    this.commentsByEncounterId[encounterId] = comments;
+  loadTeams(teams: Array<Team>): void {
+    this.teamsFollowed = teams;
   }
 
   handleError(error: ErrorResponse): void {
@@ -72,9 +83,11 @@ export class CommentsComponent implements OnInit {
         ((error:any) => this.router.navigate['login']),
         (()=> {
           this.isLoading = false;
-          this.errorMessage = "Cant get data due to authentication problems";
         })
       )
+    }else{
+      this.errorMessage = "There was an error, refresh the page and try again"
+      this.isLoading = false;
     }
   }
 
@@ -102,27 +115,23 @@ export class CommentsComponent implements OnInit {
   }
 
   showEncounters(teamId:number){
-    this.selectedTeamId = teamId;
-    this.getEncountersOfTeam(teamId);
+    this.encounterShown = undefined;
+    if(teamId != 0){
+      this.selectedTeamId = teamId;
+      this.getEncountersOfTeam(teamId);
+    }
+
   }
 
   getEncountersOfTeam(teamId:number){
     this.isLoading = true;
     this.encountersService.getEncountersOfTeam(teamId).subscribe(
-      ((encounters:Array<Encounter>) => this.encountersShown = encounters),
+      ((encounters:Array<Encounter>) => {
+        this.encountersOfSelectedTeam = encounters;
+      }),
       ((error:any) => this.handleError(error)),
-      (() => this.getCommentsOfEncounters(this.encountersShown))
+      (() => this.isLoading = false)
     )
-  }
-
-  getCommentsOfEncounters(encounters:Array<Encounter>){
-    encounters.forEach((encounter:Encounter) =>{
-      this.commentsService.getEncounterComments(encounter.id).subscribe(
-        ((comments:Array<Comment>) => this.loadComments(comments, encounter.id)),
-        ((error:any) => this.handleError(error)),
-        (() => this.isLoading = false)
-      )
-    })
   }
 
   cleanDate(encounter:Encounter):string{
@@ -130,5 +139,40 @@ export class CommentsComponent implements OnInit {
     return date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
   }
 
+  resultOf(encounter:Encounter):string{
+    var result = "";
+    if(encounter.hasResult){
+      if(encounter.winnerId && encounter.winnerId != 0)
+        result = "Winner: " + this.teams.find(t => t.id == encounter.winnerId).name;
+      if(encounter.team_Position && encounter.team_Position.length != 0){
+        result += "Positions: "
+        encounter.team_Position.forEach(standing => {
+          result += this.teams.find(t => t.id == standing.teamId).name + " - " + standing.points + " / ";
+        });
+      };
+    }
+    else
+      result = "No result yet";
+    return result;
+  }
+
+  teamsOf(encounter:Encounter):string{
+    var result = ""
+    encounter.teamIds.forEach(teamId => {
+      result += " vs " + this.teams.find(t => t.id == teamId).name
+    });
+    return result.substr(4,result.length);
+  }
+
+  photoOf(teamId){
+    return this.teams?this.teams.find(t => t.id == teamId).photo:"";
+  }
+
+  showEncounter(idEncounter:number){
+    if(idEncounter != 0)
+      this.encounterShown = this.encountersOfSelectedTeam.find(e => e.id == idEncounter);
+  }
+
+  
 }
 

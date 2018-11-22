@@ -3,6 +3,7 @@ import {AuthService} from './../../services/auth/auth.service';
 import { LoginComponent } from './../../components/login/login.component';
 import {MatSidenav} from '@angular/material/sidenav';
 import { Globals } from 'src/app/globals';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -16,7 +17,11 @@ export class HomeComponent {
   @ViewChild('sidenav') sidenav:MatSidenav;
   title = 'Sporture';
 
-  constructor(){
+  constructor(private router:Router){
+    if(Globals.isUserLogged())
+      router.navigate(["welcome"]);
+    else
+      router.navigate(["login"]);
   }
 
   getLogged():string{
@@ -32,6 +37,7 @@ export class HomeComponent {
 
   logOut(){
     Globals.logOut();
+    Globals.endAllIntervals();
     this.getLogged();
   }
 
@@ -41,5 +47,10 @@ export class HomeComponent {
 
   checkRole(role:string):boolean{
     return Globals.getRole() == role;
+  }
+
+  menuButtonClick(){
+    this.sidenav.toggle();
+    Globals.endAllIntervals();
   }
 }

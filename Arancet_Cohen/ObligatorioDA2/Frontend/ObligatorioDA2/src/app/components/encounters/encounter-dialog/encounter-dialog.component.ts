@@ -291,5 +291,5 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 export interface EncounterDialogData{
   aEncounter: Encounter;
   isNewEncounter: boolean;
-  tiitle: string;
+  title: string;
 }

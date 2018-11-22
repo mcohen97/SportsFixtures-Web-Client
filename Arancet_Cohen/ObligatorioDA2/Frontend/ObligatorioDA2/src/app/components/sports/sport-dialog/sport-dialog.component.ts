@@ -125,5 +125,5 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 
 export interface SportDialogData{
   aSport: Sport;
-  tiitle: string;
+  title: string;
 }

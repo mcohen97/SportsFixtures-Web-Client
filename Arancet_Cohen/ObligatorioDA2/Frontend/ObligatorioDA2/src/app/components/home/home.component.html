@@ -2,7 +2,7 @@
       rel="stylesheet">
 <div class = "container" >
 <mat-toolbar class="mat-elevation-z8 main-toolbar">
-    <button *ngIf = "isUserLogged()" type="button" mat-icon-button (click)="sidenav.toggle()">
+    <button *ngIf = "isUserLogged()" type="button" mat-icon-button (click)="menuButtonClick()">
         <i class="material-icons" style="vertical-align: middle">
             menu
         </i>
@@ -18,7 +18,6 @@
       </button>
       <mat-menu #menu="matMenu">
           <button mat-menu-item *ngIf = "!isUserLogged()" routerLink="login" (click)="sidenav.close()">Log in</button>
-          <button mat-menu-item *ngIf = "isUserLogged()" routerLink="users" (click)="sidenav.close()">Profile</button>
           <button mat-menu-item *ngIf = "isUserLogged()" routerLink="login" (click)="logOut()">Log out</button>
       </mat-menu>
     </span>
@@ -31,36 +30,46 @@
   <mat-sidenav #sidenav class="frontpage-sidenav" (keydown.escape) = "close()" disableClose>
     <div class="title-sidenav">Menu</div>
     <div *ngIf = "checkRole('Admin')">
-      <button type="button" routerLink="users" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="users" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Users" >supervisor_account</mat-icon>
         Users
       </button>
-      <button type="button" routerLink="sports" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="sports" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Sports" >directions_bike</mat-icon>
         Sports
       </button>
-      <button type="button" routerLink="teams" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="teams" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Teams" >category</mat-icon>
         Teams
       </button>
-      <button type="button" routerLink="encounters" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="encounters" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Encounters" >flash_on</mat-icon>
         Encounters
       </button>
-      <button type="button" routerLink="logs" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="logs" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Logs" >list_alt</mat-icon>
         Logs
       </button>
     </div>
     <div *ngIf = "checkRole('Follower')">
-      <button type="button" routerLink="" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="welcome" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Home" >home</mat-icon>
         Home
       </button>
-      <button type="button" routerLink="comments" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
-        Comments
+      <button type="button" routerLink="comments" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Encounters" >flash_on</mat-icon>
+        Encounters
       </button>
-      <button type="button" routerLink="follower-teams" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="follower-teams" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Teams" >category</mat-icon>
         Teams
       </button>
-      <button type="button" routerLink="calendar" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="calendar" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Calendar" >calendar_today</mat-icon>
         Calendar
       </button>
-      <button type="button" routerLink="positions" class="button-sidenav" (click)="sidenav.toggle()" mat-flat-button>
+      <button type="button" routerLink="positions" class="button-sidenav" (click)="menuButtonClick()" mat-flat-button>
+        <mat-icon aria-label="Positions" >format_list_numbered</mat-icon>
         Positions
       </button>
     </div>

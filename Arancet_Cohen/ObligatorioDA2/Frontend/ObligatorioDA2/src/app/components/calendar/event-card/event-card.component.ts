@@ -34,4 +34,5 @@ export class EventCardComponent implements OnInit {
     }
     return result;
   }
+
 }
